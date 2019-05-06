@@ -49,7 +49,7 @@ const ClusteringParameterMenu = ({
         </Menu>
       </Grid.Column>
       <Grid.Column width={12}>
-        <Message size='huge' header={activeParameterDescription} content={'Detailed description goes here'} />
+        <Message header={activeParameterDescription} content={'Detailed description goes here'} />
         <Divider />
       </Grid.Column>
     </Grid>

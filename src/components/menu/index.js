@@ -43,7 +43,15 @@ const MenuComponent = ({
             content='CReSCENT'
           />
 
-          <Menu.Menu position='right'>
+          {/* <Menu.Menu position='right'>
+            <Button.Group>
+              <Button content='Parameters' />
+              <Button content='Status' />
+              <Button content='Results' />
+            </Button.Group>
+          </Menu.Menu> */}
+
+          {/* <Menu.Menu position='right'>
 
           {
             [
@@ -68,25 +76,8 @@ const MenuComponent = ({
             )
           }
 
-            <Menu.Item />
-            <Modal
-              trigger={
-                <Menu.Item>
-                  <Button color='red' content='Upload' icon='upload' labelPosition='left'/>
-                </Menu.Item>
-              }
-              header='Upload Workflow Inputs Here'
-              content='Upload API stuff here'
-              actions={
-                [
-                  <Button key='submit' content='Submit uploads' />
-                ]
-              }
-            />
-            <Menu.Item>
-              <Button content='Submit' icon='cloud upload' labelPosition='left' color='blue' />
-            </Menu.Item>
-          </Menu.Menu>
+
+          </Menu.Menu> */}
         </Segment>
   )
 }
