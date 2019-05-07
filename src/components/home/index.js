@@ -66,7 +66,7 @@ const VisualizationComponent = ({
             <Button content='Parameters' color={isActiveToggle('params') ? 'red' : undefined}
               active={isActiveToggle('params')} onClick={() => setActiveToggle('params')}
             />
-            <Button content='Status' color={isActiveToggle('status') ? 'grey' : undefined}
+            <Button content='Status' color={isActiveToggle('status') ? 'green ' : undefined}
               active={isActiveToggle('status')} onClick={() => setActiveToggle('status')}
             />
             <Button content='Results' color={isActiveToggle('results') ? 'blue' : undefined}
@@ -112,11 +112,11 @@ const VisualizationComponent = ({
               }
             />
             <Button.Or text='&' />
-            <Button content='Submit' icon='cloud upload' labelPosition='right' color='blue' />
+            <Button content='Submit' icon='cloud upload' labelPosition='right' color='red' disabled />
           </Button.Group>
 
           : isActiveToggle('status') ?
-          <Segment attached='bottom' inverted color='grey' content='Current step running is...' />
+          <Segment attached='bottom' inverted color='green ' content='Current step running is...' />
 
           : isActiveToggle('results') ?
           <Segment attached='bottom' inverted color='blue' content='Not done yet...' />
