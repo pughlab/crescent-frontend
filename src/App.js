@@ -7,12 +7,13 @@ import MenuComponent from './components/menu'
 import VisualizationComponent from './components/home'
 
 const App = ({
-
+  session
 }) => {
     const [visContent, setVisContent] = useState('Home')
+
     return (
       <Segment style={{height: '100%'}}>
-        <VisualizationComponent
+        <VisualizationComponent session={session}
           visContent={visContent}
           setVisContent={setVisContent}
         />

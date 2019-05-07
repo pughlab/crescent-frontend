@@ -17,9 +17,9 @@ const CWLStepButton = ({
     <Modal size='large'
       trigger={
         <Step>
-        {/* <Icon name='check /> */}
-        <Step.Content title={step} description={'Tool name goes here'} />
-      </Step>
+          {/* <Icon name='check /> */}
+          <Step.Content title={step} description={'Tool name goes here'} />
+        </Step>
       }
     >
       <Modal.Header content={step} />
@@ -38,9 +38,15 @@ const CWLStepButton = ({
 
 
 const VisualizationComponent = ({
+  session,
+
   visContent,
   setVisContent
 }) => {
+  const submitCWL = () => {
+    session.call('crescent.submit', [], {})
+  }
+
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
   return (
@@ -107,12 +113,18 @@ const VisualizationComponent = ({
               content='Upload API stuff here'
               actions={
                 [
-                  <Button key='submit' content='Submit uploads' />
+                  <Button key='upload' content='Submit uploads' />
                 ]
               }
             />
             <Button.Or text='&' />
-            <Button content='Submit' icon='cloud upload' labelPosition='right' color='red' disabled />
+            <Button
+              content='Submit'
+              icon='cloud upload' labelPosition='right'
+              color='red'
+              // disabled
+              onClick={() => submitCWL()}
+            />
           </Button.Group>
 
           : isActiveToggle('status') ?
