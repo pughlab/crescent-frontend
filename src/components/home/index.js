@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 
 import { Icon, Menu, Popup, Header, Segment, Button, Label, Grid, Image, Modal, Divider, Step } from 'semantic-ui-react'
 
-import ClusteringParameterMenu from '../cwl/clustering/ParameterMenu'
+import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu'
 
 import NormalizationVisualization from '../cwl/normalization'
 import AlignmentVisualization from '../cwl/alignment'
@@ -85,18 +85,17 @@ const VisualizationComponent = ({
             items={
               R.map(
                 ({step}) => (
-                  <CWLStepButton step={step} setVisContent={setVisContent} />
+                  <CWLStepButton key={step} step={step} setVisContent={setVisContent} />
                 ),
                 [
-                  {step: 'Alignment'},
+                  // {step: 'QC/Alignment'},
                   {step: 'Normalization'},
-                  {step: 'Clustering'},
-                  {step: 'Alignment'},
-                  {step: 'Normalization'},
-                  {step: 'Clustering'},
-                  {step: 'Alignment'},
-                  {step: 'Normalization'},
-                  {step: 'Clustering'}
+                  {step: 'Dimension Reduction'},
+                  {step: 'Cell Clustering'},
+                  // {step: 'Differential Expression'},
+                  {step: 'Visualizations'},
+                  // {step: 'Cell Cluster Labelling'},
+                  // {step: 'Gene/Pathway Interactions'},
                 ]
               )
             }
@@ -121,7 +120,7 @@ const VisualizationComponent = ({
             <Button
               content='Submit'
               icon='cloud upload' labelPosition='right'
-              color='red'
+              color='blue'
               // disabled
               onClick={() => submitCWL()}
             />

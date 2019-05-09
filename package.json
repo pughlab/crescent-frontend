@@ -10,6 +10,7 @@
     "ramda-extension": "^0.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-range": "^1.0.5",
     "react-scripts": "3.0.0",
     "semantic-ui-react": "^0.86.0",
     "typescript": "^3.4.5"

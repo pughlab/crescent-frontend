@@ -27,12 +27,10 @@ const submitCWL = () => {
   // }) 
 
   const cwl = spawn(
-    'cwl-runner',
-    [
-      '/home/martin/Desktop/phenotate/pipeline/split_groups/split_groups.cwl',
-      '/home/martin/Desktop/phenotate/pipeline/split_groups/split_groups-job.yaml',
-    ]
-  )
+    'cd /Users/smohanra/Documents/crescent/docker-crescent && source /Users/smohanra/Documents/crescent/docker-crescent/crescent/bin/activate && export TMPDIR=/Users/smohanra/Documents/crescent/docker-crescent/tmp && /Users/smohanra/Library/Python/2.7/bin/toil-cwl-runner /Users/smohanra/Documents/crescent/docker-crescent/seurat.cwl /Users/smohanra/Documents/crescent/docker-crescent/seurat_inputs.yaml',{ 
+      shell: true
+
+  })
   cwl.stdout.on( 'data', data => {
       console.log( `stdout` )
       console.log(data)

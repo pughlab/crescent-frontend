@@ -1,8 +1,8 @@
 import React, {useState, createRef, Fragment, useEffect} from 'react';
 
-import {Menu, Popup, Header, Segment, Button, Grid, Modal, Label, Divider} from 'semantic-ui-react'
+import {Menu, Popup, Header, Segment, Button, Grid, Modal, Label, Divider, Icon} from 'semantic-ui-react'
 
-import ClusteringParameterMenu from '../cwl/clustering/ParameterMenu'
+import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu'
 
 
 const CWLStepButton = ({
@@ -17,7 +17,9 @@ const CWLStepButton = ({
     >
       <Modal.Header content={step} />
       <Modal.Content scrolling>
-        <ClusteringParameterMenu />
+        <Segment placeholder>
+          <ClusteringParameterMenu />
+        </Segment>
       </Modal.Content>
       <Modal.Actions>
         <Button content='Call API HERE'
@@ -29,6 +31,12 @@ const CWLStepButton = ({
   )
 }
 
+const CrescentIcon = () => (
+  <Icon.Group style={{marginTop: -3}} >
+    <Icon name='cloud' size='big'  />
+    <Icon name='moon' size='small' inverted style={{marginTop: 2, marginLeft: -2}} />
+  </Icon.Group>
+)
 
 const MenuComponent = ({
   visContent,
@@ -36,12 +44,14 @@ const MenuComponent = ({
 }) => {
 
   return (
-        <Segment attached='bottom' style={{height: '10%'}} as={Menu} size='large'>
+        <Segment attached='bottom' style={{height: '10%'}} as={Menu} size='massive'>
           <Menu.Item
             header
-            icon='moon'
-            content='CReSCENT'
-          />
+            // content='CReSCENT'
+          >
+            <CrescentIcon />
+            {`CReSCENT`}
+          </Menu.Item>
 
           {/* <Menu.Menu position='right'>
             <Button.Group>
