@@ -45,49 +45,15 @@ const MenuComponent = ({
 
   return (
         <Segment attached='bottom' style={{height: '10%'}} as={Menu} size='massive'>
-          <Menu.Item
-            header
-            // content='CReSCENT'
-          >
+          <Menu.Item header>
             <CrescentIcon />
             {`CReSCENT`}
           </Menu.Item>
 
-          {/* <Menu.Menu position='right'>
-            <Button.Group>
-              <Button content='Parameters' />
-              <Button content='Status' />
-              <Button content='Results' />
-            </Button.Group>
-          </Menu.Menu> */}
-
-          {/* <Menu.Menu position='right'>
-
-          {
-            [
-              {step: 'Alignment', icon: 'align justify'},
-              {step: 'Normalization', icon: 'align center'},
-              {step: 'Clustering', icon: 'hubspot'}
-            ].map(
-              ({step, icon}) => (
-                <Menu.Item key={step}>
-                  <Button.Group>
-                    <CWLStepButton step={step} icon={icon}
-                      setVisContent={setVisContent}
-                    />
-                    <Popup
-                      on='hover'
-                      trigger={<Button icon='exclamation' color='blue' loading onClick={() => setVisContent(step)} />}
-                      content='Click for results'
-                    />
-                  </Button.Group>
-                </Menu.Item>
-              )
-            )
-          }
-
-
-          </Menu.Menu> */}
+          <Menu.Menu position='right'>
+            <Menu.Item content='Projects' />
+            <Menu.Item content='Explore' />
+          </Menu.Menu>
         </Segment>
   )
 }

@@ -69,13 +69,13 @@ const VisualizationComponent = ({
       <Grid.Column width={4} style={{height: '100%'}}>
         <Segment attached='top'>
           <Button.Group fluid widths={3}>
-            <Button content='Parameters' color={isActiveToggle('params') ? 'red' : undefined}
+            <Button content='Parameters' color={isActiveToggle('params') ? 'blue' : undefined}
               active={isActiveToggle('params')} onClick={() => setActiveToggle('params')}
             />
-            <Button content='Status' color={isActiveToggle('status') ? 'green ' : undefined}
+            <Button content='Status' color={isActiveToggle('status') ? 'orange' : undefined}
               active={isActiveToggle('status')} onClick={() => setActiveToggle('status')}
             />
-            <Button content='Results' color={isActiveToggle('results') ? 'blue' : undefined}
+            <Button content='Results' color={isActiveToggle('results') ? 'green' : undefined}
               active={isActiveToggle('results')} onClick={() => setActiveToggle('results')}
             />
           </Button.Group>
@@ -106,7 +106,7 @@ const VisualizationComponent = ({
           <Button.Group fluid widths={2} attached='bottom' size='big'>
             <Modal
               trigger={
-                <Button color='red' content='Upload' icon='upload' labelPosition='left'/>
+                <Button color='blue' content='Upload' icon='upload' labelPosition='left'/>
               }
               header='Upload Workflow Inputs Here'
               content='Upload API stuff here'
@@ -127,10 +127,10 @@ const VisualizationComponent = ({
           </Button.Group>
 
           : isActiveToggle('status') ?
-          <Segment attached='bottom' inverted color='green ' content='Current step running is...' />
+          <Segment attached='bottom' inverted color='orange' content='Current step running is...' />
 
           : isActiveToggle('results') ?
-          <Segment attached='bottom' inverted color='blue' content='Not done yet...' />
+          <Segment attached='bottom' inverted color='green' content='Not done yet...' />
 
           : null
         }

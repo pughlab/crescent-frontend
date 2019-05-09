@@ -20,7 +20,7 @@ const ClusteringParameterMenu = ({
 
 }) => {
   // WORKFLOW PARAMETERS
-  const [singleCell, setSingleCell] = useState('DropSeq')
+  const [singleCell, setSingleCell] = useState('10X')
   const [resolution, setResolution] = useState(1)
   const [genes, setGenes] = useState(['MALAT1', 'GAPDH'])
   const [opacity, setOpacity] = useState(0.1)
@@ -82,7 +82,10 @@ const ClusteringParameterMenu = ({
               returnThreshold={returnThreshold}
               setReturnThreshold={setReturnThreshold}
             />
-          : <Message content='Select a parameter on the left menu' />
+          :
+            <Segment placeholder>
+              <Header textAlign='center' content='Select a parameter on the left menu' />
+            </Segment>
       }
       </Segment>
       </Grid.Column>

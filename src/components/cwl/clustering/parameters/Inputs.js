@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Button, Segment, Dropdown, Message, Divider } from 'semantic-ui-react';
+import { Button, Segment, Dropdown, Message, Divider, Label } from 'semantic-ui-react';
 
 import { Range, getTrackBackground } from "react-range";
 
@@ -8,7 +8,7 @@ import * as R from 'ramda'
 const withMessageAbove = R.curry(
     (description, InputComponent) => (
         <Segment basic>
-            <Message header={description} />
+            <Message header={description} color='blue' />
             <Divider />
             {InputComponent}
         </Segment>
@@ -19,14 +19,17 @@ const SingleCellInputType = ({
     singleCell, setSingleCell
 }) => {
     const isActive = R.equals(singleCell)
+    const activeColor = singleCell => isActive(singleCell) ? 'blue' : undefined
     return withMessageAbove('Select type of single cell experiment')(
         <Button.Group fluid size='large'>
             <Button content='DropSeq'
+                color={activeColor('DropSeq')}
                 active={isActive('DropSeq')}
                 onClick={() => setSingleCell('DropSeq')}
             />
             <Button.Or />
             <Button content='10X'
+                color={activeColor('10X')}
                 active={isActive('10X')}
                 onClick={() => setSingleCell('10X')}
             />
@@ -38,12 +41,14 @@ const Resolution = ({
     resolution, setResolution
 }) => {
     const isActive = R.equals(resolution)
+    const activeColor = resolution => isActive(resolution) ? 'blue' : undefined
     return withMessageAbove('Select TSNE resolution')(
         <Button.Group fluid size='large' widths={11}
             content={
                 R.map(
                     num => (
                         <Button key={`${num}`} content={num}
+                            color={activeColor(num)}
                             active={isActive(num)}
                             onClick={() => setResolution(num)}
                         />
@@ -66,6 +71,11 @@ const GeneList = ({
                 R.map(
                     code => ({key: code, text: code, value: code}),
                     ['MALAT1', 'GAPDH']
+                )
+            }
+            renderLabel={
+                ({text}) => (
+                    <Label color='blue' content={text} />
                 )
             }
         />
@@ -172,12 +182,14 @@ const PCADimensions = ({
     principalDimensions, setPrincipalDimensions
 }) => {
     const isActive = R.equals(principalDimensions)
+    const activeColor = dim => isActive(dim) ? 'blue' : undefined
     return withMessageAbove('Number of principal component analysis dimensions')(
         <Button.Group fluid size='large' widths={11}
             content={
                 R.map(
                     num => (
                         <Button key={num} content={num}
+                            color={activeColor(num)}
                             active={isActive(num)}
                             onClick={() => setPrincipalDimensions(num)}
                         />
