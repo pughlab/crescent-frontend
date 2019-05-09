@@ -15,40 +15,53 @@ const withMessageAbove = R.curry(
     ) 
 )
 
-const SingleCellInputType = (
-
-) => {
-
+const SingleCellInputType = ({
+    singleCell, setSingleCell
+}) => {
+    const isActive = R.equals(singleCell)
     return withMessageAbove('Select type of single cell experiment')(
         <Button.Group fluid size='large'>
-            <Button content='DropSeq' />
+            <Button content='DropSeq'
+                active={isActive('DropSeq')}
+                onClick={() => setSingleCell('DropSeq')}
+            />
             <Button.Or />
-            <Button content='10X' />
+            <Button content='10X'
+                active={isActive('10X')}
+                onClick={() => setSingleCell('10X')}
+            />
         </Button.Group>
     )
 }
 
-const Resolution = (
-
-) => {
-
+const Resolution = ({
+    resolution, setResolution
+}) => {
+    const isActive = R.equals(resolution)
     return withMessageAbove('Select TSNE resolution')(
         <Button.Group fluid size='large' widths={11}
             content={
-                R.compose(
-                    R.map(num => <Button key={num} content={num} />),
-                    R.map(R.toString)
-                )(R.range(0,11))
+                R.map(
+                    num => (
+                        <Button key={`${num}`} content={num}
+                            active={isActive(num)}
+                            onClick={() => setResolution(num)}
+                        />
+                    ),
+                    R.range(0,11)
+                )
             }
         />
     )
 }
 
-const GeneList = (
-
-) => {
+const GeneList = ({
+    genes, setGenes
+}) => {
     return withMessageAbove('Search and select genes of interest')(
         <Dropdown placeholder='Gene Symbols' fluid multiple selection search
+            value={genes}
+            onChange={(event, {value}) => setGenes(value)}
             options={
                 R.map(
                     code => ({key: code, text: code, value: code}),
@@ -62,12 +75,10 @@ const GeneList = (
 
 
 const RangeSlider = ({
-    step,
-    min,
-    max
-}) => {
-    const [values, setValues] = useState([(min+max)/2])
+    step, min, max,
 
+    value, onChange
+}) => {
     return (
         <div
             style={{
@@ -78,11 +89,11 @@ const RangeSlider = ({
             }}
         >
             <Range
-            values={values}
+            values={[value]}
             step={step}
             min={min}
             max={max}
-            onChange={values => setValues(values)}
+            onChange={onChange}
             renderTrack={({ props, children }) => (
                 <div
                 onMouseDown={props.onMouseDown}
@@ -101,7 +112,7 @@ const RangeSlider = ({
                     width: "100%",
                     borderRadius: "4px",
                     background: getTrackBackground({
-                        values,
+                        values: [value],
                         colors: ["#548BF4", "#ccc"],
                         min,
                         max
@@ -139,41 +150,54 @@ const RangeSlider = ({
             )}
             />
             <output style={{ marginTop: "30px" }} id="output">
-            {values[0].toFixed(2)}
+            {value.toFixed(2)}
             </output>
         </div>
     )
 }
 
-const Opacity = (
-
-) => {
+const Opacity = ({
+    opacity, setOpacity
+}) => {
     return withMessageAbove('Description of opacity here, [0,1]')(
-        <RangeSlider step={0.1} min={0} max={1} />
+        <RangeSlider
+            step={0.1} min={0} max={1}
+            value={opacity}
+            onChange={values => setOpacity(R.head(values))}
+        />
     )
 }
 
-const PCADimensions = (
-
-) => {
-
+const PCADimensions = ({
+    principalDimensions, setPrincipalDimensions
+}) => {
+    const isActive = R.equals(principalDimensions)
     return withMessageAbove('Number of principal component analysis dimensions')(
         <Button.Group fluid size='large' widths={11}
             content={
-                R.compose(
-                    R.map(num => <Button key={num} content={num} />),
-                    R.map(R.toString)
-                )(R.range(0,11))
+                R.map(
+                    num => (
+                        <Button key={num} content={num}
+                            active={isActive(num)}
+                            onClick={() => setPrincipalDimensions(num)}
+                        />
+                    ),
+                    R.range(0,11)
+                )
             }
         />
     )
 }
 
-const ReturnThreshold = (
-
-) => {
+const ReturnThreshold = ({
+    returnThreshold, setReturnThreshold
+}) => {
     return withMessageAbove('description of return_threshold here [0,0.1]')(
-        <RangeSlider step={0.01} min={0} max={0.1} />
+        <RangeSlider
+            step={0.01} min={0} max={0.1}
+            value={returnThreshold}
+            onChange={values => setReturnThreshold(R.head(values))}
+        />
     )
 }
 
@@ -186,36 +210,38 @@ const PARAMETERS = [
     makeParameter(
         'sc_input_type',
         'Single Cell Input Type',
-        <SingleCellInputType />
     ),
     makeParameter(
         'resolution',
         'TNSE Resolution',
-        <Resolution />
     ),
     makeParameter(
         'gene_list',
         'Genes of Interest',
-        <GeneList />
     ),
     makeParameter(
         'opacity',
         'Opacity',
-        <Opacity />
     ),
     makeParameter(
         'pca_dimensions',
         'PCA Dimensions',
-        <PCADimensions />
     ),
     makeParameter(
         'return_threshold',
-        'Return Threshold',
-        <ReturnThreshold />
+        'Return Threshold'
     )
     // makeParameter('project_id', 'Unique name for your project'),
     // makeParameter('mitochondrial_percentage', ''),
     // makeParameter('number_of_genes', 'Approximate number of genes'),
 ]
 
-export default PARAMETERS
+export {
+    PARAMETERS,
+    SingleCellInputType,
+    Resolution,
+    GeneList,
+    Opacity,
+    PCADimensions,
+    ReturnThreshold
+}
