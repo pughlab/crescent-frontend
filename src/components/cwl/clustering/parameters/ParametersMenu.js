@@ -17,15 +17,27 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 const ClusteringParameterMenu = ({
+  singleCell,
+  setSingleCell,
+  resolution,
+  setResolution,
+  genes,
+  setGenes,
+  opacity,
+  setOpacity,
+  principalDimensions,
+  setPrincipalDimensions,
+  returnThreshold,
+  setReturnThreshold,
 
 }) => {
   // WORKFLOW PARAMETERS
-  const [singleCell, setSingleCell] = useState('10X')
-  const [resolution, setResolution] = useState(1)
-  const [genes, setGenes] = useState(['MALAT1', 'GAPDH'])
-  const [opacity, setOpacity] = useState(0.1)
-  const [principalDimensions, setPrincipalDimensions] = useState(10)
-  const [returnThreshold, setReturnThreshold] = useState(0.01)
+  // const [singleCell, setSingleCell] = useState('10X')
+  // const [resolution, setResolution] = useState(1)
+  // const [genes, setGenes] = useState(['MALAT1', 'GAPDH'])
+  // const [opacity, setOpacity] = useState(0.1)
+  // const [principalDimensions, setPrincipalDimensions] = useState(10)
+  // const [returnThreshold, setReturnThreshold] = useState(0.01)
 
   // TOGGLE FOR WHICH PARAMETER TO CHANGE
   const [activeParameter, setActiveParameter] = useState(null)

@@ -9,18 +9,10 @@ import VisualizationComponent from './components/home'
 const App = ({
   session
 }) => {
-    const [visContent, setVisContent] = useState('Home')
-
     return (
       <Segment style={{height: '100%'}}>
-        <VisualizationComponent session={session}
-          visContent={visContent}
-          setVisContent={setVisContent}
-        />
-        <MenuComponent
-          visContent={visContent}
-          setVisContent={setVisContent}
-        />
+        <VisualizationComponent session={session} />
+        <MenuComponent />
       </Segment>
     )
   }

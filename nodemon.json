@@ -1,0 +1,4 @@
+{
+  "watch": ["express/"],
+  "ignore": ["express/tmp/"]
+}

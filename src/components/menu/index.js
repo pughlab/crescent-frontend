@@ -1,35 +1,8 @@
-import React, {useState, createRef, Fragment, useEffect} from 'react';
+import React, {useState, createRef, useEffect} from 'react';
 
-import {Menu, Popup, Header, Segment, Button, Grid, Modal, Label, Divider, Icon} from 'semantic-ui-react'
+import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon} from 'semantic-ui-react'
 
-import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu'
-
-
-const CWLStepButton = ({
-  step,
-  icon
-}) => {
-  return (
-    <Modal size='large'
-      trigger={
-        <Button icon={icon} content={step} />
-      }
-    >
-      <Modal.Header content={step} />
-      <Modal.Content scrolling>
-        <Segment placeholder>
-          <ClusteringParameterMenu />
-        </Segment>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button content='Call API HERE'
-          onClick={() => console.log('Submitted parameters')}
-        />
-
-      </Modal.Actions>
-    </Modal>
-  )
-}
+import * as R from 'ramda'
 
 const CrescentIcon = () => (
   <Icon.Group style={{marginTop: -3}} >
@@ -38,23 +11,57 @@ const CrescentIcon = () => (
   </Icon.Group>
 )
 
+const RunsModal = ({
+
+}) => {
+  const [openModal, setOpenModal] = useState(false)
+  return (
+    <Modal size='large'
+      open={openModal}
+      trigger={
+        <Menu.Item content='Runs' onClick={() => setOpenModal(true)}/>
+      }
+    > 
+      <Modal.Header content="Runs" />
+      <Modal.Content>
+        <Card.Group itemsPerRow={3}>
+        {
+          R.compose(
+            R.map(
+              n => (
+                <Card key={n}
+                  header={n}
+                  description='Description'
+                />
+              )
+            ),
+            R.times(R.identity)
+          )(10)
+        }
+        </Card.Group>
+      </Modal.Content>
+      <Modal.Actions>
+        <Button content='Close' onClick={() => setOpenModal(false)} />
+      </Modal.Actions>
+    </Modal>
+  )
+}
+
 const MenuComponent = ({
-  visContent,
-  setVisContent
+
 }) => {
 
   return (
-        <Segment attached='bottom' style={{height: '10%'}} as={Menu} size='massive'>
-          <Menu.Item header>
-            <CrescentIcon />
-            {`CReSCENT`}
-          </Menu.Item>
+    <Segment attached='bottom' style={{height: '10%'}} as={Menu} size='huge'>
+      <Menu.Item header>
+        <CrescentIcon />
+        {`CReSCENT`}
+      </Menu.Item>
 
-          <Menu.Menu position='right'>
-            <Menu.Item content='Projects' />
-            <Menu.Item content='Explore' />
-          </Menu.Menu>
-        </Segment>
+      <Menu.Menu position='right'>
+        <RunsModal />
+      </Menu.Menu>
+    </Segment>
   )
 }
 
