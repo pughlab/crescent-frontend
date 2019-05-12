@@ -5,6 +5,8 @@ import { Range, getTrackBackground } from "react-range";
 
 import * as R from 'ramda'
 
+import allGenes from './genes200.json'
+
 const withMessageAbove = R.curry(
     (description, InputComponent) => (
         <Segment basic>
@@ -68,10 +70,11 @@ const GeneList = ({
             value={genes}
             onChange={(event, {value}) => setGenes(value)}
             options={
-                R.map(
-                    code => ({key: code, text: code, value: code}),
-                    ['MALAT1', 'GAPDH']
-                )
+                R.compose(
+                    R.map(code => ({key: code, text: code, value: code})),
+                    R.concat(['MALAT1', 'GAPDH', 'EGFR', 'BRCA1', 'BRCA2', 'TP53']),
+                    R.uniq
+                )(allGenes)
             }
             renderLabel={
                 ({text}) => (
