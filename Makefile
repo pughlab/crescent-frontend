@@ -6,6 +6,12 @@ crescent-crossbar:
 		--name crescent-crossbar \
 		--rm -it crescent-crossbar
 
+crescent-mongo:
+	docker run \
+		-p 27017:27017 \
+		--name crescent-mongo \
+		--rm mongo
+
 crescent-express:
 	npm run server
 
