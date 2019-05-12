@@ -9,12 +9,19 @@ import VisualizationComponent from './components/home'
 const App = ({
   session
 }) => {
-    return (
-      <Segment style={{height: '100%'}}>
-        <VisualizationComponent session={session} />
-        <MenuComponent />
-      </Segment>
-    )
-  }
+  const [currentRunId, setCurrentRunId] = useState(null)
+  return (
+    <Segment style={{height: '100%'}}>
+      <VisualizationComponent
+        session={session}
+        currentRunId={currentRunId} setCurrentRunId={setCurrentRunId}
+      />
+      <MenuComponent
+        session={session}
+        currentRunId={currentRunId} setCurrentRunId={setCurrentRunId}
+      />
+    </Segment>
+  )
+}
 
   export default App
