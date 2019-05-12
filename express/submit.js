@@ -6,14 +6,17 @@ const R = require('ramda')
 const { spawn } = require( 'child_process' )
 
 // Make object to write as CWL job JSON file
-const makeCWLJobJSON = ({
-  singleCell,
-  resolution,
-  genes, // [String]
-  opacity,
-  principalDimensions,
-  returnThreshold
-}) => ({
+const makeCWLJobJSON = (
+  {
+    singleCell,
+    resolution,
+    genes, // [String]
+    opacity,
+    principalDimensions,
+    returnThreshold
+  },
+  runId
+) => ({
   R_script: {
     class: 'File',
     path: '/Users/smohanra/Documents/crescent/docker-crescent/Runs_Seurat_Clustering.R'
@@ -25,7 +28,7 @@ const makeCWLJobJSON = ({
   },
   sc_input_type: singleCell,
   resolution,
-  outsdir: 'frontend_seurat_output',
+  outsdir: runId,
   project_id: 'frontend_example_mac_10x_cwl',
   summary_plots: 'n',
   list_genes: R.join(',',genes),
@@ -39,8 +42,10 @@ const makeCWLJobJSON = ({
 const submitCWL = (
   kwargs,
   session,
+  runId
 ) => {
-  const jobJSON = makeCWLJobJSON(kwargs)
+  console.log(runId)
+  const jobJSON = makeCWLJobJSON(kwargs, runId)
   const cwl = spawn(
     `cd /Users/smohanra/Documents/crescent/docker-crescent && \
       source /Users/smohanra/Documents/crescent/docker-crescent/crescent/bin/activate && \
@@ -56,7 +61,7 @@ const submitCWL = (
       }
   )
   cwl.stdout.on( 'data', data => {
-      console.log( `stdout` )
+      console.log( `stdout: ${data}` )
       console.log(data)
   })
   cwl.stderr.on( 'data', data => {
@@ -64,7 +69,7 @@ const submitCWL = (
   })
   cwl.on( 'close', code => {
       console.log( `child process exited with code ${code}` )
-      session.publish('crescent.result', [], {})
+      session.publish('crescent.result', [], {runId})
   })
 }
 
