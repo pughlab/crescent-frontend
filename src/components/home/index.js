@@ -13,9 +13,41 @@ import UploadModal from './UploadModal'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import tsne from '../cwl/clustering/tsne.png'
+const CWLResultsButton = ({
+  step,
+  onClick,
+  active
+}) => (
+  <Step onClick={onClick} >
+    <Step.Content title={step} description='Seurat' />
+  </Step>
+)
 
-const CWLStepButton = ({
+const CWLStatusButton = ({
+  step
+}) => {
+  const [openModal, setOpenModal] = useState(false)
+  return (
+    <Modal size='large'
+      open={openModal}
+      trigger={
+        <Step onClick={() => setOpenModal(true)}>
+          <Step.Content title={step}  description='Seurat' />
+        </Step>
+      }
+    >
+      <Modal.Header content={`${step} Status`} />
+      <Modal.Content scrolling>
+        STDOUT goes here
+      </Modal.Content>
+      <Modal.Actions>
+          <Button content='Close' onClick={() => setOpenModal(false)} />
+      </Modal.Actions>
+    </Modal>
+  )
+}
+
+const CWLParamsButton = ({
   step,
 
   singleCell, setSingleCell,
@@ -31,13 +63,11 @@ const CWLStepButton = ({
       open={openModal}
       trigger={
         <Step onClick={() => setOpenModal(true)}>
-          {/* <Icon name='check /> */}
-          <Step.Content title={step} description={'Tool name goes here'} />
-          
+          <Step.Content title={step} description={'Seurat'} />
         </Step>
       }
     >
-      <Modal.Header content={step} />
+      <Modal.Header content={`${step} Parameters`} />
       <Modal.Content scrolling>
         <ClusteringParameterMenu
           singleCell={singleCell} setSingleCell={setSingleCell}
@@ -49,15 +79,7 @@ const CWLStepButton = ({
         />
       </Modal.Content>
       <Modal.Actions>
-        <Button content='Close'
-          onClick={() => {
-            console.log('Submitted parameters')
-            setOpenModal(false)
-          }
-          }
-
-        />
-
+        <Button content='Close' onClick={() => setOpenModal(false)} />
       </Modal.Actions>
     </Modal>
   )
@@ -66,6 +88,7 @@ const CWLStepButton = ({
 
 const VisualizationComponent = ({
   session,
+  currentRunId, setCurrentRunId
 }) => {
   // PARAMETERS TO SEND TO RPC
   const [singleCell, setSingleCell] = useState('10X')
@@ -81,36 +104,46 @@ const VisualizationComponent = ({
 
   // Local state for notification the result is done
   const [submitted, setSubmitted] = useState(false)
-  const [loading, setLoading]= useState(false)
   useEffect(() => {
     setSubmitted(false)
   }, [singleCell, resolution, genes, opacity, principalDimensions, returnThreshold])
+  const [loading, setLoading]= useState(false)
+  const [result, setResult] = useState(null)
+
   useEffect(() => {
     session.subscribe(
       'crescent.result',
-      (args, kwargs) => {
+      (args, {runId}) => {
         console.log('crescent.result')
-        fetch('http://localhost:4001/result')
-          .then(response => response.blob())
-          .then(R.compose(
-            setResult,
-            URL.createObjectURL
-          ))
+        setCurrentRunId(runId)
         setLoading(false)
+        setSubmitted(false)
       }
     )
   }, [])
 
+  const [visType, setVisType] = useState('tsne')
+  const isCurrentVisType = R.equals(visType)
+  useEffect(() => {
+    RA.isNotNil(currentRunId)
+    && fetch(`http://localhost:4001/result?runId=${currentRunId}&visType=${visType}`)
+      .then(response => response.blob())
+      .then(R.compose(
+          setResult,
+          URL.createObjectURL
+      ))
+    && setLoading(false)
+  }, [currentRunId, visType])
 
-  const [result, setResult] = useState(null)
-  const uploaded = R.all(RA.isNotNull, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
+  
   // Button with method to call WAMP RPC (not pure)
+  const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
   const SubmitButton = () => (
     <Button
       content='Submit'
       icon='cloud upload' labelPosition='right'
       color='blue'
-      disabled={submitted}
+      disabled={submitted || loading || notUploaded}
       // onClick={() => setSubmitted(true)}
       onClick={() =>
         session.call('crescent.submit', [], {
@@ -121,22 +154,31 @@ const VisualizationComponent = ({
           principalDimensions,
           returnThreshold
         })
-        && setLoading(true) && setSubmitted(true)
+        && setLoading(true)
+        && setSubmitted(true)
       }
     />
   )
 
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
+ 
   return (
     <Segment attached='top' style={{height: '90%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
+      <Segment basic loading={loading} style={{height: '100%'}}>
+      <Header dividing
+        content={
+          RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
+          : loading ? 'Processing...'
+          : R.not(submitted) ? 'Upload files, set parameters and submit'
+          : ''
+        }
+      />
       {
-        RA.isNotNil(result) &&
-        <Segment basic loading={loading} style={{height: '100%'}}>
-          <Image src={result} size='big' />
-        </Segment>
+        RA.isNotNil(result) && <Image src={result} size='big' />
       }
+      </Segment>
       </Grid.Column>
       <Grid.Column width={4} style={{height: '100%'}}>
         <Segment attached='top'>
@@ -144,10 +186,10 @@ const VisualizationComponent = ({
             <Button content='Parameters' color={isActiveToggle('params') ? 'blue' : undefined}
               active={isActiveToggle('params')} onClick={() => setActiveToggle('params')}
             />
-            <Button content='Status' color={isActiveToggle('status') ? 'orange' : undefined}
+            <Button content='Status' color={isActiveToggle('status') ? 'teal' : undefined}
               active={isActiveToggle('status')} onClick={() => setActiveToggle('status')}
             />
-            <Button content='Results' color={isActiveToggle('results') ? 'green' : undefined}
+            <Button content='Results' color={isActiveToggle('results') ? 'violet' : undefined}
               active={isActiveToggle('results')} onClick={() => setActiveToggle('results')}
             />
           </Button.Group>
@@ -156,23 +198,32 @@ const VisualizationComponent = ({
           <Step.Group vertical fluid ordered
             items={
               R.map(
-                ({step}) => (
-                  <CWLStepButton key={step} step={step}
-                    singleCell={singleCell} setSingleCell={setSingleCell}
-                    resolution={resolution} setResolution={setResolution}
-                    genes={genes} setGenes={setGenes}
-                    opacity={opacity} setOpacity={setOpacity}
-                    principalDimensions={principalDimensions} setPrincipalDimensions={setPrincipalDimensions}
-                    returnThreshold={returnThreshold} setReturnThreshold={setReturnThreshold}
-                  />
+                ({step, visType}) => (
+                  isActiveToggle('params') ?
+                    <CWLParamsButton key={step} step={step}
+                      singleCell={singleCell} setSingleCell={setSingleCell}
+                      resolution={resolution} setResolution={setResolution}
+                      genes={genes} setGenes={setGenes}
+                      opacity={opacity} setOpacity={setOpacity}
+                      principalDimensions={principalDimensions} setPrincipalDimensions={setPrincipalDimensions}
+                      returnThreshold={returnThreshold} setReturnThreshold={setReturnThreshold}
+                    />
+                  : isActiveToggle('status') ?
+                    <CWLStatusButton key={step} step={step} />
+                  : isActiveToggle('results') ?
+                    <CWLResultsButton key={step} step={step} 
+                      onClick={RA.isNotNil(visType) ? () => setVisType(visType) : undefined}
+                      active={isCurrentVisType(visType)}
+                    />
+                  : null
                 ),
                 [
                   // {step: 'QC/Alignment'},
-                  {step: 'Normalization'},
-                  {step: 'Dimension Reduction'},
-                  {step: 'Cell Clustering'},
+                  {step: 'Normalization', visType: null},
+                  {step: 'Dimension Reduction', visType: 'pca'},
+                  {step: 'Cell Clustering', visType: 'tsne'},
                   // {step: 'Differential Expression'},
-                  {step: 'Visualizations'},
+                  // {step: 'Visualizations'},
                   // {step: 'Cell Cluster Labelling'},
                   // {step: 'Gene/Pathway Interactions'},
                 ]
@@ -198,12 +249,13 @@ const VisualizationComponent = ({
           </Button.Group>
 
           : isActiveToggle('status') ?
-          <Segment attached='bottom' inverted color='orange' content='Current step running is...' />
+          <Segment attached='bottom' inverted color='teal' content='Current step running is...' />
 
           : isActiveToggle('results') ?
-          <Button fluid attached='bottom' size='big' color='green' icon='download' content='Download'
+          <Button fluid attached='bottom' size='big' color='violet' icon='download' content='Download'
+            disabled={R.isNil(currentRunId)}
             as='a'
-            href='http://localhost:4001/download'
+            href={`http://localhost:4001/download?runId=${currentRunId}`}
             download
           />
           : null
