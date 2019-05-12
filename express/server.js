@@ -9,11 +9,27 @@ const cors = require('cors')
 const Minio = require('minio')
 // Multer to handle multi form data
 const multer = require('multer')
-const upload = multer({dest: '/Users/smohanra/Desktop/crescentMockup/express'})
+const upload = multer({dest: '/Users/smohanra/Desktop/crescentMockup/express/tmp/express'})
 // Zip
 const AdmZip = require('adm-zip')
 
+// MongoDB
+const db = require('./database')
+const mongoose = require('mongoose')
+// Run data model
+const RunSchema = new mongoose.Schema({
+    runId: {
+        type: mongoose.Schema.Types.ObjectId,
+        auto: true
+    },
+    params: String
+})
+const Run = db.model('run', RunSchema)
 
+const fetchRuns = () => Run.find({})
+
+
+const R = require('ramda')
 
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
@@ -42,16 +58,35 @@ connection.onopen = function (session) {
     .register(
       'crescent.submit',
       (args, kwargs) => {
-        // console.log(args)
+        const d = new autobahn.when.defer()
         console.log('RUN YOUR CWL COMMAND HERE, workflow arguments in kwargs variable')
         console.log(kwargs)
-        submitCWL(kwargs, session)
-        return 'result of run submission'
+        Run.create({params: JSON.stringify(kwargs)},
+          (err, run) => {
+            if (err) {console.log(err)}
+            // console.log(run)
+            const {runId} = run
+            submitCWL(kwargs, session, runId)
+            d.resolve(run)
+          }
+        )
+        return d.promise
       }
     )
     .then(
       reg => console.log('Registered: ', reg.procedure),
       err => console.error('Registration error: ', err)
+    )
+  session
+    .register(
+      'crescent.runs',
+      (args, kwargs) => {
+        return fetchRuns()
+        // const d = new autobahn.when.defer()
+        // d.resolve(fetchRuns())
+        // return d.promise
+
+      }
     )
 
 
@@ -147,18 +182,30 @@ connection.onopen = function (session) {
   app.get(
     '/result',
     (req, res) => {
-      const tsneFile = '/Users/smohanra/Documents/crescent/docker-crescent/frontend_seurat_output/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_TSNEPlot.png'
-      res.sendFile(tsneFile)
+      const {runId, visType} = req.query
+      Run.findOne({runId}, (err, run) => {
+        if (err) {console.log(err)}
+        console.log(run)
+        const {runId, params} = run
+        const {resolution} = JSON.parse(params)
+        console.log(runId, resolution)
+        const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
+        const vis = R.equals(visType, 'tsne') ? 'SEURAT_TSNEPlot' : 'SEURAT_PCElbowPlot'
+        const file = `frontend_example_mac_10x_cwl_res${resolution}.${vis}.png`
+        res.sendFile(`${runPath}/${file}`)
+      })
     }
   )
 
   app.get(
     '/download',
     (req, res) => {
+      console.log(req.query)
+      const {runId} = req.query
       const zip = new AdmZip()
-      zip.addLocalFolder('/Users/smohanra/Documents/crescent/docker-crescent/frontend_seurat_output/SEURAT')
+      zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`)
       zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
-      res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', 'test.zip')
+      res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
     }
   )
 
@@ -166,4 +213,7 @@ connection.onopen = function (session) {
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 }
 
-connection.open()
+
+db.once('open', () => {
+  connection.open()  
+})
