@@ -167,11 +167,11 @@ const VisualizationComponent = ({
     <Segment attached='top' style={{height: '90%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
       <Segment basic loading={loading} style={{height: '100%'}}>
-      <Header dividing
+      <Header dividing 
         content={
           RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
           : loading ? 'Processing...'
-          : R.not(submitted) ? 'Upload files, set parameters and submit'
+          : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
           : ''
         }
       />
@@ -222,6 +222,7 @@ const VisualizationComponent = ({
                   {step: 'Normalization', visType: null},
                   {step: 'Dimension Reduction', visType: 'pca'},
                   {step: 'Cell Clustering', visType: 'tsne'},
+                  {step: 'Find All Markers', visType: 'markers'},
                   // {step: 'Differential Expression'},
                   // {step: 'Visualizations'},
                   // {step: 'Cell Cluster Labelling'},
