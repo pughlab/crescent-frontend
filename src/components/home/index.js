@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import { Icon, Menu, Header, Segment, Button, Label, Grid, Image, Modal, Divider, Step, Card } from 'semantic-ui-react'
+import { Icon, Menu, Dropdown, Header, Segment, Button, Label, Grid, Image, Modal, Divider, Step, Card } from 'semantic-ui-react'
 
 import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu'
 
@@ -58,6 +58,7 @@ const CWLParamsButton = ({
   returnThreshold, setReturnThreshold,
 }) => {
   const [openModal, setOpenModal] = useState(false)
+  const [tool, setTool] = useState('seurat')
   return (
     <Modal size='large'
       open={openModal}
@@ -67,7 +68,17 @@ const CWLParamsButton = ({
         </Step>
       }
     >
-      <Modal.Header content={`${step} Parameters`} />
+      <Modal.Header>
+        <Dropdown
+          placeholder='Select Friend'
+          fluid
+          selection
+          options={[
+            {key: 'seurat', text: 'Seurat', value:'seurat'}
+          ]}
+          value={tool}
+        />
+      </Modal.Header>
       <Modal.Content scrolling>
         <ClusteringParameterMenu
           singleCell={singleCell} setSingleCell={setSingleCell}
@@ -167,7 +178,7 @@ const VisualizationComponent = ({
     <Segment attached='top' style={{height: '90%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
       <Segment basic loading={loading} style={{height: '100%'}}>
-      <Header dividing 
+      <Header block 
         content={
           RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
           : loading ? 'Processing...'
@@ -176,7 +187,7 @@ const VisualizationComponent = ({
         }
       />
       {
-        RA.isNotNil(result) && <Image src={result} size='big' />
+        RA.isNotNil(result) && <Image src={result} size='big' centered />
       }
       </Segment>
       </Grid.Column>
