@@ -46,15 +46,27 @@ const submitCWL = (
 ) => {
   console.log(runId)
   const jobJSON = makeCWLJobJSON(kwargs, runId)
+  // const cwl = spawn(
+  //   `cd /Users/smohanra/Documents/crescent/docker-crescent && \
+  //     source /Users/smohanra/Documents/crescent/docker-crescent/crescent/bin/activate && \
+  //     export TMPDIR=/Users/smohanra/Documents/crescent/docker-crescent/tmp && \
+  //     rm /Users/smohanra/Documents/crescent/docker-crescent/frontend_seurat_inputs.json && \
+  //     echo '${JSON.stringify(jobJSON)}' >> /Users/smohanra/Documents/crescent/docker-crescent/frontend_seurat_inputs.json && \
+  //     /Users/smohanra/Library/Python/2.7/bin/toil-cwl-runner \
+  //       /Users/smohanra/Documents/crescent/docker-crescent/seurat.cwl \
+  //       /Users/smohanra/Documents/crescent/docker-crescent/frontend_seurat_inputs.json \
+  //   `,
+  //     { 
+  //       shell: true
+  //     }
+  // )
   const cwl = spawn(
-    `cd /Users/smohanra/Documents/crescent/docker-crescent && \
-      source /Users/smohanra/Documents/crescent/docker-crescent/crescent/bin/activate && \
-      export TMPDIR=/Users/smohanra/Documents/crescent/docker-crescent/tmp && \
-      rm /Users/smohanra/Documents/crescent/docker-crescent/frontend_seurat_inputs.json && \
-      echo '${JSON.stringify(jobJSON)}' >> /Users/smohanra/Documents/crescent/docker-crescent/frontend_seurat_inputs.json && \
-      /Users/smohanra/Library/Python/2.7/bin/toil-cwl-runner \
-        /Users/smohanra/Documents/crescent/docker-crescent/seurat.cwl \
-        /Users/smohanra/Documents/crescent/docker-crescent/frontend_seurat_inputs.json \
+    `echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
+      toil-cwl-runner \
+        --debug \
+        --maxMemory 2000000000 \
+        crescent/seurat.cwl \
+        frontend_seurat_inputs.json \
     `,
       { 
         shell: true
