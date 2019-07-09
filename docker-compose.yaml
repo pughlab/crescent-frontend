@@ -87,6 +87,6 @@ services:
 #      - ./src
     depends_on:
       - server
-#    command: npm run start
+    command: npm run start
 
 
