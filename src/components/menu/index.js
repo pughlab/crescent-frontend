@@ -79,7 +79,7 @@ const RunsModal = ({
                   <Button.Group fluid widths={2} color='violet' size='large'>
                     <Button icon='download' content='Download' labelPosition='left'
                       as='a'
-                      href={`http://localhost:4001/download?runId=${runId}`}
+                      href={`/download?runId=${runId}`}
                       download
                     />
                     <Button.Or />

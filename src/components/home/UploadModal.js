@@ -64,15 +64,15 @@ const UploadModal = ({
             <Modal.Header content='Upload files' />
             <Modal.Content >
                 <Button.Group widths={3} size='massive'>
-                    <UploadButton label='Barcodes' url='http://localhost:4001/upload/barcodes'
+                    <UploadButton label='Barcodes' url='/upload/barcodes'
                         uploadedFile={uploadedBarcodesFile}
                         setUploadedFile={setUploadedBarcodesFile}
                     />
-                    <UploadButton label='Genes' url='http://localhost:4001/upload/genes' 
+                    <UploadButton label='Genes' url='/upload/genes' 
                         uploadedFile={uploadedGenesFile}
                         setUploadedFile={setUploadedGenesFile}
                     />
-                    <UploadButton label='Matrix' url='http://localhost:4001/upload/matrix' 
+                    <UploadButton label='Matrix' url='/upload/matrix' 
                         uploadedFile={uploadedMatrixFile}
                         setUploadedFile={setUploadedMatrixFile}
                     />

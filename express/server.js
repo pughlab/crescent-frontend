@@ -2,7 +2,7 @@ const submitCWL = require('./submit')
 
 // Servers
 const autobahn = require('autobahn')
-const connection = new autobahn.Connection({url: 'ws://127.0.0.1:4000/', realm: 'realm1'})
+const connection = new autobahn.Connection({url: 'ws://crossbar:4000/', realm: 'realm1'})
 const express = require('express')
 const cors = require('cors')
 // MINIO
@@ -33,11 +33,12 @@ const R = require('ramda')
 
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
+  console.log("autobahn connection opened:")
   // Minio client
   // Instantiate the minio client with the endpoint
   // and access keys as shown below.
   const minioClient = new Minio.Client({
-    endPoint: 'localhost',
+    endPoint: 'minio',
     port: 9000,
     useSSL: false,
     // CHANGE THESE WHEN RUNNING MINIO FROM DOCKER
@@ -88,8 +89,10 @@ connection.onopen = function (session) {
 
       }
     )
-
-
+    .then(
+      reg => console.log('Registered: ', reg.procedure),
+      err => console.error('Registration error: ', err)
+    )
   // Start node server for HTTP stuff
   const app = express()
   const port = 4001
@@ -208,6 +211,15 @@ connection.onopen = function (session) {
       res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
     }
   )
+
+  app.get(
+    '/test',
+    (req, res) => {
+      console.log(req.query)
+      res.send('some string')
+    }
+  )
+
 
 
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))

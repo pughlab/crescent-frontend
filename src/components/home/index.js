@@ -137,7 +137,7 @@ const VisualizationComponent = ({
   const isCurrentVisType = R.equals(visType)
   useEffect(() => {
     RA.isNotNil(currentRunId)
-    && fetch(`http://localhost:4001/result?runId=${currentRunId}&visType=${visType}`)
+    && fetch(`/result?runId=${currentRunId}&visType=${visType}`)
       .then(response => response.blob())
       .then(R.compose(
           setResult,
@@ -267,7 +267,7 @@ const VisualizationComponent = ({
           <Button fluid attached='bottom' size='big' color='violet' icon='download' content='Download'
             disabled={R.isNil(currentRunId)}
             as='a'
-            href={`http://localhost:4001/download?runId=${currentRunId}`}
+            href={`/download?runId=${currentRunId}`}
             download
           />
           : null
