@@ -1,0 +1,11 @@
+FROM node:11-alpine as build-deps
+#WORKDIR /Users/smohanra/Desktop/crescentMockup/express
+WORKDIR /Users/smohanra/Desktop/crescentMockup
+COPY package.json .
+COPY package-lock.json .
+
+RUN npm install --no-save
+COPY . ./
+EXPOSE 4001
+CMD ["npm", "run", "server"]
+

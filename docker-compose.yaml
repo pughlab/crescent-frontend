@@ -1,0 +1,92 @@
+version: '3'
+
+services: 
+
+##### CROSSBAR #####
+
+  crossbar: 
+    image: crescent-crossbar
+    expose:
+      - ${CROSSBAR_PORT}
+ #   environment:
+ #     HOST: ${HOST}
+ #     SERVER_PORT: ${SERVER_PORT}
+    ports:
+      - ${CROSSBAR_PORT}:${CROSSBAR_PORT}
+#    volumes:
+#      - ./src
+#    command: crossbar start --cbdir /crossbarnode/.crossbar
+
+
+##### MONGO ####
+
+  mongo: 
+    image: mongo
+    expose:
+      - ${MONGO_PORT}
+#    environment:
+#      HOST: ${HOST}
+#      SERVER_PORT: ${SERVER_PORT}
+    ports:
+      - ${MONGO_PORT}:${MONGO_PORT}
+#    volumes:
+#      - ./src
+#    command: mongod
+
+##### MINIO #####
+
+  minio: 
+    image: minio/minio
+    expose:
+      - ${MINIO_PORT}
+ #   environment:
+ #     HOST: ${HOST}
+ #     SERVER_PORT: ${SERVER_PORT}
+    ports:
+      - ${MINIO_PORT}:${MINIO_PORT}
+    environment:
+      MINIO_ACCESS_KEY: crescent-access
+      MINIO_SECRET_KEY: crescent-secret
+    command: server ./express/tmp/minio
+#    volumes:
+#      - ./src
+
+##### NODE ####
+
+  server: 
+    # build:
+    #   context: ./
+    #   dockerfile: Dockerfile.server
+    image: express-test
+    expose:
+      - ${SERVER_PORT}
+#    environment:
+#      HOST: ${HOST}
+#      SERVER_PORT: ${SERVER_PORT}
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+#    volumes:
+#      - ./src
+    depends_on:
+      - crossbar
+      - mongo
+    command: npm run server
+
+##### REACT #####
+
+  react: 
+    image: react-test
+    expose:
+      - ${REACT_PORT}
+#    environment:
+#      HOST: ${HOST}
+#      SERVER_PORT: ${SERVER_PORT}
+    ports:
+      - ${REACT_PORT}:${REACT_PORT}
+#    volumes:
+#      - ./src
+    depends_on:
+      - server
+#    command: npm run start
+
+
