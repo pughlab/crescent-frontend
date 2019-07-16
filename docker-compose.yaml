@@ -60,7 +60,7 @@ services:
     # build:
     #   context: ./
     #   dockerfile: Dockerfile.server
-    image: express-test
+    image: express-test2
     expose:
       - ${SERVER_PORT}
 #    environment:
@@ -68,17 +68,18 @@ services:
 #      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
-#    volumes:
-#      - ./src
+    volumes:
+      - .:/usr/src/app
     depends_on:
       - crossbar
       - mongo
+      - minio 
     command: npm run server
 
 ##### REACT #####
 
   react: 
-    image: react-test
+    image: react-test2
     expose:
       - ${REACT_PORT}
 #    environment:
@@ -88,6 +89,8 @@ services:
       - ${REACT_PORT}:${REACT_PORT}
 #    volumes:
 #      - ./src
+    volumes:
+      - .:/usr/src/app
     depends_on:
       - server
     command: npm run start

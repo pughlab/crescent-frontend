@@ -242,6 +242,7 @@ connection.onopen = function (session) {
   )
 
   // create the gene collection if it's empty
+  /*
   Gene.findOne({},
     (err, gene) => {
       if (err) { console.log("Error with Gene schema: " + err); }
@@ -277,6 +278,7 @@ connection.onopen = function (session) {
       }
     }
   )
+  */
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 }
 
