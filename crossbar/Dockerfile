@@ -9,4 +9,4 @@ RUN chown -R crossbar:crossbar /crossbarnode
 
 EXPOSE 4000
 
-CMD ["crossbar", "start", "--cbdir", "/crossbarnode/.crossbar"]
+ENTRYPOINT ["crossbar", "start", "--cbdir", "/crossbarnode/.crossbar"]
