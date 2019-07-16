@@ -2,14 +2,14 @@ const submitCWL = require('./submit')
 
 // Servers
 const autobahn = require('autobahn')
-const connection = new autobahn.Connection({url: 'ws://crossbar:4000/', realm: 'realm1'})
+const connection = new autobahn.Connection({ url: 'ws://crossbar:4000/', realm: 'realm1' })
 const express = require('express')
 const cors = require('cors')
 // MINIO
 const Minio = require('minio')
 // Multer to handle multi form data
 const multer = require('multer')
-const upload = multer({dest: '/Users/smohanra/Desktop/crescentMockup/express/tmp/express'})
+const upload = multer({ dest: '/Users/smohanra/Desktop/crescentMockup/express/tmp/express' })
 // Zip
 const AdmZip = require('adm-zip')
 
@@ -18,21 +18,42 @@ const db = require('./database')
 const mongoose = require('mongoose')
 // Run data model
 const RunSchema = new mongoose.Schema({
-    runId: {
-        type: mongoose.Schema.Types.ObjectId,
-        auto: true
-    },
-    params: String
+  runId: {
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
+  },
+  params: String
 })
 const Run = db.model('run', RunSchema)
 
+// gene data model
+const GeneSchema = new mongoose.Schema({
+  'hgnc id': String,
+  'approved symbol': String,
+  'approved name': String,
+  'previous symbols': String,
+  'synonyms': String,
+  'chromosome': String,
+  'accession numbers': String,
+  'refseq ids': String,
+  'ensembl gene id': String,
+  'ncbi gene id': String,
+  'name synonyms': String,
+  'OMIM ID': String
+})
+const Gene = db.model('gene', GeneSchema)
 const fetchRuns = () => Run.find({})
 
-
 const R = require('ramda')
+const fs = require('fs')
+const path = require('path')
+const process = require('process')
 
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
+
+  
+
   console.log("autobahn connection opened:")
   // Minio client
   // Instantiate the minio client with the endpoint
@@ -62,7 +83,7 @@ connection.onopen = function (session) {
         const d = new autobahn.when.defer()
         console.log('RUN YOUR CWL COMMAND HERE, workflow arguments in kwargs variable')
         console.log(kwargs)
-        Run.create({params: JSON.stringify(kwargs)},
+        Run.create({params: JSON.stringify(kwargs) },
           (err, run) => {
             if (err) {console.log(err)}
             // console.log(run)
@@ -105,7 +126,7 @@ connection.onopen = function (session) {
       // console.log(file)
       const metaData = {
         'Content-Type': 'application/octet-stream',
-        'X-Amz-Meta-Testing': 1234,
+        'X-Amz-Meta-Testing': 1235,
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
@@ -116,9 +137,9 @@ connection.onopen = function (session) {
         // Do this for each file you need
         minioClient.fGetObject('crescent', 'barcodes.tsv', `${minioPath}/barcodes.tsv`,
           err => {
-            if (err) {return console.log(err)}
+            if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], {uploadedFilePath: etag})
+            session.publish('crescent.upload', [], { uploadedFilePath: etag })
           }
         )
       })
@@ -137,15 +158,15 @@ connection.onopen = function (session) {
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'genes.tsv', file.path, metaData, function(err, etag) {
+      minioClient.fPutObject(bucketName, 'genes.tsv', file.path, metaData, function (err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Download file from bucket so that CWL will have access
         minioClient.fGetObject('crescent', 'genes.tsv', `${minioPath}/genes.tsv`,
           err => {
-            if (err) {return console.log(err)}
+            if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], {uploadedFilePath: etag})
+            session.publish('crescent.upload', [], { uploadedFilePath: etag })
           }
         )
       })
@@ -165,18 +186,18 @@ connection.onopen = function (session) {
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'matrix.mtx', file.path, metaData, function(err, etag) {
+      minioClient.fPutObject(bucketName, 'matrix.mtx', file.path, metaData, function (err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Publish to upload notification channel when MinIO done
         minioClient.fGetObject('crescent', 'matrix.mtx', `${minioPath}/matrix.mtx`,
           err => {
-            if (err) {return console.log(err)}
+            if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], {uploadedFilePath: etag})
+            session.publish('crescent.upload', [], { uploadedFilePath: etag })
           }
         )
-        
+
       })
       res.sendStatus(200)
     }
@@ -185,12 +206,12 @@ connection.onopen = function (session) {
   app.get(
     '/result',
     (req, res) => {
-      const {runId, visType} = req.query
-      Run.findOne({runId}, (err, run) => {
-        if (err) {console.log(err)}
+      const { runId, visType } = req.query
+      Run.findOne({ runId }, (err, run) => {
+        if (err) { console.log(err) }
         console.log(run)
-        const {runId, params} = run
-        const {resolution} = JSON.parse(params)
+        const { runId, params } = run
+        const { resolution } = JSON.parse(params)
         console.log(runId, resolution)
         const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
         const vis = R.equals(visType, 'tsne') ? 'SEURAT_TSNEPlot' : R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : null
@@ -204,7 +225,7 @@ connection.onopen = function (session) {
     '/download',
     (req, res) => {
       console.log(req.query)
-      const {runId} = req.query
+      const { runId } = req.query
       const zip = new AdmZip()
       zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`)
       zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
@@ -220,12 +241,45 @@ connection.onopen = function (session) {
     }
   )
 
-
-
+  // create the gene collection if it's empty
+  Gene.findOne({},
+    (err, gene) => {
+      if (err) { console.log("Error with Gene schema: " + err); }
+      else if (!gene) {
+        fs.readFile(path.resolve(__dirname, 'hgnc_genes.tsv'), "utf8", (err, contents) => {
+          if (err) { console.log(err); }
+          else {
+            // put tab delimited lines into 2d array
+            lines = R.map(R.split("\t"), R.split("\n", contents))
+            head = R.map(String, lines.shift())
+            replace = head.indexOf('OMIM ID(supplied by OMIM)')
+            if (replace != -1) { head[replace] = "OMIM ID"; }
+            geneObjs = R.map(R.zipObj(head), lines)
+            Gene.insertMany(geneObjs,
+              (innererr, docs) => {
+                if (innererr) { console.log(innererr); }
+                else {
+                  console.log("Successfully inserted %d gene records", docs.length);
+                  Gene.findOne({}, (err3, foundGene) => {
+                    if(err3){console.log(err3);}
+                    else{
+                      console.log(foundGene);
+                    }
+                  })
+                }
+              }
+            )
+          }
+        })
+      }
+      else {
+        console.log("Gene collection already exists, skipping creation");
+      }
+    }
+  )
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 }
 
-
 db.once('open', () => {
-  connection.open()  
+  connection.open()
 })

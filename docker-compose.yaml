@@ -5,7 +5,7 @@ services:
 ##### CROSSBAR #####
 
   crossbar: 
-    image: crescent-crossbar
+    image: suluxan/crescent-crossbar
     expose:
       - ${CROSSBAR_PORT}
  #   environment:
@@ -21,7 +21,7 @@ services:
 ##### MONGO ####
 
   mongo: 
-    image: mongo
+    image: suluxan/mongo
     expose:
       - ${MONGO_PORT}
 #    environment:
@@ -29,8 +29,11 @@ services:
 #      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
-#    volumes:
-#      - ./src
+    volumes:
+      - ./mongodb:/data/db
+#      - type: bind
+#      source: ./mongodb
+#      target: /data/db
 #    command: mongod
 
 ##### MINIO #####
