@@ -213,10 +213,12 @@ connection.onopen = function (session) {
   )
 
   app.get(
-    '/test',
-    (req, res) => {
-      console.log(req.query)
-      res.send('some string')
+    '/runs',
+    async (req, res) => {
+      // return fetchRuns()
+      const runs = await Run.find({})
+      console.log(runs)
+      res.json(runs)
     }
   )
 
