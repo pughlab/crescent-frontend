@@ -16,33 +16,6 @@ const AdmZip = require('adm-zip')
 // MongoDB
 const db = require('./database')
 const mongoose = require('mongoose')
-// Run data model
-const RunSchema = new mongoose.Schema({
-  runId: {
-    type: mongoose.Schema.Types.ObjectId,
-    auto: true
-  },
-  params: String
-})
-const Run = db.model('run', RunSchema)
-
-// gene data model
-const GeneSchema = new mongoose.Schema({
-  'hgnc id': String,
-  'approved symbol': String,
-  'approved name': String,
-  'previous symbols': String,
-  'synonyms': String,
-  'chromosome': String,
-  'accession numbers': String,
-  'refseq ids': String,
-  'ensembl gene id': String,
-  'ncbi gene id': String,
-  'name synonyms': String,
-  'OMIM ID': String
-})
-const Gene = db.model('gene', GeneSchema)
-const fetchRuns = () => Run.find({})
 
 const R = require('ramda')
 const fs = require('fs')
@@ -51,9 +24,7 @@ const process = require('process')
 
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
-
   
-
   console.log("autobahn connection opened:")
   // Minio client
   // Instantiate the minio client with the endpoint
@@ -241,47 +212,70 @@ connection.onopen = function (session) {
     }
   )
 
-  // create the gene collection if it's empty
-  /*
-  Gene.findOne({},
-    (err, gene) => {
-      if (err) { console.log("Error with Gene schema: " + err); }
-      else if (!gene) {
-        fs.readFile(path.resolve(__dirname, 'hgnc_genes.tsv'), "utf8", (err, contents) => {
-          if (err) { console.log(err); }
-          else {
-            // put tab delimited lines into 2d array
-            lines = R.map(R.split("\t"), R.split("\n", contents))
-            head = R.map(String, lines.shift())
-            replace = head.indexOf('OMIM ID(supplied by OMIM)')
-            if (replace != -1) { head[replace] = "OMIM ID"; }
-            geneObjs = R.map(R.zipObj(head), lines)
-            Gene.insertMany(geneObjs,
-              (innererr, docs) => {
-                if (innererr) { console.log(innererr); }
-                else {
-                  console.log("Successfully inserted %d gene records", docs.length);
-                  Gene.findOne({}, (err3, foundGene) => {
-                    if(err3){console.log(err3);}
-                    else{
-                      console.log(foundGene);
-                    }
-                  })
-                }
-              }
-            )
-          }
-        })
-      }
-      else {
-        console.log("Gene collection already exists, skipping creation");
-      }
-    }
-  )
-  */
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 }
 
 db.once('open', () => {
-  connection.open()
-})
+  // Run data model
+  const RunSchema = new mongoose.Schema({
+    runId: {
+      type: mongoose.Schema.Types.ObjectId,
+      auto: true
+    },
+    params: String
+  })
+  const Run = db.model('run', RunSchema)
+  const fetchRuns = () => Run.find({})
+
+  // Gene data model
+  const GeneSchema = new mongoose.Schema({
+    HGNC_ID: String,
+    Approved_symbol: String,
+    Approved_name: String,
+    Previous_symbols: String,
+    Synonyms: String,
+    Chromosome: String,
+    Accession_numbers: String,
+    RefSeq_IDs: String,  
+    Ensembl_gene_ID: String, 
+    NCBI_Gene_ID: String, 
+    Name_synonyms: String,
+    OMIMID: String
+  })
+  const Gene = db.model('gene', GeneSchema)
+  
+  // create the gene collection if it's empty
+  Gene.findOne({},
+    (err, gene) => {
+      if (err) return console.log("Error with Gene schema: " + err); 
+      else if (!gene) {
+        // no genes in schema, insert them
+        fs.readFile(path.resolve(__dirname, 'hgnc_genes.tsv'), "utf8", (err, contents) => {
+          if (err) return console.log(err)
+          else {
+            // remove trailing newline and put tab delimited lines into 2d array            
+            lines = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
+            head = R.map(String, lines.shift())
+            // replace omim name if in exported file
+            replace = head.indexOf('OMIM ID(supplied by OMIM)')
+            if (replace != -1) { head[replace] = "OMIMID"; }
+            head = R.map(R.replace(/\s/g, '\_'), head);
+            result = R.map(R.zipObj(head), lines);
+            console.log(result[result.length -1]);
+            Gene.insertMany(result, 
+              (err, docs) => {
+                if (err) return console.log(err);
+                else console.log("Successfully inserted %d gene records", docs.length);
+                // only open connection after genes are inserted
+                connection.open()
+              }); // end of insertMany
+            }
+          }); // end of readFile
+        }
+      else {
+        console.log("Gene collection already exists, skipping creation");
+        // no need to create collection, just open connection
+        connection.open()
+        }
+    }); // end of findOne
+}); //end of db.once 

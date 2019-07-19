@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
-
-setTimeout(() => mongoose.connect('mongodb://mongo/crescent', {useNewUrlParser: true}), 50000)
+mongoose.connect('mongodb://mongo/crescent', {useNewUrlParser: true})
 
 const db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
