@@ -1,0 +1,16 @@
+Mon Jul 29 2019 18:31:29
+
+
+Options used:
+-i	input	/var/lib/cwl/stgda218a01-4fbf-4d35-963a-e928bc63fc55/minio
+-t	input_type	10X
+-r	resolution	1
+-p	prefix_outfiles	frontend_example_mac_10x_cwl
+-s	summary_plots	n
+-c	infile_colour_tsne_discrete	NA
+-g	list_genes	MALAT1,GAPDH
+-a	opacity	0.1
+-d	pca_dimensions	10
+-m	percent_mito	Inf,0.05
+-n	n_genes	200,8000
+-e	return_threshold	0.01

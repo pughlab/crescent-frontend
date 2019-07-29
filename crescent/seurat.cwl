@@ -6,7 +6,7 @@ baseCommand: [Rscript]
 
 requirements:
   DockerRequirement:
-    dockerImageId: crescent
+    dockerImageId: /usr/src/app/crescent-initial.simg 
 
 inputs:
   R_script:
@@ -31,9 +31,6 @@ inputs:
     inputBinding:
       position: 3
       prefix: -r
-
-  outsdir:
-    type: string
 
   project_id:
     type: string
@@ -89,11 +86,8 @@ inputs:
       position: 13
       prefix: -e
 
-arguments:
-    - {prefix: "-o", valueFrom: $(runtime.outdir)/$(inputs.outsdir), position: 13}
-
 outputs:
   seurat_output:
     type: Directory
     outputBinding:
-      glob: $(inputs.outsdir)
+      glob: SEURAT

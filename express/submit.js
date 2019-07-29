@@ -19,7 +19,8 @@ const makeCWLJobJSON = (
 ) => ({
   R_script: {
     class: 'File',
-    path: '/Users/smohanra/Documents/crescent/docker-crescent/Runs_Seurat_Clustering.R'
+    //path: '/Users/smohanra/Documents/crescent/docker-crescent/Runs_Seurat_Clustering.R'
+    path: 'crescent/Runs_Seurat_Clustering.R'
   },
   sc_input: {
     class: 'Directory',
@@ -28,7 +29,6 @@ const makeCWLJobJSON = (
   },
   sc_input_type: singleCell,
   resolution,
-  outsdir: runId,
   project_id: 'frontend_example_mac_10x_cwl',
   summary_plots: 'n',
   list_genes: R.join(',',genes),
@@ -61,12 +61,14 @@ const submitCWL = (
   //     }
   // )
   const cwl = spawn(
-    `echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
-      toil-cwl-runner \
+    `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
+     rm frontend_seurat_inputs.json && \
+     echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
+     toil-cwl-runner \
         --debug \
-        --maxMemory 2000000000 \
+        --singularity \
         crescent/seurat.cwl \
-        frontend_seurat_inputs.json \
+        frontend_seurat_inputs.json \ 
     `,
       { 
         shell: true

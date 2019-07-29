@@ -1,6 +1,6 @@
 # Dockerfile from crossbar docker/disclose example
 
-FROM react-test-modules
+FROM react-test-modules2
 #WORKDIR /Users/smohanra/Desktop/crescentMockup
 #WORKDIR /home/smohanra/crescent-frontend
 

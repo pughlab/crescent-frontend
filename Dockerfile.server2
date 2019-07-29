@@ -13,7 +13,7 @@
 
 #FROM node:11-alpine as build-deps
 
-FROM react-test-modules
+FROM react-test-modules2
 #WORKDIR /Users/smohanra/Desktop/crescentMockup
 #WORKDIR /home/smohanra/crescent-frontend
 #COPY . ./

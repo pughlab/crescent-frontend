@@ -20,7 +20,8 @@
     "react-range": "^1.0.5",
     "react-scripts": "3.0.0",
     "semantic-ui-react": "^0.86.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.4.5",
+    "xmlhttprequest": "^1.8.0"
   },
   "scripts": {
     "start": "react-scripts start",

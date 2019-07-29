@@ -7,3 +7,6 @@ tmp
 
 build/
 mongodb/
+crescent-initial.simg
+tmp/
+SEURAT/

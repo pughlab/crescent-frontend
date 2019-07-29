@@ -8,7 +8,7 @@ import autobahn from 'autobahn'
 
 console.log(autobahn)
 
-const connection = new autobahn.Connection({url: 'ws://127.0.0.1:4000/', realm: 'realm1'})
+const connection = new autobahn.Connection({url: 'ws://205.189.56.181:4000/', realm: 'realm1'})
 
 connection.onopen = function (session) {
  

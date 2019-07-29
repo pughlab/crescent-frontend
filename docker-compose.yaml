@@ -1,11 +1,11 @@
-version: '3'
+version: '2.4'
 
 services: 
 
 ##### CROSSBAR #####
 
   crossbar: 
-    image: suluxan/crescent-crossbar
+    image: crescent-crossbar
     expose:
       - ${CROSSBAR_PORT}
  #   environment:
@@ -29,8 +29,10 @@ services:
 #      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
-    volumes:
-      - ./mongodb:/data/db
+#    volumes:
+#      - ./mongodb:/data/db
+    depends_on:
+      - crossbar
 #      - type: bind
 #      source: ./mongodb
 #      target: /data/db
@@ -50,6 +52,8 @@ services:
     environment:
       MINIO_ACCESS_KEY: crescent-access
       MINIO_SECRET_KEY: crescent-secret
+    depends_on:
+      - crossbar
     command: server ./express/tmp/minio
 #    volumes:
 #      - ./src
@@ -60,7 +64,10 @@ services:
     # build:
     #   context: ./
     #   dockerfile: Dockerfile.server
-    image: express-test2
+#    image: express-test3
+    image: express-test-singularity
+    privileged: true
+    #image: express-test-no-user
     expose:
       - ${SERVER_PORT}
 #    environment:
@@ -70,16 +77,18 @@ services:
       - ${SERVER_PORT}:${SERVER_PORT}
     volumes:
       - .:/usr/src/app
+    #  - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - crossbar
-      - mongo
       - minio 
+      - mongo
+    #mem_limit: 20g
     command: npm run server
 
 ##### REACT #####
 
   react: 
-    image: react-test2
+    image: react-test3
     expose:
       - ${REACT_PORT}
 #    environment:
@@ -92,6 +101,7 @@ services:
     volumes:
       - .:/usr/src/app
     depends_on:
+      - crossbar
       - server
     command: npm run start
 

@@ -17,10 +17,24 @@ const AdmZip = require('adm-zip')
 const db = require('./database')
 const mongoose = require('mongoose')
 
-const R = require('ramda')
 const fs = require('fs')
 const path = require('path')
 const process = require('process')
+
+
+const RunSchema = new mongoose.Schema({
+    runId: {
+      type: mongoose.Schema.Types.ObjectId,
+      auto: true
+    },
+    params: String
+})
+const Run = db.model('run', RunSchema)
+const fetchRuns = () => Run.find({})
+
+const R = require('ramda')
+
+
 
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
@@ -184,7 +198,8 @@ connection.onopen = function (session) {
         const { runId, params } = run
         const { resolution } = JSON.parse(params)
         console.log(runId, resolution)
-        const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
+	//const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
+        const runPath = `/usr/src/app/SEURAT` 
         const vis = R.equals(visType, 'tsne') ? 'SEURAT_TSNEPlot' : R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : null
         const file = `frontend_example_mac_10x_cwl_res${resolution}.${vis}.png`
         res.sendFile(`${runPath}/${file}`)
@@ -198,7 +213,10 @@ connection.onopen = function (session) {
       console.log(req.query)
       const { runId } = req.query
       const zip = new AdmZip()
-      zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`)
+      //zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`)
+      //zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
+      //res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
+      zip.addLocalFolder(`/usr/src/app/SEURAT`)
       zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
       res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
     }
@@ -216,6 +234,10 @@ connection.onopen = function (session) {
 }
 
 db.once('open', () => {
+   connection.open()
+})
+
+/*
   // Run data model
   const RunSchema = new mongoose.Schema({
     runId: {
@@ -279,3 +301,4 @@ db.once('open', () => {
         }
     }); // end of findOne
 }); //end of db.once 
+*/

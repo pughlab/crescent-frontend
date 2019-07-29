@@ -4,19 +4,14 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install -y \
             python \
-            python-pip \ 
+            python-pip \
             nodejs \
-            npm 
+            npm \
+            docker.io
+
+RUN ls .
 
 RUN pip install toil[cwl]
 RUN cp -r /usr/local/lib/python2.7/dist-packages/backports/ssl_match_hostname/ /usr/lib/python2.7/dist-packages/backports
 
-#FROM node:11-alpine as build-deps
-
-#WORKDIR /Users/smohanra/Desktop/crescentMockup
-#WORKDIR /home/smohanra/crescent-frontend
-
-COPY package.json .
-#COPY package-lock.json .
-
-RUN npm install --no-save
+RUN ls . 
