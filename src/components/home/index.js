@@ -134,7 +134,7 @@ const VisualizationComponent = ({
     )
   }, [])
 
-  const [visType, setVisType] = useState(null)
+  const [visType, setVisType] = useState('tsne')
   const isCurrentVisType = R.equals(visType)
   useEffect(() => {
     RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
@@ -189,7 +189,7 @@ const VisualizationComponent = ({
       />
       {
         RA.isNotNil(result) && isActiveToggle('results') ?
-        isCurrentVisType('tsne') || isCurrentVisType(null) ? <TsnePlot />
+        isCurrentVisType('tsne') ? <TsnePlot />
         : <Image src={result} size='big' centered />
         : null
       }
