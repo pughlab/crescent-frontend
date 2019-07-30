@@ -134,7 +134,7 @@ const VisualizationComponent = ({
     )
   }, [])
 
-  const [visType, setVisType] = useState('tsne')
+  const [visType, setVisType] = useState(null)
   const isCurrentVisType = R.equals(visType)
   useEffect(() => {
     RA.isNotNil(currentRunId)
