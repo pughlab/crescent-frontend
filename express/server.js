@@ -230,6 +230,59 @@ connection.onopen = function (session) {
     }
   )
 
+
+
+  app.get("/tsne", (req, res) => {
+    // faking this for now cuz I don't know where the files are written and can't test
+    // just grabbing local files
+    const readFiles = (callback) => {
+      let cell_clusters = [] // store list of clusters with the coordinates of the cells
+      fs.readFile(path.resolve(__dirname, 'frontend_example_mac_10x_cwl_res1.SEURAT_TSNECoordinates.tsv'), "utf8", (err, contents) => {
+          if (err) {res.send(err);}
+          else{
+              // put coords into 2d array
+              let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
+              coords.shift(); // discard header
+              // read in other file
+              fs.readFile(path.resolve(__dirname, 'frontend_example_mac_10x_cwl_res1.SEURAT_CellClusters.tsv'), "utf-8", (err, contents) => {
+                  if (err) {res.send(err);}
+                  else{
+                      // put the cell cluster labels into an object
+                      cluster_dict = {}
+                      labels = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)));
+                      labels.shift(); // discard header
+                      coords.forEach((barcode) => {
+                          let idx = labels.find(k => k[0]==barcode[0])
+                          barcode_cluster = "cluster_" + String(idx[1]);
+                          if(barcode_cluster in cluster_dict){
+                              // append existing cluster with coords
+                              cluster_dict[barcode_cluster]['x'].push(parseFloat(barcode[1]));
+                              cluster_dict[barcode_cluster]['y'].push(parseFloat(barcode[2]));
+                          }
+                          else{
+                              cluster_dict[barcode_cluster] = {
+                                  'name': barcode_cluster,
+                                  'mode': 'markers',
+                                  'x': [parseFloat(barcode[1])],
+                                  'y': [parseFloat(barcode[2])]
+                              }
+                          }
+                      }
+                      )
+                      cell_clusters = R.values(cluster_dict);
+                      const sortByCluster = R.sortBy(R.compose(R.toLower, R.prop('name')))
+                      cell_clusters = sortByCluster(cell_clusters)
+                      callback(cell_clusters);
+                  }
+              })
+          }
+      });
+  }
+  cell_clusters = readFiles((data) => {res.send(JSON.stringify(data));})
+  })
+
+
+
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 }
 

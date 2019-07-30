@@ -187,7 +187,9 @@ const VisualizationComponent = ({
         }
       />
       {
-        RA.isNotNil(result) && <Image src={result} size='big' centered />
+        isActiveToggle('results') &&
+        RA.isNotNil(result) && 
+        <TsnePlot />
       }
       </Segment>
       </Grid.Column>
