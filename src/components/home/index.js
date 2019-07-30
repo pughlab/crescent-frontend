@@ -127,6 +127,7 @@ const VisualizationComponent = ({
       'crescent.result',
       (args, {runId}) => {
         console.log('crescent.result')
+        setActiveToggle('results')
         setCurrentRunId(runId)
         setLoading(false)
         setSubmitted(false)
