@@ -137,7 +137,7 @@ const VisualizationComponent = ({
   const [visType, setVisType] = useState(null)
   const isCurrentVisType = R.equals(visType)
   useEffect(() => {
-    RA.isNotNil(currentRunId)
+    RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
     && fetch(`/result?runId=${currentRunId}&visType=${visType}`)
       .then(response => response.blob())
       .then(R.compose(
