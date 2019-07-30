@@ -237,14 +237,14 @@ connection.onopen = function (session) {
     // just grabbing local files
     const readFiles = (callback) => {
       let cell_clusters = [] // store list of clusters with the coordinates of the cells
-      fs.readFile(path.resolve(__dirname, 'frontend_example_mac_10x_cwl_res1.SEURAT_TSNECoordinates.tsv'), "utf8", (err, contents) => {
+      fs.readFile(path.resolve('/usr/src/app/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_TSNECoordinates.tsv'), "utf8", (err, contents) => {
           if (err) {res.send(err);}
           else{
               // put coords into 2d array
               let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
               coords.shift(); // discard header
               // read in other file
-              fs.readFile(path.resolve(__dirname, 'frontend_example_mac_10x_cwl_res1.SEURAT_CellClusters.tsv'), "utf-8", (err, contents) => {
+              fs.readFile(path.resolve('/usr/src/app/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_CellClusters.tsv'), "utf-8", (err, contents) => {
                   if (err) {res.send(err);}
                   else{
                       // put the cell cluster labels into an object

@@ -9,7 +9,8 @@ export default class TsnePlot extends Component {
     }
 
     componentDidMount() {
-        fetch("http://localhost:4001/tsne")
+        fetch("/tsne")
+        //fetch("http://localhost:4001/tsne")
         .then(resp => resp.json())
         .then(data => {this.setState({clusters: data})})
     }
@@ -29,18 +30,19 @@ export default class TsnePlot extends Component {
         const hovered = this.state.hovered;
 
         return (
-            <div>
+            //<div>
             <Plot
             data={clusters}
-            layout={{title:'t-SNE'}}
+            layout={{title:'t-SNE', autosize: true}}
             useResizeHandler={true}
-            style={{maxWidth: '700px'}}
-            //style={{width: '100%', heigh: '100%'}}
+           // style={{maxWidth: '700px'}}
+            //style={{width: '100%'}}
+            style={{width:'100%', height: '90%'}}
             //onHover={this.displaySelected}
             {...this.props}
             />
-            <p style={{color: 'black'}}>{hovered}</p>
-            </div>
+            //<p style={{color: 'black'}}>{hovered}</p>
+            //</div>
         )
     }
 }
