@@ -189,7 +189,7 @@ const VisualizationComponent = ({
       />
       {
         RA.isNotNil(result) && isActiveToggle('results') ?
-        isCurrentVisType('tsne') ? <TsnePlot />
+        isCurrentVisType('tsne') || isCurrentVisType(null) ? <TsnePlot />
         : <Image src={result} size='big' centered />
         : null
       }
