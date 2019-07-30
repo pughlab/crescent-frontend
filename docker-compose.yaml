@@ -88,7 +88,8 @@ services:
 ##### REACT #####
 
   react: 
-    image: react-test3
+    # image: react-test3
+    image: react-test-plotly
     expose:
       - ${REACT_PORT}
 #    environment:

@@ -7,6 +7,7 @@ import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu
 import NormalizationVisualization from '../cwl/normalization'
 import AlignmentVisualization from '../cwl/alignment'
 import ClusteringVisualization from '../cwl/clustering'
+import TsnePlot from '../tsne'
 
 import UploadModal from './UploadModal'
 
