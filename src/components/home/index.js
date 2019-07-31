@@ -190,7 +190,7 @@ const VisualizationComponent = ({
       />
       {
         RA.isNotNil(result) && isActiveToggle('results') ?
-        isCurrentVisType('tsne') ? <TsnePlot />
+        isCurrentVisType('tsne') ? <TsnePlot parentcurrentRunId={currentRunId}></TsnePlot>
         : <Image src={result} size='big' centered />
         : null
       }

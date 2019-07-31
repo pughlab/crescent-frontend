@@ -232,10 +232,13 @@ connection.onopen = function (session) {
 
 
 
-  app.get("/tsne", (req, res) => {
+  app.get("/tsne/:runID", (req, res) => {
     // faking this for now cuz I don't know where the files are written and can't test
     // just grabbing local files
-    const { runId } = req.query
+    console.log(req.params);
+    console.log("TEST");
+    console.log(req.params.runID);
+    const runId = req.params.runID
     const readFiles = (callback) => {
       let cell_clusters = [] // store list of clusters with the coordinates of the cells
       fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {

@@ -5,11 +5,13 @@ import Plot from 'react-plotly.js'
 export default class TsnePlot extends Component {
     constructor(props){
         super(props);
-        this.state = { clusters : [], hovered: ''}
+        this.state = { clusters : [], hovered: '', runID: props.parentcurrentRunId}
     }
 
     componentDidMount() {
-        fetch("/tsne")
+        let runID = String(this.state.runID);
+        console.log(runID)
+        fetch(`/tsne/${runID}`)
         //fetch("http://localhost:4001/tsne")
         .then(resp => resp.json())
         .then(data => {this.setState({clusters: data})})
