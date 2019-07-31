@@ -973,7 +973,7 @@ options(warn = oldw)
 ####################################
 ### Finish
 ####################################
-writeLines("END - All done!!! See:\n", OutfileCPUusage, "\nfor computing times report")
+#writeLines("END - All done!!! See:\n", OutfileCPUusage, "\nfor computing times report")
 
 quit()
 
