@@ -866,7 +866,7 @@ StopWatchStart$DiffMarkerTsnePlots  <- Sys.time()
 
 pdfWidth  <- 4 * DefaultParameters$BaseSizeMultipleWidth
 pdfHeight <- NumberOfClusters * DefaultParameters$BaseSizeMultipleHeight / 2
-png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""))
+png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""), width = 1200, height = 1200, units = "px")
 #png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""), width=pdfWidth, height=pdfHeight)
 print(FeaturePlot(object = seurat.object.f, ncol = 4, features = c(top_genes_by_cluster_for_tsne.list), cols = c("lightgrey", "blue"), reduction = "tsne"))
 dev.off()
