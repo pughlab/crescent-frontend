@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: crescent-v3
+    dockerImageId: /usr/src/app/crescent-v3-july9.simg
 
 baseCommand: [Rscript]
 

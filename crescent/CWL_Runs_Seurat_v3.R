@@ -619,7 +619,7 @@ StopWatchStart$GetSignificantPCs  <- Sys.time()
 ### NOTE: JackStraw() process can take a long time for big datasets
 ### More approximate techniques such PCElbowPlot() can be used to reduce computation time
 
-pdf(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_PCElbowPlot.pdf", sep=""))
+png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_PCElbowPlot.png", sep=""))
 print(ElbowPlot(object = seurat.object.f))
 dev.off()
 
@@ -684,7 +684,8 @@ StopWatchStart$RunTSNE  <- Sys.time()
 
 seurat.object.f <- RunTSNE(object = seurat.object.f, dims.use = PcaDimsUse, do.fast = T)
 
-pdf(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot.pdf", sep=""), width = 7, height = 7)
+# pdf to png for portal 
+png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot.png", sep=""))
 print(DimPlot(object = seurat.object.f, reduction = 'tsne', group.by = 'ident', label = T, label.size=10))
 dev.off()
 
@@ -865,7 +866,8 @@ StopWatchStart$DiffMarkerTsnePlots  <- Sys.time()
 
 pdfWidth  <- 4 * DefaultParameters$BaseSizeMultipleWidth
 pdfHeight <- NumberOfClusters * DefaultParameters$BaseSizeMultipleHeight / 2
-pdf(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.pdf", sep=""), width=pdfWidth, height=pdfHeight)
+png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""))
+#png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""), width=pdfWidth, height=pdfHeight)
 print(FeaturePlot(object = seurat.object.f, ncol = 4, features = c(top_genes_by_cluster_for_tsne.list), cols = c("lightgrey", "blue"), reduction = "tsne"))
 dev.off()
 
