@@ -143,11 +143,11 @@ connection.onopen = function (session) {
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'genes.tsv.gz', file.path, metaData, function (err, etag) {
+      minioClient.fPutObject(bucketName, 'features.tsv.gz', file.path, metaData, function (err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Download file from bucket so that CWL will have access
-        minioClient.fGetObject('crescent', 'genes.tsv.gz', `${minioPath}/genes.tsv.gz`,
+        minioClient.fGetObject('crescent', 'features.tsv.gz', `${minioPath}/features.tsv.gz`,
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
