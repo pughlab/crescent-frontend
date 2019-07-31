@@ -69,6 +69,7 @@ const submitCWL = (
      toil-cwl-runner \
         --debug \
         --singularity \
+        --workDir /usr/src/app/results/${runID} \
         crescent/seurat-v3.cwl \
         frontend_seurat_inputs.json \ 
     `,

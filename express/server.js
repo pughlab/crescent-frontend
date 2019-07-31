@@ -199,7 +199,7 @@ connection.onopen = function (session) {
         const { resolution } = JSON.parse(params)
         console.log(runId, resolution)
 	//const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
-        const runPath = `/usr/src/app/SEURAT` 
+        const runPath = `/usr/src/app/results/${runID}/SEURAT` 
         const vis = R.equals(visType, 'tsne') ? 'SEURAT_TSNEPlot' : R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : null
         const file = `frontend_example_mac_10x_cwl_res${resolution}.${vis}.png`
         res.sendFile(`${runPath}/${file}`)
@@ -216,7 +216,7 @@ connection.onopen = function (session) {
       //zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`)
       //zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
       //res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
-      zip.addLocalFolder(`/usr/src/app/SEURAT`)
+      zip.addLocalFolder(`/usr/src/app/results/${runID}/SEURAT`)
       zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
       res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
     }
@@ -235,16 +235,17 @@ connection.onopen = function (session) {
   app.get("/tsne", (req, res) => {
     // faking this for now cuz I don't know where the files are written and can't test
     // just grabbing local files
+    const { runId } = req.query
     const readFiles = (callback) => {
       let cell_clusters = [] // store list of clusters with the coordinates of the cells
-      fs.readFile(path.resolve('/usr/src/app/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_TSNECoordinates.tsv'), "utf8", (err, contents) => {
+      fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {
           if (err) {res.send(err);}
           else{
               // put coords into 2d array
               let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
               coords.shift(); // discard header
               // read in other file
-              fs.readFile(path.resolve('/usr/src/app/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_CellClusters.tsv'), "utf-8", (err, contents) => {
+              fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_CellClusters.tsv`), "utf-8", (err, contents) => {
                   if (err) {res.send(err);}
                   else{
                       // put the cell cluster labels into an object
