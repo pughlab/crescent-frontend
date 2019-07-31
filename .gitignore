@@ -8,6 +8,7 @@ tmp
 build/
 mongodb/
 crescent-initial.simg
+crescent-v3-july9.simg
 tmp/
 SEURAT/
 frontend_seurat_inputs.json

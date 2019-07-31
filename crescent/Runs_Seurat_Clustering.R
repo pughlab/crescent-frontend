@@ -664,7 +664,7 @@ pdfWidth<-7
 pdfHeight<-NumberOfClusters
 
 ## pdf to png for front end
-png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""))
+png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""), width = 1200, units = "px"))
 FeaturePlot(object = seurat.object, features.plot = c(top_genes_by_cluster_for_tsne.list), cols.use = c("grey", "blue"), reduction.use = "tsne")
 dev.off()
 
