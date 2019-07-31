@@ -64,6 +64,7 @@ const submitCWL = (
   // )
   const cwl = spawn(
     `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
+     mkdir /usr/src/app/results/${runId} && \
      rm frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
      toil-cwl-runner \
