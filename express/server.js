@@ -14,7 +14,10 @@ const upload = multer({ dest: '/Users/smohanra/Desktop/crescentMockup/express/tm
 const AdmZip = require('adm-zip')
 
 // MongoDB
-const db = require('./database')
+// const db = require('./database')
+const mongooseConnection = require('../database/mongo')
+const db = mongooseConnection.connection
+
 const mongoose = require('mongoose')
 
 const fs = require('fs')
