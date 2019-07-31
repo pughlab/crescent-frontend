@@ -21,7 +21,7 @@ const makeCWLJobJSON = (
     class: 'File',
     //path: '/Users/smohanra/Documents/crescent/docker-crescent/Runs_Seurat_Clustering.R'
     //path: 'crescent/Runs_Seurat_Clustering.R'
-    path: 'crescent/CWL_Runs_Seurat_v3.R'
+    path: '/usr/src/app/crescent/CWL_Runs_Seurat_v3.R'
 
   },
   sc_input: {
