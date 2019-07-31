@@ -199,7 +199,7 @@ connection.onopen = function (session) {
         const { resolution } = JSON.parse(params)
         console.log(runId, resolution)
 	//const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
-        const runPath = `/usr/src/app/results/${runID}/SEURAT` 
+        const runPath = `/usr/src/app/results/${runId}/SEURAT` 
         const vis = R.equals(visType, 'tsne') ? 'SEURAT_TSNEPlot' : R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : null
         const file = `frontend_example_mac_10x_cwl_res${resolution}.${vis}.png`
         res.sendFile(`${runPath}/${file}`)
