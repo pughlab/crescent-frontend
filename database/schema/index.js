@@ -1,3 +1,4 @@
 module.exports = {
-  UserSchema: require('./user')
+  UserSchema: require('./user'),
+  RunSchema: require('./run')
 }

@@ -1,5 +1,7 @@
 const submitCWL = require('./submit')
 
+const R = require('ramda')
+
 // Servers
 const autobahn = require('autobahn')
 const connection = new autobahn.Connection({ url: 'ws://crossbar:4000/', realm: 'realm1' })
@@ -25,19 +27,16 @@ const path = require('path')
 const process = require('process')
 
 
-const RunSchema = new mongoose.Schema({
-    runId: {
-      type: mongoose.Schema.Types.ObjectId,
-      auto: true
-    },
-    params: String
-})
-const Run = db.model('run', RunSchema)
-const fetchRuns = () => Run.find({})
-
-const R = require('ramda')
-
-
+// const RunSchema = new mongoose.Schema({
+//     runId: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       auto: true
+//     },
+//     params: String
+// })
+// const Run = db.model('run', RunSchema)
+const Run = db.model('run')
+const fetchRuns = () => Run.find({}) //remove this
 
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {

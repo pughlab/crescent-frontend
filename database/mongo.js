@@ -8,5 +8,6 @@ mongoose.connection.on('error', console.error.bind(console, 'Connection error, u
 mongoose.connection.once('open', () => console.log('MongoDB connected'))
 // Schema for 'user' model
 mongoose.connection.model('user', Schemas.UserSchema)
+mongoose.connection.model('run', Schemas.RunSchema)
 
 module.exports = mongoose
