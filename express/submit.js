@@ -8,7 +8,7 @@ const { spawn } = require( 'child_process' )
 // Make object to write as CWL job JSON file
 const makeCWLJobJSON = (
   {
-    singleCell,
+    //singleCell,
     resolution,
     genes, // [String]
     opacity,
@@ -20,21 +20,23 @@ const makeCWLJobJSON = (
   R_script: {
     class: 'File',
     //path: '/Users/smohanra/Documents/crescent/docker-crescent/Runs_Seurat_Clustering.R'
-    path: 'crescent/Runs_Seurat_Clustering.R'
+    //path: 'crescent/Runs_Seurat_Clustering.R'
+    path: 'crescent/CWL_Runs_Seurat_v3.R'
+
   },
   sc_input: {
     class: 'Directory',
     // path: '/Users/smohanra/Documents/crescent/docker-crescent/filtered_gene_bc_matrices'
     path: '/Users/smohanra/Desktop/crescentMockup/express/tmp/minio'
   },
-  sc_input_type: singleCell,
+  sc_input_type: 'MTX', // change to singleCell eventually if supporting seurat v2
   resolution,
   project_id: 'frontend_example_mac_10x_cwl',
-  summary_plots: 'n',
+  summary_plots: 'Y',
   list_genes: R.join(',',genes),
   opacity,
   pca_dimensions: principalDimensions,
-  percent_mito: 'Inf,0.05',
+  percent_mito: '0,0.2', // v2: 'Inf,0.05',
   number_genes: '200,8000',
   return_threshold: returnThreshold,
 })
@@ -67,7 +69,7 @@ const submitCWL = (
      toil-cwl-runner \
         --debug \
         --singularity \
-        crescent/seurat.cwl \
+        crescent/seurat-v3.cwl \
         frontend_seurat_inputs.json \ 
     `,
       { 

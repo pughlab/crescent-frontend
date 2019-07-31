@@ -115,12 +115,12 @@ connection.onopen = function (session) {
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'barcodes.tsv', file.path, metaData, function(err, etag) {
+      minioClient.fPutObject(bucketName, 'barcodes.tsv.gz', file.path, metaData, function(err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Publish to upload notification channel when MinIO done
         // Do this for each file you need
-        minioClient.fGetObject('crescent', 'barcodes.tsv', `${minioPath}/barcodes.tsv`,
+        minioClient.fGetObject('crescent', 'barcodes.tsv.gz', `${minioPath}/barcodes.tsv.gz`,
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
@@ -143,11 +143,11 @@ connection.onopen = function (session) {
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'genes.tsv', file.path, metaData, function (err, etag) {
+      minioClient.fPutObject(bucketName, 'genes.tsv.gz', file.path, metaData, function (err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Download file from bucket so that CWL will have access
-        minioClient.fGetObject('crescent', 'genes.tsv', `${minioPath}/genes.tsv`,
+        minioClient.fGetObject('crescent', 'genes.tsv.gz', `${minioPath}/genes.tsv.gz`,
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
@@ -171,11 +171,11 @@ connection.onopen = function (session) {
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'matrix.mtx', file.path, metaData, function (err, etag) {
+      minioClient.fPutObject(bucketName, 'matrix.mtx.gz', file.path, metaData, function (err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Publish to upload notification channel when MinIO done
-        minioClient.fGetObject('crescent', 'matrix.mtx', `${minioPath}/matrix.mtx`,
+        minioClient.fGetObject('crescent', 'matrix.mtx.gz', `${minioPath}/matrix.mtx.gz`,
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
