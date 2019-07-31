@@ -71,7 +71,7 @@ const submitCWL = (
      toil-cwl-runner \
         --debug \
         --singularity \
-        crescent/seurat-v3.cwl \
+        /usr/src/app/crescent/seurat-v3.cwl \
         frontend_seurat_inputs.json \ 
     `,
       { 
