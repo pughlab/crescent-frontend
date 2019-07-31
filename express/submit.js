@@ -32,7 +32,7 @@ const makeCWLJobJSON = (
   sc_input_type: 'MTX', // change to singleCell eventually if supporting seurat v2
   resolution,
   project_id: 'frontend_example_mac_10x_cwl',
-  summary_plots: 'Y',
+  summary_plots: 'n',
   list_genes: R.join(',',genes),
   opacity,
   pca_dimensions: principalDimensions,
