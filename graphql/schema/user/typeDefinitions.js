@@ -11,6 +11,7 @@ const typeDefs = gql`
     userID: ID
     email: Email
     name: String
+    sessionToken: ID
   }
 
   # 'Query' type is main definition for GQL
@@ -22,12 +23,17 @@ const typeDefs = gql`
   }
   # 'Mutation' is similar (but is invoked and not executed immediately)
   type Mutation {
+    authenticateUser(
+      email: Email!,
+      password: Email!
+    ): User
+
     # 'addUser' will be a function (somewhere) with this signature
     addUser(
       # All fields should be required (i.e. non-null)
       firstName: String!,
       lastName: String!,
-      email: String!,
+      email: Email!,
       password: String!
     ): User
   }

@@ -1,3 +1,5 @@
+const R = require('ramda')
+
 // RESOLVERS specify how data is retrieved (multiple DBs, APIs, etc...)
 // 
 // (parent, variables, context) => someDefinedType
@@ -21,6 +23,17 @@ const resolvers = {
     ) => {
       const newUser = await Users.create({firstName, lastName, email, password})
       return newUser
+    },
+    authenticateUser: async (
+      parent,
+      {email, password},
+      {Users}
+    ) => {
+      // Authenticate here
+      const user = await Users.findOne({email})
+      const passed = R.equals(R.prop('password', user), password)
+      // TODO: Set session token
+      return passed ? user : null
     }
   },
   // We also resolve subfields on our type definitions
