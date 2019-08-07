@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema({
   lastName: {
     type: String,
     required: true
+  },
+  sessionToken: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
   }
 })
 
