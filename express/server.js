@@ -201,7 +201,7 @@ connection.onopen = function (session) {
 	//const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
         const runPath = `/usr/src/app/results/${runId}/SEURAT` 
         const vis = R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : null
-        const file = `frontend_example_mac_10x_cwl_res${resolution}.${vis}.png`
+        const file = `frontend_example_mac_10x_cwl.${vis}.png`
         res.sendFile(`${runPath}/${file}`)
       })
     }
@@ -241,14 +241,14 @@ connection.onopen = function (session) {
     const runId = req.params.runID
     const readFiles = (callback) => {
       let cell_clusters = [] // store list of clusters with the coordinates of the cells
-      fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {
+      fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {
           if (err) {res.send(err);}
           else{
               // put coords into 2d array
               let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
               coords.shift(); // discard header
               // read in other file
-              fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl_res1.SEURAT_CellClusters.tsv`), "utf-8", (err, contents) => {
+              fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`), "utf-8", (err, contents) => {
                   if (err) {res.send(err);}
                   else{
                       // put the cell cluster labels into an object

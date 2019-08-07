@@ -178,7 +178,7 @@ ListNGenes       <- opt$n_genes
 ThreshReturn     <- as.numeric(opt$return_threshold)
 NumbCores        <- opt$number_cores
 
-PrefixOutfiles <- c(paste(PrefixOutfiles,"_res",Resolution,sep=""))
+#PrefixOutfiles <- c(paste(PrefixOutfiles, sep=""))
 Tempdir        <- "SEURAT"
 
 
