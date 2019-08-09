@@ -1,0 +1,17 @@
+FROM ubuntu:19.04
+
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update && \
+    apt-get install -y \
+            python \
+            python-pip \
+            nodejs \
+            npm \
+            docker.io
+
+RUN ls .
+
+RUN pip install toil[cwl]
+RUN cp -r /usr/local/lib/python2.7/dist-packages/backports/ssl_match_hostname/ /usr/lib/python2.7/dist-packages/backports
+
+RUN ls . 

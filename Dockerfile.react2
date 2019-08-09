@@ -1,0 +1,13 @@
+# Dockerfile from crossbar docker/disclose example
+
+#FROM react-test-modules2
+FROM node:12-alpine as build-deps
+
+#WORKDIR /Users/smohanra/Desktop/crescentMockup
+#WORKDIR /home/smohanra/crescent-frontend
+
+#COPY . ./
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+EXPOSE 3000
+CMD ["npm", "run", "start"]

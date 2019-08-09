@@ -7,6 +7,7 @@ import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu
 import NormalizationVisualization from '../cwl/normalization'
 import AlignmentVisualization from '../cwl/alignment'
 import ClusteringVisualization from '../cwl/clustering'
+import TsnePlot from '../tsne'
 
 import UploadModal from './UploadModal'
 
@@ -126,6 +127,7 @@ const VisualizationComponent = ({
       'crescent.result',
       (args, {runId}) => {
         console.log('crescent.result')
+        setActiveToggle('results')
         setCurrentRunId(runId)
         setLoading(false)
         setSubmitted(false)
@@ -136,8 +138,8 @@ const VisualizationComponent = ({
   const [visType, setVisType] = useState('tsne')
   const isCurrentVisType = R.equals(visType)
   useEffect(() => {
-    RA.isNotNil(currentRunId)
-    && fetch(`/result/runId=${currentRunId}&visType=${visType}`)
+    RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
+    && fetch(`/result?runId=${currentRunId}&visType=${visType}`)
       .then(response => response.blob())
       .then(R.compose(
           setResult,
@@ -187,7 +189,10 @@ const VisualizationComponent = ({
         }
       />
       {
-        RA.isNotNil(result) && <Image src={result} size='big' centered />
+        RA.isNotNil(result) && isActiveToggle('results') ?
+        isCurrentVisType('tsne') ? <TsnePlot parentcurrentRunId={currentRunId}></TsnePlot>
+        : <Image src={result} size='big' centered />
+        : null
       }
       </Segment>
       </Grid.Column>

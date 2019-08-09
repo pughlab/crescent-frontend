@@ -2,37 +2,43 @@ const submitCWL = require('./submit')
 
 // Servers
 const autobahn = require('autobahn')
-const connection = new autobahn.Connection({url: 'ws://crossbar:4000/', realm: 'realm1'})
+const connection = new autobahn.Connection({ url: 'ws://crossbar:4000/', realm: 'realm1' })
 const express = require('express')
 const cors = require('cors')
 // MINIO
 const Minio = require('minio')
 // Multer to handle multi form data
 const multer = require('multer')
-const upload = multer({dest: '/Users/smohanra/Desktop/crescentMockup/express/tmp/express'})
+const upload = multer({ dest: '/Users/smohanra/Desktop/crescentMockup/express/tmp/express' })
 // Zip
 const AdmZip = require('adm-zip')
 
 // MongoDB
 const db = require('./database')
 const mongoose = require('mongoose')
-// Run data model
+
+const fs = require('fs')
+const path = require('path')
+const process = require('process')
+
+
 const RunSchema = new mongoose.Schema({
     runId: {
-        type: mongoose.Schema.Types.ObjectId,
-        auto: true
+      type: mongoose.Schema.Types.ObjectId,
+      auto: true
     },
     params: String
 })
 const Run = db.model('run', RunSchema)
-
 const fetchRuns = () => Run.find({})
-
 
 const R = require('ramda')
 
+
+
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
+  
   console.log("autobahn connection opened:")
   // Minio client
   // Instantiate the minio client with the endpoint
@@ -62,7 +68,7 @@ connection.onopen = function (session) {
         const d = new autobahn.when.defer()
         console.log('RUN YOUR CWL COMMAND HERE, workflow arguments in kwargs variable')
         console.log(kwargs)
-        Run.create({params: JSON.stringify(kwargs)},
+        Run.create({params: JSON.stringify(kwargs) },
           (err, run) => {
             if (err) {console.log(err)}
             // console.log(run)
@@ -105,20 +111,20 @@ connection.onopen = function (session) {
       // console.log(file)
       const metaData = {
         'Content-Type': 'application/octet-stream',
-        'X-Amz-Meta-Testing': 1234,
+        'X-Amz-Meta-Testing': 1235,
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'barcodes.tsv', file.path, metaData, function(err, etag) {
+      minioClient.fPutObject(bucketName, 'barcodes.tsv.gz', file.path, metaData, function(err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Publish to upload notification channel when MinIO done
         // Do this for each file you need
-        minioClient.fGetObject('crescent', 'barcodes.tsv', `${minioPath}/barcodes.tsv`,
+        minioClient.fGetObject('crescent', 'barcodes.tsv.gz', `${minioPath}/barcodes.tsv.gz`,
           err => {
-            if (err) {return console.log(err)}
+            if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], {uploadedFilePath: etag})
+            session.publish('crescent.upload', [], { uploadedFilePath: etag })
           }
         )
       })
@@ -137,15 +143,15 @@ connection.onopen = function (session) {
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'genes.tsv', file.path, metaData, function(err, etag) {
+      minioClient.fPutObject(bucketName, 'features.tsv.gz', file.path, metaData, function (err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Download file from bucket so that CWL will have access
-        minioClient.fGetObject('crescent', 'genes.tsv', `${minioPath}/genes.tsv`,
+        minioClient.fGetObject('crescent', 'features.tsv.gz', `${minioPath}/features.tsv.gz`,
           err => {
-            if (err) {return console.log(err)}
+            if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], {uploadedFilePath: etag})
+            session.publish('crescent.upload', [], { uploadedFilePath: etag })
           }
         )
       })
@@ -165,18 +171,18 @@ connection.onopen = function (session) {
         'example': 5678
       }
       // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'matrix.mtx', file.path, metaData, function(err, etag) {
+      minioClient.fPutObject(bucketName, 'matrix.mtx.gz', file.path, metaData, function (err, etag) {
         if (err) return console.log(err, etag)
         console.log('File uploaded successfully.')
         // Publish to upload notification channel when MinIO done
-        minioClient.fGetObject('crescent', 'matrix.mtx', `${minioPath}/matrix.mtx`,
+        minioClient.fGetObject('crescent', 'matrix.mtx.gz', `${minioPath}/matrix.mtx.gz`,
           err => {
-            if (err) {return console.log(err)}
+            if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], {uploadedFilePath: etag})
+            session.publish('crescent.upload', [], { uploadedFilePath: etag })
           }
         )
-        
+
       })
       res.sendStatus(200)
     }
@@ -185,16 +191,17 @@ connection.onopen = function (session) {
   app.get(
     '/result',
     (req, res) => {
-      const {runId, visType} = req.query
-      Run.findOne({runId}, (err, run) => {
-        if (err) {console.log(err)}
+      const { runId, visType } = req.query
+      Run.findOne({ runId }, (err, run) => {
+        if (err) { console.log(err) }
         console.log(run)
-        const {runId, params} = run
-        const {resolution} = JSON.parse(params)
+        const { runId, params } = run
+        const { resolution } = JSON.parse(params)
         console.log(runId, resolution)
-        const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
-        const vis = R.equals(visType, 'tsne') ? 'SEURAT_TSNEPlot' : R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : null
-        const file = `frontend_example_mac_10x_cwl_res${resolution}.${vis}.png`
+	//const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
+        const runPath = `/usr/src/app/results/${runId}/SEURAT` 
+        const vis = R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : null
+        const file = `frontend_example_mac_10x_cwl.${vis}.png`
         res.sendFile(`${runPath}/${file}`)
       })
     }
@@ -204,9 +211,12 @@ connection.onopen = function (session) {
     '/download',
     (req, res) => {
       console.log(req.query)
-      const {runId} = req.query
+      const { runId } = req.query
       const zip = new AdmZip()
-      zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`)
+      //zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`)
+      //zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
+      //res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
+      zip.addLocalFolder(`/usr/src/app/results/${runId}/SEURAT`)
       zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
       res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
     }
@@ -224,10 +234,130 @@ connection.onopen = function (session) {
 
 
 
+  app.get("/tsne/:runID", (req, res) => {
+    // faking this for now cuz I don't know where the files are written and can't test
+    // just grabbing local files
+    console.log(req.params);
+    console.log("TEST");
+    console.log(req.params.runID);
+    const runId = req.params.runID
+    const readFiles = (callback) => {
+      let cell_clusters = [] // store list of clusters with the coordinates of the cells
+      fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {
+          if (err) {res.send(err);}
+          else{
+              // put coords into 2d array
+              let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
+              coords.shift(); // discard header
+              // read in other file
+              fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`), "utf-8", (err, contents) => {
+                  if (err) {res.send(err);}
+                  else{
+                      // put the cell cluster labels into an object
+                      cluster_dict = {}
+                      labels = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)));
+                      labels.shift(); // discard header
+                      coords.forEach((barcode) => {
+                          let idx = labels.find(k => k[0]==barcode[0])
+                          barcode_cluster = "cluster_" + String(idx[1]);
+                          if(barcode_cluster in cluster_dict){
+                              // append existing cluster with coords
+                              cluster_dict[barcode_cluster]['x'].push(parseFloat(barcode[1]));
+                              cluster_dict[barcode_cluster]['y'].push(parseFloat(barcode[2]));
+                          }
+                          else{
+                              cluster_dict[barcode_cluster] = {
+                                  'name': barcode_cluster,
+                                  'mode': 'markers',
+                                  'x': [parseFloat(barcode[1])],
+                                  'y': [parseFloat(barcode[2])]
+                              }
+                          }
+                      }
+                      )
+                      cell_clusters = R.values(cluster_dict);
+                      const sortByCluster = R.sortBy(R.compose(R.toLower, R.prop('name')))
+                      cell_clusters = sortByCluster(cell_clusters)
+                      callback(cell_clusters);
+                  }
+              })
+          }
+      });
+  }
+  cell_clusters = readFiles((data) => {res.send(JSON.stringify(data));})
+  })
+
+
+
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 }
 
-
 db.once('open', () => {
-  connection.open()  
+   connection.open()
 })
+
+/*
+  // Run data model
+  const RunSchema = new mongoose.Schema({
+    runId: {
+      type: mongoose.Schema.Types.ObjectId,
+      auto: true
+    },
+    params: String
+  })
+  const Run = db.model('run', RunSchema)
+  const fetchRuns = () => Run.find({})
+
+  // Gene data model
+  const GeneSchema = new mongoose.Schema({
+    HGNC_ID: String,
+    Approved_symbol: String,
+    Approved_name: String,
+    Previous_symbols: String,
+    Synonyms: String,
+    Chromosome: String,
+    Accession_numbers: String,
+    RefSeq_IDs: String,  
+    Ensembl_gene_ID: String, 
+    NCBI_Gene_ID: String, 
+    Name_synonyms: String,
+    OMIMID: String
+  })
+  const Gene = db.model('gene', GeneSchema)
+  
+  // create the gene collection if it's empty
+  Gene.findOne({},
+    (err, gene) => {
+      if (err) return console.log("Error with Gene schema: " + err); 
+      else if (!gene) {
+        // no genes in schema, insert them
+        fs.readFile(path.resolve(__dirname, 'hgnc_genes.tsv'), "utf8", (err, contents) => {
+          if (err) return console.log(err)
+          else {
+            // remove trailing newline and put tab delimited lines into 2d array            
+            lines = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
+            head = R.map(String, lines.shift())
+            // replace omim name if in exported file
+            replace = head.indexOf('OMIM ID(supplied by OMIM)')
+            if (replace != -1) { head[replace] = "OMIMID"; }
+            head = R.map(R.replace(/\s/g, '\_'), head);
+            result = R.map(R.zipObj(head), lines);
+            console.log(result[result.length -1]);
+            Gene.insertMany(result, 
+              (err, docs) => {
+                if (err) return console.log(err);
+                else console.log("Successfully inserted %d gene records", docs.length);
+                // only open connection after genes are inserted
+                connection.open()
+              }); // end of insertMany
+            }
+          }); // end of readFile
+        }
+      else {
+        console.log("Gene collection already exists, skipping creation");
+        // no need to create collection, just open connection
+        connection.open()
+        }
+    }); // end of findOne
+}); //end of db.once 
+*/
