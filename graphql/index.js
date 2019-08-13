@@ -13,4 +13,4 @@ mongooseConnection.connection.once(
       .then(({url}) => console.log(`🚀  Server ready at ${url}`))
   }
 )
-mongooseConnection.connect('mongodb://localhost/test', {useNewUrlParser: true})
+mongooseConnection.connect('mongodb://localhost/crescent', {useNewUrlParser: true})
