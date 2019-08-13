@@ -1,4 +1,5 @@
 module.exports = {
   UserSchema: require('./user'),
-  RunSchema: require('./run')
+  RunSchema: require('./run'),
+  ProjectSchema: require('./project')
 }
