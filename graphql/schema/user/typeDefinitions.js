@@ -29,7 +29,7 @@ const typeDefs = gql`
     ): User
 
     # 'addUser' will be a function (somewhere) with this signature
-    addUser(
+    createUser(
       # All fields should be required (i.e. non-null)
       firstName: String!,
       lastName: String!,

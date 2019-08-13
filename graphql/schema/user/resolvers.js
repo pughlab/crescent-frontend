@@ -16,7 +16,7 @@ const resolvers = {
   },
   Mutation: {
     // These resolvers should do some kind of create/update/delete
-    addUser: async (
+    createUser: async (
       parent,
       {firstName, lastName, email, password},
       {Users}
