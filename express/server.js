@@ -20,7 +20,8 @@ const mongoose = require('mongoose')
 const fs = require('fs')
 const path = require('path')
 const process = require('process')
-
+const zlib = require('zlib');
+const jsonQuery = require('json-query');
 
 const RunSchema = new mongoose.Schema({
     runId: {
@@ -32,8 +33,24 @@ const RunSchema = new mongoose.Schema({
 const Run = db.model('run', RunSchema)
 const fetchRuns = () => Run.find({})
 
-const R = require('ramda')
+// Gene data model
+const GeneSchema = new mongoose.Schema({
+  HGNC_ID: String,
+  Approved_symbol: String,
+  Approved_name: String,
+  Previous_symbols: String,
+  Synonyms: String,
+  Chromosome: String,
+  Accession_numbers: String,
+  RefSeq_IDs: String,  
+  Ensembl_gene_ID: String, 
+  NCBI_Gene_ID: String, 
+  Name_synonyms: String,
+  OMIMID: String
+})
+const Gene = db.model('gene', GeneSchema)
 
+const R = require('ramda')
 
 
 // Start autobahn connectio to WAMP router and init node server
@@ -59,6 +76,37 @@ connection.onopen = function (session) {
   const bucketName = 'crescent'
   const expressPath = '/Users/smohanra/Desktop/crescentMockup/express'
   const minioPath = `${expressPath}/tmp/minio`
+
+  // populate the Gene collection if it's empty
+  Gene.findOne({},
+    (err, gene) => {
+      if (err) return console.log("Error with Gene schema: " + err); 
+      else if (!gene) {
+        // no genes in schema, insert them
+        fs.readFile(path.resolve(__dirname, 'hgnc_genes.tsv'), "utf8", (err, contents) => {
+          if (err) return console.log(err)
+          else {
+            // remove trailing newline and put tab delimited lines into 2d array            
+            lines = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
+            head = R.map(String, lines.shift())
+            // replace omim name if in exported file
+            replace = head.indexOf('OMIM ID(supplied by OMIM)')
+            if (replace != -1) { head[replace] = "OMIMID"; }
+            head = R.map(R.replace(/\s/g, '\_'), head);
+            result = R.map(R.zipObj(head), lines);
+            Gene.insertMany(result, 
+              (err, docs) => {
+                if (err) return console.log(err);
+                else console.log("Successfully inserted %d gene records", docs.length);
+              }); // end of insertMany
+            }
+          }); // end of readFile
+        }
+      else {
+        console.log("Gene collection already exists, skipping creation");
+        }
+    }); // end of findOne
+  
 
   // Register method to run example
   session
@@ -187,11 +235,14 @@ connection.onopen = function (session) {
       res.sendStatus(200)
     }
   )
-
+  
   app.get(
     '/result',
     (req, res) => {
       const { runId, visType } = req.query
+      if (visType == 'tsne'){
+        res.json('unavailable'); // blank response to prevent error
+      }
       Run.findOne({ runId }, (err, run) => {
         if (err) { console.log(err) }
         console.log(run)
@@ -222,24 +273,108 @@ connection.onopen = function (session) {
     }
   )
 
-  app.get(
-    '/runs',
-    async (req, res) => {
-      // return fetchRuns()
-      const runs = await Run.find({})
-      console.log(runs)
-      res.json(runs)
+
+  app.get('/search/features/:searchInput',
+    (req, res) => {
+      let emptyResult = [{'text': ''}];
+      const searchInput = req.params.searchInput;
+      let jsonObj = '';
+      // check if json of file exists, create it from zipped file if not
+      if (! fs.existsSync('./features.json')) {
+        const fileContents = fs.createReadStream('./features.tsv.gz');
+        const writeStream = fs.createWriteStream('./features.tsv');
+        const unzip = zlib.createGunzip();
+        let stream = fileContents.pipe(unzip).pipe(writeStream)
+            stream.on('finish', () => {
+                // put unzipped file into json
+                fs.readFile('./features.tsv', 'utf-8', (err, contents) => {
+                    if (err) {return console.log(err);}
+                    else{
+                        // convert contents to 2d-array
+                        features = R.map(R.split("\t"), R.split("\n", contents));
+                        jsonObj = R.map(R.zipObj(['ENSID', 'Symbol', 'Expression']), features)
+                        jsonObj = {"data": jsonObj}
+                        // write json for future use
+                        fs.writeFile("features.json", JSON.stringify(jsonObj), 'utf8', (err) => {
+                            if (err) {return console.log(err);}
+                            else{
+                              let result = []
+                              let query = jsonQuery(`data[*Symbol~/^${searchInput}/i]`, {data: jsonObj, allowRegexp: true}).value;
+                              if (query.length == 0){
+                                res.send(emptyResult);
+                              }
+                              else {
+                                query = (query.length > 5) ? query.slice(0,5) : query; // only return max of 5 results
+                                const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
+                                R.forEach(formatResult, query);
+                                res.send(result); 
+                              }
+                            }
+                        });
+                    }
+                }); 
+            }); 
+      }
+      else {
+          jsonObj = JSON.parse(fs.readFileSync("./features.json", 'utf-8'));
+          let result = []
+          let query = jsonQuery(`data[*Symbol~/^${searchInput}/i]`, {data: jsonObj, allowRegexp: true}).value;
+          if (query.length == 0){res.send(emptyResult);}
+          else {
+            query = (query.length > 5) ? query.slice(0,5) : query; // only return max of 5 results
+            const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
+            R.forEach(formatResult, query);
+            res.send(result); 
+          }
+      }
     }
-  )
+  );
 
 
+  app.get('/search/genes/:searchInput',
+    (req, res) => {
+      let emptyResult = [{'text': ''}];
+      const searchInput = req.params.searchInput;
+      let searchRegex = new RegExp(searchInput);
+      // relaxed search on gene symbol, exact search on ensembl id
+      Gene.find({ $or:[ {'Approved_symbol': {$regex: searchRegex, $options: 'i'}}, {'HGNC_ID': searchInput}, {'Ensembl_gene_ID': searchInput}]},
+      (err, docs) => {
+        if (err) { console.log(err); res.send(emptyResult);}
+        // check if anything was found
+        if (docs && docs.length > 0) {
+          docs = (docs.length > 5) ? docs.slice(0,5) : docs; // max 5 returned
+          let searchResult = []
+          const formatResult = x=> searchResult.push({'text': x['Approved_symbol'], 'description': x['Approved_name'], 'value': x['HGNC_ID']});
+          R.forEach(formatResult, docs);
+          res.json(searchResult);
+        }
+        else{res.send(emptyResult);}
+      });
+    }
+  );
+/*
+//revisit once minio is persistent
+  app.get('/search/features/:searchInput',
+    (req, res) => {
+      minioClient.fGetObject(bucketName, 'features.tsv.gz', `./features.tsv.gz`, (err) => {
+        if(err){return console.log(err);}
+        else{
+          // read the zip archive
+          let zip = new AdmZip("./features.tsv.gz");
+          let zipEntries = zip.getEntries();
+          zipEntries.forEach((zipEntry) => {
+            console.log(zipEntry.toString());
+          })
+        }
+      });
 
-  app.get("/tsne/:runID", (req, res) => {
-    // faking this for now cuz I don't know where the files are written and can't test
-    // just grabbing local files
-    console.log(req.params);
-    console.log("TEST");
-    console.log(req.params.runID);
+    }
+  );
+  */
+
+  app.get(
+    '/tsne/:runID', 
+    (req, res) => {
     const runId = req.params.runID
     const readFiles = (callback) => {
       let cell_clusters = [] // store list of clusters with the coordinates of the cells
@@ -264,21 +399,15 @@ connection.onopen = function (session) {
                               // append existing cluster with coords
                               cluster_dict[barcode_cluster]['x'].push(parseFloat(barcode[1]));
                               cluster_dict[barcode_cluster]['y'].push(parseFloat(barcode[2]));
+                              cluster_dict[barcode_cluster]['text'].push(barcode[0]);
                           }
-                          else{
-                              cluster_dict[barcode_cluster] = {
-                                  'name': barcode_cluster,
-                                  'mode': 'markers',
-                                  'x': [parseFloat(barcode[1])],
-                                  'y': [parseFloat(barcode[2])]
-                              }
-                          }
-                      }
-                      )
+                          // create new entry for the cluster
+                          else{cluster_dict[barcode_cluster] = {'name': barcode_cluster, 'mode': 'markers','x': [parseFloat(barcode[1])],'y': [parseFloat(barcode[2])], 'text': [barcode[0]]};}
+                      })
                       cell_clusters = R.values(cluster_dict);
                       const sortByCluster = R.sortBy(R.compose(R.toLower, R.prop('name')))
                       cell_clusters = sortByCluster(cell_clusters)
-                      callback(cell_clusters);
+                      callback(cell_clusters); // callback is to send the data
                   }
               })
           }
@@ -287,9 +416,46 @@ connection.onopen = function (session) {
   cell_clusters = readFiles((data) => {res.send(JSON.stringify(data));})
   })
 
+  app.get(
+    '/norm-counts/:runID/:feature',
+    (req, res) => {
+    const queryFeature = req.params.feature;
+    const runID = req.params.runID;
+    console.log(queryFeature);
+    console.log(runID);
+    // given a feature name, extract the normalized expression for each cell (barcode)
+    fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`), "utf8", (err, contents) => {
+    let result = [];
+    if (err) {res.send(err); return;}
+    // will need to unquote barcodes and features
+    const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
+    // convert contents to 2d-array
+    features = R.map(R.split("\t"), R.split("\n", contents));
+    // grab barcodes and unquote them
+    barcodes = R.map(unquote, features.shift());
+    let found = false
+    for (const line of features){
+        // unquote the feature
+        line[0] = unquote(line[0]);
+        // if matches, zip with barcodes and return
+        if (String(line[0]) == String(queryFeature)){
+          console.log('here');
+          res.send(R.zip(barcodes,line.slice(1)));
+          return
+        }
+    }
+    if (! found){
+      res.send(result)
+      return
+    }
+    
+   });
+})
 
+  
 
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
 }
 
 db.once('open', () => {
