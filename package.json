@@ -9,6 +9,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "graphql": "^14.4.2",
+    "merge-graphql-schemas": "^1.7.0",
     "minio": "^7.0.8",
     "mongoose": "^5.5.7",
     "multer": "^1.4.1",

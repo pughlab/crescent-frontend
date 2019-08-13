@@ -10,8 +10,9 @@ const resolvers = {
     }
   },
   Mutation: {
-    createProject: async (parent, {userID}, {Project}) => {
-      const project = await Projects.create({members: [userID]})
+    createProject: async (parent, {userID}, {Projects}) => {
+      console.log(userID)
+      const project = await Projects.create({name: 'test project'})
       return project
     }
   },
