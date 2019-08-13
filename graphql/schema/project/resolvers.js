@@ -3,7 +3,7 @@ const R = require('ramda')
 const resolvers = {
   Query: {
     project: async (parent, {projectID}, {Projects}) => {
-      return null
+      return await Projects.findOne({projectID})
     },
     projects: async (parent, variables, {Projects}) => {
       return await Projects.find({})
@@ -11,7 +11,8 @@ const resolvers = {
   },
   Mutation: {
     createProject: async (parent, {userID}, {Project}) => {
-      return null
+      const project = await Projects.create({members: [userID]})
+      return project
     }
   },
   // Subfield resolvers
