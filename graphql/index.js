@@ -9,7 +9,7 @@ mongooseConnection.connection.once(
     console.log('MongoDB connected')
     // Launch
     apolloServer
-      .listen()
+      .listen({port: 5000})
       .then(({url}) => console.log(`🚀  Server ready at ${url}`))
   }
 )
