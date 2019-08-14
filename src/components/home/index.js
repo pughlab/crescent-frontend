@@ -155,18 +155,31 @@ const VisualizationComponent = ({
       color='blue'
       disabled={submitted || loading || notUploaded}
       // onClick={() => setSubmitted(true)}
-      onClick={() =>
-        session.call('crescent.submit', [], {
+      onClick={() => {
+        fetch(`/submit?kwargs=${JSON.stringify({
           singleCell,
           resolution,
           genes,
           opacity,
           principalDimensions,
           returnThreshold
-        })
-        && setLoading(true)
-        && setSubmitted(true)
-      }
+        })}`, {method: 'POST'})
+          .then(response => {
+            console.log(response)
+            setLoading(true)
+            setSubmitted(true)
+          })
+        // session.call('crescent.submit', [], {
+        //   singleCell,
+        //   resolution,
+        //   genes,
+        //   opacity,
+        //   principalDimensions,
+        //   returnThreshold
+        // })
+        // && setLoading(true)
+        // && setSubmitted(true)
+      }}
     />
   )
 
