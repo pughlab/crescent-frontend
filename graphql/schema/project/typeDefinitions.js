@@ -17,6 +17,11 @@ const typeDefs = gql`
     createProject(
       userID: ID
     ): Project
+
+    addUserToProject(
+      userID: ID
+      projectID: ID
+    ): Project
   }
 `
 
