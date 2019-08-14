@@ -22,12 +22,12 @@ const LoginForm = ({
             />
           </Card.Content>
           <Card.Content>
-            <Button color='teal' fluid size='large'>
+            <Button color='grey' fluid size='large'>
               Login
             </Button>
           </Card.Content>
           <Card.Content extra>
-            <Button color='teal' fluid onClick={() => setShowLogin(false)}>
+            <Button color='grey' fluid onClick={() => setShowLogin(false)}>
               Click to register
             </Button>
           </Card.Content>

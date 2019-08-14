@@ -28,12 +28,12 @@ const RegisterForm = ({
             />
           </Card.Content>
           <Card.Content>
-            <Button color='teal' fluid size='large'>
+            <Button color='grey' fluid size='large'>
               Register
             </Button>
           </Card.Content>
           <Card.Content extra>
-            <Button color='teal' fluid onClick={() => setShowLogin(true)}>
+            <Button color='grey' fluid onClick={() => setShowLogin(true)}>
               Click to login
             </Button>
           </Card.Content>
