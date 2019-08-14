@@ -141,10 +141,7 @@ const VisualizationComponent = ({
     RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
     && fetch(`/result?runId=${currentRunId}&visType=${visType}`)
       .then(response => response.blob())
-      .then(R.compose(
-          setResult,
-          URL.createObjectURL
-      ))
+      .then(R.compose(setResult, URL.createObjectURL))
     && setLoading(false)
   }, [currentRunId, visType])
 
