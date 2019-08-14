@@ -38,7 +38,7 @@
     "eject": "react-scripts eject",
     "express": "nodemon express/server.js",
     "graphql": "nodemon graphql/index.js",
-    "server": "concurrently \"npm run express\" && \"npm run graphql\""
+    "server": "concurrently \"npm run express\" \"npm run graphql\""
   },
   "eslintConfig": {
     "extends": "react-app"
