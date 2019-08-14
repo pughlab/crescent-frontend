@@ -8,6 +8,7 @@
     "apollo-boost": "^0.4.4",
     "apollo-server": "^2.8.1",
     "autobahn": "^19.4.1",
+    "concurrently": "^4.1.1",
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "graphql": "^14.4.2",
@@ -35,8 +36,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "nodemon express/server.js",
-    "graphql": "nodemon graphql/index.js"
+    "express": "nodemon express/server.js",
+    "graphql": "nodemon graphql/index.js",
+    "server": "concurrently \"npm run express\" && \"npm run graphql\""
   },
   "eslintConfig": {
     "extends": "react-app"
