@@ -8,5 +8,6 @@ COPY package-lock.json .
 RUN npm install --no-save
 COPY . ./
 EXPOSE 3000
+EXPOSE 5000
 CMD ["npm", "run", "start"]
 
