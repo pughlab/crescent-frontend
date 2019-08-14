@@ -26,6 +26,8 @@ RUN apt-get update && \
 # Create a directory to be mounted
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
+# Express server port
 EXPOSE 4001
-
+# GraphQL server port
+EXPOSE 5000
 CMD ["npm", "run", "server"]
