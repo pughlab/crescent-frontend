@@ -10,7 +10,7 @@ import ApolloClient from 'apollo-boost'
 import { ApolloProvider } from '@apollo/react-hooks'
 
 const client = new ApolloClient({
-  uri: 'https://127.0.0.1:5000',
+  uri: 'http://127.0.0.1:5000',
 })
 
 // ENV CHANGE HERE (comment one out)
