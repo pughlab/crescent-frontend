@@ -290,8 +290,10 @@ connection.onopen = function (session) {
 }
 
 db.once('open', () => {
-   connection.open()
+  console.log('Database connection open')
+  connection.open()
 })
+mongooseConnection.connect('mongodb://mongo/crescent', {useNewUrlParser: true})
 
 /*
   // Run data model
