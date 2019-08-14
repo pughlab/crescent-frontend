@@ -104,6 +104,15 @@ connection.onopen = function (session) {
   // Start node server for HTTP stuff
   const app = express()
   const port = 4001
+  app.get(
+    '/runs',
+    async (req, res) => {
+      console.log('runs')
+      const runs = await Run.find({})
+      res.json(runs)
+    }
+  )
+
   app.put(
     '/upload/barcodes',
     upload.single('uploadedFile'),
@@ -190,6 +199,7 @@ connection.onopen = function (session) {
     }
   )
 
+  // TODO: remove
   app.get(
     '/result',
     (req, res) => {

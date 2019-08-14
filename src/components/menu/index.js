@@ -18,9 +18,8 @@ const RunsModal = ({
   const [openModal, setOpenModal] = useState(false)
   const [runs, setRuns] = useState([])
   useEffect(() => {
-    session
-      .call('crescent.runs', [], {})
-      .then(res => setRuns(res))
+    fetch(`/runs`)
+      .then(res => console.log(res) && setRuns(res))
   })
   return (
     <Modal size='fullscreen'
