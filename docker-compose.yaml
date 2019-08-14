@@ -64,10 +64,8 @@ services:
     # build:
     #   context: ./
     #   dockerfile: Dockerfile.server
-#    image: express-test3
     image: express-test-singularity
     privileged: true
-    #image: express-test-no-user
     expose:
       - ${SERVER_PORT}
 #    environment:
@@ -86,9 +84,7 @@ services:
     command: npm run server
 
 ##### REACT #####
-
   react: 
-    # image: react-test3
     image: react-test-plotly
     expose:
       - ${REACT_PORT}
@@ -97,8 +93,6 @@ services:
 #      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${REACT_PORT}:${REACT_PORT}
-#    volumes:
-#      - ./src
     volumes:
       - .:/usr/src/app
     depends_on:
