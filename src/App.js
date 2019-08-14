@@ -12,18 +12,13 @@ const App = ({
   session
 }) => {
   const [currentRunId, setCurrentRunId] = useState(null)
-  const [loggedIn, setLoggedIn] = useState(true)
+  const [loggedIn, setLoggedIn] = useState(false)
   return (
+    !loggedIn ?
+    <LandingComponent /> :
     <Segment style={{height: '100%'}}>
-      {
-        loggedIn ?
-        <>
-          <VisualizationComponent session={session} currentRunId={currentRunId} setCurrentRunId={setCurrentRunId} />
-          <MenuComponent session={session} currentRunId={currentRunId} setCurrentRunId={setCurrentRunId} />
-        </>
-        :
-        <LandingComponent />
-      }
+      <VisualizationComponent session={session} currentRunId={currentRunId} setCurrentRunId={setCurrentRunId} />
+      <MenuComponent session={session} currentRunId={currentRunId} setCurrentRunId={setCurrentRunId} />
     </Segment>
   )
 }
