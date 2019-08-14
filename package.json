@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/react-hooks": "^3.0.0",
     "adm-zip": "^0.4.13",
+    "apollo-boost": "^0.4.4",
     "apollo-server": "^2.8.1",
     "autobahn": "^19.4.1",
     "cors": "^2.8.5",
