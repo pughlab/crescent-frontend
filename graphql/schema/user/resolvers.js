@@ -32,7 +32,11 @@ const resolvers = {
       // Authenticate here
       const user = await Users.findOne({email})
       const passed = R.equals(R.prop('password', user), password)
-      // TODO: Set session token
+      if (passed) {
+        // Save date as token for now
+        user.sessionToken = `${new Date()}`
+        await user.save()
+      }
       return passed ? user : null
     }
   },
