@@ -35,7 +35,12 @@ const LoginForm = ({
   `)
   // Use result of effect to navigate to portal
   useEffect(() => {
-    if (RA.isNotNilOrEmpty(data) && R.has('authenticateUser', data)) {
+    console.log(data)
+    if (
+      RA.isNotNilOrEmpty(data) &&
+      R.has('authenticateUser', data) &&
+      R.compose(RA.isNotNil, R.prop('authenticateUser'))(data)
+    ) {
       setLoggedIn(true)
     }
   }, [data])
