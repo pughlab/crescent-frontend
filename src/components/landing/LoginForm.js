@@ -22,9 +22,10 @@ const LoginValidationSchema = Yup.object().shape({
 })
 
 const LoginForm = ({
-  setLoggedIn,
-  setShowLogin
+  setLoggedIn, //For navigating to portal on success
+  setShowLogin //For toggling to registration
 }) => {
+  // GraphQL mutation hook to call mutation and use result
   const [authenticateUser, {loading, data, error}] = useMutation(gql`
     mutation AuthenticateUser($email: Email!, $password: String!) {
       authenticateUser(email: $email, password: $password) {
@@ -32,6 +33,7 @@ const LoginForm = ({
       }
     }
   `)
+  // Use result of effect to navigate to portal
   useEffect(() => {
     if (RA.isNotNilOrEmpty(data) && R.has('authenticateUser', data)) {
       setLoggedIn(true)
@@ -42,25 +44,27 @@ const LoginForm = ({
       <Grid.Column style={{ maxWidth: 450 }}>
       <Formik
         initialValues={{ email: '', password: '' }}
+        // Call GQL mutation on form submit
         onSubmit={(values, actions) => {
-          console.log(values)
           const {email, password} = values
           authenticateUser({variables: {email, password}})
         }}
+        // Use validation schema defined above
         validationSchema={LoginValidationSchema}
         render={({
-          touched: {email: emailTouched, password: passwordTouched},
-          errors: {email: emailError, password: passwordError},
-          values: {email, password},
+          touched, errors,
           handleSubmit, handleChange, handleBlur
         }) => {
-          const isError = (touched, error) => R.and(
-            RA.isNotNil(touched),
-            RA.isNotNil(error)
+          const isError = valueName => R.and(
+            R.both(
+              R.has(valueName),
+              R.compose(RA.isNotNil, R.prop(valueName))
+            )(touched),
+            R.both(
+              R.has(valueName),
+              R.compose(RA.isNotNil, R.prop(valueName))
+            )(errors)
           )
-          const isEmailError = isError(emailTouched, emailError)
-          const isPasswordError = isError(passwordTouched, passwordError)
-          console.log(isEmailError, isPasswordError)
           return (
             <Form size='large' onSubmit={handleSubmit}>
               <Card fluid>
@@ -69,8 +73,7 @@ const LoginForm = ({
                   <Form.Input
                     fluid icon='user' iconPosition='left'
                     placeholder='E-mail address'
-                    error={isEmailError}
-                    value={email}
+                    error={isError('email')}
                     name='email'
                     onChange={handleChange}
                     onBlur={handleBlur}             
@@ -78,9 +81,8 @@ const LoginForm = ({
                   <Form.Input
                     fluid icon='lock' iconPosition='left'
                     placeholder='Password'
-                    error={isPasswordError}
+                    error={isError('password')}
                     type='password'
-                    value={password}
                     name='password'
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -89,7 +91,12 @@ const LoginForm = ({
                 <Card.Content>
                   <Button
                     fluid color='grey' size='large'
-                    disabled={R.or(isEmailError, isPasswordError)}
+                    disabled={
+                      R.any(RA.isTrue, [
+                        R.any(isError, ['email', 'password']),
+                        R.isEmpty(touched)
+                      ])
+                    }
                     type='submit'
                     content='Login'
                   />
@@ -97,6 +104,7 @@ const LoginForm = ({
                 <Card.Content extra>
                   <Button
                     fluid color='grey'
+                    type='button'
                     onClick={() => setShowLogin(false)}
                     content='Click to register'
                   />
