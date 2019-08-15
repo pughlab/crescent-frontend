@@ -341,6 +341,12 @@ nCellsInOriginalMatrix<-length(seurat.object.u@meta.data$orig.ident)
 StopWatchEnd$CreateSeuratObject  <- Sys.time()
 
 ####################################
+### Write log10 raw count matrix
+####################################
+count_matrix <- log10(as.matrix(GetAssayData(object = seurat.object.u, slot = "counts")))
+write.table(count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_log10_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
+
+####################################
 ### Get mitochondrial genes
 ####################################
 writeLines("\n*** Get  mitochondrial genes ***\n")
@@ -543,8 +549,8 @@ seurat.object.f <- NormalizeData(object = seurat.object.f, normalization.method 
 StopWatchEnd$NormalizeData  <- Sys.time()
 
 # output the normalized count matrix for violin plots
-normalized_count_matrix <- as.matrix(seurat.object.f@assays[["RNA"]]@data)
-write.table(normalized_count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_normalized_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
+#normalized_count_matrix <- as.matrix(seurat.object.f@assays[["RNA"]]@data)
+#write.table(normalized_count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_normalized_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
 
 ####################################
 ### Detect, save list and plot variable genes
@@ -706,6 +712,7 @@ OutfileRDS<-paste(Tempdir,"/",PrefixOutfiles,".SEURAT_object.rds", sep="")
 saveRDS(seurat.object.f, file = OutfileRDS)
 
 StopWatchEnd$SaveRDS  <- Sys.time()
+
 
 ####################################
 ### Write out t-SNE coordinates

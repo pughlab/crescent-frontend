@@ -1,6 +1,6 @@
 
 import React, { Component} from 'react'
-import { Dropdown, Label, Grid, Button }  from 'semantic-ui-react'
+import { Dropdown, Label, Grid, Button, Loader }  from 'semantic-ui-react'
 import Plot from 'react-plotly.js'
 
 const R = require('ramda')
@@ -14,7 +14,10 @@ export default class TsnePlot extends Component {
             searchQuery: '',
             searchOptions: [],
             selectedOptions: [],
-            value: []
+            value: [],
+            message: '',
+            opacLoading: false,
+            violinLoading: false
          }
     }
 
@@ -30,14 +33,24 @@ export default class TsnePlot extends Component {
     }
 
     handleChange = (e, { searchQuery, value }) => {
+        console.log('trigger!')
+        
         const {searchOptions} = this.state
         let selectedOption = R.find(R.propEq('value',value[value.length-1]))(searchOptions);
-        this.setState(state => {
-            const selectedOptions = state.selectedOptions.concat(selectedOption);
-            return {
-                searchQuery: '', value, selectedOptions
-            }
-        });
+        if (selectedOption){
+            this.setState(state => {
+                //const selectedOptions = state.selectedOptions.concat(selectedOption);
+                const selectedOptions = [].concat(selectedOption)
+                return {
+                    searchQuery: '', value, selectedOptions
+                }
+            });
+        }
+        else{
+            this.setState(() => {
+                return {selectedOptions: [], searchOptions: [], value: []}
+            });
+        }
     }
 
     handleSearchChange = (e, {searchQuery}) => {
@@ -50,14 +63,33 @@ export default class TsnePlot extends Component {
     }
 
     handleApply = () => {
+        this.setState({opacLoading: true})
         const {runID, selectedOptions} = this.state;
-        // only use the first lol
-        let first = String(selectedOptions[0]['text'])
-        console.log(first);
-        fetch(`/norm-counts/${runID}/${first}`)
-        .then(resp => resp.json())
-        .then(data => console.log(data))
+        if (selectedOptions.length != 0){
+            // only use the first
+            let first = String(selectedOptions[0]['text']);
+            fetch(`/opacity/${runID}/${first}`)
+            .then(resp => resp.json())
+            .then(clusters => {
+                console.log(clusters);
+                if (clusters.length > 0) {
+                this.setState({clusters, opacLoading: false, message: ''});
+                this.render();
+                }
+                else{
+                    console.log("Caught");
+                    this.setState({message: 'No Gene Expression, Graph Not Updated', opacLoading: false});
+                    this.render();
+                }
+        })
+        }
     }
+
+    handleExpression = () => {
+        this.setState({violinLoading: true});
+    }
+
+    
     /* 
     static getDerivedStateFromProps(props, state) {
         console.log(props)
@@ -86,8 +118,7 @@ export default class TsnePlot extends Component {
     render() {
         //const clusters = this.state.clusters;
 
-        const {clusters, searchQuery, searchOptions, selectedOptions, value} = this.state;
-
+        const {clusters, searchQuery, searchOptions, selectedOptions, value, message, opacLoading, violinLoading} = this.state;
         return (
             <div>
             <Plot
@@ -99,7 +130,8 @@ export default class TsnePlot extends Component {
             />
             <Grid>            
                 <Grid.Row>                
-                    <Grid.Column width={12}>                    
+                    <Grid.Column width={2}/>
+                    <Grid.Column width={6}>                    
                     <Dropdown
                         fluid
                         multiple
@@ -112,8 +144,13 @@ export default class TsnePlot extends Component {
                         onSearchChange={this.handleSearchChange}
                         onChange={this.handleChange}
                     />
+                    <p style={{paddingLeft: 10, color: 'red'}}>{message}</p>
                     </Grid.Column>
-                    <Grid.Column width={4}><Button onClick={this.handleApply}>Apply</Button></Grid.Column>
+                    <Grid.Column width={6}>
+                        <Button color='#5626bf' size='small' loading={opacLoading} onClick={this.handleApply}>Change Opacity</Button>
+                        <Button color='#5626bf' size='small' loading={violinLoading} onClick={this.handleExpression}>View Expression</Button>
+                    </Grid.Column>
+                    <Grid.Column width={2}/>
                 </Grid.Row>
             </Grid>
             </div>

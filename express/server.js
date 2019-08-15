@@ -22,6 +22,7 @@ const path = require('path')
 const process = require('process')
 const zlib = require('zlib');
 const jsonQuery = require('json-query');
+const async = require('async');
 
 const RunSchema = new mongoose.Schema({
     runId: {
@@ -32,23 +33,6 @@ const RunSchema = new mongoose.Schema({
 })
 const Run = db.model('run', RunSchema)
 const fetchRuns = () => Run.find({})
-
-// Gene data model
-const GeneSchema = new mongoose.Schema({
-  HGNC_ID: String,
-  Approved_symbol: String,
-  Approved_name: String,
-  Previous_symbols: String,
-  Synonyms: String,
-  Chromosome: String,
-  Accession_numbers: String,
-  RefSeq_IDs: String,  
-  Ensembl_gene_ID: String, 
-  NCBI_Gene_ID: String, 
-  Name_synonyms: String,
-  OMIMID: String
-})
-const Gene = db.model('gene', GeneSchema)
 
 const R = require('ramda')
 
@@ -76,37 +60,7 @@ connection.onopen = function (session) {
   const bucketName = 'crescent'
   const expressPath = '/Users/smohanra/Desktop/crescentMockup/express'
   const minioPath = `${expressPath}/tmp/minio`
-
-  // populate the Gene collection if it's empty
-  Gene.findOne({},
-    (err, gene) => {
-      if (err) return console.log("Error with Gene schema: " + err); 
-      else if (!gene) {
-        // no genes in schema, insert them
-        fs.readFile(path.resolve(__dirname, 'hgnc_genes.tsv'), "utf8", (err, contents) => {
-          if (err) return console.log(err)
-          else {
-            // remove trailing newline and put tab delimited lines into 2d array            
-            lines = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
-            head = R.map(String, lines.shift())
-            // replace omim name if in exported file
-            replace = head.indexOf('OMIM ID(supplied by OMIM)')
-            if (replace != -1) { head[replace] = "OMIMID"; }
-            head = R.map(R.replace(/\s/g, '\_'), head);
-            result = R.map(R.zipObj(head), lines);
-            Gene.insertMany(result, 
-              (err, docs) => {
-                if (err) return console.log(err);
-                else console.log("Successfully inserted %d gene records", docs.length);
-              }); // end of insertMany
-            }
-          }); // end of readFile
-        }
-      else {
-        console.log("Gene collection already exists, skipping creation");
-        }
-    }); // end of findOne
-  
+ 
 
   // Register method to run example
   session
@@ -413,46 +367,129 @@ connection.onopen = function (session) {
           }
       });
   }
-  cell_clusters = readFiles((data) => {res.send(JSON.stringify(data));})
+  cell_clusters = readFiles((data) => {
+    // send and then write for future use
+    res.send(JSON.stringify(data)); 
+    fs.writeFile(`/usr/src/app/results/${runId}/clusters.json`, JSON.stringify(data), 'utf8', (err) => console.log(err))
   })
+});
 
-  app.get(
-    '/norm-counts/:runID/:feature',
-    (req, res) => {
+
+
+//TODO: finish this
+app.get('/norm-counts/:runID/:feature',
+  (req, res) => {
     const queryFeature = req.params.feature;
     const runID = req.params.runID;
-    console.log(queryFeature);
-    console.log(runID);
-    // given a feature name, extract the normalized expression for each cell (barcode)
-    fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`), "utf8", (err, contents) => {
-    let result = [];
-    if (err) {res.send(err); return;}
-    // will need to unquote barcodes and features
-    const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
-    // convert contents to 2d-array
-    features = R.map(R.split("\t"), R.split("\n", contents));
-    // grab barcodes and unquote them
-    barcodes = R.map(unquote, features.shift());
-    let found = false
-    for (const line of features){
-        // unquote the feature
-        line[0] = unquote(line[0]);
-        // if matches, zip with barcodes and return
-        if (String(line[0]) == String(queryFeature)){
-          console.log('here');
-          res.send(R.zip(barcodes,line.slice(1)));
+    // extract normalized expression for every barcode
+    fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`, 'utf-8',
+      (err, contents) => {
+        let result = [];
+        if (err) {res.send(err); return;}
+        const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
+        // convert contents to 2d-array
+        features = R.map(R.split("\t"), R.split("\n", contents));
+        barcodes = R.map(unquote, features.shift());
+        let found = false;
+        for (const line of features){
+          if (String(unquote(line[0])) == String(queryFeature)){
+            found = true;
+            // open up the file that categorizes the cells into clusters based on barcode
+            fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`, 'utf-8',
+              (err, clusterFile) => {
+                if (err) {res.send(err); return;}
+                clusters = R.map(R.split("\t"), R.split("\n", clusterFile)); 
+                header = clusters.shift();
+                // ok now we want to knit these 2d arrays together
+                for(cell in clusters){
+
+
+
+                }
+              }
+            )
+          }
+        }
+
+      }
+    )
+  }
+);
+
+
+
+  app.get(
+    '/opacity/:runID/:feature',
+    (req, res) => {
+      const queryFeature = req.params.feature;
+      const runID = req.params.runID;
+      // given a feature name, extract the normalized expression for each cell (barcode)
+      fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_log10_count_matrix.tsv`), "utf8", 
+      (err, contents) => {
+        let result = [];
+        if (err) {res.send(err); return;}
+        // will need to unquote barcodes and features
+        const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
+        // convert contents to 2d-array
+        features = R.map(R.split("\t"), R.split("\n", contents));
+        // grab barcodes and unquote them
+        barcodes = R.map(unquote, features.shift());
+        let found = false
+        for (const line of features){
+            // unquote the feature
+            line[0] = unquote(line[0]);
+            // if matches, zip with barcodes and return
+            if (String(line[0]) == String(queryFeature)){
+              console.log('found');
+              // open up the json file to append the opacities
+              found = true
+              fs.readFile(`/usr/src/app/results/${runID}/clusters.json`,"utf-8", (err, jsonContents) => {
+                obj = JSON.parse(jsonContents);
+                let counts = line.slice(1);
+                // divide by max, multiply by .90 and add .10 to derive opacities (0.1 - 1.0 scale)
+                let max = Math.max(...counts);
+                let min = 0.05
+                opacityMap = R.zip(barcodes, R.map((c) => ((c*.9/max) + min).toFixed(2), counts));
+                let clustersParsed = 0;
+                // knit them together
+                obj.forEach((itm) => {
+                  // for each cluster, fill in the opacities of the marker
+                  let orderedOpacities = [];
+                  let barcodesParsed = 0;
+                  itm['text'].forEach(barcode => {
+                    barcodesParsed++;
+                    opacityMap.filter((map) => {
+                      if(map[0] == barcode){
+                        if (map[1] != 'NaN'){
+                          orderedOpacities.push(map[1]);
+                        }
+                        else{
+                          orderedOpacities.push(min);
+                        }
+                      }
+                    });
+                    if (barcodesParsed == itm['text'].length){
+                      itm['marker'] = {'opacity': orderedOpacities}
+                      clustersParsed++;
+                    }
+                  });
+                    if (clustersParsed == obj.length){
+                    console.log('Complete');
+                    res.send(obj);
+                  }
+                  }); 
+              });                            
+            }
+        }
+        if (! found){
+          // send blank
+          console.log('Feature not found');
+          res.send(result)
           return
         }
-    }
-    if (! found){
-      res.send(result)
-      return
-    }
-    
-   });
-})
+      });
 
-  
+   });
 
   app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
@@ -462,68 +499,3 @@ db.once('open', () => {
    connection.open()
 })
 
-/*
-  // Run data model
-  const RunSchema = new mongoose.Schema({
-    runId: {
-      type: mongoose.Schema.Types.ObjectId,
-      auto: true
-    },
-    params: String
-  })
-  const Run = db.model('run', RunSchema)
-  const fetchRuns = () => Run.find({})
-
-  // Gene data model
-  const GeneSchema = new mongoose.Schema({
-    HGNC_ID: String,
-    Approved_symbol: String,
-    Approved_name: String,
-    Previous_symbols: String,
-    Synonyms: String,
-    Chromosome: String,
-    Accession_numbers: String,
-    RefSeq_IDs: String,  
-    Ensembl_gene_ID: String, 
-    NCBI_Gene_ID: String, 
-    Name_synonyms: String,
-    OMIMID: String
-  })
-  const Gene = db.model('gene', GeneSchema)
-  
-  // create the gene collection if it's empty
-  Gene.findOne({},
-    (err, gene) => {
-      if (err) return console.log("Error with Gene schema: " + err); 
-      else if (!gene) {
-        // no genes in schema, insert them
-        fs.readFile(path.resolve(__dirname, 'hgnc_genes.tsv'), "utf8", (err, contents) => {
-          if (err) return console.log(err)
-          else {
-            // remove trailing newline and put tab delimited lines into 2d array            
-            lines = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
-            head = R.map(String, lines.shift())
-            // replace omim name if in exported file
-            replace = head.indexOf('OMIM ID(supplied by OMIM)')
-            if (replace != -1) { head[replace] = "OMIMID"; }
-            head = R.map(R.replace(/\s/g, '\_'), head);
-            result = R.map(R.zipObj(head), lines);
-            console.log(result[result.length -1]);
-            Gene.insertMany(result, 
-              (err, docs) => {
-                if (err) return console.log(err);
-                else console.log("Successfully inserted %d gene records", docs.length);
-                // only open connection after genes are inserted
-                connection.open()
-              }); // end of insertMany
-            }
-          }); // end of readFile
-        }
-      else {
-        console.log("Gene collection already exists, skipping creation");
-        // no need to create collection, just open connection
-        connection.open()
-        }
-    }); // end of findOne
-}); //end of db.once 
-*/
