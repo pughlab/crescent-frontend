@@ -15,7 +15,7 @@ const App = ({
   session
 }) => {
   const [currentRunId, setCurrentRunId] = useState(null)
-  const [loggedIn, setLoggedIn] = useState(true)
+  const [loggedIn, setLoggedIn] = useState(false)
   const {loading, data, error} = useQuery(gql`
     {
       users {
