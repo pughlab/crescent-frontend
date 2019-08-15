@@ -64,17 +64,17 @@ services:
     # build:
     #   context: ./
     #   dockerfile: Dockerfile.server
-#    image: express-test3
     image: express-test-singularity
     privileged: true
-    #image: express-test-no-user
     expose:
       - ${SERVER_PORT}
+      - ${GRAPHQL_PORT}
 #    environment:
 #      HOST: ${HOST}
 #      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${SERVER_PORT}:${SERVER_PORT}
+      - ${GRAPHQL_PORT}:${GRAPHQL_PORT}
     volumes:
       - .:/usr/src/app
     #  - /var/run/docker.sock:/var/run/docker.sock
@@ -86,9 +86,7 @@ services:
     command: npm run server
 
 ##### REACT #####
-
   react: 
-    # image: react-test3
     image: react-test-plotly
     expose:
       - ${REACT_PORT}
@@ -97,8 +95,6 @@ services:
 #      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${REACT_PORT}:${REACT_PORT}
-#    volumes:
-#      - ./src
     volumes:
       - .:/usr/src/app
     depends_on:

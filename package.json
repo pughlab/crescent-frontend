@@ -3,10 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/react-hooks": "^3.0.0",
     "adm-zip": "^0.4.13",
+    "apollo-boost": "^0.4.4",
+    "apollo-server": "^2.8.1",
     "autobahn": "^19.4.1",
+    "concurrently": "^4.1.1",
     "cors": "^2.8.5",
     "express": "^4.16.4",
+    "formik": "^1.5.8",
+    "graphql": "^14.4.2",
+    "merge-graphql-schemas": "^1.7.0",
     "minio": "^7.0.8",
     "mongoose": "^5.5.7",
     "multer": "^1.4.1",
@@ -23,14 +30,17 @@
     "react-scripts": "3.0.0",
     "semantic-ui-react": "^0.86.0",
     "typescript": "^3.4.5",
-    "xmlhttprequest": "^1.8.0"
+    "xmlhttprequest": "^1.8.0",
+    "yup": "^0.27.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "nodemon express/server.js"
+    "express": "nodemon express/server.js",
+    "graphql": "nodemon graphql/index.js",
+    "server": "concurrently \"npm run express\" \"npm run graphql\""
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -1,4 +1,4 @@
 {
-  "watch": ["express/"],
+  "watch": ["express/", "graphql/", "database/"],
   "ignore": ["express/tmp/"]
 }

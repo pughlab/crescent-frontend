@@ -6,11 +6,16 @@ import * as serviceWorker from './serviceWorker';
 
 import autobahn from 'autobahn'
 
-console.log(autobahn)
+import ApolloClient from 'apollo-boost'
+import { ApolloProvider } from '@apollo/react-hooks'
+
+const client = new ApolloClient({
+  uri: 'http://127.0.0.1:5000',
+})
 
 // ENV CHANGE HERE (comment one out)
-const connection = new autobahn.Connection({url: 'ws://205.189.56.181:4000/', realm: 'realm1'})
-// const connection = new autobahn.Connection({url: 'ws://127.0.0.1:4000/', realm: 'realm1'})
+// const connection = new autobahn.Connection({url: 'ws://205.189.56.181:4000/', realm: 'realm1'})
+const connection = new autobahn.Connection({url: 'ws://127.0.0.1:4000/', realm: 'realm1'})
 
 connection.onopen = function (session) {
  
@@ -22,7 +27,12 @@ connection.onopen = function (session) {
   // // 2) publish an event
   // session.publish('com.myapp.hello', ['Hello, world!']);
   
-  ReactDOM.render(<App session={session} />, document.getElementById('root'))
+  ReactDOM.render(
+    <ApolloProvider client={client}>
+      <App session={session} />
+    </ApolloProvider>,
+    document.getElementById('root')
+  )
 }
 
 

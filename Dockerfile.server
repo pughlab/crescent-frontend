@@ -1,24 +1,33 @@
 FROM ubuntu:19.04
 
+# Install node, pip
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install -y \
             python \
             python-pip \ 
             nodejs \
-            npm 
-            
+            npm
+
+# Install toil version-specific dependency
+RUN pip install ruamel.yaml==0.15.77
 RUN pip install toil[cwl]
 RUN cp -r /usr/local/lib/python2.7/dist-packages/backports/ssl_match_hostname/ /usr/lib/python2.7/dist-packages/backports
 
-#FROM node:11-alpine as build-deps
-#WORKDIR /Users/smohanra/Desktop/crescentMockup/express
-WORKDIR /Users/smohanra/Desktop/crescentMockup
-COPY package.json .
-COPY package-lock.json .
+RUN apt-get install -y wget
 
-RUN npm install --no-save
-COPY . ./
+# Install Singularity
+RUN wget -O- http://neuro.debian.net/lists/xenial.us-ca.full | tee /etc/apt/sources.list.d/neurodebian.sources.list
+RUN apt-key adv --recv-keys --keyserver hkp://pool.sks-keyservers.net:80 0xA5D32F012649A5A9
+RUN apt-get update && \
+    apt-get install -y \
+            singularity-container 
+
+# Create a directory to be mounted
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+# Express server port
 EXPOSE 4001
+# GraphQL server port
+EXPOSE 5000
 CMD ["npm", "run", "server"]
-

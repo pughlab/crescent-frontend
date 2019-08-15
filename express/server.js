@@ -1,5 +1,7 @@
 const submitCWL = require('./submit')
 
+const R = require('ramda')
+
 // Servers
 const autobahn = require('autobahn')
 const connection = new autobahn.Connection({ url: 'ws://crossbar:4000/', realm: 'realm1' })
@@ -14,8 +16,9 @@ const upload = multer({ dest: '/Users/smohanra/Desktop/crescentMockup/express/tm
 const AdmZip = require('adm-zip')
 
 // MongoDB
-const db = require('./database')
-const mongoose = require('mongoose')
+// const db = require('./database')
+const mongooseConnection = require('../database/mongo')
+const db = mongooseConnection.connection
 
 const fs = require('fs')
 const path = require('path')
@@ -24,18 +27,7 @@ const zlib = require('zlib');
 const jsonQuery = require('json-query');
 const async = require('async');
 
-const RunSchema = new mongoose.Schema({
-    runId: {
-      type: mongoose.Schema.Types.ObjectId,
-      auto: true
-    },
-    params: String
-})
-const Run = db.model('run', RunSchema)
-const fetchRuns = () => Run.find({})
-
-const R = require('ramda')
-
+const Run = db.model('run')
 
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
@@ -63,47 +55,72 @@ connection.onopen = function (session) {
  
 
   // Register method to run example
-  session
-    .register(
-      'crescent.submit',
-      (args, kwargs) => {
-        const d = new autobahn.when.defer()
-        console.log('RUN YOUR CWL COMMAND HERE, workflow arguments in kwargs variable')
-        console.log(kwargs)
-        Run.create({params: JSON.stringify(kwargs) },
-          (err, run) => {
-            if (err) {console.log(err)}
-            // console.log(run)
-            const {runId} = run
-            submitCWL(kwargs, session, runId)
-            d.resolve(run)
-          }
-        )
-        return d.promise
-      }
-    )
-    .then(
-      reg => console.log('Registered: ', reg.procedure),
-      err => console.error('Registration error: ', err)
-    )
-  session
-    .register(
-      'crescent.runs',
-      (args, kwargs) => {
-        return fetchRuns()
-        // const d = new autobahn.when.defer()
-        // d.resolve(fetchRuns())
-        // return d.promise
+  // session
+  //   .register(
+  //     'crescent.submit',
+  //     (args, kwargs) => {
+  //       const d = new autobahn.when.defer()
+  //       console.log('RUN YOUR CWL COMMAND HERE, workflow arguments in kwargs variable')
+  //       console.log(kwargs)
+  //       Run.create({params: JSON.stringify(kwargs) },
+  //         (err, run) => {
+  //           if (err) {console.log(err)}
+  //           // console.log(run)
+  //           const {runId} = run
+  //           submitCWL(kwargs, session, runId)
+  //           d.resolve(run)
+  //         }
+  //       )
+  //       return d.promise
+  //     }
+  //   )
+  //   .then(
+  //     reg => console.log('Registered: ', reg.procedure),
+  //     err => console.error('Registration error: ', err)
+  //   )
+  // session
+  //   .register(
+  //     'crescent.runs',
+  //     (args, kwargs) => {
+  //       return fetchRuns()
+  //       // const d = new autobahn.when.defer()
+  //       // d.resolve(fetchRuns())
+  //       // return d.promise
 
-      }
-    )
-    .then(
-      reg => console.log('Registered: ', reg.procedure),
-      err => console.error('Registration error: ', err)
-    )
+  //     }
+  //   )
+  //   .then(
+  //     reg => console.log('Registered: ', reg.procedure),
+  //     err => console.error('Registration error: ', err)
+  //   )
+
   // Start node server for HTTP stuff
   const app = express()
   const port = 4001
+  // Method for submitting a CWL job
+  app.post(
+    '/submit',
+    async (req, res) => {
+      console.log(req.query)
+      // Assign `params` as stringified kwargs
+      const {kwargs: params} = req.query
+      const run = await Run.create({params})
+      // Parse and pass as object of parameters
+      const kwargs = JSON.parse(params)
+      const {runId} = run
+      submitCWL(kwargs, session, runId)
+      res.sendStatus(200)
+    }
+  )
+  // Method for fetching all runs
+  app.get(
+    '/runs',
+    async (req, res) => {
+      const runs = await Run.find({})
+      res.json(runs)
+    }
+  )
+
   app.put(
     '/upload/barcodes',
     upload.single('uploadedFile'),
@@ -126,11 +143,10 @@ connection.onopen = function (session) {
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], { uploadedFilePath: etag })
+            res.sendStatus(200)
           }
         )
       })
-      res.sendStatus(200)
     }
   )
   app.put(
@@ -153,11 +169,11 @@ connection.onopen = function (session) {
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], { uploadedFilePath: etag })
+            res.sendStatus(200)
           }
         )
       })
-      res.sendStatus(200)
+      
     }
   )
   app.put(
@@ -181,15 +197,14 @@ connection.onopen = function (session) {
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], { uploadedFilePath: etag })
+            res.sendStatus(200)
           }
         )
 
       })
-      res.sendStatus(200)
     }
   )
-  
+
   app.get(
     '/result',
     (req, res) => {
@@ -496,6 +511,8 @@ app.get('/norm-counts/:runID/:feature',
 }
 
 db.once('open', () => {
-   connection.open()
+  console.log('Database connection open')
+  connection.open()
 })
+mongooseConnection.connect('mongodb://mongo/crescent', {useNewUrlParser: true})
 
