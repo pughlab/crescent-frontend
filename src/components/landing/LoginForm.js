@@ -47,43 +47,64 @@ const LoginForm = ({
           const {email, password} = values
           authenticateUser({variables: {email, password}})
         }}
+        validationSchema={LoginValidationSchema}
         render={({
+          touched: {email: emailTouched, password: passwordTouched},
+          errors: {email: emailError, password: passwordError},
           values: {email, password},
-          handleSubmit, handleChange
-        }) => (
-          <Form size='large' onSubmit={handleSubmit}>
-            <Card fluid>
-              <Image src={Logo} size='tiny' wrapped ui={false} />
-              <Card.Content>
-                <Form.Input
-                  fluid icon='user' iconPosition='left'
-                  placeholder='E-mail address'
-                  value={email}
-                  name='email'
-                  onChange={handleChange}                  
-                />
-                <Form.Input
-                  fluid icon='lock' iconPosition='left'
-                  placeholder='Password'
-                  type='password'
-                  value={password}
-                  name='password'
-                  onChange={handleChange}
-                />
-              </Card.Content>
-              <Card.Content>
-                <Button color='grey' fluid size='large' type='submit'>
-                  Login
-                </Button>
-              </Card.Content>
-              <Card.Content extra>
-                <Button color='grey' fluid onClick={() => setShowLogin(false)}>
-                  Click to register
-                </Button>
-              </Card.Content>
-            </Card>
-          </Form>
-        )}
+          handleSubmit, handleChange, handleBlur
+        }) => {
+          const isError = (touched, error) => R.and(
+            RA.isNotNil(touched),
+            RA.isNotNil(error)
+          )
+          const isEmailError = isError(emailTouched, emailError)
+          const isPasswordError = isError(passwordTouched, passwordError)
+          console.log(isEmailError, isPasswordError)
+          return (
+            <Form size='large' onSubmit={handleSubmit}>
+              <Card fluid>
+                <Image src={Logo} size='tiny' wrapped ui={false} />
+                <Card.Content>
+                  <Form.Input
+                    fluid icon='user' iconPosition='left'
+                    placeholder='E-mail address'
+                    error={isEmailError}
+                    value={email}
+                    name='email'
+                    onChange={handleChange}
+                    onBlur={handleBlur}             
+                  />
+                  <Form.Input
+                    fluid icon='lock' iconPosition='left'
+                    placeholder='Password'
+                    error={isPasswordError}
+                    type='password'
+                    value={password}
+                    name='password'
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                  />
+                </Card.Content>
+                <Card.Content>
+                  <Button
+                    fluid color='grey' size='large'
+                    disabled={R.or(isEmailError, isPasswordError)}
+                    type='submit'
+                    content='Login'
+                  />
+                </Card.Content>
+                <Card.Content extra>
+                  <Button
+                    fluid color='grey'
+                    onClick={() => setShowLogin(false)}
+                    content='Click to register'
+                  />
+                </Card.Content>
+              </Card>
+            </Form>
+          )
+        }}
       />
       </Grid.Column>
     </Grid>
