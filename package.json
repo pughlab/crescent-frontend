@@ -30,7 +30,8 @@
     "react-scripts": "3.0.0",
     "semantic-ui-react": "^0.86.0",
     "typescript": "^3.4.5",
-    "xmlhttprequest": "^1.8.0"
+    "xmlhttprequest": "^1.8.0",
+    "yup": "^0.27.0"
   },
   "scripts": {
     "start": "react-scripts start",
