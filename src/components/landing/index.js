@@ -2,10 +2,13 @@ import React, {useState} from 'react'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 
-const LandingPageComponent = () => {
+const LandingPageComponent = ({
+  setLoggedIn
+}) => {
   const [showLogin, setShowLogin] = useState(true)
+  console.log(setLoggedIn)
   return (
-    showLogin ? <LoginForm setShowLogin={setShowLogin} /> : <RegisterForm setShowLogin={setShowLogin} />
+    showLogin ? <LoginForm {...{setLoggedIn, setShowLogin}} /> : <RegisterForm setShowLogin={setShowLogin} />
   )
 }
 
