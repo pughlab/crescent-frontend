@@ -29,6 +29,8 @@ const async = require('async');
 
 const Run = db.model('run')
 
+var opened = false;
+
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
   
@@ -276,7 +278,7 @@ connection.onopen = function (session) {
                                 query = (query.length > 5) ? query.slice(0,5) : query; // only return max of 5 results
                                 const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
                                 R.forEach(formatResult, query);
-                                res.send(result); 
+                                res.send(JSON.stringify(result)); 
                               }
                             }
                         });
@@ -293,7 +295,7 @@ connection.onopen = function (session) {
             query = (query.length > 5) ? query.slice(0,5) : query; // only return max of 5 results
             const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
             R.forEach(formatResult, query);
-            res.send(result); 
+            res.send(JSON.stringify(result)); 
           }
       }
     }
@@ -431,8 +433,6 @@ app.get('/norm-counts/:runID/:feature',
   }
 );
 
-
-
   app.get(
     '/opacity/:runID/:feature',
     (req, res) => {
@@ -462,8 +462,11 @@ app.get('/norm-counts/:runID/:feature',
                 obj = JSON.parse(jsonContents);
                 let counts = line.slice(1);
                 // divide by max, multiply by .90 and add .10 to derive opacities (0.1 - 1.0 scale)
-                let max = Math.max(...counts);
+                let max = 0;
                 let min = 0.05
+                counts.forEach(count => {
+                  if(count != '-Inf' & count > max){max = parseFloat(count);}
+                });
                 opacityMap = R.zip(barcodes, R.map((c) => ((c*.9/max) + min).toFixed(2), counts));
                 let clustersParsed = 0;
                 // knit them together
@@ -503,11 +506,13 @@ app.get('/norm-counts/:runID/:feature',
           return
         }
       });
-
    });
 
-  app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-
+   if (opened == false){
+    app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+    opened = true
+   }
+   else{console.log("Example app already listening")}
 }
 
 db.once('open', () => {

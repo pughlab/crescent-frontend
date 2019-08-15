@@ -1,4 +1,3 @@
-
 import React, { Component} from 'react'
 import { Dropdown, Label, Grid, Button, Loader }  from 'semantic-ui-react'
 import Plot from 'react-plotly.js'
@@ -33,8 +32,7 @@ export default class TsnePlot extends Component {
     }
 
     handleChange = (e, { searchQuery, value }) => {
-        console.log('trigger!')
-        
+       
         const {searchOptions} = this.state
         let selectedOption = R.find(R.propEq('value',value[value.length-1]))(searchOptions);
         if (selectedOption){
@@ -57,8 +55,9 @@ export default class TsnePlot extends Component {
         this.setState({ searchQuery });
         if (searchQuery){
             fetch(`/search/features/${searchQuery}`)
-            .then(resp => resp.json())
+            .then(resp => resp.clone().json())
             .then(searchOptions => {this.setState({searchOptions})})
+            .then(console.log(this.state))
         }
     }
 
