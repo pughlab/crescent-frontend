@@ -178,7 +178,7 @@ ListNGenes       <- opt$n_genes
 ThreshReturn     <- as.numeric(opt$return_threshold)
 NumbCores        <- opt$number_cores
 
-PrefixOutfiles <- c(paste(PrefixOutfiles,"_res",Resolution,sep=""))
+#PrefixOutfiles <- c(paste(PrefixOutfiles, sep=""))
 Tempdir        <- "SEURAT"
 
 
@@ -339,6 +339,12 @@ seurat.object.u  <- CreateSeuratObject(counts = input.matrix, min.cells = Defaul
 nCellsInOriginalMatrix<-length(seurat.object.u@meta.data$orig.ident)
 
 StopWatchEnd$CreateSeuratObject  <- Sys.time()
+
+####################################
+### Write log10 raw count matrix
+####################################
+count_matrix <- log10(as.matrix(GetAssayData(object = seurat.object.u, slot = "counts")))
+write.table(count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_log10_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
 
 ####################################
 ### Get mitochondrial genes
@@ -542,6 +548,10 @@ seurat.object.f <- NormalizeData(object = seurat.object.f, normalization.method 
 
 StopWatchEnd$NormalizeData  <- Sys.time()
 
+# output the normalized count matrix for violin plots
+#normalized_count_matrix <- as.matrix(seurat.object.f@assays[["RNA"]]@data)
+#write.table(normalized_count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_normalized_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
+
 ####################################
 ### Detect, save list and plot variable genes
 ####################################
@@ -702,6 +712,7 @@ OutfileRDS<-paste(Tempdir,"/",PrefixOutfiles,".SEURAT_object.rds", sep="")
 saveRDS(seurat.object.f, file = OutfileRDS)
 
 StopWatchEnd$SaveRDS  <- Sys.time()
+
 
 ####################################
 ### Write out t-SNE coordinates
@@ -866,7 +877,7 @@ StopWatchStart$DiffMarkerTsnePlots  <- Sys.time()
 
 pdfWidth  <- 4 * DefaultParameters$BaseSizeMultipleWidth
 pdfHeight <- NumberOfClusters * DefaultParameters$BaseSizeMultipleHeight / 2
-png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""))
+png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""), width = 1200, height = 1200, units = "px")
 #png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_TSNEPlot_EachTopGene.png", sep=""), width=pdfWidth, height=pdfHeight)
 print(FeaturePlot(object = seurat.object.f, ncol = 4, features = c(top_genes_by_cluster_for_tsne.list), cols = c("lightgrey", "blue"), reduction = "tsne"))
 dev.off()
