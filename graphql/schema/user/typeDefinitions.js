@@ -25,7 +25,7 @@ const typeDefs = gql`
   type Mutation {
     authenticateUser(
       email: Email!,
-      password: Email!
+      password: String!
     ): User
 
     # 'addUser' will be a function (somewhere) with this signature
