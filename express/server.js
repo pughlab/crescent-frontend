@@ -138,11 +138,10 @@ connection.onopen = function (session) {
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], { uploadedFilePath: etag })
+            res.sendStatus(200)
           }
         )
       })
-      res.sendStatus(200)
     }
   )
   app.put(
@@ -165,11 +164,11 @@ connection.onopen = function (session) {
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], { uploadedFilePath: etag })
+            res.sendStatus(200)
           }
         )
       })
-      res.sendStatus(200)
+      
     }
   )
   app.put(
@@ -193,12 +192,11 @@ connection.onopen = function (session) {
           err => {
             if (err) { return console.log(err) }
             console.log('File successfully downloaded')
-            session.publish('crescent.upload', [], { uploadedFilePath: etag })
+            res.sendStatus(200)
           }
         )
 
       })
-      res.sendStatus(200)
     }
   )
 
