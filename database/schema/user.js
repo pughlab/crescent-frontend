@@ -22,7 +22,8 @@ const UserSchema = new mongoose.Schema({
     required: true
   },
   sessionToken: {
-    type: mongoose.Schema.Types.ObjectId,
+    // type: mongoose.Schema.Types.ObjectId,
+    type: String,
     default: null
   }
 })
