@@ -29,8 +29,6 @@ const async = require('async');
 
 const Run = db.model('run')
 
-var opened = false;
-
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
   
@@ -433,7 +431,68 @@ app.get('/norm-counts/:runID/:feature',
   }
 );
 
-  app.get(
+app.get(
+  '/expression/:runID/:feature',
+  (req, res) => {
+    const queryFeature = req.params.feature;
+    const runID = req.params.runID;
+    // extract normalized expression for every barcode
+    fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_log10_count_matrix.tsv`, 'utf-8',
+      (err, contents) => {
+        let result = [];
+        if (err) {res.send(err); return;}
+        const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
+        // convert contents to 2d-array
+        features = R.map(R.split("\t"), R.split("\n", contents));
+        barcodes = R.map(unquote, features.shift());
+        let found = false;
+        for (const line of features){
+          if (String(unquote(line[0])) == String(queryFeature)){
+            found = true;
+            // zip the barcodes with the feature line
+            normCounts = R.zip(barcodes, line.slice(1));
+            // open up the file that categorizes the cells into clusters based on barcode
+            fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`, 'utf-8',
+              (err, clusterFile) => {
+                if (err) {res.send(err); return;}
+                // put into 2d array (remove trailing newline)
+                clusters = R.map(R.split("\t"), R.split("\n", clusterFile.slice(0,-1))); 
+                headers = clusters.shift();
+                const sortByFirst = R.sortBy(R.prop(0));
+                normCounts = sortByFirst(normCounts);
+                clusters = sortByFirst(clusters);
+                let x = [];
+                let y = []; 
+                console.log(normCounts)
+                console.log(clusters)
+                for(i = 0; i < Math.min(normCounts.length, clusters.length); i++){
+                    if (normCounts[i][0] != clusters[i][0]){
+                        console.log("Error: different set of cells in clusters and Normalized count files");
+                        return
+                    }
+                    else{
+                        x.push(clusters[i][1]);
+                        y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
+                    }
+                }
+                let data = [{
+                    type: 'violin',
+                    x: x,
+                    y: y,
+                    meanline: {visible: true}
+                }]
+                console.log(data);
+                res.send(JSON.stringify(data));
+             }
+            )
+          }
+        }
+
+      }
+    )
+});
+  
+app.get(
     '/opacity/:runID/:feature',
     (req, res) => {
       const queryFeature = req.params.feature;
@@ -508,11 +567,7 @@ app.get('/norm-counts/:runID/:feature',
       });
    });
 
-   if (opened == false){
     app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-    opened = true
-   }
-   else{console.log("Example app already listening")}
 }
 
 db.once('open', () => {
