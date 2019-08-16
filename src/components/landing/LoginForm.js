@@ -37,9 +37,10 @@ const LoginForm = ({
   useEffect(() => {
     console.log(data)
     if (
-      RA.isNotNilOrEmpty(data) &&
-      R.has('authenticateUser', data) &&
-      R.compose(RA.isNotNil, R.prop('authenticateUser'))(data)
+      R.both(
+        RA.isNotNilOrEmpty,
+        R.propSatisfies(RA.isNotNil, 'authenticateUser')
+      )(data)
     ) {
       setLoggedIn(true)
     }
