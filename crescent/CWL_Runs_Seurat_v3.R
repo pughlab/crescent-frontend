@@ -341,12 +341,6 @@ nCellsInOriginalMatrix<-length(seurat.object.u@meta.data$orig.ident)
 StopWatchEnd$CreateSeuratObject  <- Sys.time()
 
 ####################################
-### Write log10 raw count matrix
-####################################
-count_matrix <- log10(as.matrix(GetAssayData(object = seurat.object.u, slot = "counts")))
-write.table(count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_log10_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
-
-####################################
 ### Get mitochondrial genes
 ####################################
 writeLines("\n*** Get  mitochondrial genes ***\n")
@@ -712,6 +706,12 @@ OutfileRDS<-paste(Tempdir,"/",PrefixOutfiles,".SEURAT_object.rds", sep="")
 saveRDS(seurat.object.f, file = OutfileRDS)
 
 StopWatchEnd$SaveRDS  <- Sys.time()
+
+####################################
+### Write log10 raw count matrix
+####################################
+count_matrix <- log10(as.matrix(GetAssayData(object = seurat.object.f, slot = "counts")))
+write.table(count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_log10_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
 
 
 ####################################
