@@ -29,8 +29,8 @@ services:
 #      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
-#    volumes:
-#      - ./mongodb:/data/db
+    volumes:
+      - ./mongodb:/data/db
     depends_on:
       - crossbar
 #      - type: bind
@@ -64,7 +64,7 @@ services:
     # build:
     #   context: ./
     #   dockerfile: Dockerfile.server
-    image: express-test-singularity
+    image: express-gql2
     privileged: true
     expose:
       - ${SERVER_PORT}
@@ -87,7 +87,7 @@ services:
 
 ##### REACT #####
   react: 
-    image: react-test-plotly
+    image: react-gql
     expose:
       - ${REACT_PORT}
 #    environment:
