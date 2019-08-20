@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import { Button, Form, Grid, Header, Image, Message, Segment, Card } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Image, Message, Segment, Card, Divider } from 'semantic-ui-react'
 
 import Logo from './logo.jpg'
 
@@ -75,6 +75,8 @@ const LoginForm = ({
               <Card fluid>
                 <Image src={Logo} size='tiny' wrapped ui={false} />
                 <Card.Content>
+                  <Card.Header content='CReSCENT: The CanceR Single Cell ExpressioN Toolkit' />
+                  <Divider/>
                   <Form.Input
                     fluid icon='user' iconPosition='left'
                     placeholder='E-mail address'
