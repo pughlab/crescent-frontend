@@ -1,5 +1,5 @@
 import React, { Component} from 'react'
-import { Dropdown, Label, Grid, Button, Loader }  from 'semantic-ui-react'
+import { Dropdown, Label, Grid, Button, Loader, Divider }  from 'semantic-ui-react'
 import Plot from 'react-plotly.js'
 
 const R = require('ramda')
@@ -77,7 +77,7 @@ export default class TsnePlot extends Component {
                 }
                 else{
                     console.log("Caught");
-                    this.setState({message: 'No Gene Expression, Graph Not Updated', opacLoading: false});
+                    this.setState({message: 'No gene expression data available - graph not updated', opacLoading: false});
                     this.render();
                 }
         })
@@ -120,22 +120,23 @@ export default class TsnePlot extends Component {
         const {clusters, searchQuery, searchOptions, selectedOptions, value, message, opacLoading, violinLoading} = this.state;
         return (
             <div>
-            <Plot
+            <Plot 
             data={clusters}
             layout={{title:'t-SNE', autosize: true}}
             useResizeHandler={true}
             style={{width:'100%', height: '90%'}}
             {...this.props}
             />
-            <Grid>            
-                <Grid.Row>                
+            <Divider/>
+            <Grid>    
+                <Grid.Row >                
                     <Grid.Column width={2}/>
                     <Grid.Column width={6}>                    
                     <Dropdown
                         fluid
                         multiple
                         search
-                        renderLabel = {({text}) => (<Label color='blue' content={text}/>)}
+                        renderLabel = {({text}) => (<Label color='violet' content={text}/>)}
                         searchQuery={searchQuery}
                         selection
                         options={searchOptions.concat(selectedOptions)}
