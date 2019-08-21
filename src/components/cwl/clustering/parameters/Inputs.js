@@ -44,7 +44,7 @@ const Resolution = ({
 }) => {
     const isActive = R.equals(resolution)
     const activeColor = resolution => isActive(resolution) ? 'blue' : undefined
-    return withMessageAbove('Select TSNE resolution')(
+    return withMessageAbove('Select clustering resolution')(
         <Button.Group fluid size='large' widths={11}
             content={
                 R.map(
@@ -228,7 +228,7 @@ const PARAMETERS = [
     ),
     makeParameter(
         'resolution',
-        'TNSE Resolution',
+        'Clustering Resolution',
     ),
     makeParameter(
         'gene_list',

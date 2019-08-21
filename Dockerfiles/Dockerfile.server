@@ -6,7 +6,6 @@ RUN apt-get update && \
     apt-get install -y \
             python \
             python-pip \ 
-            nodejs \
             npm
 
 # Install toil version-specific dependency
@@ -22,6 +21,18 @@ RUN apt-key adv --recv-keys --keyserver hkp://pool.sks-keyservers.net:80 0xA5D32
 RUN apt-get update && \
     apt-get install -y \
             singularity-container 
+
+
+RUN apt-get update && \
+    apt-get install -y \
+            sudo \
+            curl \
+            software-properties-common
+
+RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo sh -
+RUN apt-get update && \
+    apt-get install -y \
+            nodejs
 
 # Create a directory to be mounted
 RUN mkdir -p /usr/src/app
