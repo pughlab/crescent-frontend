@@ -29,13 +29,8 @@ services:
 #      SERVER_PORT: ${SERVER_PORT}
     ports:
       - ${MONGO_PORT}:${MONGO_PORT}
-<<<<<<< HEAD
-   volumes:
-     - ./mongodb:/data/db
-=======
     volumes:
       - ./mongodb:/data/db
->>>>>>> 925003e4f8e0fe858eefcd6338eb435a84dd78fc
     depends_on:
       - crossbar
 #      - type: bind
