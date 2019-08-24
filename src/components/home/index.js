@@ -7,7 +7,7 @@ import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu
 import NormalizationVisualization from '../cwl/normalization'
 import AlignmentVisualization from '../cwl/alignment'
 import ClusteringVisualization from '../cwl/clustering'
-import TsnePlot from '../tsne'
+import Expression from '../expression'
 
 import UploadModal from './UploadModal'
 
@@ -200,7 +200,7 @@ const VisualizationComponent = ({
       />
       {
         RA.isNotNil(result) && isActiveToggle('results') ?
-        isCurrentVisType('tsne') ? <TsnePlot parentcurrentRunId={currentRunId}></TsnePlot>
+        isCurrentVisType('tsne') ? <Expression parentcurrentRunId={currentRunId}></Expression>
         : <Image src={result} size='big' centered />
         : null
       }
