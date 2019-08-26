@@ -5,6 +5,10 @@ const RunSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true
   },
+  name: {
+    type: String,
+    required: true
+  },
   params: String
 })
 

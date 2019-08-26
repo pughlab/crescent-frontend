@@ -24,6 +24,10 @@ const ProjectSchema = new mongoose.Schema({
   members: {
     type: [mongoose.Schema.Types.ObjectId],
     default: []
+  },
+  runs: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: []
   }
 })
 
