@@ -6,13 +6,9 @@ import SearchFeatures from './SearchFeatures'
 
 export default class Expression extends Component{
     constructor(props){
-
-        console.log("FROM PARENT:")
-        let testRun = props.parentcurrentRunId;
-        console.log(testRun)
         super(props);
         this.state = {
-            runID : testRun,
+            runID : props.parentcurrentRunId,
             selectedFeature : '',
             loading : false,
             showTsne : true, // toggle this
@@ -32,10 +28,6 @@ export default class Expression extends Component{
     }
 
     static getDerivedStateFromProps(props, state){
-        //console.log("IN UPDATE:")
-        //console.log(props.runID);
-        //console.log(state.runID);
-
         if (props.parentcurrentRunId != state.runID){
             return {runID: props.parentcurrentRunId};
         }
@@ -47,8 +39,6 @@ export default class Expression extends Component{
         let {runID, selectedFeature, loading, showTsne} = this.state;
         let plot, hidden, shown
 
-        console.log('IN CHILD:')
-        console.log(runID)
         if (showTsne == true){
             hidden = 'Show Violin';
             shown = 't-SNE';

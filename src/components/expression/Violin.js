@@ -18,7 +18,7 @@ export default class Violin extends Component{
     fetchData = () => {
         let runID = String(this.state.runID);
         let feature = String(this.state.selectedFeature);
-        if (feature != ''){
+        if (feature){
             fetch(`/expression/${runID}/${feature}`)
             .then(resp => resp.json(resp))
             .then(data => {

@@ -18,7 +18,7 @@ export default class Tsne extends Component{
     fetchData = () => {
         let {runID, selectedFeature} = this.state;
 
-        if (selectedFeature == ''){
+        if (! selectedFeature || selectedFeature == ''){
             fetch(`/tsne/${runID}`)
             .then(resp => resp.json())
             .then(data => {this.setState({clusters: data, message: ''})});
