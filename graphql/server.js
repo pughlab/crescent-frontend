@@ -5,10 +5,12 @@ const { mergeTypes, mergeResolvers } = require('merge-graphql-schemas')
 
 const R = require('ramda')
 
+// GRAPHQL SCHEMAS
 const UserSchema = require('./schema/user')
 const ProjectSchema = require('./schema/project')
+const RunSchema = require('./schema/run')
 
-const schemas = [UserSchema, ProjectSchema]
+const schemas = [UserSchema, ProjectSchema, RunSchema]
 
 // GQL server requires type definitions and resolvers for those types
 const server = new ApolloServer({
@@ -25,7 +27,9 @@ const server = new ApolloServer({
       // TODO: use DataSource rather than putting connection into context
       // Data models can be provided in context...
       Users: mongooseConnection.model('user'),
-      Projects: mongooseConnection.model('project')
+      Projects: mongooseConnection.model('project'),
+      Runs: mongooseConnection.model('run')
+
     }
   }
 })

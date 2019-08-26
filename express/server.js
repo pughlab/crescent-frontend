@@ -112,6 +112,20 @@ connection.onopen = function (session) {
       res.sendStatus(200)
     }
   )
+  app.post(
+    '/run/submit/:runID',
+    async (req, res) => {
+      const {
+        params: {runID},
+        query: {name, params}
+      } = req
+      console.log('gql axios', runID, name, params)
+      // // Parse and pass as object of parameters
+      const kwargs = JSON.parse(params)
+      submitCWL(kwargs, session, runID)
+      res.sendStatus(200)
+    }
+  )
   // Method for fetching all runs
   app.get(
     '/runs',
