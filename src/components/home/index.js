@@ -185,6 +185,9 @@ const VisualizationComponent = ({
 
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
+
+  console.log("INDEX")
+  console.log(currentRunId);
  
   return (
     <Segment attached='top' style={{height: '90%'}} as={Grid}>

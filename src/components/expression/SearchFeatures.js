@@ -48,7 +48,13 @@ export default class SearchFeature extends Component{
     handleApply = () => {
         //this.setState({loading: true})
         const selectedOptions = this.state.selectedOptions;
-        let firstSelection = String(selectedOptions[0]['text']);
+        let firstSelection;
+        if (selectedOptions.length > 0){
+            firstSelection = String(selectedOptions[0]['text']);
+        }
+        else {
+
+        }
         this.props.callbackFromParent(firstSelection, true);
         this.render()
     }
@@ -65,11 +71,10 @@ export default class SearchFeature extends Component{
     render() {
         let {searchQuery, searchOptions, selectedOptions, value, message, loading } = this.state;
         
-        console.log(loading)
         return (
             <Grid>    
                 <Grid.Row >                
-                    <Grid.Column width={2}/>
+                    <Grid.Column width={4}/>
                     <Grid.Column width={6}>                    
                     <Dropdown
                         fluid
@@ -85,10 +90,10 @@ export default class SearchFeature extends Component{
                     />
                     <p style={{paddingLeft: 10, color: 'red'}}>{message}</p>
                     </Grid.Column>
-                    <Grid.Column width={6}>
+                    <Grid.Column width={4} textAlign='left'>
                         <Button size='small' loading={loading} onClick={this.handleApply}>View Expression</Button>
                     </Grid.Column>
-                    <Grid.Column width={2}/>
+                    <Grid.Column width={4}/>
                 </Grid.Row>
             </Grid>
         )

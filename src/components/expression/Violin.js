@@ -9,6 +9,7 @@ export default class Violin extends Component{
         this.state = {
             runID : props.runID,
             selectedFeature : props.selectedFeature,
+            hidden: props.hidden,
             expressionData : [],
             message: ''
         }
@@ -38,23 +39,40 @@ export default class Violin extends Component{
     }
 
     static getDerivedStateFromProps(props, state){
+        let update = {}
         if (props.selectedFeature != state.selectedFeature){
-            return {selectedFeature: props.selectedFeature};
+            update.selectedFeature = props.selectedFeature;
         }
-        else{ return null }
+        if (props.hidden != state.hidden){
+            update.hidden = props.hidden;
+        }
+        if (props.runID != state.runID){
+            update.runID = props.runID;
+        }
+
+        // return the updated state or null if no change
+        return Object.keys(update).length ? update : null;
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if(prevState.selectedFeature != this.state.selectedFeature){
+        if((prevState.selectedFeature != this.state.selectedFeature) || (prevState.runID != this.state.runID)){
             this.fetchData();
         }
     }
 
     render() {
-        let {expressionData, message} = this.state;
+        let {expressionData, message, hidden} = this.state;
+        let plotDisplay;
+
+        if (hidden == true){
+            plotDisplay = 'none';
+        }
+        else{
+            plotDisplay = 'inline-block';
+        }
 
         return (
-            <div>                        
+            <div hidden={hidden} style={{display: plotDisplay}}>
                 <p>{message}</p>
                 <Plot
                     data={expressionData}

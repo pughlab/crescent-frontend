@@ -6,9 +6,13 @@ import SearchFeatures from './SearchFeatures'
 
 export default class Expression extends Component{
     constructor(props){
+
+        console.log("FROM PARENT:")
+        let testRun = props.parentcurrentRunId;
+        console.log(testRun)
         super(props);
         this.state = {
-            runID : props.parentcurrentRunId,
+            runID : testRun,
             selectedFeature : '',
             loading : false,
             showTsne : true, // toggle this
@@ -27,19 +31,33 @@ export default class Expression extends Component{
         this.setState({loading: isLoading})
     }
 
+    static getDerivedStateFromProps(props, state){
+        //console.log("IN UPDATE:")
+        //console.log(props.runID);
+        //console.log(state.runID);
+
+        if (props.parentcurrentRunId != state.runID){
+            return {runID: props.parentcurrentRunId};
+        }
+        else { return null }
+    }
+
+   
     render() {
         let {runID, selectedFeature, loading, showTsne} = this.state;
         let plot, hidden, shown
 
+        console.log('IN CHILD:')
+        console.log(runID)
         if (showTsne == true){
             hidden = 'Show Violin';
             shown = 't-SNE';
-            plot = <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID }></Tsne>
+            //plot = <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID }></Tsne>
         }
         else{
             hidden = 'Show t-SNE';
             shown = 'Violin';
-            plot = <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID }></Violin>
+            //plot = <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID }></Violin>
         }
         return (
             <div>
@@ -47,8 +65,11 @@ export default class Expression extends Component{
                     <Button.Content hidden>{hidden}</Button.Content>
                     <Button.Content visible>{shown}</Button.Content>
                 </Button>
-                {plot}
-                <SearchFeatures runID={ runID } loading={ loading } callbackFromParent={this.updateFeature}></SearchFeatures>
+                <div style={{width:'100%', height: '90%', textAlign: 'center'}} >
+                    <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID } hidden={!showTsne}></Tsne>
+                    <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID } hidden={showTsne}></Violin>
+                    <SearchFeatures runID={ runID } loading={ loading } callbackFromParent={this.updateFeature}></SearchFeatures>
+                </div>
             </div>
         )
     }

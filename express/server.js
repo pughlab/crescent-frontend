@@ -273,8 +273,7 @@ connection.onopen = function (session) {
                                 res.send(emptyResult);
                               }
                               else {
-                                query = (query.length > 5) ? query.slice(0,5) : query; // only return max of 5 results
-                                const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
+                                query = (query.length > 4) ? query.slice(0,4) : query; // only return max of 4 results console.log(query)
                                 R.forEach(formatResult, query);
                                 res.send(JSON.stringify(result)); 
                               }
@@ -290,7 +289,7 @@ connection.onopen = function (session) {
           let query = jsonQuery(`data[*Symbol~/^${searchInput}/i]`, {data: jsonObj, allowRegexp: true}).value;
           if (query.length == 0){res.send(emptyResult);}
           else {
-            query = (query.length > 5) ? query.slice(0,5) : query; // only return max of 5 results
+            query = (query.length > 4) ? query.slice(0,4) : query; // only return max of 4 results
             const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
             R.forEach(formatResult, query);
             res.send(JSON.stringify(result)); 
@@ -299,28 +298,6 @@ connection.onopen = function (session) {
     }
   );
 
-
-  app.get('/search/genes/:searchInput',
-    (req, res) => {
-      let emptyResult = [{'text': ''}];
-      const searchInput = req.params.searchInput;
-      let searchRegex = new RegExp(searchInput);
-      // relaxed search on gene symbol, exact search on ensembl id
-      Gene.find({ $or:[ {'Approved_symbol': {$regex: searchRegex, $options: 'i'}}, {'HGNC_ID': searchInput}, {'Ensembl_gene_ID': searchInput}]},
-      (err, docs) => {
-        if (err) { console.log(err); res.send(emptyResult);}
-        // check if anything was found
-        if (docs && docs.length > 0) {
-          docs = (docs.length > 5) ? docs.slice(0,5) : docs; // max 5 returned
-          let searchResult = []
-          const formatResult = x=> searchResult.push({'text': x['Approved_symbol'], 'description': x['Approved_name'], 'value': x['HGNC_ID']});
-          R.forEach(formatResult, docs);
-          res.json(searchResult);
-        }
-        else{res.send(emptyResult);}
-      });
-    }
-  );
 /*
 //revisit once minio is persistent
   app.get('/search/features/:searchInput',
@@ -463,8 +440,6 @@ app.get(
                 clusters = sortByFirst(clusters);
                 let x = [];
                 let y = []; 
-                console.log(normCounts)
-                console.log(clusters)
                 for(i = 0; i < Math.min(normCounts.length, clusters.length); i++){
                     if (normCounts[i][0] != clusters[i][0]){
                         console.log("Error: different set of cells in clusters and Normalized count files");
@@ -472,7 +447,12 @@ app.get(
                     }
                     else{
                         x.push(clusters[i][1]);
-                        y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
+                        if(normCounts[i][1] == '-Inf'){
+                          y.push(0)
+                        }
+                        else{
+                          y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
+                        }
                     }
                 }
                 let data = [{
@@ -481,7 +461,6 @@ app.get(
                     y: y,
                     meanline: {visible: true}
                 }]
-                console.log(data);
                 res.send(JSON.stringify(data));
              }
             )

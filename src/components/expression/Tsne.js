@@ -8,6 +8,7 @@ export default class Tsne extends Component{
         this.state = {
             runID : props.runID,
             selectedFeature : props.selectedFeature,
+            hidden: props.hidden,
             clusters : [],
             message: '',
             plotting: false
@@ -46,30 +47,47 @@ export default class Tsne extends Component{
     }
 
     static getDerivedStateFromProps(props, state){
+        let update = {}
         if (props.selectedFeature != state.selectedFeature){
-            return {selectedFeature: props.selectedFeature};
+            update.selectedFeature = props.selectedFeature;
         }
-        else { return null }
+        if (props.hidden != state.hidden){
+            update.hidden = props.hidden;
+        }
+        if (props.runID != state.runID){
+            update.runID = props.runID;
+        }
+
+        // return the updated state or null if no change
+        return Object.keys(update).length ? update : null;
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevState.selectedFeature != this.state.selectedFeature){
-            this.fetchData()
+        if((prevState.selectedFeature != this.state.selectedFeature) || (prevState.runID != this.state.runID)){
+            this.fetchData();
         }
     }
 
     render() {
-        let { clusters, message } = this.state;
+        let { clusters, message, hidden } = this.state;
+        let plotDisplay;
+
+        if (hidden == true){
+            plotDisplay = 'none';
+        }
+        else{
+            plotDisplay = 'inline-block';
+        }
         return (
-            <div>
-            <Plot 
-            data={clusters}
-            layout={{title: 't-SNE', autosize: true}}
-            useResizeHandler={true}
-            style={{width:'100%', height: '90%'}}
-            {...this.props}
-            />
-            <p>{message}</p>
+            <div hidden={hidden} style={{display: plotDisplay}}>
+                <Plot 
+                data={clusters}
+                layout={{title: 't-SNE', autosize: false}}
+                useResizeHandler={false}
+                //style={{width:'100%', height: '90%'}}
+                {...this.props}
+                />
+                <p>{message}</p>
             </div>
         )
     }
