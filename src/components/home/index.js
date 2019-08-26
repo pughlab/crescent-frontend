@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import { Icon, Menu, Dropdown, Header, Segment, Button, Label, Grid, Image, Modal, Divider, Step, Card } from 'semantic-ui-react'
+import { Icon, Input, Menu, Dropdown, Header, Segment, Button, Label, Grid, Image, Modal, Divider, Step, Card } from 'semantic-ui-react'
 
 import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu'
 
@@ -61,6 +61,7 @@ const CWLParamsButton = ({
   const [openModal, setOpenModal] = useState(false)
   const [tool, setTool] = useState('seurat')
   return (
+    <div>
     <Modal size='large'
       open={openModal}
       trigger={
@@ -94,13 +95,15 @@ const CWLParamsButton = ({
         <Button content='Close' onClick={() => setOpenModal(false)} />
       </Modal.Actions>
     </Modal>
+    </div>
   )
 }
 
 
 const VisualizationComponent = ({
   session,
-  currentRunId, setCurrentRunId
+  currentRunId, setCurrentRunId,
+  current
 }) => {
   // PARAMETERS TO SEND TO RPC
   const [singleCell, setSingleCell] = useState('10X')
@@ -121,6 +124,8 @@ const VisualizationComponent = ({
   }, [singleCell, resolution, genes, opacity, principalDimensions, returnThreshold])
   const [loading, setLoading]= useState(false)
   const [result, setResult] = useState(null)
+
+  const [openRunModal, setOpenRunModal]  = useState(false)
 
   useEffect(() => {
     session.subscribe(
@@ -148,46 +153,52 @@ const VisualizationComponent = ({
   
   // Button with method to call WAMP RPC (not pure)
   const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
-  const SubmitButton = () => (
-    <Button
-      content='Submit'
-      icon='cloud upload' labelPosition='right'
-      color='blue'
-      disabled={submitted || loading || notUploaded}
-      // onClick={() => setSubmitted(true)}
-      onClick={() => {
-        fetch(`/submit?kwargs=${JSON.stringify({
-          singleCell,
-          resolution,
-          genes,
-          opacity,
-          principalDimensions,
-          returnThreshold
-        })}`, {method: 'POST'})
-          .then(response => {
-            console.log(response)
-            setLoading(true)
-            setSubmitted(true)
-          })
-        // session.call('crescent.submit', [], {
-        //   singleCell,
-        //   resolution,
-        //   genes,
-        //   opacity,
-        //   principalDimensions,
-        //   returnThreshold
-        // })
-        // && setLoading(true)
-        // && setSubmitted(true)
-      }}
-    />
-  )
+  const SubmitButton = () => {
+    const [runName, setRunName] = useState('')
+    return   (
+      <div>
+        <Button
+          content='Submit'
+          icon='cloud upload' labelPosition='right'
+          color='blue'
+          disabled={submitted || loading || notUploaded}
+          // onClick={() => setSubmitted(true)}
+          onClick={() => setOpenRunModal(true)}
+        />
+        // Modal for entering the run id name
+        <Modal size='small' open={openRunModal}>
+          <Modal.Header>Submit Run</Modal.Header>
+          <Modal.Content>          
+            <Input fluid placeholder='Enter a Run Name' onChange={(e, {value}) => {setRunName(value)}}/>
+          </Modal.Content>
+          <Modal.Actions>
+            <Button content='Close' onClick={() => setOpenRunModal(false)} />
+            <Button primary content='Submit' onClick={() => {
+              console.log(runName);
+              fetch(`/submit?kwargs=${JSON.stringify({
+                singleCell,
+                resolution,
+                genes,
+                opacity,
+                principalDimensions,
+                returnThreshold
+              })}`, {method: 'POST'})
+              .then(response => {
+                  console.log(response)
+                  setLoading(true)
+                  setSubmitted(true)
+                  setOpenRunModal(false)
+              });}}
+             />
+  
+          </Modal.Actions>
+        </Modal>
+      </div>
+    )
+  }
 
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
-
-  console.log("INDEX")
-  console.log(currentRunId);
  
   return (
     <Segment attached='top' style={{height: '90%'}} as={Grid}>
