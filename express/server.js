@@ -104,7 +104,7 @@ connection.onopen = function (session) {
       console.log(req.query)
       // Assign `params` as stringified kwargs
       const {kwargs: params} = req.query
-      const run = await Run.create({params})
+      const run = await Run.create({params, name:'test'})
       // Parse and pass as object of parameters
       const kwargs = JSON.parse(params)
       const {runId} = run
