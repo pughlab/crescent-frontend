@@ -18,7 +18,7 @@ const resolvers = {
       const {runID} = run
       // Note: 'params' word is abused here
       const submit = await axios.post(
-        `/run/submit/${runID}`,
+        `/runs/submit/${runID}`,
         {},
         // This is 'query' in Express
         {params: {name, params}}

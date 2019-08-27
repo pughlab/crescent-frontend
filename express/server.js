@@ -113,7 +113,7 @@ connection.onopen = function (session) {
     }
   )
   app.post(
-    '/run/submit/:runID',
+    '/runs/submit/:runID',
     async (req, res) => {
       const {
         params: {runID},
@@ -218,6 +218,7 @@ connection.onopen = function (session) {
       })
     }
   )
+
 
   app.get(
     '/result',
