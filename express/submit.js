@@ -37,7 +37,7 @@ const makeCWLJobJSON = (
   opacity,
   pca_dimensions: principalDimensions,
   percent_mito: '0,0.2', // v2: 'Inf,0.05',
-  number_genes: '200,8000',
+  number_genes: '50,8000',
   return_threshold: returnThreshold,
 })
 

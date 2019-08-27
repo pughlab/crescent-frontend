@@ -181,7 +181,8 @@ const VisualizationComponent = ({
                 genes,
                 opacity,
                 principalDimensions,
-                returnThreshold
+                returnThreshold,
+                runName
               })}`, {method: 'POST'})
               .then(response => {
                   console.log(response)

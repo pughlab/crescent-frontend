@@ -14,6 +14,7 @@ const multer = require('multer')
 const upload = multer({ dest: '/Users/smohanra/Desktop/crescentMockup/express/tmp/express' })
 // Zip
 const AdmZip = require('adm-zip')
+const jStat = require('jStat');
 
 // MongoDB
 // const db = require('./database')
@@ -28,6 +29,19 @@ const jsonQuery = require('json-query');
 const async = require('async');
 
 const Run = db.model('run')
+
+const colours = [
+  '#1f77b4',  // muted blue
+  '#ff7f0e',  // safety orange
+  '#2ca02c',  // cooked asparagus green
+  '#d62728',  // brick red
+  '#9467bd',  // muted purple
+  '#8c564b',  // chestnut brown
+  '#e377c2',  // raspberry yogurt pink
+  '#7f7f7f',  // middle gray
+  '#bcbd22',  // curry yellow-green
+  '#17becf'   // blue-teal
+]
 
 // Start autobahn connectio to WAMP router and init node server
 connection.onopen = function (session) {
@@ -366,47 +380,23 @@ connection.onopen = function (session) {
   })
 });
 
-
-
-//TODO: finish this
-app.get('/norm-counts/:runID/:feature',
-  (req, res) => {
-    const queryFeature = req.params.feature;
-    const runID = req.params.runID;
-    // extract normalized expression for every barcode
-    fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`, 'utf-8',
-      (err, contents) => {
-        let result = [];
-        if (err) {res.send(err); return;}
-        const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
-        // convert contents to 2d-array
-        features = R.map(R.split("\t"), R.split("\n", contents));
-        barcodes = R.map(unquote, features.shift());
-        let found = false;
-        for (const line of features){
-          if (String(unquote(line[0])) == String(queryFeature)){
-            found = true;
-            // open up the file that categorizes the cells into clusters based on barcode
-            fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`, 'utf-8',
-              (err, clusterFile) => {
-                if (err) {res.send(err); return;}
-                clusters = R.map(R.split("\t"), R.split("\n", clusterFile)); 
-                header = clusters.shift();
-                // ok now we want to knit these 2d arrays together
-                for(cell in clusters){
-
-
-
-                }
-              }
-            )
-          }
-        }
-
-      }
-    )
+const dist = (X) => {
+  var iqr = jStat.percentile(X, 0.75) - jStat.percentile(X, 0.25);
+  var iqrM = iqr /1.34;
+  var std = jStat.stdev(X,true);
+  var min = std < iqrM ? std : iqrM;
+  if(min === 0){
+      min = std
   }
-);
+  if(min === 0){
+      min = Math.abs(X[1])
+  }
+  if(min === 0){
+      min = 1.0
+  }
+  return 0.9 * min * Math.pow(X.length, -0.2)
+}
+
 
 app.get(
   '/expression/:runID/:feature',
@@ -414,7 +404,8 @@ app.get(
     const queryFeature = req.params.feature;
     const runID = req.params.runID;
     // extract normalized expression for every barcode
-    fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_log10_count_matrix.tsv`, 'utf-8',
+    console.log('here')
+    fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`, 'utf-8',
       (err, contents) => {
         let result = [];
         if (err) {res.send(err); return;}
@@ -438,6 +429,26 @@ app.get(
                 const sortByFirst = R.sortBy(R.prop(0));
                 normCounts = sortByFirst(normCounts);
                 clusters = sortByFirst(clusters);
+                // construct a list of the unique clusters
+                let distinctClusters = []
+                let transforms = [{
+                  type: 'groupby',
+                  groups: [],
+                  styles: [{}]
+                }]
+                /*
+                clusters.forEach((c) => {
+                  if (! distinctClusters.includes(c[1])){
+
+                    distinctClusters.push(c[1]);
+                    transforms[0]['groups'].push(c[1])
+                    transforms[0]['styles'].push({target: c[1], value: {line: {color: 'blue'}})
+                  }
+                })
+                */
+                console.log(distinctClusters);
+                console.log(distinctClusters.length);
+
                 let x = [];
                 let y = []; 
                 for(i = 0; i < Math.min(normCounts.length, clusters.length); i++){
@@ -446,17 +457,32 @@ app.get(
                         return
                     }
                     else{
+
                         x.push(clusters[i][1]);
+                        y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
+                        
+                        /*
+                        if(! normcounts[i][1] == '0'){}
+                          y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
+
                         if(normCounts[i][1] == '-Inf'){
                           y.push(0)
                         }
                         else{
                           y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
                         }
+                        */
                     }
                 }
+                let distribution = dist(y);
+                console.log(distribution)
                 let data = [{
                     type: 'violin',
+                    spanmode: "hard",
+                    points: "jitter",
+                    jitter: .85,
+                    bandwidth: distribution,
+                    width: 0.75,
                     x: x,
                     y: y,
                     meanline: {visible: true}
@@ -466,7 +492,10 @@ app.get(
             )
           }
         }
-
+        if (! found) {
+          console.log('Normalized Counts: Feature Not Found')
+          res.send(result)
+        }
       }
     )
 });
@@ -477,7 +506,7 @@ app.get(
       const queryFeature = req.params.feature;
       const runID = req.params.runID;
       // given a feature name, extract the normalized expression for each cell (barcode)
-      fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_log10_count_matrix.tsv`), "utf8", 
+      fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`), "utf8", 
       (err, contents) => {
         let result = [];
         if (err) {res.send(err); return;}
@@ -539,7 +568,7 @@ app.get(
         }
         if (! found){
           // send blank
-          console.log('Feature not found');
+          console.log('Opacity: feature not found');
           res.send(result)
           return
         }
