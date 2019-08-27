@@ -2,103 +2,19 @@ import React, {useState, useEffect} from 'react';
 
 import { Icon, Input, Menu, Dropdown, Header, Segment, Button, Label, Grid, Image, Modal, Divider, Step, Card } from 'semantic-ui-react'
 
-import ClusteringParameterMenu from '../cwl/clustering/parameters/ParametersMenu'
+import { useMutation } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
 
-import NormalizationVisualization from '../cwl/normalization'
-import AlignmentVisualization from '../cwl/alignment'
-import ClusteringVisualization from '../cwl/clustering'
 import Expression from '../expression'
+
+import CWLParamsButton from './ParamsButton'
+import CWLStatusButton from './StatusButton'
+import CWLResultsButton from './ResultsButton'
 
 import UploadModal from './UploadModal'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-
-const CWLResultsButton = ({
-  step,
-  onClick,
-  active
-}) => (
-  <Step onClick={onClick} >
-    <Step.Content title={step} description='Seurat' />
-  </Step>
-)
-
-const CWLStatusButton = ({
-  step
-}) => {
-  const [openModal, setOpenModal] = useState(false)
-  return (
-    <Modal size='large'
-      open={openModal}
-      trigger={
-        <Step onClick={() => setOpenModal(true)}>
-          <Step.Content title={step}  description='Seurat' />
-        </Step>
-      }
-    >
-      <Modal.Header content={`${step} Status`} />
-      <Modal.Content scrolling>
-        STDOUT goes here
-      </Modal.Content>
-      <Modal.Actions>
-          <Button content='Close' onClick={() => setOpenModal(false)} />
-      </Modal.Actions>
-    </Modal>
-  )
-}
-
-const CWLParamsButton = ({
-  step,
-
-  singleCell, setSingleCell,
-  resolution, setResolution,
-  genes, setGenes,
-  opacity, setOpacity,
-  principalDimensions, setPrincipalDimensions,
-  returnThreshold, setReturnThreshold,
-}) => {
-  const [openModal, setOpenModal] = useState(false)
-  const [tool, setTool] = useState('seurat')
-  return (
-    <div>
-    <Modal size='large'
-      open={openModal}
-      trigger={
-        <Step onClick={() => setOpenModal(true)}>
-          <Step.Content title={step} description={'Seurat'} />
-        </Step>
-      }
-    >
-      <Modal.Header>
-        <Dropdown
-          placeholder='Select Friend'
-          fluid
-          selection
-          options={[
-            {key: 'seurat', text: 'Seurat', value:'seurat'}
-          ]}
-          value={tool}
-        />
-      </Modal.Header>
-      <Modal.Content scrolling>
-        <ClusteringParameterMenu
-          singleCell={singleCell} setSingleCell={setSingleCell}
-          resolution={resolution} setResolution={setResolution}
-          genes={genes} setGenes={setGenes}
-          opacity={opacity} setOpacity={setOpacity}
-          principalDimensions={principalDimensions} setPrincipalDimensions={setPrincipalDimensions}
-          returnThreshold={returnThreshold} setReturnThreshold={setReturnThreshold}
-        />
-      </Modal.Content>
-      <Modal.Actions>
-        <Button content='Close' onClick={() => setOpenModal(false)} />
-      </Modal.Actions>
-    </Modal>
-    </div>
-  )
-}
-
 
 const VisualizationComponent = ({
   session,
@@ -116,7 +32,7 @@ const VisualizationComponent = ({
   const [uploadedBarcodesFile, setUploadedBarcodesFile] = useState(null)    
   const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
   const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
-
+  const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
   // Local state for notification the result is done
   const [submitted, setSubmitted] = useState(false)
   useEffect(() => {
@@ -151,12 +67,47 @@ const VisualizationComponent = ({
   }, [currentRunId, visType])
 
   
+
   // Button with method to call WAMP RPC (not pure)
-  const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
+  // Modal for entering the run id name
   const SubmitButton = () => {
     const [runName, setRunName] = useState('')
+    // GraphQL mutation hook to call mutation and use result
+    const [createRun, {loading, data, error}] = useMutation(gql`
+      # mutation AuthenticateUser($email: Email!, $password: String!) {
+      #   authenticateUser(email: $email, password: $password) {
+      #     userID
+      #   }
+      # }
+      mutation SubmitRun($name: String!, $params: String!) {
+        createRun(name: $name, params: $params) {
+          runID
+          name
+          params
+        }
+      }
+    `)
+    useEffect(() => {
+      if (loading) {
+        setLoading(true)
+        setSubmitted(true)
+        setOpenRunModal(false)
+      }
+    }, [loading])
+    useEffect(() => {
+      if (
+        R.both(
+          RA.isNotNilOrEmpty,
+          R.propSatisfies(RA.isNotNil, 'createRun')
+        )(data)
+      ) {
+        console.log(data)
+        setLoading(true)
+        setSubmitted(true)
+      }
+    }, [data])
     return   (
-      <div>
+      <>
         <Button
           content='Submit'
           icon='cloud upload' labelPosition='right'
@@ -165,7 +116,6 @@ const VisualizationComponent = ({
           // onClick={() => setSubmitted(true)}
           onClick={() => setOpenRunModal(true)}
         />
-        // Modal for entering the run id name
         <Modal size='small' open={openRunModal}>
           <Modal.Header>Submit Run</Modal.Header>
           <Modal.Content>          
@@ -173,27 +123,23 @@ const VisualizationComponent = ({
           </Modal.Content>
           <Modal.Actions>
             <Button content='Close' onClick={() => setOpenRunModal(false)} />
-            <Button primary content='Submit' onClick={() => {
-              console.log(runName);
-              fetch(`/submit?kwargs=${JSON.stringify({
-                singleCell,
-                resolution,
-                genes,
-                opacity,
-                principalDimensions,
-                returnThreshold
-              })}`, {method: 'POST'})
-              .then(response => {
-                  console.log(response)
-                  setLoading(true)
-                  setSubmitted(true)
-                  setOpenRunModal(false)
-              });}}
-             />
-  
+            <Button primary content='Submit'
+              onClick={() => {
+                console.log(runName)
+                const params = JSON.stringify({
+                  singleCell,
+                  resolution,
+                  genes,
+                  opacity,
+                  principalDimensions,
+                  returnThreshold                  
+                })
+                createRun({variables: {name: runName, params}})
+              }}
+            />
           </Modal.Actions>
         </Modal>
-      </div>
+      </>
     )
   }
 
