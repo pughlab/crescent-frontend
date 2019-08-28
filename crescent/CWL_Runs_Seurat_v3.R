@@ -546,8 +546,8 @@ seurat.object.f <- NormalizeData(object = seurat.object.f, normalization.method 
 StopWatchEnd$NormalizeData  <- Sys.time()
 
 # output the normalized count matrix for violin plots
-#normalized_count_matrix <- as.matrix(seurat.object.f@assays[["RNA"]]@data)
-#write.table(normalized_count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_normalized_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
+normalized_count_matrix <- as.matrix(seurat.object.f@assays[["RNA"]]@data)
+write.table(normalized_count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_normalized_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
 
 ####################################
 ### Detect, save list and plot variable genes

@@ -15,7 +15,7 @@ const makeCWLJobJSON = (
     principalDimensions,
     returnThreshold
   },
-  runId
+  runID
 ) => ({
   R_script: {
     class: 'File',
@@ -37,17 +37,17 @@ const makeCWLJobJSON = (
   opacity,
   pca_dimensions: principalDimensions,
   percent_mito: '0,0.2', // v2: 'Inf,0.05',
-  number_genes: '200,8000',
+  number_genes: '50,8000',
   return_threshold: returnThreshold,
 })
 
 const submitCWL = (
   kwargs,
   session,
-  runId
+  runID
 ) => {
-  console.log(runId)
-  const jobJSON = makeCWLJobJSON(kwargs, runId)
+  console.log(runID)
+  const jobJSON = makeCWLJobJSON(kwargs, runID)
   // const cwl = spawn(
   //   `cd /Users/smohanra/Documents/crescent/docker-crescent && \
   //     source /Users/smohanra/Documents/crescent/docker-crescent/crescent/bin/activate && \
@@ -64,8 +64,8 @@ const submitCWL = (
   // )
   const cwl = spawn(
     `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
-     mkdir /usr/src/app/results/${runId} && \
-     cd /usr/src/app/results/${runId} && \
+     mkdir /usr/src/app/results/${runID} && \
+     cd /usr/src/app/results/${runID} && \
      rm -f frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
      toil-cwl-runner \
@@ -87,7 +87,7 @@ const submitCWL = (
   })
   cwl.on( 'close', code => {
       console.log( `child process exited with code ${code}` )
-      session.publish('crescent.result', [], {runId})
+      session.publish('crescent.result', [], {runID})
   })
 }
 
