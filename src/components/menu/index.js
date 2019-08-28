@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Menu, Card, Popup, Segment, Button, Grid, Modal, Label, Divider, Icon} from 'semantic-ui-react'
+import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 
@@ -113,13 +113,17 @@ const RunsModal = ({
 
 const MenuComponent = ({
   session,
-  currentRunId, setCurrentRunId
+  currentRunId, setCurrentRunId,
+  currentProjectID
 }) => {
   return (
     <Segment attached='bottom' style={{height: '10%'}} as={Menu} size='huge'>
       <Menu.Item header>
         <CrescentIcon />
         {`CReSCENT`}
+      </Menu.Item>
+      <Menu.Item>
+        <Header size='tiny' content={`Project: ${currentProjectID}`} />
       </Menu.Item>
 
       <Menu.Menu position='right'>

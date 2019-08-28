@@ -1,13 +1,20 @@
 import React, {useState} from 'react'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
+import ProjectSelectModal from './ProjectSelectModal'
 
 const LandingPageComponent = ({
-  setLoggedIn
+  loggedIn, setLoggedIn,
+  setCurrentProjectID
 }) => {
   const [showLogin, setShowLogin] = useState(true)
+
   return (
-    showLogin ? <LoginForm {...{setLoggedIn, setShowLogin}} /> : <RegisterForm setShowLogin={setShowLogin} />
+    loggedIn ?
+      <ProjectSelectModal {...{setCurrentProjectID}} />
+    : showLogin ?
+      <LoginForm {...{setLoggedIn, setShowLogin}} />
+    : <RegisterForm {...{setShowLogin}} />
   )
 }
 
