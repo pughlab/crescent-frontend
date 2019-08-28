@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Menu, Card, Popup, Segment, Button, Grid, Modal, Label, Divider, Icon, Header, Input} from 'semantic-ui-react'
+import {Card, Popup, Segment, Button, Grid, Modal, Label, Divider, Icon, Header, Input, Message} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import faker from 'faker'
@@ -34,7 +34,7 @@ const ProjectCard = ({
 const ProjectSelectModal = ({
   setCurrentProjectID
 }) => {
-  const [projectType, setProjectType] = useState('uploaded') // || 'public' || 'curated'
+  const [projectType, setProjectType] = useState(null) // 'uploaded' || 'public' || 'curated'
   const isActiveProjectType = R.equals(projectType)
 
   const [newProjectName, setNewProjectName] = useState(null) 
@@ -63,6 +63,12 @@ const ProjectSelectModal = ({
         </Button.Group>
       </Modal.Content>
       <Modal.Content scrolling>
+      {
+        R.isNil(projectType) ?
+        <Segment placeholder>
+          <Header textAlign='center' content='Click above to select a project type' />
+        </Segment>
+        :
         <Card.Group itemsPerRow={4}>
         {
           R.map(
@@ -74,8 +80,11 @@ const ProjectSelectModal = ({
           )
         }
         </Card.Group>
+      }
       </Modal.Content>
       <Modal.Actions>
+      {
+        isActiveProjectType('uploaded') &&
         <Input fluid
           action={
             <Button
@@ -86,6 +95,7 @@ const ProjectSelectModal = ({
           placeholder='Enter a project name'
           onChange={(e, {value}) => {setNewProjectName(value)}}
         />
+      }
       </Modal.Actions>
     </Modal>
   )
