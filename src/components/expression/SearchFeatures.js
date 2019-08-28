@@ -13,8 +13,23 @@ export default class SearchFeature extends Component{
             selectedOptions: [],
             value: [],
             message: '',
-            loading: props.loading
+            loading: props.loading,
+            plotOptions: props.plotOptions
         }
+    }
+
+    handleChangePlot = (e, {value}) => {
+        let plotOptions = this.state.plotOptions;
+        plotOptions.forEach((option) => {
+            if(value == option['plot']){
+                option['selected'] = true;
+            }
+            else{
+                option['selected'] = false
+            }
+        })
+        console.log(plotOptions)
+        this.props.callbackFromParent(null, this.state.loading, plotOptions);
     }
 
     handleChange = (e, {value}) => {
@@ -53,9 +68,9 @@ export default class SearchFeature extends Component{
             firstSelection = String(selectedOptions[0]['text']);
         }
         else {
-
+        
         }
-        this.props.callbackFromParent(firstSelection, true);
+        this.props.callbackFromParent(firstSelection, true, this.state.plotOptions); 
         this.render()
     }
 
@@ -69,13 +84,26 @@ export default class SearchFeature extends Component{
     }
 
     render() {
-        let {searchQuery, searchOptions, selectedOptions, value, message, loading } = this.state;
-        
+        let {searchQuery, searchOptions, selectedOptions, value, message, loading, plotOptions } = this.state;
+        let options = [];
+        plotOptions.forEach((option) =>{
+            options.push({key: option['plot'], text: option['plot'], value: option['plot']})
+        })
+       
         return (
             <Grid>    
                 <Grid.Row >                
-                    <Grid.Column width={4}/>
-                    <Grid.Column width={6}>                    
+                    <Grid.Column width={3}/>
+                    <Grid.Column width={2}> 
+                        <Dropdown
+                            fluid
+                            selection
+                            defaultValue={'t-SNE'}
+                            options={options}
+                            onChange={this.handleChangePlot}
+                        />
+                    </Grid.Column>
+                    <Grid.Column width={6}>
                     <Dropdown
                         fluid
                         multiple
@@ -90,10 +118,11 @@ export default class SearchFeature extends Component{
                     />
                     <p style={{paddingLeft: 10, color: 'red'}}>{message}</p>
                     </Grid.Column>
-                    <Grid.Column width={4} textAlign='left'>
+                    <Grid.Column width={3}>
                         <Button size='small' loading={loading} onClick={this.handleApply}>View Expression</Button>
                     </Grid.Column>
-                    <Grid.Column width={4}/>
+
+                    <Grid.Column width={2}/>
                 </Grid.Row>
             </Grid>
         )

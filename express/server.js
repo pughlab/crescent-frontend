@@ -465,14 +465,13 @@ app.get(
                   line: {},
                   points: "jitter",
                   jitter: .85,
-                  //bandwidth: '',
                   width: 0.75,
                   meanline: {visible: true}
                 }
                 // create a violin plotly component for every cluster
                 for(i = 0; i < combined.length; i++){
-                  if (String(combined[i][0]) != currentCluster){
-                    // we're on a new cluster
+                  if (String(combined[i][0]) != currentCluster || i == combined.length-1){
+                      // we're on a new cluster
                       if (currentCluster !== null){
                         // do summary calculations and add the existing cluster's info to the data
                         if (R.sum(R.map(parseFloat, currY)) == 0){currentViolin['type'] = 'box'}       

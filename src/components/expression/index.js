@@ -4,6 +4,8 @@ import Tsne from './Tsne'
 import Violin from './Violin'
 import SearchFeatures from './SearchFeatures'
 
+const R = require('ramda')
+
 export default class Expression extends Component{
     constructor(props){
         super(props);
@@ -12,6 +14,7 @@ export default class Expression extends Component{
             selectedFeature : '',
             loading : false,
             showTsne : true, // toggle this
+            plotOptions: [{plot: 't-SNE', selected: true}, {plot: 'Violin', selected: false}]
         }
     }
 
@@ -19,8 +22,15 @@ export default class Expression extends Component{
         this.setState({showTsne: !this.state.showTsne});
     }
 
-    updateFeature = (newFeature, isLoading) => {
-        this.setState({selectedFeature: newFeature, loading: isLoading});
+    updateVariables = (newFeature, isLoading, plotChange) => {
+        if (newFeature !== null){
+        this.setState({selectedFeature: newFeature, loading: isLoading, plotOptions: plotChange});
+        }
+        else{
+            this.setState({loading: isLoading, plotOptions: plotChange});
+        }
+        console.log('in parent')
+        console.log(this.state)
     }
 
     changeLoading = (isLoading) => {
@@ -36,29 +46,21 @@ export default class Expression extends Component{
 
    
     render() {
-        let {runID, selectedFeature, loading, showTsne} = this.state;
-        let plot, hidden, shown
+        let {runID, selectedFeature, loading, showTsne, plotOptions} = this.state;
+        //let plot //, hidden, shown
 
-        if (showTsne == true){
-            hidden = 'Show Violin';
-            shown = 't-SNE';
-            //plot = <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID }></Tsne>
-        }
-        else{
-            hidden = 'Show t-SNE';
-            shown = 'Violin';
-            //plot = <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID }></Violin>
-        }
+        const hidePlot = plotType => R.compose(
+            R.not,
+            R.prop('selected'),
+            R.find(R.propEq("plot", plotType))
+         )(plotOptions)
+        
         return (
             <div>
-                <Button size='large' animated='vertical' onClick={this.togglePlot}>
-                    <Button.Content hidden>{hidden}</Button.Content>
-                    <Button.Content visible>{shown}</Button.Content>
-                </Button>
                 <div style={{width:'100%', height: '90%', textAlign: 'center'}} >
-                    <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID } hidden={!showTsne}></Tsne>
-                    <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID } hidden={showTsne}></Violin>
-                    <SearchFeatures runID={ runID } loading={ loading } callbackFromParent={this.updateFeature}></SearchFeatures>
+                    <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID } hidden={hidePlot('t-SNE')}></Tsne>
+                    <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID } hidden={hidePlot('Violin')}></Violin>
+                    <SearchFeatures plotOptions={plotOptions} runID={ runID } loading={ loading } callbackFromParent={this.updateVariables}></SearchFeatures>
                 </div>
             </div>
         )
