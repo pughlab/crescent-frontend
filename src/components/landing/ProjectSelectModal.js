@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Menu, Card, Popup, Segment, Button, Grid, Modal, Label, Divider, Icon, Header} from 'semantic-ui-react'
+import {Menu, Card, Popup, Segment, Button, Grid, Modal, Label, Divider, Icon, Header, Input} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import faker from 'faker'
@@ -36,6 +36,8 @@ const ProjectSelectModal = ({
 }) => {
   const [projectType, setProjectType] = useState('uploaded') // || 'public' || 'curated'
   const isActiveProjectType = R.equals(projectType)
+
+  const [newProjectName, setNewProjectName] = useState(null) 
   return (
     <Modal size='fullscreen' dimmer='blurring' open={true}>
       <Modal.Header as={Header} textAlign='center' content="Projects/Datasets" />
@@ -73,6 +75,18 @@ const ProjectSelectModal = ({
         }
         </Card.Group>
       </Modal.Content>
+      <Modal.Actions>
+        <Input fluid
+          action={
+            <Button
+              content='Create new project'
+              onClick={() => console.log('create project', newProjectName)}
+            />
+          }
+          placeholder='Enter a project name'
+          onChange={(e, {value}) => {setNewProjectName(value)}}
+        />
+      </Modal.Actions>
     </Modal>
   )
 }
