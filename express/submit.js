@@ -8,7 +8,7 @@ const { spawn } = require( 'child_process' )
 // Make object to write as CWL job JSON file
 const makeCWLJobJSON = (
   {
-    //singleCell,
+    singleCell,
     resolution,
     genes, // [String]
     opacity,
@@ -29,7 +29,7 @@ const makeCWLJobJSON = (
     // path: '/Users/smohanra/Documents/crescent/docker-crescent/filtered_gene_bc_matrices'
     path: '/Users/smohanra/Desktop/crescentMockup/express/tmp/minio'
   },
-  sc_input_type: 'MTX', // change to singleCell eventually if supporting seurat v2
+  sc_input_type: singleCell, //'MTX', // change to singleCell eventually if supporting seurat v2
   resolution,
   project_id: 'frontend_example_mac_10x_cwl',
   summary_plots: 'n',

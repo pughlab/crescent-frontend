@@ -22,18 +22,18 @@ const SingleCellInputType = ({
 }) => {
     const isActive = R.equals(singleCell)
     const activeColor = singleCell => isActive(singleCell) ? 'blue' : undefined
-    return withMessageAbove('Select type of single cell experiment')(
+    return withMessageAbove('Select type of single cell input')(
         <Button.Group fluid size='large'>
-            <Button content='DropSeq'
-                color={activeColor('DropSeq')}
-                active={isActive('DropSeq')}
-                onClick={() => setSingleCell('DropSeq')}
+            <Button content='DGE'
+                color={activeColor('DGE')}
+                active={isActive('DGE')}
+                onClick={() => setSingleCell('DGE')}
             />
             <Button.Or />
-            <Button content='10X'
-                color={activeColor('10X')}
-                active={isActive('10X')}
-                onClick={() => setSingleCell('10X')}
+            <Button content='MTX'
+                color={activeColor('MTX')}
+                active={isActive('MTX')}
+                onClick={() => setSingleCell('MTX')}
             />
         </Button.Group>
     )
@@ -42,22 +42,11 @@ const SingleCellInputType = ({
 const Resolution = ({
     resolution, setResolution
 }) => {
-    const isActive = R.equals(resolution)
-    const activeColor = resolution => isActive(resolution) ? 'blue' : undefined
-    return withMessageAbove('Select clustering resolution')(
-        <Button.Group fluid size='large' widths={11}
-            content={
-                R.map(
-                    num => (
-                        <Button key={`${num}`} content={num}
-                            color={activeColor(num)}
-                            active={isActive(num)}
-                            onClick={() => setResolution(num)}
-                        />
-                    ),
-                    R.range(0,11)
-                )
-            }
+    return withMessageAbove('Set clustering resolution')(
+        <RangeSlider
+            step={0.1} min={0.1} max={2.5}
+            value={resolution}
+            onChange={values => setResolution(R.head(values))}
         />
     )
 }
@@ -184,22 +173,11 @@ const Opacity = ({
 const PCADimensions = ({
     principalDimensions, setPrincipalDimensions
 }) => {
-    const isActive = R.equals(principalDimensions)
-    const activeColor = dim => isActive(dim) ? 'blue' : undefined
-    return withMessageAbove('Number of principal component analysis dimensions')(
-        <Button.Group fluid size='large' widths={11}
-            content={
-                R.map(
-                    num => (
-                        <Button key={num} content={num}
-                            color={activeColor(num)}
-                            active={isActive(num)}
-                            onClick={() => setPrincipalDimensions(num)}
-                        />
-                    ),
-                    R.range(0,11)
-                )
-            }
+    return withMessageAbove('Number of dimensions for principal component analysis')(
+        <RangeSlider
+            step={1} min={1} max={50}
+            value={principalDimensions}
+            onChange={values => setPrincipalDimensions(R.head(values))}
         />
     )
 }
@@ -231,21 +209,21 @@ const PARAMETERS = [
         'Clustering Resolution',
     ),
     makeParameter(
-        'gene_list',
-        'Genes of Interest',
-    ),
-    makeParameter(
-        'opacity',
-        'Opacity',
-    ),
-    makeParameter(
         'pca_dimensions',
         'PCA Dimensions',
-    ),
-    makeParameter(
-        'return_threshold',
-        'Return Threshold'
     )
+    // makeParameter(
+    //     'return_threshold',
+    //     'Return Threshold'
+    // ),
+    // makeParameter(
+    //     'opacity',
+    //     'Opacity',
+    // ),
+    // makeParameter(
+    //     'gene_list',
+    //     'Genes of Interest',
+    // )
     // makeParameter('project_id', 'Unique name for your project'),
     // makeParameter('mitochondrial_percentage', ''),
     // makeParameter('number_of_genes', 'Approximate number of genes'),

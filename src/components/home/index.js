@@ -103,7 +103,7 @@ const VisualizationComponent = ({
   currentRunId, setCurrentRunId
 }) => {
   // PARAMETERS TO SEND TO RPC
-  const [singleCell, setSingleCell] = useState('10X')
+  const [singleCell, setSingleCell] = useState('MTX')
   const [resolution, setResolution] = useState(1)
   const [genes, setGenes] = useState(['MALAT1', 'GAPDH'])
   const [opacity, setOpacity] = useState(0.1)
@@ -244,7 +244,7 @@ const VisualizationComponent = ({
                   : null
                 ),
                 [
-                  // {step: 'QC/Alignment'},
+                  {step: 'Quality Control', visType: 'qc'},
                   {step: 'Normalization', visType: null},
                   {step: 'Dimension Reduction', visType: 'pca'},
                   {step: 'Cell Clustering', visType: 'tsne'},
