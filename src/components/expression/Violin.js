@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Grid } from 'semantic-ui-react'
+import { Grid, Header } from 'semantic-ui-react'
 import Plot from 'react-plotly.js'
 
 
@@ -22,10 +22,15 @@ export default class Violin extends Component{
             fetch(`/expression/${runID}/${feature}`)
             .then(resp => resp.json(resp))
             .then(data => {
-                this.setState({expressionData: data, message: ''})
+                if (data.length > 0){
+                    this.setState({expressionData: data, message: 'Expression for ' + String(feature)});
+                }
+                else {
+                    this.setState({expressionData: data, message: 'No Expression for '+ String(feature)});
+                }
                 this.render();
                 this.props.callbackFromParent(false);
-           })
+            })
         }
         else{
             this.setState({message: "Select a Feature"})
@@ -73,10 +78,15 @@ export default class Violin extends Component{
 
         return (
             <div hidden={hidden} style={{display: plotDisplay}}>
-                <p>{message}</p>
                 <Plot
+                    useResizeHandler={true}
                     data={expressionData}
-                    layout={{yaxis:{zeroline: false}}}
+                    layout={{
+                        title: message, 
+                        titlefont: {family: "Lato,sans-serif"}, 
+                        yaxis:{zeroline: false, title: 'Normalized Expression'}, 
+                        xaxis:{tickmode: 'linear', title: 'Clusters'}
+                    }}
                 />
             </div>
         )
