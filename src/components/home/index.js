@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 
 import { Icon, Input, Menu, Dropdown, Header, Segment, Button, Label, Grid, Image, Modal, Divider, Step, Card } from 'semantic-ui-react'
 
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 
 import Expression from '../expression'
@@ -74,11 +74,6 @@ const VisualizationComponent = ({
     const [runName, setRunName] = useState('')
     // GraphQL mutation hook to call mutation and use result
     const [createRun, {loading, data, error}] = useMutation(gql`
-      # mutation AuthenticateUser($email: Email!, $password: String!) {
-      #   authenticateUser(email: $email, password: $password) {
-      #     userID
-      #   }
-      # }
       mutation SubmitRun($name: String!, $params: String!) {
         createRun(name: $name, params: $params) {
           runID
@@ -146,18 +141,44 @@ const VisualizationComponent = ({
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
  
+  const RunHeader = () => {
+    const {loading: queryLoading, data, error} = useQuery(gql`
+      query RunDetails($runID: ID!) {
+        run(runID: $runID) {
+          runID
+          name
+        }
+      }
+    `, {
+      variables: {runID: currentRunId},
+      skip: R.isNil(currentRunId)
+    })
+    return (
+      <Header block 
+        content={
+          RA.isNotNilOrEmpty(data) ? `Run Name: ${R.path(['run','name'], data)} (${R.path(['run','runID'], data)})`
+          // RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
+          : R.or(loading, queryLoading) ? 'Processing...'
+          : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
+          : ''
+        }
+      />
+    )
+
+  }
   return (
     <Segment attached='top' style={{height: '90%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
       <Segment basic loading={loading} style={{height: '100%'}}>
-      <Header block 
+      <RunHeader />
+      {/* <Header block 
         content={
           RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
           : loading ? 'Processing...'
           : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
           : ''
         }
-      />
+      /> */}
       {
         RA.isNotNil(result) && isActiveToggle('results') ?
         isCurrentVisType('tsne') ? <Expression parentcurrentRunId={currentRunId}></Expression>
