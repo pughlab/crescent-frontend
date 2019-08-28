@@ -76,7 +76,7 @@ const LoginForm = ({
               <Card fluid>
                 <Image src={Logo} size='tiny' wrapped ui={false} />
                 <Card.Content>
-                  <Card.Header content='CReSCENT: The CanceR Single Cell ExpressioN Toolkit' />
+                  <Card.Header content='CReSCENT: CanceR Single Cell ExpressioN Toolkit' />
                   <Divider/>
                   <Form.Input
                     fluid icon='user' iconPosition='left'
