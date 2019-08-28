@@ -17,10 +17,17 @@ const App = ({
   const [currentRunId, setCurrentRunId] = useState(null)
   const [loggedIn, setLoggedIn] = useState(false)
   const [currentProjectID, setCurrentProjectID] = useState(null)
+  const [userID, setUserID] = useState(null)
   return (
       // loggedIn ?
       R.isNil(currentProjectID) ?
-      <LandingComponent {...{loggedIn, setLoggedIn, setCurrentProjectID}} /> :
+      <LandingComponent
+        {...{
+          userID, setUserID,
+          loggedIn, setLoggedIn,
+          setCurrentProjectID
+        }}
+      /> :
       <Segment style={{height: '100%'}}>
         <VisualizationComponent
           {...{
@@ -31,8 +38,8 @@ const App = ({
         <MenuComponent
           {...{
             session,
-            currentRunId,
-            setCurrentRunId,
+            userID, setUserID,
+            currentRunId, setCurrentRunId,
             currentProjectID
           }}
         />

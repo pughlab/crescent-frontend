@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
 
 import {Card, Popup, Segment, Button, Grid, Modal, Label, Divider, Icon, Header, Input, Message} from 'semantic-ui-react'
-
+import { useMutation } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 import faker from 'faker'
 
 const ProjectCard = ({
@@ -32,12 +34,36 @@ const ProjectCard = ({
 }
 
 const ProjectSelectModal = ({
-  setCurrentProjectID
+  setCurrentProjectID,
+  userID
 }) => {
+  console.log(userID)
   const [projectType, setProjectType] = useState(null) // 'uploaded' || 'public' || 'curated'
   const isActiveProjectType = R.equals(projectType)
 
-  const [newProjectName, setNewProjectName] = useState(null) 
+  const [newProjectName, setNewProjectName] = useState(null)
+
+  // GQL mutation to create a project
+  const [createProject, {loading, data, error}] = useMutation(gql`
+    mutation CreateProject($userID: ID!) {
+      createProject(userID: $userID) {
+        projectID
+      }
+    }
+  `)
+  // On successful project creation, set currentProjectID
+  useEffect(() => {
+    console.log(data)
+    if (
+      R.both(
+        RA.isNotNilOrEmpty,
+        R.propSatisfies(RA.isNotNil, 'createProject')
+      )(data)
+    ) {
+      setCurrentProjectID(R.path(['createProject','projectID'], data))
+    }
+  }, [data])
+  console.log('createProject', data)
   return (
     <Modal size='fullscreen' dimmer='blurring' open={true}>
       <Modal.Header as={Header} textAlign='center' content="Projects/Datasets" />
@@ -69,10 +95,10 @@ const ProjectSelectModal = ({
           <Header textAlign='center' content='Click above to select a project type' />
         </Segment>
         :
-        <Card.Group itemsPerRow={4}>
+        <Card.Group itemsPerRow={3}>
         {
           R.map(
-            project => <ProjectCard {...{project, setCurrentProjectID}} />,
+            project => <ProjectCard key={R.prop('projectID', project)} {...{project, setCurrentProjectID}} />,
             R.times(
               () => ({projectID: faker.random.uuid(), name: faker.random.word()}),
               20
@@ -89,7 +115,10 @@ const ProjectSelectModal = ({
           action={
             <Button
               content='Create new project'
-              onClick={() => console.log('create project', newProjectName)}
+              onClick={() => {
+                console.log('create project', newProjectName)
+                createProject({variables: {userID}})
+              }}
             />
           }
           placeholder='Enter a project name'
