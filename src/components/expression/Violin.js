@@ -22,8 +22,6 @@ export default class Violin extends Component{
             fetch(`/expression/${runID}/${feature}`)
             .then(resp => resp.json(resp))
             .then(data => {
-                console.log('within violin')
-                console.log(data);
                 if (data.length > 0){
                     this.setState({expressionData: data, message: 'Expression for ' + String(feature)});
                 }
@@ -80,10 +78,15 @@ export default class Violin extends Component{
 
         return (
             <div hidden={hidden} style={{display: plotDisplay}}>
-                <Header as='h3'>{message}</Header>
                 <Plot
+                    useResizeHandler={true}
                     data={expressionData}
-                    layout={{yaxis:{zeroline: false}}}
+                    layout={{
+                        title: message, 
+                        titlefont: {family: "Lato,sans-serif"}, 
+                        yaxis:{zeroline: false, title: 'Normalized Expression'}, 
+                        xaxis:{tickmode: 'linear', title: 'Clusters'}
+                    }}
                 />
             </div>
         )

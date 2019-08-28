@@ -354,7 +354,7 @@ connection.onopen = function (session) {
                       labels.shift(); // discard header
                       coords.forEach((barcode) => {
                           let idx = labels.find(k => k[0]==barcode[0])
-                          barcode_cluster = "cluster_" + String(idx[1]);
+                          barcode_cluster = String(idx[1]);
                           if(barcode_cluster in cluster_dict){
                               // append existing cluster with coords
                               cluster_dict[barcode_cluster]['x'].push(parseFloat(barcode[1]));
@@ -380,6 +380,8 @@ connection.onopen = function (session) {
   })
 });
 
+// from the broad single cell github: 
+// https://github.com/broadinstitute/single_cell_portal_core/blob/f70d2053cd1767968cbcc0e31c4250d185a98942/app/assets/javascripts/kernel-functions.js
 const dist = (X) => {
   var iqr = jStat.percentile(X, 0.75) - jStat.percentile(X, 0.25);
   var iqrM = iqr /1.34;
@@ -404,7 +406,6 @@ app.get(
     const queryFeature = req.params.feature;
     const runID = req.params.runID;
     // extract normalized expression for every barcode
-    console.log('here')
     fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`, 'utf-8',
       (err, contents) => {
         let result = [];
@@ -418,75 +419,69 @@ app.get(
           if (String(unquote(line[0])) == String(queryFeature)){
             found = true;
             // zip the barcodes with the feature line
-            normCounts = R.zip(barcodes, line.slice(1));
+            let normCounts = R.zip(barcodes, line.slice(1));
             // open up the file that categorizes the cells into clusters based on barcode
             fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`, 'utf-8',
               (err, clusterFile) => {
                 if (err) {res.send(err); return;}
                 // put into 2d array (remove trailing newline)
-                clusters = R.map(R.split("\t"), R.split("\n", clusterFile.slice(0,-1))); 
+                let clusters = R.map(R.split("\t"), R.split("\n", clusterFile.slice(0,-1))); 
                 headers = clusters.shift();
                 const sortByFirst = R.sortBy(R.prop(0));
                 normCounts = sortByFirst(normCounts);
                 clusters = sortByFirst(clusters);
-                // construct a list of the unique clusters
-                let distinctClusters = []
-                let transforms = [{
-                  type: 'groupby',
-                  groups: [],
-                  styles: [{}]
-                }]
-                /*
-                clusters.forEach((c) => {
-                  if (! distinctClusters.includes(c[1])){
-
-                    distinctClusters.push(c[1]);
-                    transforms[0]['groups'].push(c[1])
-                    transforms[0]['styles'].push({target: c[1], value: {line: {color: 'blue'}})
-                  }
-                })
-                */
-                console.log(distinctClusters);
-                console.log(distinctClusters.length);
-
-                let x = [];
-                let y = []; 
-                for(i = 0; i < Math.min(normCounts.length, clusters.length); i++){
-                    if (normCounts[i][0] != clusters[i][0]){
-                        console.log("Error: different set of cells in clusters and Normalized count files");
-                        return
-                    }
-                    else{
-
-                        x.push(clusters[i][1]);
-                        y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
-                        
-                        /*
-                        if(! normcounts[i][1] == '0'){}
-                          y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
-
-                        if(normCounts[i][1] == '-Inf'){
-                          y.push(0)
-                        }
-                        else{
-                          y.push(+(parseFloat(normCounts[i][1]).toFixed(2)));
-                        }
-                        */
-                    }
+                // TODO: before combining, add a check
+                const combine = (left, right) => {return [right[1], left[0], left[1]]}
+                // this will create a 2d array with the cluster, barcode, and normalized counts
+                let combined = R.zipWith(combine, normCounts, clusters);
+                combined = sortByFirst(combined); // sort by cluster
+                let data = [];
+                // initialize counters
+                let currentCluster = null;
+                let currentViolin = {};
+                let colourIter = -1;
+                let currX = [];
+                let currY = [];
+                let template = {
+                  name: '',
+                  type: 'violin',
+                  spanmode: "hard",
+                  fillcolor: '',
+                  line: {},
+                  points: "jitter",
+                  jitter: .85,
+                  //bandwidth: '',
+                  width: 0.75,
+                  meanline: {visible: true}
                 }
-                let distribution = dist(y);
-                console.log(distribution)
-                let data = [{
-                    type: 'violin',
-                    spanmode: "hard",
-                    points: "jitter",
-                    jitter: .85,
-                    bandwidth: distribution,
-                    width: 0.75,
-                    x: x,
-                    y: y,
-                    meanline: {visible: true}
-                }]
+                // create a violin plotly component for every cluster
+                for(i = 0; i < combined.length; i++){
+                  if (String(combined[i][0]) != currentCluster){
+                    // we're on a new cluster
+                      if (currentCluster !== null){
+                        // do summary calculations and add the existing cluster's info to the data
+                        if (R.sum(R.map(parseFloat, currY)) == 0){currentViolin['type'] = 'box'}       
+                        else{currentViolin['bandwidth'] = dist(currY);}
+                        currentViolin['x'] = currX;
+                        currentViolin['y'] = currY;
+                        data.push(currentViolin);
+                    }
+                    // start a new blank plot element for this cluster
+                    currentCluster = String(combined[i][0])
+                    currentViolin = {...template}; // copy the template
+                    colourIter++;
+                    currentViolin['name'] = currentCluster;
+                    //currentViolin['fillcolor'] = colours[colourIter%10]; // there are 10 default colours
+                    currentViolin['line'] = {color: colours[colourIter%10]}
+                    currX = [currentCluster];
+                    currY = [combined[i][2]];
+                  }
+                  // same cluster, just add the data values
+                  else{
+                    currX.push(currentCluster);
+                    currY.push(combined[i][2]);
+                  }
+                }
                 res.send(JSON.stringify(data));
              }
             )
