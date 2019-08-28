@@ -23,7 +23,8 @@ const LoginValidationSchema = Yup.object().shape({
 
 const LoginForm = ({
   setLoggedIn, //For navigating to portal on success
-  setShowLogin //For toggling to registration
+  setShowLogin, //For toggling to registration
+  setUserID
 }) => {
   // GraphQL mutation hook to call mutation and use result
   const [authenticateUser, {loading, data, error}] = useMutation(gql`
@@ -42,6 +43,7 @@ const LoginForm = ({
         R.propSatisfies(RA.isNotNil, 'authenticateUser')
       )(data)
     ) {
+      setUserID(R.path(['authenticateUser','userID'], data))
       setLoggedIn(true)
     }
   }, [data])
