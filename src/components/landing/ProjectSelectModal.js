@@ -34,7 +34,7 @@ const ProjectCard = ({
 }
 
 const ProjectSelectModal = ({
-  setCurrentProjectID,
+  currentProjectID, setCurrentProjectID,
   userID
 }) => {
   console.log(userID)
@@ -65,7 +65,9 @@ const ProjectSelectModal = ({
   }, [data])
   console.log('createProject', data)
   return (
-    <Modal size='fullscreen' dimmer='blurring' open={true}>
+    <Modal size='fullscreen' dimmer='blurring'
+      open={R.isNil(currentProjectID)}
+    >
       <Modal.Header as={Header} textAlign='center' content="Projects/Datasets" />
       <Modal.Content>
         <Button.Group fluid widths={3}>

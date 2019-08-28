@@ -6,13 +6,13 @@ import ProjectSelectModal from './ProjectSelectModal'
 const LandingPageComponent = ({
   userID, setUserID,
   loggedIn, setLoggedIn,
-  setCurrentProjectID
+  currentProjectID, setCurrentProjectID,
 }) => {
   const [showLogin, setShowLogin] = useState(true)
 
   return (
     loggedIn ?
-      <ProjectSelectModal {...{setCurrentProjectID, userID}} />
+      <ProjectSelectModal {...{currentProjectID, setCurrentProjectID, userID}} />
     : showLogin ?
       <LoginForm {...{setLoggedIn, setShowLogin, setUserID}} />
     : <RegisterForm {...{setShowLogin}} />

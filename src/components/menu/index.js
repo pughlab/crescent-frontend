@@ -4,6 +4,8 @@ import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon} 
 
 import * as R from 'ramda'
 
+import ProjectSelectModal from '../landing/ProjectSelectModal'
+
 const CrescentIcon = () => (
   <Icon.Group style={{marginTop: -3}} >
     <Icon name='cloud' size='big'  />
@@ -13,7 +15,7 @@ const CrescentIcon = () => (
 
 const RunsModal = ({
   session,
-  currentRunId, setCurrentRunId
+  currentRunId, setCurrentRunId,
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const [runs, setRuns] = useState([])
@@ -114,16 +116,14 @@ const RunsModal = ({
 const MenuComponent = ({
   session,
   currentRunId, setCurrentRunId,
-  currentProjectID
+  currentProjectID, setCurrentProjectID,
+  userID
 }) => {
   return (
     <Segment attached='bottom' style={{height: '10%'}} as={Menu} size='huge'>
       <Menu.Item header>
         <CrescentIcon />
-        {`CReSCENT`}
-      </Menu.Item>
-      <Menu.Item>
-        <Header size='tiny' content={`Project: ${currentProjectID}`} />
+        {'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'}
       </Menu.Item>
 
       <Menu.Menu position='right'>
@@ -131,6 +131,10 @@ const MenuComponent = ({
           session={session}
           currentRunId={currentRunId} setCurrentRunId={setCurrentRunId}
         />
+        <Menu.Item onClick={() => setCurrentProjectID(null)}>
+          {'Projects'}
+          <ProjectSelectModal  {...{currentProjectID, setCurrentProjectID, userID}} />
+        </Menu.Item>
       </Menu.Menu>
     </Segment>
   )

@@ -19,7 +19,7 @@ import * as RA from 'ramda-adjunct'
 const VisualizationComponent = ({
   session,
   currentRunId, setCurrentRunId,
-  current
+  currentProjectID
 }) => {
   // PARAMETERS TO SEND TO RPC
   const [singleCell, setSingleCell] = useState('10X')
@@ -141,7 +141,7 @@ const VisualizationComponent = ({
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
  
-  const RunHeader = () => {
+  const VisHeader = () => {
     const {loading: queryLoading, data, error} = useQuery(gql`
       query RunDetails($runID: ID!) {
         run(runID: $runID) {
@@ -153,16 +153,26 @@ const VisualizationComponent = ({
       variables: {runID: currentRunId},
       skip: R.isNil(currentRunId)
     })
-    return (
-      <Header block 
-        content={
-          RA.isNotNilOrEmpty(data) ? `Run Name: ${R.path(['run','name'], data)} (${R.path(['run','runID'], data)})`
-          // RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
-          : R.or(loading, queryLoading) ? 'Processing...'
-          : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
-          : ''
-        }
-      />
+    return ( 
+      <Header block>
+        <Header.Content>
+          {`Project: ${currentProjectID}`}
+          {
+            RA.isNotNilOrEmpty(data) &&
+            <Header.Subheader content={`Run Name: ${R.path(['run','name'], data)} (${R.path(['run','runID'], data)})`} />
+          }
+        </Header.Content>
+      </Header>
+      // :
+      // <Header block 
+      //   content={
+      //     // RA.isNotNilOrEmpty(data) ? 
+      //     // RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
+      //     R.or(loading, queryLoading) ? 'Processing...'
+      //     : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
+      //     : ''
+      //   }
+      // />
     )
 
   }
@@ -170,7 +180,7 @@ const VisualizationComponent = ({
     <Segment attached='top' style={{height: '90%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
       <Segment basic loading={loading} style={{height: '100%'}}>
-      <RunHeader />
+      <VisHeader />
       {/* <Header block 
         content={
           RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`

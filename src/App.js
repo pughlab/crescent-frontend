@@ -25,14 +25,15 @@ const App = ({
         {...{
           userID, setUserID,
           loggedIn, setLoggedIn,
-          setCurrentProjectID
+          currentProjectID, setCurrentProjectID
         }}
       /> :
       <Segment style={{height: '100%'}}>
         <VisualizationComponent
           {...{
             session,
-            currentRunId, setCurrentRunId
+            currentRunId, setCurrentRunId,
+            currentProjectID
           }}
         />
         <MenuComponent
@@ -40,7 +41,7 @@ const App = ({
             session,
             userID, setUserID,
             currentRunId, setCurrentRunId,
-            currentProjectID
+            currentProjectID, setCurrentProjectID
           }}
         />
       </Segment>
