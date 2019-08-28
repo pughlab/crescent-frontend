@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const RunSchema = new mongoose.Schema({
   // TODO: remove this
-  runId: {
+  runID: {
     type: mongoose.Schema.Types.ObjectId,
     auto: true
   },

@@ -46,10 +46,10 @@ const VisualizationComponent = ({
   useEffect(() => {
     session.subscribe(
       'crescent.result',
-      (args, {runId}) => {
+      (args, {runID}) => {
         console.log('crescent.result')
         setActiveToggle('results')
-        setCurrentRunId(runId)
+        setCurrentRunId(runID)
         setLoading(false)
         setSubmitted(false)
       }
@@ -60,7 +60,7 @@ const VisualizationComponent = ({
   const isCurrentVisType = R.equals(visType)
   useEffect(() => {
     RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
-    && fetch(`/result?runId=${currentRunId}&visType=${visType}`)
+    && fetch(`/result?runID=${currentRunId}&visType=${visType}`)
       .then(response => response.blob())
       .then(R.compose(setResult, URL.createObjectURL))
     && setLoading(false)
@@ -242,7 +242,7 @@ const VisualizationComponent = ({
           <Button fluid attached='bottom' size='big' color='violet' icon='download' content='Download'
             disabled={R.isNil(currentRunId)}
             as='a'
-            href={`/download?runId=${currentRunId}`}
+            href={`/download?runID=${currentRunId}`}
             download
           />
           : null

@@ -66,8 +66,8 @@ connection.onopen = function (session) {
   //         (err, run) => {
   //           if (err) {console.log(err)}
   //           // console.log(run)
-  //           const {runId} = run
-  //           submitCWL(kwargs, session, runId)
+  //           const {runID} = run
+  //           submitCWL(kwargs, session, runID)
   //           d.resolve(run)
   //         }
   //       )
@@ -107,8 +107,8 @@ connection.onopen = function (session) {
       const run = await Run.create({params, name:'test'})
       // Parse and pass as object of parameters
       const kwargs = JSON.parse(params)
-      const {runId} = run
-      submitCWL(kwargs, session, runId)
+      const {runID} = run
+      submitCWL(kwargs, session, runID)
       res.sendStatus(200)
     }
   )
@@ -223,18 +223,18 @@ connection.onopen = function (session) {
   app.get(
     '/result',
     (req, res) => {
-      const { runId, visType } = req.query
+      const { runID, visType } = req.query
       if (visType == 'tsne'){
         res.json('unavailable'); // blank response to prevent error
       }
-      Run.findOne({ runId }, (err, run) => {
+      Run.findOne({ runID }, (err, run) => {
         if (err) { console.log(err) }
         console.log(run)
-        const { runId, params } = run
+        const { runID, params } = run
         const { resolution } = JSON.parse(params)
-        console.log(runId, resolution)
-	//const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`
-        const runPath = `/usr/src/app/results/${runId}/SEURAT` 
+        console.log(runID, resolution)
+	//const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runID}/SEURAT`
+        const runPath = `/usr/src/app/results/${runID}/SEURAT` 
         const vis = R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : null
         const file = `frontend_example_mac_10x_cwl.${vis}.png`
         res.sendFile(`${runPath}/${file}`)
@@ -246,14 +246,14 @@ connection.onopen = function (session) {
     '/download',
     (req, res) => {
       console.log(req.query)
-      const { runId } = req.query
+      const { runID } = req.query
       const zip = new AdmZip()
-      //zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runId}/SEURAT`)
+      //zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runID}/SEURAT`)
       //zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
-      //res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
-      zip.addLocalFolder(`/usr/src/app/results/${runId}/SEURAT`)
+      //res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runID}.zip`)
+      zip.addLocalFolder(`/usr/src/app/results/${runID}/SEURAT`)
       zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
-      res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runId}.zip`)
+      res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runID}.zip`)
     }
   )
 
@@ -336,17 +336,17 @@ connection.onopen = function (session) {
   app.get(
     '/tsne/:runID', 
     (req, res) => {
-    const runId = req.params.runID
+    const runID = req.params.runID
     const readFiles = (callback) => {
       let cell_clusters = [] // store list of clusters with the coordinates of the cells
-      fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {
+      fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {
           if (err) {res.send(err);}
           else{
               // put coords into 2d array
               let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
               coords.shift(); // discard header
               // read in other file
-              fs.readFile(path.resolve(`/usr/src/app/results/${runId}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`), "utf-8", (err, contents) => {
+              fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`), "utf-8", (err, contents) => {
                   if (err) {res.send(err);}
                   else{
                       // put the cell cluster labels into an object
@@ -377,7 +377,7 @@ connection.onopen = function (session) {
   cell_clusters = readFiles((data) => {
     // send and then write for future use
     res.send(JSON.stringify(data)); 
-    fs.writeFile(`/usr/src/app/results/${runId}/clusters.json`, JSON.stringify(data), 'utf8', (err) => console.log(err))
+    fs.writeFile(`/usr/src/app/results/${runID}/clusters.json`, JSON.stringify(data), 'utf8', (err) => console.log(err))
   })
 });
 

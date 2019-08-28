@@ -39,10 +39,10 @@ const RunsModal = ({
         <Card.Group itemsPerRow={3}>
         {
           R.map(
-            ({runId, params}) => (
-              <Card key={runId} link>
+            ({runID, params}) => (
+              <Card key={runID} link>
                 <Card.Content>
-                  <Card.Header content={runId} />
+                  <Card.Header content={runID} />
                   <Card.Description>
                     {
                       R.compose(
@@ -84,13 +84,13 @@ const RunsModal = ({
                   <Button.Group fluid widths={2} color='violet' size='large'>
                     <Button icon='download' content='Download' labelPosition='left'
                       as='a'
-                      href={`/download?runId=${runId}`}
+                      href={`/download?runID=${runID}`}
                       download
                     />
                     <Button.Or />
                     <Button icon='eye' content='View' labelPosition='right'
                       onClick={() => {
-                          setCurrentRunId(runId)
+                          setCurrentRunId(runID)
                           setOpenModal(false)
                         }
                       }
