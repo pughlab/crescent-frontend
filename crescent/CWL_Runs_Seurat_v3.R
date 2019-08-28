@@ -484,8 +484,11 @@ bottom_row<-plot_grid(nFeature_RNA.plot, nCount_RNA.plot, percent.mito.plot, per
 
 ### Create a *pdf file with the violin ggplot's
 
-VlnPlotPdf<-paste(Tempdir,"/",PrefixOutfiles,".SEURAT_QC_VlnPlot.pdf", sep="")
-pdf(file=VlnPlotPdf, width = 12, height = 7)
+#VlnPlotPdf<-paste(Tempdir,"/",PrefixOutfiles,".SEURAT_QC_VlnPlot.pdf", sep="")
+#pdf(file=VlnPlotPdf, width = 12, height = 7)
+VlnPlotPdf<-paste(Tempdir,"/",PrefixOutfiles,".SEURAT_QC_VlnPlot.png", sep="")
+png(file=VlnPlotPdf, width = 1000, height = 1000, units = "px")
+
 print(plot_grid(Headers.plot, bottom_row, ncol = 1, rel_heights = c(0.2,1)))
 dev.off()
 
@@ -623,7 +626,7 @@ StopWatchStart$GetSignificantPCs  <- Sys.time()
 ### NOTE: JackStraw() process can take a long time for big datasets
 ### More approximate techniques such PCElbowPlot() can be used to reduce computation time
 
-png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_PCElbowPlot.png", sep=""))
+png(file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_PCElbowPlot.png", sep=""), width = 700, height = 700, units = "px")
 print(ElbowPlot(object = seurat.object.f))
 dev.off()
 
