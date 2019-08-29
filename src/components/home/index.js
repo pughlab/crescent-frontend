@@ -16,6 +16,54 @@ import UploadModal from './UploadModal'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
+const VisHeader = ({
+  currentProjectID, currentRunId
+}) => {
+  const {loading: projectLoading, data: projectData} = useQuery(gql`
+    query ProjectDetails($projectID: ID!) {
+      project(projectID: $projectID) {
+        projectID
+        name
+      }
+    }
+  `, {
+    variables: {projectID: currentProjectID}
+  })
+  const {loading: runLoading, data: runData} = useQuery(gql`
+    query RunDetails($runID: ID!) {
+      run(runID: $runID) {
+        runID
+        name
+      }
+    }
+  `, {
+    variables: {runID: currentRunId},
+    skip: R.isNil(currentRunId)
+  })
+  const isDataReturned = (query, data) => R.both(
+    RA.isNotNilOrEmpty,
+    R.propSatisfies(RA.isNotNil, query)
+  )(data)
+  console.log(runData, projectData, 'data')
+  return ( 
+    <Header block>
+      <Header.Content>
+        {
+          isDataReturned('project', projectData) &&
+          `${R.path(['project','name'], projectData)} (ID ${R.path(['project','name'], projectData)})`
+        }
+        {
+         isDataReturned('run', runData) &&
+          <Header.Subheader
+            content={`${R.path(['run','name'], runData)} (ID ${R.path(['run','runID'], runData)})`}
+          /> 
+        }
+      </Header.Content>
+    </Header>
+  )
+
+}
+
 const VisualizationComponent = ({
   session,
   currentRunId, setCurrentRunId,
@@ -140,57 +188,12 @@ const VisualizationComponent = ({
 
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
- 
-  const VisHeader = () => {
-    const {loading: projectLoading, data: projectData} = useQuery(gql`
-      query ProjectDetails($projectID: ID!) {
-        project(projectID: $projectID) {
-          projectID
-          name
-        }
-      }
-    `, {
-      variables: {projectID: currentProjectID}
-    })
-    const {loading: runLoading, data: runData} = useQuery(gql`
-      query RunDetails($runID: ID!) {
-        run(runID: $runID) {
-          runID
-          name
-        }
-      }
-    `, {
-      variables: {runID: currentRunId},
-      skip: R.isNil(currentRunId)
-    })
-    const isDataReturned = (query, data) => R.both(
-      RA.isNotNilOrEmpty,
-      R.propSatisfies(RA.isNotNil, query)
-    )(data)
-    console.log(runData, projectData, 'data')
-    return ( 
-      <Header block>
-        <Header.Content>
-          {
-            isDataReturned('project', projectData) &&
-            `${R.path(['project','name'], projectData)} (ID ${R.path(['project','name'], projectData)})`
-          }
-          {
-           isDataReturned('run', runData) &&
-            <Header.Subheader
-              content={`${R.path(['run','name'], runData)} (ID ${R.path(['run','runID'], runData)})`}
-            /> 
-          }
-        </Header.Content>
-      </Header>
-    )
 
-  }
   return (
     <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
       <Segment basic loading={loading} style={{height: '100%'}}>
-      <VisHeader />
+      <VisHeader {...{currentProjectID, currentRunId}} />
       {
         RA.isNotNil(result) && isActiveToggle('results') ?
         isCurrentVisType('tsne') ? <Expression parentcurrentRunId={currentRunId}></Expression>
