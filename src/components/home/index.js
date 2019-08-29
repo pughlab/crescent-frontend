@@ -74,8 +74,8 @@ const VisualizationComponent = ({
     const [runName, setRunName] = useState('')
     // GraphQL mutation hook to call mutation and use result
     const [createRun, {loading, data, error}] = useMutation(gql`
-      mutation SubmitRun($name: String!, $params: String!) {
-        createRun(name: $name, params: $params) {
+      mutation SubmitRun($name: String!, $params: String!, projectID: ID!) {
+        createRun(name: $name, params: $params, projectID: $projectID) {
           runID
           name
           params
@@ -129,7 +129,7 @@ const VisualizationComponent = ({
                   principalDimensions,
                   returnThreshold                  
                 })
-                createRun({variables: {name: runName, params}})
+                createRun({variables: {name: runName, params, projectID: currentProjectID}})
               }}
             />
           </Modal.Actions>

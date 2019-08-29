@@ -17,7 +17,8 @@ const typeDefs = gql`
   type Mutation {
     createRun(
       name: String,
-      params: String
+      params: String,
+      projectID: ID
     ): Run
   }
 `

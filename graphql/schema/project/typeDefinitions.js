@@ -3,8 +3,7 @@ const { gql } = require('apollo-server')
 const typeDefs = gql`
   type Project {
     projectID: ID
-    children: [ID]
-    dataset: ID
+    name: String
     members: [User]
   }
   type Query {
