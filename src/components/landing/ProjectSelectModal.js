@@ -41,7 +41,7 @@ const ProjectSelectModal = ({
   const isActiveProjectType = R.equals(projectType)
 
   const [newProjectName, setNewProjectName] = useState(null)
-  console.log(currentProjectID, R.isNil(currentProjectID))
+  // console.log(currentProjectID, R.isNil(currentProjectID))
   // GQL mutation to create a project
   const [createProject, {loading, data, error}] = useMutation(gql`
     mutation CreateProject($userID: ID!) {
@@ -62,7 +62,7 @@ const ProjectSelectModal = ({
       setCurrentProjectID(R.path(['createProject','projectID'], data))
     }
   }, [data])
-  console.log('createProject', data)
+  // console.log('createProject', data)
   return (
     <Modal size='fullscreen' dimmer='blurring'
       open={R.isNil(currentProjectID)}
@@ -115,6 +115,7 @@ const ProjectSelectModal = ({
         <Input fluid
           action={
             <Button
+              disabled={RA.isNilOrEmpty(newProjectName)}
               content='Create new project'
               onClick={() => {
                 console.log('create project', newProjectName)
