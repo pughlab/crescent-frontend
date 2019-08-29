@@ -74,7 +74,7 @@ const VisualizationComponent = ({
     const [runName, setRunName] = useState('')
     // GraphQL mutation hook to call mutation and use result
     const [createRun, {loading, data, error}] = useMutation(gql`
-      mutation SubmitRun($name: String!, $params: String!, projectID: ID!) {
+      mutation SubmitRun($name: String!, $params: String!, $projectID: ID!) {
         createRun(name: $name, params: $params, projectID: $projectID) {
           runID
           name
@@ -142,7 +142,17 @@ const VisualizationComponent = ({
   const isActiveToggle = R.equals(activeToggle)
  
   const VisHeader = () => {
-    const {loading: queryLoading, data, error} = useQuery(gql`
+    const {loading: projectLoading, data: projectData} = useQuery(gql`
+      query ProjectDetails($projectID: ID!) {
+        project(projectID: $projectID) {
+          projectID
+          name
+        }
+      }
+    `, {
+      variables: {projectID: currentProjectID}
+    })
+    const {loading: runLoading, data: runData} = useQuery(gql`
       query RunDetails($runID: ID!) {
         run(runID: $runID) {
           runID
@@ -153,26 +163,26 @@ const VisualizationComponent = ({
       variables: {runID: currentRunId},
       skip: R.isNil(currentRunId)
     })
+    const isDataReturned = (query, data) => R.both(
+      RA.isNotNilOrEmpty,
+      R.propSatisfies(RA.isNotNil, query)
+    )(data)
+    console.log(runData, projectData, 'data')
     return ( 
       <Header block>
         <Header.Content>
-          {`Project: ${currentProjectID}`}
           {
-            RA.isNotNilOrEmpty(data) &&
-            <Header.Subheader content={`Run Name: ${R.path(['run','name'], data)} (${R.path(['run','runID'], data)})`} />
+            isDataReturned('project', projectData) &&
+            `${R.path(['project','name'], projectData)} (ID ${R.path(['project','name'], projectData)})`
+          }
+          {
+           isDataReturned('run', runData) &&
+            <Header.Subheader
+              content={`${R.path(['run','name'], runData)} (ID ${R.path(['run','runID'], runData)})`}
+            /> 
           }
         </Header.Content>
       </Header>
-      // :
-      // <Header block 
-      //   content={
-      //     // RA.isNotNilOrEmpty(data) ? 
-      //     // RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
-      //     R.or(loading, queryLoading) ? 'Processing...'
-      //     : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
-      //     : ''
-      //   }
-      // />
     )
 
   }
@@ -181,14 +191,6 @@ const VisualizationComponent = ({
       <Grid.Column width={12} style={{height: '100%'}}>
       <Segment basic loading={loading} style={{height: '100%'}}>
       <VisHeader />
-      {/* <Header block 
-        content={
-          RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
-          : loading ? 'Processing...'
-          : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
-          : ''
-        }
-      /> */}
       {
         RA.isNotNil(result) && isActiveToggle('results') ?
         isCurrentVisType('tsne') ? <Expression parentcurrentRunId={currentRunId}></Expression>
