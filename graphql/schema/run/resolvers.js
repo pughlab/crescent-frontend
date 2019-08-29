@@ -7,6 +7,10 @@ const axios = A.create({
 
 const resolvers = {
   Query: {
+    runs: async (parent, {}, {Runs}) => {
+      const runs = await Runs.find({})
+      return runs
+    },
     run: async (parent, {runID}, {Runs}) => {
       const run = await Runs.findOne({runID})
       return run
