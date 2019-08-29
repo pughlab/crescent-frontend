@@ -3,6 +3,11 @@ import React, {useState, useEffect} from 'react';
 import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon} from 'semantic-ui-react'
 
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
+
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+
 
 import ProjectSelectModal from '../landing/ProjectSelectModal'
 
@@ -16,19 +21,33 @@ const CrescentIcon = () => (
 const RunsModal = ({
   session,
   currentRunId, setCurrentRunId,
+  currentProjectID
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const [runs, setRuns] = useState([])
-  useEffect(() => {
-    if (openModal) {
-      fetch(`/runs`)
-      .then(response => response.json())
-      .then(res => !console.log(res) && setRuns(res))
-    // session
-    //   .call('crescent.runs', [], {})
-    //   .then(res => setRuns(res))
+  const {loading, data, error, refetch} = useQuery(gql`
+    query RunsByProjectID($projectID: ID!) {
+      runs(projectID: $projectID) {
+        runID
+        name
+        params
+      }
     }
+  `, {variables: {projectID: currentProjectID}})
+  // console.log(runs)
+  useEffect(() => {
+    if (openModal) {refetch()}
   }, [openModal])
+  useEffect(() => {
+    if (
+      R.both(
+        RA.isNotNilOrEmpty,
+        R.propSatisfies(RA.isNotNil, 'runs')
+      )(data)
+    ) {
+      setRuns(R.prop('runs', data))
+    }
+  }, [data])
   return (
     <Modal size='fullscreen'
       open={openModal}
@@ -36,22 +55,28 @@ const RunsModal = ({
         <Menu.Item content='Runs' onClick={() => setOpenModal(true)}/>
       }
     > 
-      <Modal.Header content="Runs" />
+      <Modal.Header as={Header} textAlign='center' content="Runs" />
       <Modal.Content scrolling>
         <Card.Group itemsPerRow={3}>
         {
           R.map(
-            ({runID, params}) => (
+            ({runID, name, params}) => (
               <Card key={runID} link>
                 <Card.Content>
-                  <Card.Header content={runID} />
+                  <Card.Header as={Header}>
+                    <Header.Content>
+                      {name}
+                      <Header.Subheader content={runID} />
+                    </Header.Content>
+                  </Card.Header>
+                </Card.Content>
+                <Card.Content>
                   <Card.Description>
                     {
                       R.compose(
                         ({
                           singleCell,
                           resolution,
-                          genes,
                           opacity,
                           principalDimensions,
                           returnThreshold
@@ -121,15 +146,15 @@ const MenuComponent = ({
 }) => {
   return (
     <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='large'>
-      <Menu.Item header>
-        <CrescentIcon />
-        {'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'}
-      </Menu.Item>
+      <Menu.Item header content={<CrescentIcon />} />
 
       <Menu.Menu position='right'>
         <RunsModal
-          session={session}
-          currentRunId={currentRunId} setCurrentRunId={setCurrentRunId}
+          {...{
+            session,
+            currentRunId, setCurrentRunId,
+            currentProjectID
+          }}
         />
         <Menu.Item onClick={() => setCurrentProjectID(null)}>
           {'Projects'}

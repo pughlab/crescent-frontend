@@ -1,11 +1,10 @@
 import React, {useState, useEffect} from 'react';
 
 import {Card, Popup, Segment, Button, Grid, Modal, Label, Divider, Icon, Header, Input, Message} from 'semantic-ui-react'
-import { useMutation } from '@apollo/react-hooks'
+import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import faker from 'faker'
 
 const ProjectCard = ({
   project: {
@@ -37,23 +36,34 @@ const ProjectSelectModal = ({
   currentProjectID, setCurrentProjectID,
   userID
 }) => {
-  console.log(userID)
   const [projectType, setProjectType] = useState(null) // 'uploaded' || 'public' || 'curated'
   const isActiveProjectType = R.equals(projectType)
 
-  const [newProjectName, setNewProjectName] = useState(null)
+  // GQL query to find all projects of which user is a member of
+  const {loading: queryLoading, data: projectsData} = useQuery(gql`
+    query UserProjects($userID: ID!) {
+      projects(userID: $userID) {
+        projectID
+        name
+      }
+    }
+  `, {
+    variables: {userID},
+    fetchPolicy: 'cache-and-network'
+  })
+  // console.log(projectsData, 'projects')
 
+  const [newProjectName, setNewProjectName] = useState(null)
   // GQL mutation to create a project
   const [createProject, {loading, data, error}] = useMutation(gql`
-    mutation CreateProject($userID: ID!) {
-      createProject(userID: $userID) {
+    mutation CreateProject($userID: ID!, $name: String!) {
+      createProject(userID: $userID, name: $name) {
         projectID
       }
     }
-  `)
+  `, {variables: {userID, name: newProjectName}})
   // On successful project creation, set currentProjectID
   useEffect(() => {
-    console.log(data)
     if (
       R.both(
         RA.isNotNilOrEmpty,
@@ -63,7 +73,6 @@ const ProjectSelectModal = ({
       setCurrentProjectID(R.path(['createProject','projectID'], data))
     }
   }, [data])
-  console.log('createProject', data)
   return (
     <Modal size='fullscreen' dimmer='blurring'
       open={R.isNil(currentProjectID)}
@@ -99,13 +108,17 @@ const ProjectSelectModal = ({
         :
         <Card.Group itemsPerRow={3}>
         {
-          R.map(
-            project => <ProjectCard key={R.prop('projectID', project)} {...{project, setCurrentProjectID}} />,
-            R.times(
-              () => ({projectID: faker.random.uuid(), name: faker.random.word()}),
-              20
-            )
-          )
+          isActiveProjectType('uploaded') ?
+            R.compose(
+              R.map(project => <ProjectCard key={R.prop('projectID', project)} {...{project, setCurrentProjectID}} />),
+              R.ifElse(
+                R.both(RA.isNotNilOrEmpty, R.propSatisfies(RA.isNotNil, 'projects')),
+                R.prop('projects'),
+                R.always([])
+              )
+            )(projectsData)
+            :
+            []
         }
         </Card.Group>
       }
@@ -116,10 +129,11 @@ const ProjectSelectModal = ({
         <Input fluid
           action={
             <Button
+              disabled={RA.isNilOrEmpty(newProjectName)}
               content='Create new project'
               onClick={() => {
                 console.log('create project', newProjectName)
-                createProject({variables: {userID}})
+                createProject()
               }}
             />
           }

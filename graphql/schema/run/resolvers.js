@@ -7,14 +7,22 @@ const axios = A.create({
 
 const resolvers = {
   Query: {
+    allRuns: async (parent, variables, {Runs}) => {
+      return await Runs.find({})
+    },
+    runs: async (parent, {projectID}, {Runs}) => {
+      console.log('resolver', projectID)
+      const runs = await Runs.find({projectID})
+      return runs
+    },
     run: async (parent, {runID}, {Runs}) => {
       const run = await Runs.findOne({runID})
       return run
     },
   },
   Mutation: {
-    createRun: async (parent, {name, params}, {Runs}) => {
-      const run = await Runs.create({name, params})
+    createRun: async (parent, {name, params, projectID}, {Runs}) => {
+      const run = await Runs.create({name, params, projectID})
       const {runID} = run
       // Note: 'params' word is abused here
       const submit = await axios.post(
@@ -24,6 +32,14 @@ const resolvers = {
         {params: {name, params}}
       )
       return run
+    }
+  },
+  Run: {
+    // Subfield resolvers
+    project: async ({projectID}, variables, {Projects}) => {
+      // Find project that run belongs to
+      const project = await Projects.findOne({projectID})
+      return project
     }
   }
 }

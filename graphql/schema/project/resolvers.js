@@ -7,16 +7,19 @@ const resolvers = {
       return await Projects.findOne({projectID})
     },
     // Query multiple projects
-    projects: async (parent, variables, {Projects}) => {
-      return await Projects.find({})
+    projects: async (parent, {userID}, {Projects}) => {
+      return await Projects.find({
+        members: {
+          $elemMatch: {$eq: userID}
+        }
+      })
     }
   },
   Mutation: {
     // Create a project given a userID
     // TODO: move userID into context
-    createProject: async (parent, {userID}, {Projects}) => {
-      console.log(userID)
-      const project = await Projects.create({name: `test project by ${userID}`, members: [userID]})
+    createProject: async (parent, {userID, name}, {Projects}) => {
+      const project = await Projects.create({name, members: [userID]})
       return project
     },
     // Add a user to be a member of a project

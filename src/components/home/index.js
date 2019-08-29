@@ -16,6 +16,54 @@ import UploadModal from './UploadModal'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
+const VisHeader = ({
+  currentProjectID, currentRunId
+}) => {
+  const {loading: projectLoading, data: projectData} = useQuery(gql`
+    query ProjectDetails($projectID: ID!) {
+      project(projectID: $projectID) {
+        projectID
+        name
+      }
+    }
+  `, {
+    variables: {projectID: currentProjectID}
+  })
+  const {loading: runLoading, data: runData} = useQuery(gql`
+    query RunDetails($runID: ID!) {
+      run(runID: $runID) {
+        runID
+        name
+      }
+    }
+  `, {
+    variables: {runID: currentRunId},
+    skip: R.isNil(currentRunId)
+  })
+  const isDataReturned = (query, data) => R.both(
+    RA.isNotNilOrEmpty,
+    R.propSatisfies(RA.isNotNil, query)
+  )(data)
+  console.log(runData, projectData, 'data')
+  return ( 
+    <Header block>
+      <Header.Content>
+        {
+          isDataReturned('project', projectData) &&
+          `${R.path(['project','name'], projectData)} (ID ${R.path(['project','projectID'], projectData)})`
+        }
+        {
+         isDataReturned('run', runData) &&
+          <Header.Subheader
+            content={`${R.path(['run','name'], runData)} (ID ${R.path(['run','runID'], runData)})`}
+          /> 
+        }
+      </Header.Content>
+    </Header>
+  )
+
+}
+
 const VisualizationComponent = ({
   session,
   currentRunId, setCurrentRunId,
@@ -74,8 +122,8 @@ const VisualizationComponent = ({
     const [runName, setRunName] = useState('')
     // GraphQL mutation hook to call mutation and use result
     const [createRun, {loading, data, error}] = useMutation(gql`
-      mutation SubmitRun($name: String!, $params: String!) {
-        createRun(name: $name, params: $params) {
+      mutation SubmitRun($name: String!, $params: String!, $projectID: ID!) {
+        createRun(name: $name, params: $params, projectID: $projectID) {
           runID
           name
           params
@@ -129,7 +177,7 @@ const VisualizationComponent = ({
                   principalDimensions,
                   returnThreshold                  
                 })
-                createRun({variables: {name: runName, params}})
+                createRun({variables: {name: runName, params, projectID: currentProjectID}})
               }}
             />
           </Modal.Actions>
@@ -140,55 +188,12 @@ const VisualizationComponent = ({
 
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
- 
-  const VisHeader = () => {
-    const {loading: queryLoading, data, error} = useQuery(gql`
-      query RunDetails($runID: ID!) {
-        run(runID: $runID) {
-          runID
-          name
-        }
-      }
-    `, {
-      variables: {runID: currentRunId},
-      skip: R.isNil(currentRunId)
-    })
-    return ( 
-      <Header block>
-        <Header.Content>
-          {`Project: ${currentProjectID}`}
-          {
-            RA.isNotNilOrEmpty(data) &&
-            <Header.Subheader content={`Run Name: ${R.path(['run','name'], data)} (${R.path(['run','runID'], data)})`} />
-          }
-        </Header.Content>
-      </Header>
-      // :
-      // <Header block 
-      //   content={
-      //     // RA.isNotNilOrEmpty(data) ? 
-      //     // RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
-      //     R.or(loading, queryLoading) ? 'Processing...'
-      //     : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
-      //     : ''
-      //   }
-      // />
-    )
 
-  }
   return (
     <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
       <Segment basic loading={loading} style={{height: '100%'}}>
-      <VisHeader />
-      {/* <Header block 
-        content={
-          RA.isNotNull(currentRunId) ? `Job ID: ${currentRunId}`
-          : loading ? 'Processing...'
-          : R.not(submitted) ? 'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'
-          : ''
-        }
-      /> */}
+      <VisHeader {...{currentProjectID, currentRunId}} />
       {
         RA.isNotNil(result) && isActiveToggle('results') ?
         isCurrentVisType('tsne') ? <Expression parentcurrentRunId={currentRunId}></Expression>
