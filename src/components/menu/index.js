@@ -34,7 +34,7 @@ const RunsModal = ({
       }
     }
   `, {variables: {projectID: currentProjectID}})
-  console.log(runs)
+  // console.log(runs)
   useEffect(() => {
     if (openModal) {refetch()}
   }, [openModal])
@@ -48,14 +48,6 @@ const RunsModal = ({
       setRuns(R.prop('runs', data))
     }
   }, [data])
-  console.log('runs data', data)
-  // useEffect(() => {
-  //   if (openModal) {
-  //     fetch(`/runs`)
-  //     .then(response => response.json())
-  //     .then(res => !console.log(res) && setRuns(res))
-  //   }
-  // }, [openModal])
   return (
     <Modal size='fullscreen'
       open={openModal}
@@ -63,22 +55,28 @@ const RunsModal = ({
         <Menu.Item content='Runs' onClick={() => setOpenModal(true)}/>
       }
     > 
-      <Modal.Header content="Runs" />
+      <Modal.Header as={Header} textAlign='center' content="Runs" />
       <Modal.Content scrolling>
         <Card.Group itemsPerRow={3}>
         {
           R.map(
-            ({runID, params}) => (
+            ({runID, name, params}) => (
               <Card key={runID} link>
                 <Card.Content>
-                  <Card.Header content={runID} />
+                  <Card.Header as={Header}>
+                    <Header.Content>
+                      {name}
+                      <Header.Subheader content={runID} />
+                    </Header.Content>
+                  </Card.Header>
+                </Card.Content>
+                <Card.Content>
                   <Card.Description>
                     {
                       R.compose(
                         ({
                           singleCell,
                           resolution,
-                          genes,
                           opacity,
                           principalDimensions,
                           returnThreshold
