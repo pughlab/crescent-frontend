@@ -85,7 +85,8 @@ export default class Violin extends Component{
                         title: message, 
                         titlefont: {family: "Lato,sans-serif"}, 
                         yaxis:{zeroline: false, title: 'Normalized Expression'}, 
-                        xaxis:{tickmode: 'linear', title: 'Clusters'}
+                        xaxis:{tickmode: 'linear', title: 'Clusters'},
+                        hovermode: 'closest'
                     }}
                 />
             </div>

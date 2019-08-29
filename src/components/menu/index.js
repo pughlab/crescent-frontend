@@ -120,7 +120,7 @@ const MenuComponent = ({
   userID
 }) => {
   return (
-    <Segment attached='bottom' style={{height: '10%'}} as={Menu} size='huge'>
+    <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='large'>
       <Menu.Item header>
         <CrescentIcon />
         {'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'}

@@ -177,7 +177,7 @@ const VisualizationComponent = ({
 
   }
   return (
-    <Segment attached='top' style={{height: '90%'}} as={Grid}>
+    <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
       <Segment basic loading={loading} style={{height: '100%'}}>
       <VisHeader />
@@ -200,18 +200,18 @@ const VisualizationComponent = ({
       <Grid.Column width={4} style={{height: '100%'}}>
         <Segment attached='top'>
           <Button.Group fluid widths={3}>
-            <Button content='Parameters' color={isActiveToggle('params') ? 'blue' : undefined}
+            <Button compact={true} content='Parameters' color={isActiveToggle('params') ? 'blue' : undefined}
               active={isActiveToggle('params')} onClick={() => setActiveToggle('params')}
             />
-            <Button content='Status' color={isActiveToggle('status') ? 'teal' : undefined}
+            <Button compact={true} content='Status' color={isActiveToggle('status') ? 'teal' : undefined}
               active={isActiveToggle('status')} onClick={() => setActiveToggle('status')}
             />
-            <Button content='Results' color={isActiveToggle('results') ? 'violet' : undefined}
+            <Button compact={true} content='Results' color={isActiveToggle('results') ? 'violet' : undefined}
               active={isActiveToggle('results')} onClick={() => setActiveToggle('results')}
             />
           </Button.Group>
         </Segment>
-        <Segment attached style={{height: '80%', overflowY: 'scroll'}}>
+        <Segment attached style={{height: '83%', overflowY: 'scroll'}}>
           <Step.Group vertical fluid ordered
             items={
               R.map(
