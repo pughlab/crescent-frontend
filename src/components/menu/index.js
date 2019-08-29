@@ -146,10 +146,7 @@ const MenuComponent = ({
 }) => {
   return (
     <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='large'>
-      <Menu.Item header>
-        <CrescentIcon />
-        {'CReSCENT:\xa0\xa0CanceR Single Cell ExpressioN Toolkit'}
-      </Menu.Item>
+      <Menu.Item header content={<CrescentIcon />} />
 
       <Menu.Menu position='right'>
         <RunsModal
