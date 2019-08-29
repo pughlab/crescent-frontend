@@ -28,7 +28,7 @@ const App = ({
           currentProjectID, setCurrentProjectID
         }}
       /> :
-      <Segment style={{height: '100%'}}>
+      <Segment style={{height: '100%', padding: 0}}>
         <VisualizationComponent
           {...{
             session,
