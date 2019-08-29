@@ -9,7 +9,7 @@ const resolvers = {
   Query: {
     runs: async (parent, {projectID}, {Runs}) => {
       console.log('resolver', projectID)
-      const runs = await Runs.find({})
+      const runs = await Runs.find({projectID})
       return runs
     },
     run: async (parent, {runID}, {Runs}) => {

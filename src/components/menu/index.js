@@ -26,8 +26,8 @@ const RunsModal = ({
   const [openModal, setOpenModal] = useState(false)
   const [runs, setRuns] = useState([])
   const {loading, data, error, refetch} = useQuery(gql`
-    query AllRuns {
-      runs {
+    query RunsByProjectID($projectID: ID!) {
+      runs(projectID: $projectID) {
         runID
         name
         params
