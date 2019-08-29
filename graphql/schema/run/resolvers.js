@@ -7,6 +7,9 @@ const axios = A.create({
 
 const resolvers = {
   Query: {
+    allRuns: async (parent, variables, {Runs}) => {
+      return await Runs.find({})
+    },
     runs: async (parent, {projectID}, {Runs}) => {
       console.log('resolver', projectID)
       const runs = await Runs.find({projectID})
@@ -29,6 +32,14 @@ const resolvers = {
         {params: {name, params}}
       )
       return run
+    }
+  },
+  Run: {
+    // Subfield resolvers
+    project: async ({projectID}, variables, {Projects}) => {
+      // Find project that run belongs to
+      const project = await Projects.findOne({projectID})
+      return project
     }
   }
 }

@@ -5,8 +5,11 @@ const typeDefs = gql`
     runID: ID
     name: String
     params: String
+    projectID: ID
+    project: Project
   }
   type Query {
+    allRuns: [Run]
     runs(
       projectID: ID
     ): [Run]
