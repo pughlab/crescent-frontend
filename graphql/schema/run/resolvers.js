@@ -7,7 +7,8 @@ const axios = A.create({
 
 const resolvers = {
   Query: {
-    runs: async (parent, {}, {Runs}) => {
+    runs: async (parent, {projectID}, {Runs}) => {
+      console.log('resolver', projectID)
       const runs = await Runs.find({})
       return runs
     },

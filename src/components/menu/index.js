@@ -3,6 +3,11 @@ import React, {useState, useEffect} from 'react';
 import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon} from 'semantic-ui-react'
 
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
+
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+
 
 import ProjectSelectModal from '../landing/ProjectSelectModal'
 
@@ -16,19 +21,41 @@ const CrescentIcon = () => (
 const RunsModal = ({
   session,
   currentRunId, setCurrentRunId,
+  currentProjectID
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const [runs, setRuns] = useState([])
-  useEffect(() => {
-    if (openModal) {
-      fetch(`/runs`)
-      .then(response => response.json())
-      .then(res => !console.log(res) && setRuns(res))
-    // session
-    //   .call('crescent.runs', [], {})
-    //   .then(res => setRuns(res))
+  const {loading, data, error, refetch} = useQuery(gql`
+    query AllRuns {
+      runs {
+        runID
+        name
+        params
+      }
     }
+  `, {variables: {projectID: currentProjectID}})
+  console.log(runs)
+  useEffect(() => {
+    if (openModal) {refetch()}
   }, [openModal])
+  useEffect(() => {
+    if (
+      R.both(
+        RA.isNotNilOrEmpty,
+        R.propSatisfies(RA.isNotNil, 'runs')
+      )(data)
+    ) {
+      setRuns(R.prop('runs', data))
+    }
+  }, [data])
+  console.log('runs data', data)
+  // useEffect(() => {
+  //   if (openModal) {
+  //     fetch(`/runs`)
+  //     .then(response => response.json())
+  //     .then(res => !console.log(res) && setRuns(res))
+  //   }
+  // }, [openModal])
   return (
     <Modal size='fullscreen'
       open={openModal}
@@ -128,8 +155,11 @@ const MenuComponent = ({
 
       <Menu.Menu position='right'>
         <RunsModal
-          session={session}
-          currentRunId={currentRunId} setCurrentRunId={setCurrentRunId}
+          {...{
+            session,
+            currentRunId, setCurrentRunId,
+            currentProjectID
+          }}
         />
         <Menu.Item onClick={() => setCurrentProjectID(null)}>
           {'Projects'}

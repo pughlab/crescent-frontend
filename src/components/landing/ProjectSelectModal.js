@@ -37,12 +37,11 @@ const ProjectSelectModal = ({
   currentProjectID, setCurrentProjectID,
   userID
 }) => {
-  console.log(userID)
   const [projectType, setProjectType] = useState(null) // 'uploaded' || 'public' || 'curated'
   const isActiveProjectType = R.equals(projectType)
 
   const [newProjectName, setNewProjectName] = useState(null)
-
+  console.log(currentProjectID, R.isNil(currentProjectID))
   // GQL mutation to create a project
   const [createProject, {loading, data, error}] = useMutation(gql`
     mutation CreateProject($userID: ID!) {
@@ -53,7 +52,7 @@ const ProjectSelectModal = ({
   `)
   // On successful project creation, set currentProjectID
   useEffect(() => {
-    console.log(data)
+    // console.log(data)
     if (
       R.both(
         RA.isNotNilOrEmpty,
