@@ -50,7 +50,7 @@ const VisHeader = ({
       <Header.Content>
         {
           isDataReturned('project', projectData) &&
-          `${R.path(['project','name'], projectData)} (ID ${R.path(['project','name'], projectData)})`
+          `${R.path(['project','name'], projectData)} (ID ${R.path(['project','projectID'], projectData)})`
         }
         {
          isDataReturned('run', runData) &&
