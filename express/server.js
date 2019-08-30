@@ -6,7 +6,6 @@ const R = require('ramda')
 const autobahn = require('autobahn')
 const connection = new autobahn.Connection({ url: 'ws://crossbar:4000/', realm: 'realm1' })
 const express = require('express')
-const cors = require('cors')
 // MINIO
 const Minio = require('minio')
 // Multer to handle multi form data
@@ -14,21 +13,21 @@ const multer = require('multer')
 const upload = multer({ dest: '/Users/smohanra/Desktop/crescentMockup/express/tmp/express' })
 // Zip
 const AdmZip = require('adm-zip')
-const jStat = require('jStat');
-
-// MongoDB
-// const db = require('./database')
-const mongooseConnection = require('../database/mongo')
-const db = mongooseConnection.connection
+const jStat = require('jStat')
 
 const fs = require('fs')
+const fsp = fs.promises
 const path = require('path')
-const process = require('process')
-const zlib = require('zlib');
-const jsonQuery = require('json-query');
-const async = require('async');
+const zlib = require('zlib')
+const jsonQuery = require('json-query')
 
+
+// Mongo connection
+const mongooseConnection = require('../database/mongo')
+const db = mongooseConnection.connection
+// Mongo collections
 const Run = db.model('run')
+const Project = db.model('project')
 
 const colours = [
   '#1f77b4',  // muted blue
@@ -66,66 +65,13 @@ connection.onopen = function (session) {
   const bucketName = 'crescent'
   const expressPath = '/Users/smohanra/Desktop/crescentMockup/express'
   const minioPath = `${expressPath}/tmp/minio`
- 
 
-  // Register method to run example
-  // session
-  //   .register(
-  //     'crescent.submit',
-  //     (args, kwargs) => {
-  //       const d = new autobahn.when.defer()
-  //       console.log('RUN YOUR CWL COMMAND HERE, workflow arguments in kwargs variable')
-  //       console.log(kwargs)
-  //       Run.create({params: JSON.stringify(kwargs) },
-  //         (err, run) => {
-  //           if (err) {console.log(err)}
-  //           // console.log(run)
-  //           const {runID} = run
-  //           submitCWL(kwargs, session, runID)
-  //           d.resolve(run)
-  //         }
-  //       )
-  //       return d.promise
-  //     }
-  //   )
-  //   .then(
-  //     reg => console.log('Registered: ', reg.procedure),
-  //     err => console.error('Registration error: ', err)
-  //   )
-  // session
-  //   .register(
-  //     'crescent.runs',
-  //     (args, kwargs) => {
-  //       return fetchRuns()
-  //       // const d = new autobahn.when.defer()
-  //       // d.resolve(fetchRuns())
-  //       // return d.promise
-
-  //     }
-  //   )
-  //   .then(
-  //     reg => console.log('Registered: ', reg.procedure),
-  //     err => console.error('Registration error: ', err)
-  //   )
 
   // Start node server for HTTP stuff
   const app = express()
   const port = 4001
-  // Method for submitting a CWL job
-  app.post(
-    '/submit',
-    async (req, res) => {
-      console.log(req.query)
-      // Assign `params` as stringified kwargs
-      const {kwargs: params} = req.query
-      const run = await Run.create({params, name:'test'})
-      // Parse and pass as object of parameters
-      const kwargs = JSON.parse(params)
-      const {runID} = run
-      submitCWL(kwargs, session, runID)
-      res.sendStatus(200)
-    }
-  )
+
+  // API endpoint called by GQL to submit a job
   app.post(
     '/runs/submit/:runID',
     async (req, res) => {
@@ -133,22 +79,47 @@ connection.onopen = function (session) {
         params: {runID},
         query: {name, params}
       } = req
-      console.log('gql axios', runID, name, params)
       // // Parse and pass as object of parameters
       const kwargs = JSON.parse(params)
       submitCWL(kwargs, session, runID)
       res.sendStatus(200)
     }
   )
-  // Method for fetching all runs
-  app.get(
-    '/runs',
-    async (req, res) => {
-      const runs = await Run.find({})
-      res.json(runs)
-    }
-  )
+  
+  // // API endpoint for uploading files given a projectID
+  // app.put(
+  //   '/project/:projectID/upload/barcodes',
+  //   upload.single('uploadedFile'),
+  //   async (req, res, next) => {
+  //     const barcodesID = 'barcodes.tsv.gz'
+  //     // File that needs to be uploaded.
+  //     const {
+  //       params: {projectID},
+  //       file: {path: filePath}
+  //     } = req
+  //     const metaData = {
+  //       'Content-Type': 'application/octet-stream',
+  //       'X-Amz-Meta-Testing': 1235,
+  //       'example': 5678
+  //     }
+  //     // Using fPutObject API upload your file to the bucket
+  //     minioClient.fPutObject(bucketName, 'barcodes.tsv.gz', filePath, metaData, function(err, etag) {
+  //       if (err) return console.log(err, etag)
+  //       console.log('File uploaded successfully.')
+  //       // Do this for each file you need to check
+  //       // TODO: remove?
+  //       minioClient.fGetObject(bucketName, 'barcodes.tsv.gz', `${minioPath}/${barcodesID}`,
+  //         err => {
+  //           if (err) { return console.log(err) }
+  //           console.log('File successfully downloaded')
+  //           res.sendStatus(200)
+  //         }
+  //       )
+  //     })
+  //   }
+  // )
 
+  //TODO: remove
   app.put(
     '/upload/barcodes',
     upload.single('uploadedFile'),
