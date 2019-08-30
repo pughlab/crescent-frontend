@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react';
 
-import { Icon, Input, Menu, Dropdown, Header, Segment, Button, Label, Grid, Image, Modal, Divider, Step, Card } from 'semantic-ui-react'
+import { Segment, Button, Grid, Image, Step } from 'semantic-ui-react'
 
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import VisHeader from './Header'
 
 import Expression from '../expression'
 
@@ -12,57 +11,10 @@ import CWLStatusButton from './StatusButton'
 import CWLResultsButton from './ResultsButton'
 
 import UploadModal from './UploadModal'
+import SubmitButton from './SubmitButton'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-
-const VisHeader = ({
-  currentProjectID, currentRunId
-}) => {
-  const {loading: projectLoading, data: projectData} = useQuery(gql`
-    query ProjectDetails($projectID: ID!) {
-      project(projectID: $projectID) {
-        projectID
-        name
-      }
-    }
-  `, {
-    variables: {projectID: currentProjectID}
-  })
-  const {loading: runLoading, data: runData} = useQuery(gql`
-    query RunDetails($runID: ID!) {
-      run(runID: $runID) {
-        runID
-        name
-      }
-    }
-  `, {
-    variables: {runID: currentRunId},
-    skip: R.isNil(currentRunId)
-  })
-  const isDataReturned = (query, data) => R.both(
-    RA.isNotNilOrEmpty,
-    R.propSatisfies(RA.isNotNil, query)
-  )(data)
-  console.log(runData, projectData, 'data')
-  return ( 
-    <Header block>
-      <Header.Content>
-        {
-          isDataReturned('project', projectData) &&
-          `${R.path(['project','name'], projectData)} (ID ${R.path(['project','projectID'], projectData)})`
-        }
-        {
-         isDataReturned('run', runData) &&
-          <Header.Subheader
-            content={`${R.path(['run','name'], runData)} (ID ${R.path(['run','runID'], runData)})`}
-          /> 
-        }
-      </Header.Content>
-    </Header>
-  )
-
-}
 
 const VisualizationComponent = ({
   session,
@@ -89,8 +41,6 @@ const VisualizationComponent = ({
   const [loading, setLoading]= useState(false)
   const [result, setResult] = useState(null)
 
-  const [openRunModal, setOpenRunModal]  = useState(false)
-
   useEffect(() => {
     session.subscribe(
       'crescent.result',
@@ -114,93 +64,21 @@ const VisualizationComponent = ({
     && setLoading(false)
   }, [currentRunId, visType])
 
-  
-
-  // Button with method to call WAMP RPC (not pure)
-  // Modal for entering the run id name
-  const SubmitButton = () => {
-    const [runName, setRunName] = useState('')
-    // GraphQL mutation hook to call mutation and use result
-    const [createRun, {loading, data, error}] = useMutation(gql`
-      mutation SubmitRun($name: String!, $params: String!, $projectID: ID!) {
-        createRun(name: $name, params: $params, projectID: $projectID) {
-          runID
-          name
-          params
-        }
-      }
-    `)
-    useEffect(() => {
-      if (loading) {
-        setLoading(true)
-        setSubmitted(true)
-        setOpenRunModal(false)
-      }
-    }, [loading])
-    useEffect(() => {
-      if (
-        R.both(
-          RA.isNotNilOrEmpty,
-          R.propSatisfies(RA.isNotNil, 'createRun')
-        )(data)
-      ) {
-        console.log(data)
-        setLoading(true)
-        setSubmitted(true)
-      }
-    }, [data])
-    return   (
-      <>
-        <Button
-          content='Submit'
-          icon='cloud upload' labelPosition='right'
-          color='blue'
-          disabled={submitted || loading || notUploaded}
-          // onClick={() => setSubmitted(true)}
-          onClick={() => setOpenRunModal(true)}
-        />
-        <Modal size='small' open={openRunModal}>
-          <Modal.Header>Submit Run</Modal.Header>
-          <Modal.Content>          
-            <Input fluid placeholder='Enter a Run Name' onChange={(e, {value}) => {setRunName(value)}}/>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button content='Close' onClick={() => setOpenRunModal(false)} />
-            <Button primary content='Submit'
-              onClick={() => {
-                console.log(runName)
-                const params = JSON.stringify({
-                  singleCell,
-                  resolution,
-                  genes,
-                  opacity,
-                  principalDimensions,
-                  returnThreshold                  
-                })
-                createRun({variables: {name: runName, params, projectID: currentProjectID}})
-              }}
-            />
-          </Modal.Actions>
-        </Modal>
-      </>
-    )
-  }
-
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
 
   return (
     <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
       <Grid.Column width={12} style={{height: '100%'}}>
-      <Segment basic loading={loading} style={{height: '100%'}}>
-      <VisHeader {...{currentProjectID, currentRunId}} />
-      {
-        RA.isNotNil(result) && isActiveToggle('results') ?
-        isCurrentVisType('tsne') ? <Expression parentcurrentRunId={currentRunId}></Expression>
-        : <Image src={result} size='big' centered />
-        : null
-      }
-      </Segment>
+        <Segment basic loading={loading} style={{height: '100%'}}>
+        <VisHeader {...{currentProjectID, currentRunId}} />
+        {
+          RA.isNotNil(result) && isActiveToggle('results') ?
+          isCurrentVisType('tsne') ? <Expression parentcurrentRunId={currentRunId} />
+          : <Image src={result} size='big' centered />
+          : null
+        }
+        </Segment>
       </Grid.Column>
       <Grid.Column width={4} style={{height: '100%'}}>
         <Segment attached='top'>
@@ -258,17 +136,26 @@ const VisualizationComponent = ({
           isActiveToggle('params') ?
           <Button.Group fluid widths={2} attached='bottom' size='big'>
             <UploadModal
-              // pass setState stuff here
-              uploadedBarcodesFile={uploadedBarcodesFile}
-              setUploadedBarcodesFile={setUploadedBarcodesFile}
-              uploadedGenesFile={uploadedGenesFile}
-              setUploadedGenesFile={setUploadedGenesFile}
-              uploadedMatrixFile={uploadedMatrixFile}
-              setUploadedMatrixFile={setUploadedMatrixFile}
+              {...{
+                uploadedBarcodesFile, setUploadedBarcodesFile,
+                uploadedGenesFile, setUploadedGenesFile,
+                uploadedMatrixFile, setUploadedMatrixFile,
+              }}
             />
             <Button.Or text='&' />
-            <SubmitButton />
-
+            <SubmitButton
+              {...{
+                currentProjectID,
+                setLoading, loading,
+                setSubmitted, submitted,
+                notUploaded,
+              }}
+              params={JSON.stringify({
+                singleCell, resolution,
+                genes, opacity,
+                principalDimensions, returnThreshold                  
+              })}
+            />
           </Button.Group>
 
           : isActiveToggle('status') ?
