@@ -380,7 +380,7 @@ connection.onopen = function (session) {
                           else{cluster_dict[barcode_cluster] = {'name': barcode_cluster, 'mode': 'markers','x': [parseFloat(barcode[1])],'y': [parseFloat(barcode[2])], 'text': [barcode[0]]};}
                       })
                       cell_clusters = R.values(cluster_dict);
-                      const sortByCluster = R.sortBy(R.compose(R.toLower, R.prop('name')))
+                      const sortByCluster = R.sortBy(R.compose(parseInt, R.prop('name')))
                       cell_clusters = sortByCluster(cell_clusters)
                       callback(cell_clusters); // callback is to send the data
                   }
@@ -446,7 +446,7 @@ app.get(
                 normCounts = sortByFirst(normCounts);
                 clusters = sortByFirst(clusters);
                 // TODO: before combining, add a check
-                const combine = (left, right) => {return [right[1], left[0], left[1]]}
+                const combine = (left, right) => {return [Number(right[1]), left[0], left[1]]}
                 // this will create a 2d array with the cluster, barcode, and normalized counts
                 let combined = R.zipWith(combine, normCounts, clusters);
                 combined = sortByFirst(combined); // sort by cluster
