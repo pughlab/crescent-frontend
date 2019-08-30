@@ -165,7 +165,13 @@ const VisualizationComponent = ({
           <Button fluid attached='bottom' size='big' color='violet' icon='download' content='Download'
             disabled={R.isNil(currentRunId)}
             as='a'
-            href={`/download?runID=${currentRunId}`}
+            onClick={() => 
+              fetch(`/download/${currentRunId}`)
+                .then(response => response.blob())
+                .then(objectURL = URL.createObjectURL(blob))
+            }
+            //href={`http://localhost:4001/download/${currentRunId}`}
+            href={objectURL}
             download
           />
           : null

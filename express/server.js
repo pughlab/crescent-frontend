@@ -10,7 +10,7 @@ const express = require('express')
 const Minio = require('minio')
 // Multer to handle multi form data
 const multer = require('multer')
-const upload = multer({ dest: '/Users/smohanra/Desktop/crescentMockup/express/tmp/express' })
+const upload = multer({ dest: '/usr/src/app/minio/upload' })
 // Zip
 const AdmZip = require('adm-zip')
 const jStat = require('jStat')
@@ -63,8 +63,47 @@ connection.onopen = function (session) {
     console.log('Bucket created successfully in "us-east-1".')
   })
   const bucketName = 'crescent'
+<<<<<<< Updated upstream
   const expressPath = '/Users/smohanra/Desktop/crescentMockup/express'
   const minioPath = `${expressPath}/tmp/minio`
+=======
+  const expressPath = '/usr/src/app'
+  const minioPath = `${expressPath}/minio/download`
+ 
+
+  // Register method to run example
+  // session
+  //   .register(
+  //     'crescent.submit',
+  //     (args, kwargs) => {
+  //       const d = new autobahn.when.defer()
+  //       console.log('RUN YOUR CWL COMMAND HERE, workflow arguments in kwargs variable')
+  //       console.log(kwargs)
+  //       Run.create({params: JSON.stringify(kwargs) },
+  //         (err, run) => {
+  //           if (err) {console.log(err)}
+  //           // console.log(run)
+  //           const {runID} = run
+  //           submitCWL(kwargs, session, runID)
+  //           d.resolve(run)
+  //         }
+  //       )
+  //       return d.promise
+  //     }
+  //   )
+  //   .then(
+  //     reg => console.log('Registered: ', reg.procedure),
+  //     err => console.error('Registration error: ', err)
+  //   )
+  // session
+  //   .register(
+  //     'crescent.runs',
+  //     (args, kwargs) => {
+  //       return fetchRuns()
+  //       // const d = new autobahn.when.defer()
+  //       // d.resolve(fetchRuns())
+  //       // return d.promise
+>>>>>>> Stashed changes
 
 
   // Start node server for HTTP stuff
@@ -228,15 +267,16 @@ connection.onopen = function (session) {
   )
 
   app.get(
-    '/download',
+    '/download/:runID',
     (req, res) => {
       console.log(req.query)
-      const { runID } = req.query
+      const runID = req.params.runID
       const zip = new AdmZip()
       //zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runID}/SEURAT`)
       //zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
       //res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runID}.zip`)
       zip.addLocalFolder(`/usr/src/app/results/${runID}/SEURAT`)
+      //console.log("DOWNLOAD RUN ID:", runID)
       zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
       res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runID}.zip`)
     }

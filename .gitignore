@@ -11,7 +11,8 @@ crescent-initial.simg
 crescent-v3-july9.simg
 
 results/*
-
+minio/download/*
+minio/upload/*
 SEURAT/
 frontend_seurat_inputs.json
 results/
