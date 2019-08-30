@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
-import ProjectSelectModal from './ProjectSelectModal'
+import ProjectSelectModal from '../projects/ProjectSelectModal'
 
 const LandingPageComponent = ({
   userID, setUserID,

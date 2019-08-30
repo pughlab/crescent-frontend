@@ -38,7 +38,6 @@ const App = ({
         />
         <MenuComponent
           {...{
-            session,
             userID, setUserID,
             currentRunId, setCurrentRunId,
             currentProjectID, setCurrentProjectID
