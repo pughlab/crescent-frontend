@@ -8,7 +8,7 @@ const DatasetSchema = new mongoose.Schema({
   },
   projectID: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    required: true
   },
   // MinIO object names
   barcodesID: {
