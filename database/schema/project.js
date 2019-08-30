@@ -16,7 +16,7 @@ const ProjectSchema = new mongoose.Schema({
   },
   // or...
   // Can be a 1:1 project that encapsulates a dataset
-  dataset: {
+  datasetID: {
     type: mongoose.Schema.Types.ObjectId,
     default: null
   },
