@@ -41,6 +41,7 @@ const UploadButton = ({
 )
 
 const UploadModal = ({
+  currentProjectID,
   uploadedBarcodesFile, setUploadedBarcodesFile,
   uploadedGenesFile, setUploadedGenesFile,
   uploadedMatrixFile, setUploadedMatrixFile,
@@ -59,15 +60,21 @@ const UploadModal = ({
       <Modal.Header content='Upload files' />
       <Modal.Content >
         <Button.Group widths={3} size='massive'>
-          <UploadButton label='Barcodes' url='/upload/barcodes'
+          <UploadButton label='Barcodes'
+            // url='/upload/barcodes'
+            url={`/project/${currentProjectID}/upload/barcodes`}
             uploadedFile={uploadedBarcodesFile}
             setUploadedFile={setUploadedBarcodesFile}
           />
-          <UploadButton label='Genes' url='/upload/genes' 
+          <UploadButton label='Genes'
+            // url='/upload/genes' 
+            url={`/project/${currentProjectID}/upload/genes`}
             uploadedFile={uploadedGenesFile}
             setUploadedFile={setUploadedGenesFile}
           />
-          <UploadButton label='Matrix' url='/upload/matrix' 
+          <UploadButton label='Matrix'
+            // url='/upload/matrix' 
+            url={`/project/${currentProjectID}/upload/matrix`}
             uploadedFile={uploadedMatrixFile}
             setUploadedFile={setUploadedMatrixFile}
           />

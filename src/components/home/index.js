@@ -137,6 +137,7 @@ const VisualizationComponent = ({
           <Button.Group fluid widths={2} attached='bottom' size='big'>
             <UploadModal
               {...{
+                currentProjectID,
                 uploadedBarcodesFile, setUploadedBarcodesFile,
                 uploadedGenesFile, setUploadedGenesFile,
                 uploadedMatrixFile, setUploadedMatrixFile,
@@ -165,13 +166,13 @@ const VisualizationComponent = ({
           <Button fluid attached='bottom' size='big' color='violet' icon='download' content='Download'
             disabled={R.isNil(currentRunId)}
             as='a'
-            onClick={() => 
-              fetch(`/download/${currentRunId}`)
-                .then(response => response.blob())
-                .then(objectURL = URL.createObjectURL(blob))
-            }
-            //href={`http://localhost:4001/download/${currentRunId}`}
-            href={objectURL}
+            // onClick={() => 
+            //   fetch(`/download/${currentRunId}`)
+            //     .then(response => response.blob())
+            //     .then(objectURL = URL.createObjectURL(blob))
+            // }
+            // //href={`http://localhost:4001/download/${currentRunId}`}
+            // href={objectURL}
             download
           />
           : null

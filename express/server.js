@@ -63,48 +63,8 @@ connection.onopen = function (session) {
     console.log('Bucket created successfully in "us-east-1".')
   })
   const bucketName = 'crescent'
-<<<<<<< Updated upstream
-  const expressPath = '/Users/smohanra/Desktop/crescentMockup/express'
-  const minioPath = `${expressPath}/tmp/minio`
-=======
   const expressPath = '/usr/src/app'
   const minioPath = `${expressPath}/minio/download`
- 
-
-  // Register method to run example
-  // session
-  //   .register(
-  //     'crescent.submit',
-  //     (args, kwargs) => {
-  //       const d = new autobahn.when.defer()
-  //       console.log('RUN YOUR CWL COMMAND HERE, workflow arguments in kwargs variable')
-  //       console.log(kwargs)
-  //       Run.create({params: JSON.stringify(kwargs) },
-  //         (err, run) => {
-  //           if (err) {console.log(err)}
-  //           // console.log(run)
-  //           const {runID} = run
-  //           submitCWL(kwargs, session, runID)
-  //           d.resolve(run)
-  //         }
-  //       )
-  //       return d.promise
-  //     }
-  //   )
-  //   .then(
-  //     reg => console.log('Registered: ', reg.procedure),
-  //     err => console.error('Registration error: ', err)
-  //   )
-  // session
-  //   .register(
-  //     'crescent.runs',
-  //     (args, kwargs) => {
-  //       return fetchRuns()
-  //       // const d = new autobahn.when.defer()
-  //       // d.resolve(fetchRuns())
-  //       // return d.promise
->>>>>>> Stashed changes
-
 
   // Start node server for HTTP stuff
   const app = express()
@@ -126,28 +86,141 @@ connection.onopen = function (session) {
   )
   
   // // API endpoint for uploading files given a projectID
+  app.put(
+    '/project/:projectID/upload/barcodes',
+    upload.single('uploadedFile'),
+    async (req, res, next) => {
+      // File that needs to be uploaded.
+      const {
+        params: {projectID},
+        file: {path: filePath}
+      } = req
+      const project = await Project.findOne({projectID})
+      // Create project directory inside minio if doesn't exist
+      const projectDirPath = `${minioPath}/${projectID}`
+      try {
+        await fsp.stat(projectDirPath)
+      } catch (err) {
+        await fsp.mkdir(projectDirPath)
+      }
+      const metaData = {
+        'Content-Type': 'application/octet-stream',
+        'X-Amz-Meta-Testing': 1235,
+        'example': 5678
+      }
+      // Using fPutObject API upload your file to the bucket
+      minioClient.fPutObject(bucketName, 'barcodes.tsv.gz', filePath, metaData, function(err, etag) {
+        if (err) return console.log(err, etag)
+        console.log('File uploaded successfully.')
+        // Do this for each file you need to check
+        // TODO: remove?
+        minioClient.fGetObject(bucketName, 'barcodes.tsv.gz', `${projectDirPath}/barcodes.tsv.gz`,
+          err => {
+            if (err) { return console.log(err) }
+            console.log('File successfully downloaded')
+            res.sendStatus(200)
+          }
+        )
+      })
+    }
+  )
+  app.put(
+    '/project/:projectID/upload/genes',
+    upload.single('uploadedFile'),
+    async (req, res, next) => {
+      // File that needs to be uploaded.
+      const {
+        params: {projectID},
+        file: {path: filePath}
+      } = req
+      const project = await Project.findOne({projectID})
+      // Create project directory inside minio if doesn't exist
+      const projectDirPath = `${minioPath}/${projectID}`
+      try {
+        await fsp.stat(projectDirPath)
+      } catch (err) {
+        await fsp.mkdir(projectDirPath)
+      }
+      const metaData = {
+        'Content-Type': 'application/octet-stream',
+        'X-Amz-Meta-Testing': 1235,
+        'example': 5678
+      }
+      // Using fPutObject API upload your file to the bucket
+      minioClient.fPutObject(bucketName, 'features.tsv.gz', filePath, metaData, function(err, etag) {
+        if (err) return console.log(err, etag)
+        console.log('File uploaded successfully.')
+        // Do this for each file you need to check
+        // TODO: remove?
+        minioClient.fGetObject(bucketName, 'features.tsv.gz', `${projectDirPath}/features.tsv.gz`,
+          err => {
+            if (err) { return console.log(err) }
+            console.log('File successfully downloaded')
+            res.sendStatus(200)
+          }
+        )
+      })
+    }
+  )
+  app.put(
+    '/project/:projectID/upload/matrix',
+    upload.single('uploadedFile'),
+    async (req, res, next) => {
+      // File that needs to be uploaded.
+      const {
+        params: {projectID},
+        file: {path: filePath}
+      } = req
+      const project = await Project.findOne({projectID})
+      // Create project directory inside minio if doesn't exist
+      const projectDirPath = `${minioPath}/${projectID}`
+      try {
+        await fsp.stat(projectDirPath)
+      } catch (err) {
+        await fsp.mkdir(projectDirPath)
+      }
+      const metaData = {
+        'Content-Type': 'application/octet-stream',
+        'X-Amz-Meta-Testing': 1235,
+        'example': 5678
+      }
+      // Using fPutObject API upload your file to the bucket
+      minioClient.fPutObject(bucketName, 'matrix.mtx.gz', filePath, metaData, function(err, etag) {
+        if (err) return console.log(err, etag)
+        console.log('File uploaded successfully.')
+        // Do this for each file you need to check
+        // TODO: remove?
+        minioClient.fGetObject(bucketName, 'matrix.mtx.gz', `${projectDirPath}/matrix.mtx.gz`,
+          err => {
+            if (err) { return console.log(err) }
+            console.log('File successfully downloaded')
+            res.sendStatus(200)
+          }
+        )
+      })
+    }
+  )
+
+  // //TODO: remove
   // app.put(
-  //   '/project/:projectID/upload/barcodes',
+  //   '/upload/barcodes',
   //   upload.single('uploadedFile'),
-  //   async (req, res, next) => {
-  //     const barcodesID = 'barcodes.tsv.gz'
+  //   (req, res, next) => {
   //     // File that needs to be uploaded.
-  //     const {
-  //       params: {projectID},
-  //       file: {path: filePath}
-  //     } = req
+  //     const file = req.file
+  //     // console.log(file)
   //     const metaData = {
   //       'Content-Type': 'application/octet-stream',
   //       'X-Amz-Meta-Testing': 1235,
   //       'example': 5678
   //     }
   //     // Using fPutObject API upload your file to the bucket
-  //     minioClient.fPutObject(bucketName, 'barcodes.tsv.gz', filePath, metaData, function(err, etag) {
+  //     minioClient.fPutObject(bucketName, 'barcodes.tsv.gz', file.path, metaData, function(err, etag) {
   //       if (err) return console.log(err, etag)
   //       console.log('File uploaded successfully.')
-  //       // Do this for each file you need to check
-  //       // TODO: remove?
-  //       minioClient.fGetObject(bucketName, 'barcodes.tsv.gz', `${minioPath}/${barcodesID}`,
+  //       // Publish to upload notification channel when MinIO done
+  //       // Do this for each file you need
+  //       minioClient.fGetObject('crescent', 'barcodes.tsv.gz', `${minioPath}/barcodes.tsv.gz`,
   //         err => {
   //           if (err) { return console.log(err) }
   //           console.log('File successfully downloaded')
@@ -157,91 +230,61 @@ connection.onopen = function (session) {
   //     })
   //   }
   // )
-
-  //TODO: remove
-  app.put(
-    '/upload/barcodes',
-    upload.single('uploadedFile'),
-    (req, res, next) => {
-      // File that needs to be uploaded.
-      const file = req.file
-      // console.log(file)
-      const metaData = {
-        'Content-Type': 'application/octet-stream',
-        'X-Amz-Meta-Testing': 1235,
-        'example': 5678
-      }
-      // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'barcodes.tsv.gz', file.path, metaData, function(err, etag) {
-        if (err) return console.log(err, etag)
-        console.log('File uploaded successfully.')
-        // Publish to upload notification channel when MinIO done
-        // Do this for each file you need
-        minioClient.fGetObject('crescent', 'barcodes.tsv.gz', `${minioPath}/barcodes.tsv.gz`,
-          err => {
-            if (err) { return console.log(err) }
-            console.log('File successfully downloaded')
-            res.sendStatus(200)
-          }
-        )
-      })
-    }
-  )
-  app.put(
-    '/upload/genes',
-    upload.single('uploadedFile'),
-    (req, res, next) => {
-      // File that needs to be uploaded.
-      const file = req.file
-      const metaData = {
-        'Content-Type': 'application/octet-stream',
-        'X-Amz-Meta-Testing': 1234,
-        'example': 5678
-      }
-      // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'features.tsv.gz', file.path, metaData, function (err, etag) {
-        if (err) return console.log(err, etag)
-        console.log('File uploaded successfully.')
-        // Download file from bucket so that CWL will have access
-        minioClient.fGetObject('crescent', 'features.tsv.gz', `${minioPath}/features.tsv.gz`,
-          err => {
-            if (err) { return console.log(err) }
-            console.log('File successfully downloaded')
-            res.sendStatus(200)
-          }
-        )
-      })
+  // app.put(
+  //   '/upload/genes',
+  //   upload.single('uploadedFile'),
+  //   (req, res, next) => {
+  //     // File that needs to be uploaded.
+  //     const file = req.file
+  //     const metaData = {
+  //       'Content-Type': 'application/octet-stream',
+  //       'X-Amz-Meta-Testing': 1234,
+  //       'example': 5678
+  //     }
+  //     // Using fPutObject API upload your file to the bucket
+  //     minioClient.fPutObject(bucketName, 'features.tsv.gz', file.path, metaData, function (err, etag) {
+  //       if (err) return console.log(err, etag)
+  //       console.log('File uploaded successfully.')
+  //       // Download file from bucket so that CWL will have access
+  //       minioClient.fGetObject('crescent', 'features.tsv.gz', `${minioPath}/features.tsv.gz`,
+  //         err => {
+  //           if (err) { return console.log(err) }
+  //           console.log('File successfully downloaded')
+  //           res.sendStatus(200)
+  //         }
+  //       )
+  //     })
       
-    }
-  )
-  app.put(
-    '/upload/matrix',
-    upload.single('uploadedFile'),
-    (req, res, next) => {
-      // File that needs to be uploaded.
-      const file = req.file
-      // console.log(file)
-      const metaData = {
-        'Content-Type': 'application/octet-stream',
-        'X-Amz-Meta-Testing': 1234,
-        'example': 5678
-      }
-      // Using fPutObject API upload your file to the bucket
-      minioClient.fPutObject(bucketName, 'matrix.mtx.gz', file.path, metaData, function (err, etag) {
-        if (err) return console.log(err, etag)
-        console.log('File uploaded successfully.')
-        // Publish to upload notification channel when MinIO done
-        minioClient.fGetObject('crescent', 'matrix.mtx.gz', `${minioPath}/matrix.mtx.gz`,
-          err => {
-            if (err) { return console.log(err) }
-            console.log('File successfully downloaded')
-            res.sendStatus(200)
-          }
-        )
+  //   }
+  // )
+  // app.put(
+  //   '/upload/matrix',
+  //   upload.single('uploadedFile'),
+  //   (req, res, next) => {
+  //     // File that needs to be uploaded.
+  //     const file = req.file
+  //     // console.log(file)
+  //     const metaData = {
+  //       'Content-Type': 'application/octet-stream',
+  //       'X-Amz-Meta-Testing': 1234,
+  //       'example': 5678
+  //     }
+  //     // Using fPutObject API upload your file to the bucket
+  //     minioClient.fPutObject(bucketName, 'matrix.mtx.gz', file.path, metaData, function (err, etag) {
+  //       if (err) return console.log(err, etag)
+  //       console.log('File uploaded successfully.')
+  //       // Publish to upload notification channel when MinIO done
+  //       minioClient.fGetObject('crescent', 'matrix.mtx.gz', `${minioPath}/matrix.mtx.gz`,
+  //         err => {
+  //           if (err) { return console.log(err) }
+  //           console.log('File successfully downloaded')
+  //           res.sendStatus(200)
+  //         }
+  //       )
 
-      })
-    }
-  )
+  //     })
+  //   }
+  // )
 
 
   app.get(
