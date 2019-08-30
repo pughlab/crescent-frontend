@@ -84,7 +84,7 @@ const ProjectSelectModal = ({
           R.map(
             ({label, key}) => (
               <Button key={key}
-                color={isActiveProjectType(key) ? 'grey' : null}
+                color={isActiveProjectType(key) ? 'black' : null}
                 content={label}
                 active={isActiveProjectType(key)}
                 onClick={() => setProjectType(key)}
@@ -98,28 +98,29 @@ const ProjectSelectModal = ({
           )
         }
         </Button.Group>
+        {
+          isActiveProjectType('uploaded') &&
+          <>
+            <Divider />
+            <Input fluid
+              action={
+                <Button
+                  color='black'
+                  disabled={RA.isNilOrEmpty(newProjectName)}
+                  content='Create new project'
+                  onClick={() => {
+                    console.log('create project', newProjectName)
+                    createProject()
+                  }}
+                />
+              }
+              placeholder='Enter a project name'
+              onChange={(e, {value}) => {setNewProjectName(value)}}
+            />
+          </>
+        }
       </Modal.Header>
       <Modal.Content scrolling>
-      {
-        isActiveProjectType('uploaded') &&
-        <>
-          <Input fluid
-            action={
-              <Button
-                disabled={RA.isNilOrEmpty(newProjectName)}
-                content='Create new project'
-                onClick={() => {
-                  console.log('create project', newProjectName)
-                  createProject()
-                }}
-              />
-            }
-            placeholder='Enter a project name'
-            onChange={(e, {value}) => {setNewProjectName(value)}}
-          />
-          <Divider />
-        </>
-      }
       {
         R.isNil(projectType) ?
         <Segment placeholder>
