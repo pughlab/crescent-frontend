@@ -7,9 +7,15 @@ const Schemas = require('./schema')
 mongoose.connection.on('error', console.error.bind(console, 'Connection error, unable to connect to MongoDB'))
 mongoose.connection.once('open', () => console.log('MongoDB connected'))
 // Schema for 'user' model
-const {UserSchema, RunSchema, ProjectSchema} = Schemas
+const {
+  UserSchema,
+  RunSchema,
+  ProjectSchema,
+  DatasetSchema
+} = Schemas
 mongoose.connection.model('user', UserSchema)
 mongoose.connection.model('run', RunSchema)
 mongoose.connection.model('project', ProjectSchema)
+mongoose.connection.model('dataset', DatasetSchema)
 
 module.exports = mongoose
