@@ -15,6 +15,7 @@ const makeCWLJobJSON = (
     principalDimensions,
     returnThreshold
   },
+  projectID,
   runID
 ) => ({
   R_script: {
@@ -27,7 +28,9 @@ const makeCWLJobJSON = (
   sc_input: {
     class: 'Directory',
     // path: '/Users/smohanra/Documents/crescent/docker-crescent/filtered_gene_bc_matrices'
-    path: '/Users/smohanra/Desktop/crescentMockup/express/tmp/minio'
+    // path: '/Users/smohanra/Desktop/crescentMockup/express/tmp/minio'
+    path: `/usr/src/app/minio/download/${projectID}`
+
   },
   sc_input_type: singleCell, //'MTX', // change to singleCell eventually if supporting seurat v2
   resolution,
@@ -43,11 +46,12 @@ const makeCWLJobJSON = (
 
 const submitCWL = (
   kwargs,
+  projectID,
   runID,
   onCompleted
 ) => {
   console.log(runID)
-  const jobJSON = makeCWLJobJSON(kwargs, runID)
+  const jobJSON = makeCWLJobJSON(kwargs, projectID, runID)
   const cwl = spawn(
     `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
      mkdir /usr/src/app/results/${runID} && \

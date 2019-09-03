@@ -72,15 +72,17 @@ app.post(
       params: {runID},
       query: {name, params}
     } = req
+    const run = await Run.findOne({runID})
+    const { projectID } = run
     // // Parse and pass as object of parameters
     const kwargs = JSON.parse(params)
     const onCompleted = () => Run.findOneAndUpdate({runID}, {$set: {completed: true}})
-    submitCWL(kwargs, runID, onCompleted)
+    submitCWL(kwargs, projectID, runID, onCompleted)
     res.sendStatus(200)
   }
 )
 
-// // API endpoint for uploading files given a projectID
+// API endpoint for uploading files given a projectID
 app.put(
   '/projects/:projectID/upload/barcodes',
   upload.single('uploadedFile'),
