@@ -84,10 +84,21 @@ connection.onopen = function (session) {
       res.sendStatus(200)
     }
   )
+
+  app.get(
+    '/projects/:projectID/runs/:runID/status',
+    async (req, res) => {
+      const {
+        params: {projectID, runID}
+      } = req
+      res.json({projectID, runID})
+      res.sendStatus(200)
+    }
+  )
   
   // // API endpoint for uploading files given a projectID
   app.put(
-    '/project/:projectID/upload/barcodes',
+    '/projects/:projectID/upload/barcodes',
     upload.single('uploadedFile'),
     async (req, res, next) => {
       // File that needs to be uploaded.
@@ -125,7 +136,7 @@ connection.onopen = function (session) {
     }
   )
   app.put(
-    '/project/:projectID/upload/genes',
+    '/projects/:projectID/upload/genes',
     upload.single('uploadedFile'),
     async (req, res, next) => {
       // File that needs to be uploaded.
@@ -163,7 +174,7 @@ connection.onopen = function (session) {
     }
   )
   app.put(
-    '/project/:projectID/upload/matrix',
+    '/projects/:projectID/upload/matrix',
     upload.single('uploadedFile'),
     async (req, res, next) => {
       // File that needs to be uploaded.
