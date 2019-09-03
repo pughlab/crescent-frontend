@@ -82,7 +82,7 @@ export default class Tsne extends Component{
             <div hidden={hidden} style={{display: plotDisplay}}>
                 <Plot 
                 data={clusters}
-                layout={{title: 't-SNE', autosize: false, hovermode: 'closest'}}
+                layout={{title: 't-SNE', autosize: false, hovermode: 'closest', xaxis:{showgrid: false}, yaxis:{showgrid: false}}}
                 useResizeHandler={false}
                 //style={{width:'100%', height: '90%'}}
                 {...this.props}
