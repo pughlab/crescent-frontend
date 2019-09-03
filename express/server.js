@@ -78,9 +78,11 @@ connection.onopen = function (session) {
         params: {runID},
         query: {name, params}
       } = req
+      const run = await Run.findOne({runID})
+      const { projectID } = run
       // // Parse and pass as object of parameters
       const kwargs = JSON.parse(params)
-      submitCWL(kwargs, session, runID)
+      submitCWL(kwargs, session, projectID, runID)
       res.sendStatus(200)
     }
   )
