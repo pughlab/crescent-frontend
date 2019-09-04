@@ -44,14 +44,18 @@ const NewProjectModal = ({
               placeholder='Enter a short project description'
               onChange={(e, {value}) => {setDescription(value)}}
             />
-            <Form.Button fluid
+          </Form>
+        </Modal.Content>
+        <Modal.Actions>
+          <Button content='Cancel' onClick={() => setOpenModal(false)} />
+          <Button
               color='black'
+              basic={RA.isNilOrEmpty(name)}
               disabled={RA.isNilOrEmpty(name)}
               content='Create new project'
               onClick={() => createProject()}
             />
-          </Form>
-        </Modal.Content>
+        </Modal.Actions>
       </Modal>
     </>
   )
