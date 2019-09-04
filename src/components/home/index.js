@@ -43,9 +43,6 @@ const VisualizationComponent = ({
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
 
-  const [activeToggle, setActiveToggle] = useState('params')
-  const isActiveToggle = R.equals(activeToggle)
-
   useEffect(() => {
     session.subscribe(
       'crescent.result',
