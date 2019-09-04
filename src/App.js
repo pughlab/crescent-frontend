@@ -8,7 +8,7 @@ import MenuComponent from './components/menu'
 import VisualizationComponent from './components/home'
 import LandingComponent from './components/landing'
 
-const App = () => {
+const App = ({session}) => {
   const [currentRunId, setCurrentRunId] = useState(null)
   const [loggedIn, setLoggedIn] = useState(false)
   const [currentProjectID, setCurrentProjectID] = useState(null)
@@ -26,6 +26,7 @@ const App = () => {
     <Segment style={{height: '100%', padding: 0}}>
       <VisualizationComponent
         {...{
+          session,
           currentRunId, setCurrentRunId,
           currentProjectID
         }}

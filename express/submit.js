@@ -48,7 +48,7 @@ const submitCWL = (
   kwargs,
   projectID,
   runID,
-  onCompleted
+  session
 ) => {
   console.log(runID)
   const jobJSON = makeCWLJobJSON(kwargs, projectID, runID)
@@ -77,7 +77,7 @@ const submitCWL = (
   })
   cwl.on( 'close', code => {
       console.log( `child process exited with code ${code}` )
-      onCompleted()
+      session.publish('crescent.result', [], {runID})
   })
 }
 

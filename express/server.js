@@ -19,6 +19,8 @@ const path = require('path')
 const zlib = require('zlib')
 const jsonQuery = require('json-query')
 
+const autobahn = require('autobahn')
+const connection = new autobahn.Connection({ url: 'ws://crossbar:4000/', realm: 'realm1' })
 
 // Mongo connection
 const mongooseConnection = require('../database/mongo')
@@ -27,19 +29,6 @@ const db = mongooseConnection.connection
 const Run = db.model('run')
 const Project = db.model('project')
 
-const colours = [
-  '#1f77b4',  // muted blue
-  '#ff7f0e',  // safety orange
-  '#2ca02c',  // cooked asparagus green
-  '#d62728',  // brick red
-  '#9467bd',  // muted purple
-  '#8c564b',  // chestnut brown
-  '#e377c2',  // raspberry yogurt pink
-  '#7f7f7f',  // middle gray
-  '#bcbd22',  // curry yellow-green
-  '#17becf'   // blue-teal
-]
-  
 // Minio client
 // Instantiate the minio client with the endpoint
 // and access keys as shown below.
@@ -60,6 +49,22 @@ const bucketName = 'crescent'
 const expressPath = '/usr/src/app'
 const minioPath = `${expressPath}/minio/download`
 
+const colours = [
+  '#1f77b4',  // muted blue
+  '#ff7f0e',  // safety orange
+  '#2ca02c',  // cooked asparagus green
+  '#d62728',  // brick red
+  '#9467bd',  // muted purple
+  '#8c564b',  // chestnut brown
+  '#e377c2',  // raspberry yogurt pink
+  '#7f7f7f',  // middle gray
+  '#bcbd22',  // curry yellow-green
+  '#17becf'   // blue-teal
+]
+  
+
+connection.onopen = (session) => {
+
 // Start node server for HTTP stuff
 const app = express()
 const port = 4001
@@ -76,8 +81,7 @@ app.post(
     const { projectID } = run
     // // Parse and pass as object of parameters
     const kwargs = JSON.parse(params)
-    const onCompleted = () => Run.findOneAndUpdate({runID}, {$set: {completed: true}})
-    submitCWL(kwargs, projectID, runID, onCompleted)
+    submitCWL(kwargs, projectID, runID, session)
     res.sendStatus(200)
   }
 )
@@ -545,11 +549,13 @@ app.get(
   }
 );
 
+app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+}
 
 
 db.once('open', () => {
   console.log('Database connection open')
-  app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+  connection.open()
 })
 mongooseConnection.connect('mongodb://mongo/crescent', {useNewUrlParser: true})
 

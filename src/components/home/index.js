@@ -16,9 +16,6 @@ import SubmitButton from './SubmitButton'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import { useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
-
 // Custom hook
 function useInterval(callback, delay) {
   const savedCallback = useRef();
@@ -41,6 +38,7 @@ function useInterval(callback, delay) {
 }
 
 const VisualizationComponent = ({
+  session,
   currentRunId, setCurrentRunId,
   currentProjectID
 }) => {
@@ -66,49 +64,28 @@ const VisualizationComponent = ({
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
 
-  const {loading: runLoading, data: runData, refetch: runRefetch} = useQuery(gql`
-    query RunDetails($runID: ID!) {
-      run(runID: $runID) {
-        runID
-        name
-        completed
-      }
-    }
-  `, {
-    variables: {runID: currentRunId},
-    skip: R.isNil(currentRunId)
-  })
-  useInterval(() => runRefetch(), 5000)
   useEffect(() => {
-    if (
-      R.both(
-        RA.isNotNilOrEmpty,
-        R.propSatisfies(RA.isNotNil, 'run')
-      )(runData)
-    ) {
-      const {run: {completed}} = runData
-      if (completed) {
-        fetch(`/result?runID=${currentRunId}&visType=${visType}`)
-          .then(response => response.blob())
-          .then(response => {
-            R.compose(setResult, URL.createObjectURL)(response)
-            setActiveToggle('results')
-            setLoading(false)
-            setSubmitted(false)
-          })
+    session.subscribe(
+      'crescent.result',
+      (args, {runID}) => {
+        console.log('crescent.result')
+        setActiveToggle('results')
+        setCurrentRunId(runID)
+        setLoading(false)
+        setSubmitted(false)
       }
-    }
-  }, [runData, visType, currentRunId])
+    )
+  }, [])
 
   const [visType, setVisType] = useState('tsne')
   const isCurrentVisType = R.equals(visType)
-  // useEffect(() => {
-  //   RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
-  //   && fetch(`/result?runID=${currentRunId}&visType=${visType}`)
-  //     .then(response => response.blob())
-  //     .then(R.compose(setResult, URL.createObjectURL))
-  //   && setLoading(false)
-  // }, [currentRunId, visType])
+  useEffect(() => {
+    RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
+    && fetch(`/result?runID=${currentRunId}&visType=${visType}`)
+      .then(response => response.blob())
+      .then(R.compose(setResult, URL.createObjectURL))
+    && setLoading(false)
+  }, [currentRunId, visType])
 
   return (
     <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
