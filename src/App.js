@@ -1,50 +1,44 @@
-import React, {Component, useState} from 'react';
-import './App.css';
+import './App.css'
+import React, {useState} from 'react'
+import * as R from 'ramda'
 
 import {Segment} from 'semantic-ui-react'
 
 import MenuComponent from './components/menu'
 import VisualizationComponent from './components/home'
-
 import LandingComponent from './components/landing'
 
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
-
-const App = ({
-  session
-}) => {
+const App = () => {
   const [currentRunId, setCurrentRunId] = useState(null)
   const [loggedIn, setLoggedIn] = useState(false)
   const [currentProjectID, setCurrentProjectID] = useState(null)
   const [userID, setUserID] = useState(null)
   return (
-      // loggedIn ?
-      R.isNil(currentProjectID) ?
-      <LandingComponent
+    // loggedIn ?
+    R.isNil(currentProjectID) ?
+    <LandingComponent
+      {...{
+        userID, setUserID,
+        loggedIn, setLoggedIn,
+        currentProjectID, setCurrentProjectID
+      }}
+    /> :
+    <Segment style={{height: '100%', padding: 0}}>
+      <VisualizationComponent
+        {...{
+          currentRunId, setCurrentRunId,
+          currentProjectID
+        }}
+      />
+      <MenuComponent
         {...{
           userID, setUserID,
-          loggedIn, setLoggedIn,
+          currentRunId, setCurrentRunId,
           currentProjectID, setCurrentProjectID
         }}
-      /> :
-      <Segment style={{height: '100%', padding: 0}}>
-        <VisualizationComponent
-          {...{
-            session,
-            currentRunId, setCurrentRunId,
-            currentProjectID
-          }}
-        />
-        <MenuComponent
-          {...{
-            userID, setUserID,
-            currentRunId, setCurrentRunId,
-            currentProjectID, setCurrentProjectID
-          }}
-        />
-      </Segment>
+      />
+    </Segment>
   )
 }
 
-  export default App
+export default App

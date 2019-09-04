@@ -19,6 +19,7 @@
     "json-query": "^2.2.2",
     "merge-graphql-schemas": "^1.7.0",
     "minio": "^7.0.8",
+    "moment": "^2.24.0",
     "mongoose": "^5.5.7",
     "multer": "^1.4.1",
     "nodemon": "^1.19.0",

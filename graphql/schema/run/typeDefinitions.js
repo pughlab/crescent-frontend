@@ -7,6 +7,7 @@ const typeDefs = gql`
     params: String
     projectID: ID
     project: Project
+    completed: Boolean
   }
   type Query {
     allRuns: [Run]
