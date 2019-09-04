@@ -40,6 +40,8 @@ const VisualizationComponent = ({
   }, [singleCell, resolution, genes, opacity, principalDimensions, returnThreshold])
   const [loading, setLoading]= useState(false)
   const [result, setResult] = useState(null)
+  const [activeToggle, setActiveToggle] = useState('params')
+  const isActiveToggle = R.equals(activeToggle)
 
   const [activeToggle, setActiveToggle] = useState('params')
   const isActiveToggle = R.equals(activeToggle)
