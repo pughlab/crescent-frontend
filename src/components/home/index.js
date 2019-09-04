@@ -41,6 +41,9 @@ const VisualizationComponent = ({
   const [loading, setLoading]= useState(false)
   const [result, setResult] = useState(null)
 
+  const [activeToggle, setActiveToggle] = useState('params')
+  const isActiveToggle = R.equals(activeToggle)
+
   useEffect(() => {
     session.subscribe(
       'crescent.result',
@@ -63,9 +66,6 @@ const VisualizationComponent = ({
       .then(R.compose(setResult, URL.createObjectURL))
     && setLoading(false)
   }, [currentRunId, visType])
-
-  const [activeToggle, setActiveToggle] = useState('params')
-  const isActiveToggle = R.equals(activeToggle)
 
   return (
     <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
