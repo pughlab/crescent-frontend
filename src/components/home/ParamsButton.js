@@ -10,17 +10,13 @@ const CWLParamsButton = ({
 
   singleCell, setSingleCell,
   resolution, setResolution,
-  genes, setGenes,
-  opacity, setOpacity,
   principalDimensions, setPrincipalDimensions,
-  returnThreshold, setReturnThreshold,
 }) => {
   const [openModal, setOpenModal] = useState(false)
   const [tool, setTool] = useState('seurat')
   return (
     <div>
-    <Modal size='large'
-      open={openModal}
+    <Modal size='large' open={openModal}
       trigger={
         <Step onClick={() => setOpenModal(true)}>
           <Step.Content title={step} description={'Seurat'} />
@@ -28,24 +24,19 @@ const CWLParamsButton = ({
       }
     >
       <Modal.Header>
-        <Dropdown
+        <Dropdown fluid selection
           placeholder='Select Friend'
-          fluid
-          selection
-          options={[
-            {key: 'seurat', text: 'Seurat', value:'seurat'}
-          ]}
+          options={[{key: 'seurat', text: 'Seurat', value:'seurat'}]}
           value={tool}
         />
       </Modal.Header>
       <Modal.Content scrolling>
         <ClusteringParameterMenu
-          singleCell={singleCell} setSingleCell={setSingleCell}
-          resolution={resolution} setResolution={setResolution}
-          genes={genes} setGenes={setGenes}
-          opacity={opacity} setOpacity={setOpacity}
-          principalDimensions={principalDimensions} setPrincipalDimensions={setPrincipalDimensions}
-          returnThreshold={returnThreshold} setReturnThreshold={setReturnThreshold}
+          {...{
+            singleCell, setSingleCell,
+            resolution, setResolution,
+            principalDimensions, setPrincipalDimensions
+          }}
         />
       </Modal.Content>
       <Modal.Actions>

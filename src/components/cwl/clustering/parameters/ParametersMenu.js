@@ -13,14 +13,10 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 const ClusteringParameterMenu = ({
-  singleCell,
-  setSingleCell,
-  resolution,
-  setResolution,
-  principalDimensions,
-  setPrincipalDimensions,
+  singleCell, setSingleCell,
+  resolution, setResolution,
+  principalDimensions, setPrincipalDimensions,
 }) => {
-
   // TOGGLE FOR WHICH PARAMETER TO CHANGE
   const [activeParameter, setActiveParameter] = useState(null)
   const isActiveParameter = R.equals(activeParameter)
@@ -30,13 +26,13 @@ const ClusteringParameterMenu = ({
         <Menu fluid vertical tabular>
         {
           R.map(
-            ({parameter, label, component}) => (
+            // prompt and description used for input components
+            ({parameter, label, prompt, description}) => (
               <Menu.Item key={parameter}
-                active={activeParameter===parameter}
+                active={isActiveParameter(parameter)}
                 onClick={() => setActiveParameter(parameter)}
-              >
-                <Header content={label} />
-              </Menu.Item>
+                content={<Header content={label} />}
+              />
             ),
             PARAMETERS
           )
@@ -47,20 +43,11 @@ const ClusteringParameterMenu = ({
       <Segment basic >
       {
           isActiveParameter('sc_input_type') ?
-            <SingleCellInputType
-              singleCell={singleCell}
-              setSingleCell={setSingleCell}
-            />
+            <SingleCellInputType {...{singleCell, setSingleCell}} />
           : isActiveParameter('resolution') ?
-            <Resolution
-              resolution={resolution}
-              setResolution={setResolution}
-            />
+            <Resolution {...{resolution, setResolution}} />
           : isActiveParameter('pca_dimensions') ?
-            <PCADimensions
-              principalDimensions={principalDimensions}
-              setPrincipalDimensions={setPrincipalDimensions}
-            />
+            <PCADimensions {...{principalDimensions, setPrincipalDimensions}} />
           :
             <Segment placeholder>
               <Header textAlign='center' content='Select a parameter on the left menu' />

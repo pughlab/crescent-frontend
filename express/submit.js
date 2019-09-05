@@ -10,25 +10,18 @@ const makeCWLJobJSON = (
   {
     singleCell,
     resolution,
-    genes, // [String]
-    opacity,
     principalDimensions,
-    returnThreshold
   },
   projectID,
   runID
 ) => ({
   R_script: {
     class: 'File',
-    //path: '/Users/smohanra/Documents/crescent/docker-crescent/Runs_Seurat_Clustering.R'
-    //path: 'crescent/Runs_Seurat_Clustering.R'
     path: '/usr/src/app/crescent/CWL_Runs_Seurat_v3.R'
 
   },
   sc_input: {
     class: 'Directory',
-    // path: '/Users/smohanra/Documents/crescent/docker-crescent/filtered_gene_bc_matrices'
-    // path: '/Users/smohanra/Desktop/crescentMockup/express/tmp/minio'
     path: `/usr/src/app/minio/download/${projectID}`
 
   },
@@ -36,12 +29,9 @@ const makeCWLJobJSON = (
   resolution,
   project_id: 'frontend_example_mac_10x_cwl',
   summary_plots: 'n',
-  list_genes: R.join(',',genes),
-  opacity,
   pca_dimensions: principalDimensions,
   percent_mito: '0,0.2', // v2: 'Inf,0.05',
   number_genes: '50,8000',
-  return_threshold: returnThreshold,
 })
 
 const submitCWL = (
