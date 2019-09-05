@@ -4,6 +4,7 @@ const typeDefs = gql`
   scalar Date
   type Project {
     projectID: ID
+    kind: String #'uploaded', 'curated'
     name: String
     description: String
     members: [User]
@@ -11,13 +12,11 @@ const typeDefs = gql`
     createdOn: Date
   }
   type Query {
-    project(
-      projectID: ID
-    ): Project
+    project(projectID: ID): Project
     
-    projects(
-      userID: ID
-    ): [Project]
+    uploadedProjects(userID: ID): [Project]
+
+    curatedProjects: [Project]
   }
   type Mutation {
     createProject(
