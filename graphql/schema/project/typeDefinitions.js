@@ -1,10 +1,14 @@
 const { gql } = require('apollo-server')
 
 const typeDefs = gql`
+  scalar Date
   type Project {
     projectID: ID
     name: String
+    description: String
     members: [User]
+    createdBy: User
+    createdOn: Date
   }
   type Query {
     project(
@@ -18,7 +22,8 @@ const typeDefs = gql`
   type Mutation {
     createProject(
       userID: ID,
-      name: String
+      name: String,
+      description: String
     ): Project
 
     addUserToProject(

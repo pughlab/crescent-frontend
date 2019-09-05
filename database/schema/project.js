@@ -9,16 +9,18 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  // Can be a 1:N project to project mapping
-  children: {
-    type: [mongoose.Schema.Types.ObjectId],
-    default: []
+  description: {
+    type: String,
+    required: true
   },
-  // or...
-  // Can be a 1:1 project that encapsulates a dataset
-  datasetID: {
+  createdOn: {
+    type: Date,
+    default: Date.now
+  },
+  // User that created new project
+  createdBy: {
     type: mongoose.Schema.Types.ObjectId,
-    default: null
+    required: true
   },
   // Users that have access (N:1 user to project mapping)
   members: {
@@ -28,7 +30,18 @@ const ProjectSchema = new mongoose.Schema({
   runs: {
     type: [mongoose.Schema.Types.ObjectId],
     default: []
-  }
+  },
+  // // Can be a 1:N project to project mapping
+  // children: {
+  //   type: [mongoose.Schema.Types.ObjectId],
+  //   default: []
+  // },
+  // or...
+  // // Can be a 1:1 project that encapsulates a dataset
+  // datasetID: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   default: null
+  // },
 })
 
 module.exports = ProjectSchema

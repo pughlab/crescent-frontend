@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 
 import { Segment, Button, Grid, Image, Step } from 'semantic-ui-react'
 
@@ -15,6 +15,27 @@ import SubmitButton from './SubmitButton'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+
+// Custom hook
+function useInterval(callback, delay) {
+  const savedCallback = useRef();
+
+  // Remember the latest callback.
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  useEffect(() => {
+    function tick() {
+      savedCallback.current();
+    }
+    if (delay !== null) {
+      let id = setInterval(tick, delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
 
 const VisualizationComponent = ({
   session,
@@ -40,6 +61,8 @@ const VisualizationComponent = ({
   }, [singleCell, resolution, genes, opacity, principalDimensions, returnThreshold])
   const [loading, setLoading]= useState(false)
   const [result, setResult] = useState(null)
+  const [activeToggle, setActiveToggle] = useState('params')
+  const isActiveToggle = R.equals(activeToggle)
 
   useEffect(() => {
     session.subscribe(
@@ -63,9 +86,6 @@ const VisualizationComponent = ({
       .then(R.compose(setResult, URL.createObjectURL))
     && setLoading(false)
   }, [currentRunId, visType])
-
-  const [activeToggle, setActiveToggle] = useState('params')
-  const isActiveToggle = R.equals(activeToggle)
 
   return (
     <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
