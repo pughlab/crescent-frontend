@@ -6,11 +6,7 @@ import {
   PARAMETERS,
   SingleCellInputType,
   Resolution,
-  GeneList,
-  Opacity,
   PCADimensions,
-  ReturnThreshold,
-
 } from './Inputs'
 
 import * as R from 'ramda'
@@ -21,23 +17,9 @@ const ClusteringParameterMenu = ({
   setSingleCell,
   resolution,
   setResolution,
-  genes,
-  setGenes,
-  opacity,
-  setOpacity,
   principalDimensions,
   setPrincipalDimensions,
-  returnThreshold,
-  setReturnThreshold,
-
 }) => {
-  // WORKFLOW PARAMETERS
-  // const [singleCell, setSingleCell] = useState('10X')
-  // const [resolution, setResolution] = useState(1)
-  // const [genes, setGenes] = useState(['MALAT1', 'GAPDH'])
-  // const [opacity, setOpacity] = useState(0.1)
-  // const [principalDimensions, setPrincipalDimensions] = useState(10)
-  // const [returnThreshold, setReturnThreshold] = useState(0.01)
 
   // TOGGLE FOR WHICH PARAMETER TO CHANGE
   const [activeParameter, setActiveParameter] = useState(null)
@@ -74,25 +56,10 @@ const ClusteringParameterMenu = ({
               resolution={resolution}
               setResolution={setResolution}
             />
-          : isActiveParameter('gene_list') ?
-            <GeneList
-              genes={genes}
-              setGenes={setGenes}
-            />
-          : isActiveParameter('opacity') ?
-            <Opacity
-              opacity={opacity}
-              setOpacity={setOpacity}
-            />
           : isActiveParameter('pca_dimensions') ?
             <PCADimensions
               principalDimensions={principalDimensions}
               setPrincipalDimensions={setPrincipalDimensions}
-            />
-          : isActiveParameter('return_threshold') ?
-            <ReturnThreshold
-              returnThreshold={returnThreshold}
-              setReturnThreshold={setReturnThreshold}
             />
           :
             <Segment placeholder>
