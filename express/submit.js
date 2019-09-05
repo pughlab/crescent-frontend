@@ -9,6 +9,8 @@ const { spawn } = require( 'child_process' )
 const makeCWLJobJSON = (
   {
     singleCell,
+    numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+    percentMito: {min: minPercentMito, max: maxPercentMito},
     resolution,
     principalDimensions,
   },
@@ -30,8 +32,10 @@ const makeCWLJobJSON = (
   project_id: 'frontend_example_mac_10x_cwl',
   summary_plots: 'n',
   pca_dimensions: principalDimensions,
-  percent_mito: '0,0.2', // v2: 'Inf,0.05',
-  number_genes: '50,8000',
+  // percent_mito: '0,0.2', // v2: 'Inf,0.05',
+  percent_mito: `${minPercentMito},${maxPercentMito}`,
+  // number_genes: '50,8000',
+  number_genes: `${minNumberGenes},${maxNumberGenes}`
 })
 
 const submitCWL = (

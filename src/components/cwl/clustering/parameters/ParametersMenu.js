@@ -5,6 +5,8 @@ import {Grid, Menu, Segment, Message, Header, Divider} from 'semantic-ui-react'
 import {
   PARAMETERS,
   SingleCellInputType,
+  NumberGenes,
+  PercentMito,
   Resolution,
   PCADimensions,
 } from './Inputs'
@@ -14,6 +16,8 @@ import * as RA from 'ramda-adjunct'
 
 const ClusteringParameterMenu = ({
   singleCell, setSingleCell,
+  numberGenes, setNumberGenes,
+  percentMito, setPercentMito,
   resolution, setResolution,
   principalDimensions, setPrincipalDimensions,
 }) => {
@@ -44,6 +48,10 @@ const ClusteringParameterMenu = ({
       {
           isActiveParameter('sc_input_type') ?
             <SingleCellInputType {...{singleCell, setSingleCell}} />
+          : isActiveParameter('number_genes') ?
+            <NumberGenes {...{numberGenes, setNumberGenes}} />
+          : isActiveParameter('percent_mito') ?
+            <PercentMito {...{percentMito, setPercentMito}} />
           : isActiveParameter('resolution') ?
             <Resolution {...{resolution, setResolution}} />
           : isActiveParameter('pca_dimensions') ?

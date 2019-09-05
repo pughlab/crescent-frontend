@@ -9,6 +9,8 @@ const CWLParamsButton = ({
   step,
 
   singleCell, setSingleCell,
+  numberGenes, setNumberGenes,
+  percentMito, setPercentMito,
   resolution, setResolution,
   principalDimensions, setPrincipalDimensions,
 }) => {
@@ -34,6 +36,8 @@ const CWLParamsButton = ({
         <ClusteringParameterMenu
           {...{
             singleCell, setSingleCell,
+            numberGenes, setNumberGenes,
+            percentMito, setPercentMito,
             resolution, setResolution,
             principalDimensions, setPrincipalDimensions
           }}

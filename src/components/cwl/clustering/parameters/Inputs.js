@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Button, Segment, Dropdown, Message, Divider, Label } from 'semantic-ui-react';
+import { Button, Segment, Form, Message, Divider, Label } from 'semantic-ui-react';
 
 import RangeSlider from './RangeSlider'
 
@@ -18,6 +18,18 @@ const PARAMETERS = [
     'Single Cell Input Type',
     'Select type of single cell input',
     'Input can be either MTX: barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz files or DGE: tab delimited digital gene expression (DGE) file with genes in rows vs. barcodes in columns. Default is MTX.'
+  ),
+  parameter(
+    'number_genes',
+    'Number of Genes',
+    'Specify range for number of genes',
+    'The minimum and maximum number of unique gene counts in a cell to be included in normalization and clustering analyses. Default is 50 to 8000.'
+  ),
+  parameter(
+    'percent_mito',
+    'Mitochrondrial Percentage',
+    'Specify range of mitochondrial percentage',
+    'The minimum and maximum percentage of mitochondrial gene counts in a cell to be included in normalization and clustering analyses. For example, for whole cell scRNA-seq use 0 to 0.2, or for Nuc-seq use 0 to 0.05.'
   ),
   parameter(
     'resolution',
@@ -65,10 +77,39 @@ const SingleCellInputType = ({
     )
 }
 
+const NumberGenes = ({
+  numberGenes: {min, max}, setNumberGenes
+}) => {
+  // console.log(min, max)
+  return withMessageAbove(PARAMETERS[1],
+    <Form>
+      <Form.Group widths={2}>
+        <Form.Input label='Min' value={min} onChange={(e, {value}) => setNumberGenes({min: value, max})} />
+        <Form.Input label='Max' value={max} onChange={(e, {value}) => setNumberGenes({min, max: value})} />
+      </Form.Group>
+    </Form>
+  )
+ 
+}
+
+const PercentMito = ({
+  percentMito: {min, max}, setPercentMito,
+}) => {
+  // console.log(min, max)
+  return withMessageAbove(PARAMETERS[2],
+    <Form>
+      <Form.Group widths={2}>
+        <Form.Input label='Min' value={min} onChange={(e, {value}) => setPercentMito({min: value, max})} />
+        <Form.Input label='Max' value={max} onChange={(e, {value}) => setPercentMito({min, max: value})} />
+      </Form.Group>
+    </Form>
+  )
+}
+
 const Resolution = ({
     resolution, setResolution
 }) => {
-    return withMessageAbove(PARAMETERS[1],
+    return withMessageAbove(PARAMETERS[3],
         <RangeSlider
             step={0.1} min={0.1} max={2.5}
             value={resolution}
@@ -80,7 +121,7 @@ const Resolution = ({
 const PCADimensions = ({
     principalDimensions, setPrincipalDimensions
 }) => {
-    return withMessageAbove(PARAMETERS[2],
+    return withMessageAbove(PARAMETERS[4],
         <RangeSlider
             step={1} min={1} max={50}
             value={principalDimensions}
@@ -92,6 +133,8 @@ const PCADimensions = ({
 export {
     PARAMETERS,
     SingleCellInputType,
+    NumberGenes,
+    PercentMito,
     Resolution,
     PCADimensions,
 }

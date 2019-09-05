@@ -44,6 +44,8 @@ const VisualizationComponent = ({
 }) => {
   // PARAMETERS TO SEND TO RPC
   const [singleCell, setSingleCell] = useState('MTX')
+  const [numberGenes, setNumberGenes] = useState({min: 50, max: 8000})
+  const [percentMito, setPercentMito] = useState({min: 0, max: 0.2})
   const [resolution, setResolution] = useState(1)
   const [principalDimensions, setPrincipalDimensions] = useState(10)
 
@@ -52,7 +54,7 @@ const VisualizationComponent = ({
   const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
   const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
   const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
-  
+
   // Local state for notification the result is done
   const [submitted, setSubmitted] = useState(false)
   useEffect(() => setSubmitted(false), [singleCell, resolution, principalDimensions])
@@ -118,9 +120,13 @@ const VisualizationComponent = ({
                 ({step, visType}) => (
                   isActiveToggle('params') ?
                     <CWLParamsButton key={step} step={step}
-                      singleCell={singleCell} setSingleCell={setSingleCell}
-                      resolution={resolution} setResolution={setResolution}
-                      principalDimensions={principalDimensions} setPrincipalDimensions={setPrincipalDimensions}
+                      {...{
+                        singleCell, setSingleCell,
+                        numberGenes, setNumberGenes,
+                        percentMito, setPercentMito,
+                        resolution, setResolution,
+                        principalDimensions, setPrincipalDimensions,
+                      }}
                     />
                   : isActiveToggle('status') ?
                     <CWLStatusButton key={step} step={step} />
@@ -161,7 +167,11 @@ const VisualizationComponent = ({
                   setSubmitted, submitted,
                   notUploaded,
                   params: JSON.stringify({
-                    singleCell, resolution, principalDimensions
+                    singleCell,
+                    numberGenes,
+                    percentMito,
+                    resolution,
+                    principalDimensions,
                   })
                 }}
               />
