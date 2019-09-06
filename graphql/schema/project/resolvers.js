@@ -7,9 +7,15 @@ const resolvers = {
       return await Projects.findOne({projectID})
     },
     // Query multiple projects
-    projects: async (parent, {userID}, {Projects}) => {
+    uploadedProjects: async (parent, {userID}, {Projects}) => {
       return await Projects.find({
-        $or: [{createdBy: userID}, {members: {$elemMatch: {$eq: userID}}}]
+        $or: [{createdBy: userID}, {members: {$elemMatch: {$eq: userID}}}],
+        kind: 'uploaded'
+      })
+    },
+    curatedProjects: async (parent, variables, {Projects}) => {
+      return await Projects.find({
+        kind: 'curated'
       })
     }
   },

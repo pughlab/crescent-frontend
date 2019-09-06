@@ -47,7 +47,17 @@ const ProjectSelectModal = ({
   // GQL query to find all projects of which user is a member of
   const {loading, data, error} = useQuery(gql`
     query UserProjects($userID: ID!) {
-      projects(userID: $userID) {
+      uploadedProjects(userID: $userID) {
+        projectID
+        name
+        description
+        createdOn
+        createdBy {
+          name
+        }
+      }
+
+      curatedProjects {
         projectID
         name
         description
@@ -61,6 +71,20 @@ const ProjectSelectModal = ({
     variables: {userID},
     fetchPolicy: 'cache-and-network'
   })
+
+  const userProjects = R.ifElse(
+      queryIsNotNil('uploadedProjects'),
+      R.prop('uploadedProjects'),
+      R.always([])
+    )(data)
+
+  const curatedProjects = R.ifElse(
+      queryIsNotNil('curatedProjects'),
+      R.prop('curatedProjects'),
+      R.always([])
+    )(data)
+
+  console.log(curatedProjects, userProjects)
   return (
     <Modal size='fullscreen' dimmer='blurring' open={R.isNil(currentProjectID)}>
       <Modal.Header as={Header} textAlign='center' content="Projects/Datasets" />
@@ -97,17 +121,12 @@ const ProjectSelectModal = ({
           :
           <Card.Group itemsPerRow={3}>
           {
-            isActiveProjectType('uploaded') ?
-              R.compose(
-                R.map(project => <ProjectCard key={R.prop('projectID', project)} {...{project, setCurrentProjectID}} />),
-                R.ifElse(
-                  queryIsNotNil('projects'),
-                  R.prop('projects'),
-                  R.always([])
-                )
-              )(data)
-              :
-              []
+            R.map(
+              project => <ProjectCard key={R.prop('projectID', project)} {...{project, setCurrentProjectID}} />,
+              isActiveProjectType('uploaded') ? userProjects
+              : isActiveProjectType('curated') ? curatedProjects
+              : []
+            )
           }
           </Card.Group>
       }

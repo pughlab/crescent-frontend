@@ -44,21 +44,20 @@ const VisualizationComponent = ({
 }) => {
   // PARAMETERS TO SEND TO RPC
   const [singleCell, setSingleCell] = useState('MTX')
+  const [numberGenes, setNumberGenes] = useState({min: 50, max: 8000})
+  const [percentMito, setPercentMito] = useState({min: 0, max: 0.2})
   const [resolution, setResolution] = useState(1)
-  const [genes, setGenes] = useState(['MALAT1', 'GAPDH'])
-  const [opacity, setOpacity] = useState(0.1)
   const [principalDimensions, setPrincipalDimensions] = useState(10)
-  const [returnThreshold, setReturnThreshold] = useState(0.01)
+
   // Uploaded files
   const [uploadedBarcodesFile, setUploadedBarcodesFile] = useState(null)    
   const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
   const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
   const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
+
   // Local state for notification the result is done
   const [submitted, setSubmitted] = useState(false)
-  useEffect(() => {
-    setSubmitted(false)
-  }, [singleCell, resolution, genes, opacity, principalDimensions, returnThreshold])
+  useEffect(() => setSubmitted(false), [singleCell, resolution, principalDimensions])
   const [loading, setLoading]= useState(false)
   const [result, setResult] = useState(null)
   const [activeToggle, setActiveToggle] = useState('params')
@@ -121,12 +120,13 @@ const VisualizationComponent = ({
                 ({step, visType}) => (
                   isActiveToggle('params') ?
                     <CWLParamsButton key={step} step={step}
-                      singleCell={singleCell} setSingleCell={setSingleCell}
-                      resolution={resolution} setResolution={setResolution}
-                      genes={genes} setGenes={setGenes}
-                      opacity={opacity} setOpacity={setOpacity}
-                      principalDimensions={principalDimensions} setPrincipalDimensions={setPrincipalDimensions}
-                      returnThreshold={returnThreshold} setReturnThreshold={setReturnThreshold}
+                      {...{
+                        singleCell, setSingleCell,
+                        numberGenes, setNumberGenes,
+                        percentMito, setPercentMito,
+                        resolution, setResolution,
+                        principalDimensions, setPrincipalDimensions,
+                      }}
                     />
                   : isActiveToggle('status') ?
                     <CWLStatusButton key={step} step={step} />
@@ -143,10 +143,6 @@ const VisualizationComponent = ({
                   {step: 'Dimension Reduction', visType: 'pca'},
                   {step: 'Cell Clustering', visType: 'tsne'},
                   {step: 'Find All Markers', visType: 'markers'},
-                  // {step: 'Differential Expression'},
-                  // {step: 'Visualizations'},
-                  // {step: 'Cell Cluster Labelling'},
-                  // {step: 'Gene/Pathway Interactions'},
                 ]
               )
             }
@@ -154,47 +150,49 @@ const VisualizationComponent = ({
         </Segment>
         {
           isActiveToggle('params') ?
-          <Button.Group fluid widths={2} attached='bottom' size='big'>
-            <UploadModal
-              {...{
-                currentProjectID,
-                uploadedBarcodesFile, setUploadedBarcodesFile,
-                uploadedGenesFile, setUploadedGenesFile,
-                uploadedMatrixFile, setUploadedMatrixFile,
-              }}
-            />
-            <Button.Or text='&' />
-            <SubmitButton
-              {...{
-                currentProjectID,
-                setLoading, loading,
-                setSubmitted, submitted,
-                notUploaded,
-              }}
-              params={JSON.stringify({
-                singleCell, resolution,
-                genes, opacity,
-                principalDimensions, returnThreshold                  
-              })}
-            />
-          </Button.Group>
+            <Button.Group fluid widths={2} attached='bottom' size='big'>
+              <UploadModal
+                {...{
+                  currentProjectID,
+                  uploadedBarcodesFile, setUploadedBarcodesFile,
+                  uploadedGenesFile, setUploadedGenesFile,
+                  uploadedMatrixFile, setUploadedMatrixFile,
+                }}
+              />
+              <Button.Or text='&' />
+              <SubmitButton
+                {...{
+                  currentProjectID,
+                  setLoading, loading,
+                  setSubmitted, submitted,
+                  notUploaded,
+                  params: JSON.stringify({
+                    singleCell,
+                    numberGenes,
+                    percentMito,
+                    resolution,
+                    principalDimensions,
+                  })
+                }}
+              />
+            </Button.Group>
 
           : isActiveToggle('status') ?
-          <Segment attached='bottom' inverted color='teal' content='Current step running is...' />
+            <Segment attached='bottom' inverted color='teal' content='Current step running is...' />
 
           : isActiveToggle('results') ?
-          <Button fluid attached='bottom' size='big' color='violet' icon='download' content='Download'
-            disabled={R.isNil(currentRunId)}
-            as='a'
-            // onClick={() => 
-            //   fetch(`/download/${currentRunId}`)
-            //     .then(response => response.blob())
-            //     .then(objectURL = URL.createObjectURL(blob))
-            // }
-            // //href={`http://localhost:4001/download/${currentRunId}`}
-            // href={objectURL}
-            download
-          />
+            <Button fluid attached='bottom' size='big' color='violet' icon='download' content='Download'
+              disabled={R.isNil(currentRunId)}
+              as='a'
+              // onClick={() => 
+              //   fetch(`/download/${currentRunId}`)
+              //     .then(response => response.blob())
+              //     .then(objectURL = URL.createObjectURL(blob))
+              // }
+              // //href={`http://localhost:4001/download/${currentRunId}`}
+              // href={objectURL}
+              download
+            />
           : null
         }
       </Grid.Column>

@@ -5,6 +5,10 @@ const ProjectSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true
   },
+  kind: {
+    type: String,
+    default: 'uploaded'
+  },
   name: {
     type: String,
     required: true

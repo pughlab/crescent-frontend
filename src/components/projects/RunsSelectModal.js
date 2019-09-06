@@ -66,35 +66,18 @@ const RunsSelectModal = ({
                         ({
                           singleCell,
                           resolution,
-                          opacity,
                           principalDimensions,
-                          returnThreshold
                         }) => (
                           <Label.Group>
                             <Label content='Single Cell Input Type' detail={singleCell} />
                             <Label content='TSNE Resolution' detail={resolution} />
-                            <Label content='Opacity' detail={opacity} />
                             <Label content='PCA Dimensions' detail={principalDimensions} />
-                            <Label content='Return Threshold' detail={returnThreshold} />
                           </Label.Group>
                         ),
                         JSON.parse
                       )(params)
                     }
                   </Card.Description>
-                </Card.Content>
-                <Card.Content extra>
-                  <Label.Group>
-                  {
-                    R.compose(
-                      R.map(
-                        gene => <Label key={gene} content={gene} />
-                      ),
-                      R.prop('genes'),
-                      JSON.parse
-                    )(params)
-                  }
-                  </Label.Group>
                 </Card.Content>
                 <Card.Content extra>
                   <Button.Group fluid widths={2} color='violet' size='large'>
