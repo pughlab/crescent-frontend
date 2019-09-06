@@ -54,7 +54,7 @@ export default class SearchFeature extends Component{
     handleSearchChange = (e, {searchQuery}) => {
         this.setState({ searchQuery });
         if (searchQuery){
-            fetch(`/search/features/${searchQuery}`)
+            fetch(`/search/features/${this.state.runID}/${searchQuery}`)
             .then(resp => resp.clone().json())
             .then(searchOptions => {this.setState({searchOptions})})
         }
