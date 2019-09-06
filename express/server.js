@@ -18,6 +18,7 @@ const fsp = fs.promises
 const path = require('path')
 const zlib = require('zlib')
 const jsonQuery = require('json-query')
+const firstline = require('firstline')
 
 const autobahn = require('autobahn')
 const connection = new autobahn.Connection({ url: 'ws://crossbar:4000/', realm: 'realm1' })
@@ -240,60 +241,95 @@ app.get(
   }
 )
 
+  app.get(
+    '/metadata/:runID',
+    async (req, res) => {
+      const {
+        params: {runID}
+      } = req;
+      const metafile = `./results/${runID}/metadata.tsv`
+      if (fs.existsSync(metafile)){
+        // if there is metadata, read the first line and return the columns
+        firstline(metafile)
+        .then((data) => {
+          let options = R.split('\t', data);
+          options.shift();
+          res.send(JSON.stringify(options));
+        })
+      }
+      else{
+        res.send(JSON.stringify([]));
+      }
+    })
 
-app.get('/search/features/:searchInput',
-  (req, res) => {
-    let emptyResult = [{'text': ''}];
-    const searchInput = req.params.searchInput;
-    let jsonObj = '';
-    // check if json of file exists, create it from zipped file if not
-    if (! fs.existsSync('./features.json')) {
-      const fileContents = fs.createReadStream('./features.tsv.gz');
-      const writeStream = fs.createWriteStream('./features.tsv');
-      const unzip = zlib.createGunzip();
-      let stream = fileContents.pipe(unzip).pipe(writeStream)
-          stream.on('finish', () => {
-              // put unzipped file into json
-              fs.readFile('./features.tsv', 'utf-8', (err, contents) => {
-                  if (err) {return console.log(err);}
-                  else{
-                      // convert contents to 2d-array
-                      features = R.map(R.split("\t"), R.split("\n", contents));
-                      jsonObj = R.map(R.zipObj(['ENSID', 'Symbol', 'Expression']), features)
-                      jsonObj = {"data": jsonObj}
-                      // write json for future use
-                      fs.writeFile("features.json", JSON.stringify(jsonObj), 'utf8', (err) => {
-                          if (err) {return console.log(err);}
-                          else{
-                            let result = []
-                            let query = jsonQuery(`data[*Symbol~/^${searchInput}/i]`, {data: jsonObj, allowRegexp: true}).value;
-                            if (query.length == 0){
-                              res.send(emptyResult);
-                            }
-                            else {
-                              query = (query.length > 4) ? query.slice(0,4) : query; // only return max of 4 results console.log(query)
-                              R.forEach(formatResult, query);
-                              res.send(JSON.stringify(result)); 
-                            }
+  app.get('/search/features/:runID/:searchInput',
+    async (req, res) => {
+      const {
+        params: {runID, searchInput}
+      } = req;
+      let emptyResult = [{'text': ''}];
+      // get the projectID from the run
+      const run = await Run.findOne({runID})
+      const { projectID } = run
+      let jsonObj = '';
+    
+      /*
+      minioClient.fGetObject(projectID, 'features.tsv.gz', `tmp/${projectID}/features.tsv.gz`, (err) => {
+          if(err){return console.log(err);}
+          else{
+            console.log("I'm in.")
+          }
+        });
+      */
+      
+      // check if json of file exists, create it from zipped file if not
+      if (! fs.existsSync('./features.json')) {
+        const fileContents = fs.createReadStream('./features.tsv.gz');
+        const writeStream = fs.createWriteStream('./features.tsv');
+        const unzip = zlib.createGunzip();
+        let stream = fileContents.pipe(unzip).pipe(writeStream)
+        stream.on('finish', () => {
+            // put unzipped file into json
+            fs.readFile('./features.tsv', 'utf-8', (err, contents) => {
+                if (err) {return console.log(err);}
+                else{
+                    // convert contents to 2d-array
+                    features = R.map(R.split("\t"), R.split("\n", contents));
+                    jsonObj = R.map(R.zipObj(['ENSID', 'Symbol', 'Expression']), features)
+                    jsonObj = {"data": jsonObj}
+                    // write json for future use
+                    fs.writeFile("features.json", JSON.stringify(jsonObj), 'utf8', (err) => {
+                        if (err) {return console.log(err);}
+                        else{
+                          let result = []
+                          let query = jsonQuery(`data[*Symbol~/^${searchInput}/i]`, {data: jsonObj, allowRegexp: true}).value;
+                          if (query.length == 0){
+                            res.send(emptyResult);
                           }
-                      });
-                  }
-              }); 
-          }); 
+                          else {
+                            query = (query.length > 4) ? query.slice(0,4) : query; // only return max of 4 results console.log(query)
+                            R.forEach(formatResult, query);
+                            res.send(JSON.stringify(result)); 
+                          }
+                        }
+                    });
+                }
+            }); 
+            }); 
+      }
+      else {
+          jsonObj = JSON.parse(fs.readFileSync("./features.json", 'utf-8'));
+          let result = []
+          let query = jsonQuery(`data[*Symbol~/^${searchInput}/i]`, {data: jsonObj, allowRegexp: true}).value;
+          if (query.length == 0){res.send(emptyResult);}
+          else {
+            query = (query.length > 4) ? query.slice(0,4) : query; // only return max of 4 results
+            const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
+            R.forEach(formatResult, query);
+            res.send(JSON.stringify(result)); 
+          }
+      }
     }
-    else {
-        jsonObj = JSON.parse(fs.readFileSync("./features.json", 'utf-8'));
-        let result = []
-        let query = jsonQuery(`data[*Symbol~/^${searchInput}/i]`, {data: jsonObj, allowRegexp: true}).value;
-        if (query.length == 0){res.send(emptyResult);}
-        else {
-          query = (query.length > 4) ? query.slice(0,4) : query; // only return max of 4 results
-          const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
-          R.forEach(formatResult, query);
-          res.send(JSON.stringify(result)); 
-        }
-    }
-  }
 );
 
 /*
@@ -316,9 +352,61 @@ app.get('/search/features/:searchInput',
 );
 */
 
-app.get(
-  '/tsne/:runID', 
-  (req, res) => {
+ app.get(
+  '/tsnegroups/:runID/:group', 
+  async (req, res) => {
+    const {
+      params: {runID, group}
+    } = req
+    console.log(runID, group)
+    const readFiles = (callback) => {
+      let cell_clusters = [] // store list of clusters with the coordinates of the cells
+      fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {
+          if (err) {res.send(err);}
+          else{
+              // put coords into 2d array
+              let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
+              coords.shift(); // discard header
+              // read in metadata file
+              fs.readFile(path.resolve(`/usr/src/app/results/${runID}/metadata.tsv`), "utf-8", (err, contents) => {
+                  if (err) {res.send(err);}
+                  else{
+                      // put the cell cluster labels into an object
+                      cluster_dict = {}
+                      let labels = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)));
+                      let labelIdx = labels[0].indexOf(group)
+                      labels.shift(); // discard header
+                      coords.forEach((barcode) => {
+                          let idx = labels.find(k => k[0]==barcode[0])
+                          barcode_cluster = String(idx[labelIdx]);
+                          if(barcode_cluster in cluster_dict){
+                              // append existing cluster with coords
+                              cluster_dict[barcode_cluster]['x'].push(parseFloat(barcode[1]));
+                              cluster_dict[barcode_cluster]['y'].push(parseFloat(barcode[2]));
+                              cluster_dict[barcode_cluster]['text'].push(barcode[0]);
+                          }
+                          // create new entry for the cluster
+                          else{cluster_dict[barcode_cluster] = {'name': barcode_cluster, 'mode': 'markers','x': [parseFloat(barcode[1])],'y': [parseFloat(barcode[2])], 'text': [barcode[0]]};}
+                      })
+                      cell_clusters = R.values(cluster_dict);
+                      const sortByCluster = R.sortBy(R.compose(parseInt, R.prop('name')))
+                      cell_clusters = sortByCluster(cell_clusters)
+                      callback(cell_clusters); // callback is to send the data
+                  }
+              })
+          }
+      });
+}
+cell_clusters = readFiles((data) => {
+  // send and then write for future use
+  res.send(JSON.stringify(data)); 
+  fs.writeFile(`/usr/src/app/results/${runID}/${group}.json`, JSON.stringify(data), 'utf8', (err) => console.log(err))
+})
+});
+
+  app.get(
+    '/tsne/:runID', 
+    (req, res) => {
     const runID = req.params.runID
     const readFiles = (callback) => {
       let cell_clusters = [] // store list of clusters with the coordinates of the cells
@@ -338,6 +426,10 @@ app.get(
                       labels.shift(); // discard header
                       coords.forEach((barcode) => {
                           let idx = labels.find(k => k[0]==barcode[0])
+                          if (! idx){
+                            console.log("Problem with barcodes not matching")
+                            res.send("ERROR")
+                          }
                           barcode_cluster = String(idx[1]);
                           if(barcode_cluster in cluster_dict){
                               // append existing cluster with coords
@@ -470,6 +562,83 @@ app.get(
         }
       }
     )
+  }
+);
+
+app.get(
+  '/opacitygroup/:runID/:feature/:group',
+  async (req, res) => {
+    const {
+      params: {runID, feature, group}
+    } = req
+    // given a feature name, extract the normalized expression for each cell (barcode)
+    fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`), "utf8", 
+    (err, contents) => {
+      let result = [];
+      if (err) {res.send(err); return;}
+      // will need to unquote barcodes and features
+      const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
+      // convert contents to 2d-array
+      features = R.map(R.split("\t"), R.split("\n", contents));
+      // grab barcodes and unquote them
+      barcodes = R.map(unquote, features.shift());
+      let found = false
+      for (const line of features){
+          // unquote the feature
+          line[0] = unquote(line[0]);
+          // if matches, zip with barcodes and return
+          if (String(line[0]) == String(feature)){
+            console.log('found');
+            // open up the json file to append the opacities
+            found = true
+            fs.readFile(`/usr/src/app/results/${runID}/${group}.json`,"utf-8", (err, jsonContents) => {
+              obj = JSON.parse(jsonContents);
+              let counts = line.slice(1);
+              // divide by max, multiply by .90 and add .10 to derive opacities (0.1 - 1.0 scale)
+              let max = 0;
+              let min = 0.05
+              counts.forEach(count => {
+                if(count != '-Inf' & count > max){max = parseFloat(count);}
+              });
+              opacityMap = R.zip(barcodes, R.map((c) => ((c*.9/max) + min).toFixed(2), counts));
+              let clustersParsed = 0;
+              // knit them together
+              obj.forEach((itm) => {
+                // for each cluster, fill in the opacities of the marker
+                let orderedOpacities = [];
+                let barcodesParsed = 0;
+                itm['text'].forEach(barcode => {
+                  barcodesParsed++;
+                  opacityMap.filter((map) => {
+                    if(map[0] == barcode){
+                      if (map[1] != 'NaN'){
+                        orderedOpacities.push(map[1]);
+                      }
+                      else{
+                        orderedOpacities.push(min);
+                      }
+                    }
+                  });
+                  if (barcodesParsed == itm['text'].length){
+                    itm['marker'] = {'opacity': orderedOpacities}
+                    clustersParsed++;
+                  }
+                });
+                  if (clustersParsed == obj.length){
+                  console.log('Complete');
+                  res.send(obj);
+                }
+                }); 
+            });                            
+          }
+      }
+      if (! found){
+        // send blank
+        console.log('Opacity: feature not found');
+        res.send(result)
+        return
+      }
+    });
   }
 );
 

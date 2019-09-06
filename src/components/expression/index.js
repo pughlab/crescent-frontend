@@ -3,6 +3,7 @@ import { Button } from 'semantic-ui-react'
 import Tsne from './Tsne'
 import Violin from './Violin'
 import SearchFeatures from './SearchFeatures'
+import ChangeGroup from './ChangeGroup'
 
 const R = require('ramda')
 
@@ -13,13 +14,18 @@ export default class Expression extends Component{
             runID : props.parentcurrentRunId,
             selectedFeature : '',
             loading : false,
-            showTsne : true, // toggle this
-            plotOptions: [{plot: 't-SNE', selected: true}, {plot: 'Violin', selected: false}]
+            plotOptions: [{plot: 't-SNE', selected: true}, {plot: 'Violin', selected: false}],
+            altGroups: null,
+            selectedGroup: null 
         }
     }
 
     togglePlot = () => {
         this.setState({showTsne: !this.state.showTsne});
+    }
+
+    changeGroup = (newGroup) => {
+        this.setState({selectedGroup: newGroup})
     }
 
     updateVariables = (newFeature, isLoading, plotChange) => {
@@ -29,12 +35,32 @@ export default class Expression extends Component{
         else{
             this.setState({loading: isLoading, plotOptions: plotChange});
         }
-        console.log('in parent')
-        console.log(this.state)
     }
 
     changeLoading = (isLoading) => {
         this.setState({loading: isLoading})
+    }
+
+    hasMetadata = () => {
+        if(this.state.runID !== null){
+            fetch(`/metadata/${this.state.runID}`)
+            .then(resp => resp.json())
+            .then((data) => {
+                this.setState({altGroups: data, group: data[0]})
+            })
+        }
+    }
+    
+    componentDidMount() {
+        if(this.state.runID !== null){
+            this.hasMetadata();
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if((prevState.runID != this.state.runID)){
+            this.hasMetadata();
+        }
     }
 
     static getDerivedStateFromProps(props, state){
@@ -46,20 +72,24 @@ export default class Expression extends Component{
 
    
     render() {
-        let {runID, selectedFeature, loading, showTsne, plotOptions} = this.state;
-        //let plot //, hidden, shown
-
+        let {runID, selectedFeature, loading, plotOptions, altGroups, selectedGroup} = this.state;
+        let groups = ''
         const hidePlot = plotType => R.compose(
             R.not,
             R.prop('selected'),
             R.find(R.propEq("plot", plotType))
          )(plotOptions)
-        
+            
+        if (altGroups && altGroups.length > 0){
+            groups = <ChangeGroup runID={ runID } options={ altGroups } callbackFromParent={ this.changeGroup }/>
+        }
+      
         return (
             <div>
                 <div style={{width:'100%', height: '90%', textAlign: 'center'}} >
-                    <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID } hidden={hidePlot('t-SNE')}></Tsne>
-                    <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } runID={ runID } hidden={hidePlot('Violin')}></Violin>
+                    { groups }
+                    <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('t-SNE')}></Tsne>
+                    <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('Violin')}></Violin>
                     <SearchFeatures plotOptions={plotOptions} runID={ runID } loading={ loading } callbackFromParent={this.updateVariables}></SearchFeatures>
                 </div>
             </div>
