@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Grid, Header } from 'semantic-ui-react'
 import Plot from 'react-plotly.js'
+import { expression } from '@babel/template';
 
 
 export default class Violin extends Component{
@@ -21,7 +22,8 @@ export default class Violin extends Component{
         let feature = String(this.state.selectedFeature);
         let group = String(this.state.group)
         if (feature){
-            if (group){
+            if (! group){
+                console.log('wrong call', group)
                 fetch(`/expressiongroup/${runID}/${feature}/${group}`)
                 .then(resp => resp.json(resp))
                 .then(data => {
@@ -98,6 +100,7 @@ export default class Violin extends Component{
         }
 
         let xlabel = (group) ? group : 'Clusters'
+        console.log(expressionData)
 
         return (
             <div hidden={hidden} style={{display: plotDisplay}}>

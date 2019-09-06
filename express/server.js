@@ -268,6 +268,8 @@ app.get(
         params: {runID, searchInput}
       } = req;
       let emptyResult = [{'text': ''}];
+      let result = []
+      const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
       // get the projectID from the run
       const run = await Run.findOne({runID})
       const { projectID } = run
@@ -283,14 +285,16 @@ app.get(
       */
       
       // check if json of file exists, create it from zipped file if not
-      if (! fs.existsSync('./features.json')) {
-        const fileContents = fs.createReadStream('./features.tsv.gz');
-        const writeStream = fs.createWriteStream('./features.tsv');
+      if (! fs.existsSync(`./results/${runID}/features.json`)) {
+        console.log(`./minio/download/${projectID}/features.tsv.gz`)
+        console.log(fs.existsSync(`./minio/download/${projectID}/features.tsv.gz`))
+        const fileContents = fs.createReadStream(`./minio/download/${projectID}/features.tsv.gz`);
+        const writeStream = fs.createWriteStream(`./results/${runID}/features.tsv`);
         const unzip = zlib.createGunzip();
         let stream = fileContents.pipe(unzip).pipe(writeStream)
         stream.on('finish', () => {
             // put unzipped file into json
-            fs.readFile('./features.tsv', 'utf-8', (err, contents) => {
+            fs.readFile(`./results/${runID}/features.tsv`, 'utf-8', (err, contents) => {
                 if (err) {return console.log(err);}
                 else{
                     // convert contents to 2d-array
@@ -298,7 +302,7 @@ app.get(
                     jsonObj = R.map(R.zipObj(['ENSID', 'Symbol', 'Expression']), features)
                     jsonObj = {"data": jsonObj}
                     // write json for future use
-                    fs.writeFile("features.json", JSON.stringify(jsonObj), 'utf8', (err) => {
+                    fs.writeFile(`./results/${runID}/features.json`, JSON.stringify(jsonObj), 'utf8', (err) => {
                         if (err) {return console.log(err);}
                         else{
                           let result = []
@@ -318,13 +322,11 @@ app.get(
             }); 
       }
       else {
-          jsonObj = JSON.parse(fs.readFileSync("./features.json", 'utf-8'));
-          let result = []
+          jsonObj = JSON.parse(fs.readFileSync(`./results/${runID}/features.json`, 'utf-8'));
           let query = jsonQuery(`data[*Symbol~/^${searchInput}/i]`, {data: jsonObj, allowRegexp: true}).value;
           if (query.length == 0){res.send(emptyResult);}
           else {
             query = (query.length > 4) ? query.slice(0,4) : query; // only return max of 4 results
-            const formatResult = x => result.push({'text': x['Symbol'], 'value': x['ENSID']});
             R.forEach(formatResult, query);
             res.send(JSON.stringify(result)); 
           }
@@ -579,6 +581,7 @@ app.get(
     const queryFeature = req.params.feature;
     const runID = req.params.runID;
     // extract normalized expression for every barcode
+
     fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`, 'utf-8',
       (err, contents) => {
         let result = [];

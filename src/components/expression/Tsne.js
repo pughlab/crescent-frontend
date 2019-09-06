@@ -26,7 +26,6 @@ export default class Tsne extends Component{
                 .then(data => {this.setState({clusters: data, message: ''})})
             }
             else{
-                console.log('should not be here')
                 fetch(`/tsne/${runID}`)
                 .then(resp => resp.json())
                 .then(data => {this.setState({clusters: data, message: ''})});
