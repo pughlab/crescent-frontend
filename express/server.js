@@ -358,7 +358,6 @@ app.get('/search/features/:searchInput',
     const {
       params: {runID, group}
     } = req
-    console.log(runID, group)
     const readFiles = (callback) => {
       let cell_clusters = [] // store list of clusters with the coordinates of the cells
       fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_TSNECoordinates.tsv`), "utf8", (err, contents) => {
@@ -469,6 +468,110 @@ const dist = (X) => {
   if(min === 0) {min = 1.0}
   return 0.9 * min * Math.pow(X.length, -0.2)
 }
+
+app.get(
+  '/expressiongroup/:runID/:feature/:group',
+  async (req, res) => {
+    const {
+      params: {runID, feature, group}
+    } = req
+        // extract normalized expression for every barcode
+        fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`, 'utf-8',
+        (err, contents) => {
+          let result = [];
+          if (err) {res.send(err); return;}
+          const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
+          // convert contents to 2d-array
+          features = R.map(R.split("\t"), R.split("\n", contents));
+          barcodes = R.map(unquote, features.shift());
+          let found = false;
+          for (const line of features){
+            if (String(unquote(line[0])) == String(feature)){
+              found = true;
+              // zip the barcodes with the feature line
+              let normCounts = R.zip(barcodes, line.slice(1));
+              // open up the file that categorizes the cells into clusters based on barcode
+              fs.readFile(`/usr/src/app/results/${runID}/metadata.tsv`, 'utf-8',
+                (err, clusterFile) => {
+                  if (err) {res.send(err); return;}
+                  // put into 2d array (remove trailing newline)
+                  let clusters = R.map(R.split("\t"), R.split("\n", clusterFile.slice(0,-1)));
+                  idx = clusters[0].indexOf(group);
+                  let subset = [];
+                  clusters.forEach((row) => {subset.push([row[0],row[idx]])})
+                  headers = subset.shift();
+                  const sortByFirst = R.sortBy(R.prop(0));
+                  normCounts = sortByFirst(normCounts);
+                  clusters = sortByFirst(subset);
+                  // TODO: before combining, add a check
+                  const combine = (left, right) => {return [right[1], left[0], left[1]]}
+                  // this will create a 2d array with the cluster, barcode, and normalized counts
+                  let combined = R.zipWith(combine, normCounts, clusters);
+                  combined = sortByFirst(combined); // sort by cluster
+                  let data = [];
+                  // initialize counters
+                  let currentCluster = null;
+                  let currentViolin = {};
+                  let colourIter = -1;
+                  let currX = [];
+                  let currY = [];
+                  let template = {
+                    name: '',
+                    type: 'violin',
+                    spanmode: "hard",
+                    fillcolor: '',
+                    line: {},
+                    points: "jitter",
+                    jitter: .85,
+                    width: 0.75,
+                    meanline: {visible: true}
+                  }
+                  // create a violin plotly component for every cluster
+                  for(i = 0; i < combined.length; i++){
+                    if (String(combined[i][0]) != currentCluster || i == combined.length-1){
+                        // we're on a new cluster
+                        if (currentCluster !== null){
+                          // do summary calculations and add the existing cluster's info to the data
+                          if (R.sum(R.map(parseFloat, currY)) == 0){currentViolin['type'] = 'box'}       
+                          else{currentViolin['bandwidth'] = dist(currY);}
+                          currentViolin['x'] = currX;
+                          currentViolin['y'] = currY;
+                          data.push(currentViolin);
+                      }
+                      // start a new blank plot element for this cluster
+                      currentCluster = String(combined[i][0])
+                      currentViolin = {...template}; // copy the template
+                      colourIter++;
+                      currentViolin['name'] = currentCluster;
+                      //currentViolin['fillcolor'] = colours[colourIter%10]; // there are 10 default colours
+                      currentViolin['line'] = {color: colours[colourIter%10]}
+                      currX = [currentCluster];
+                      currY = [combined[i][2]];
+                    }
+                    // same cluster, just add the data values
+                    else{
+                      currX.push(currentCluster);
+                      currY.push(combined[i][2]);
+                    }
+                  }
+                  //const sortByCluster = R.sortBy(R.compose(R.slice(-1,1), R.prop('name')))
+                  //data = sortByCluster(data)
+                  //data = sortByCluster(data)
+                  //R.map(sortByCluster, data)
+                  res.send(JSON.stringify(data));
+                }
+              )
+            }
+          }
+          if (! found) {
+            console.log('Normalized Counts: Feature Not Found')
+            res.send(result)
+          }
+        }
+      )
+
+  }
+);
 
 app.get(
   '/expression/:runID/:feature',
@@ -664,7 +767,6 @@ app.get(
           line[0] = unquote(line[0]);
           // if matches, zip with barcodes and return
           if (String(line[0]) == String(queryFeature)){
-            console.log('found');
             // open up the json file to append the opacities
             found = true
             fs.readFile(`/usr/src/app/results/${runID}/clusters.json`,"utf-8", (err, jsonContents) => {

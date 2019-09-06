@@ -26,6 +26,7 @@ export default class Tsne extends Component{
                 .then(data => {this.setState({clusters: data, message: ''})})
             }
             else{
+                console.log('should not be here')
                 fetch(`/tsne/${runID}`)
                 .then(resp => resp.json())
                 .then(data => {this.setState({clusters: data, message: ''})});
@@ -93,10 +94,7 @@ export default class Tsne extends Component{
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if((prevState.selectedFeature != this.state.selectedFeature) || (prevState.runID != this.state.runID)){
-            this.fetchData();
-        }
-        if((prevState.group != this.state.group)){
+        if((prevState.selectedFeature != this.state.selectedFeature) || (prevState.runID != this.state.runID) || (prevState.group != this.state.group)){
             this.fetchData();
         }
     }

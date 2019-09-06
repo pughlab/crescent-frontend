@@ -46,7 +46,7 @@ export default class Expression extends Component{
             fetch(`/metadata/${this.state.runID}`)
             .then(resp => resp.json())
             .then((data) => {
-                this.setState({altGroups: data, group: data[0]})
+                this.setState({altGroups: data, selectedGroup: data[0]})
             })
         }
     }
@@ -83,7 +83,7 @@ export default class Expression extends Component{
         if (altGroups && altGroups.length > 0){
             groups = <ChangeGroup runID={ runID } options={ altGroups } callbackFromParent={ this.changeGroup }/>
         }
-      
+     
         return (
             <div>
                 <div style={{width:'100%', height: '90%', textAlign: 'center'}} >

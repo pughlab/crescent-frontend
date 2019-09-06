@@ -10,6 +10,7 @@ export default class Violin extends Component{
             runID : props.runID,
             selectedFeature : props.selectedFeature,
             hidden: props.hidden,
+            group: props.group,
             expressionData : [],
             message: ''
         }
@@ -18,19 +19,36 @@ export default class Violin extends Component{
     fetchData = () => {
         let runID = String(this.state.runID);
         let feature = String(this.state.selectedFeature);
+        let group = String(this.state.group)
         if (feature){
-            fetch(`/expression/${runID}/${feature}`)
-            .then(resp => resp.json(resp))
-            .then(data => {
-                if (data.length > 0){
-                    this.setState({expressionData: data, message: 'Expression for ' + String(feature)});
-                }
-                else {
-                    this.setState({expressionData: data, message: 'No Expression for '+ String(feature)});
-                }
-                this.render();
-                this.props.callbackFromParent(false);
-            })
+            if (group){
+                fetch(`/expressiongroup/${runID}/${feature}/${group}`)
+                .then(resp => resp.json(resp))
+                .then(data => {
+                    if (data.length > 0){
+                        this.setState({expressionData: data, message: 'Expression for ' + String(feature)});
+                    }
+                    else {
+                        this.setState({expressionData: data, message: 'No Expression for '+ String(feature)});
+                    }
+                    this.render();
+                    this.props.callbackFromParent(false);
+                })
+            }
+            else{
+                fetch(`/expression/${runID}/${feature}`)
+                .then(resp => resp.json(resp))
+                .then(data => {
+                    if (data.length > 0){
+                        this.setState({expressionData: data, message: 'Expression for ' + String(feature)});
+                    }
+                    else {
+                        this.setState({expressionData: data, message: 'No Expression for '+ String(feature)});
+                    }
+                    this.render();
+                    this.props.callbackFromParent(false);
+                })
+            }
         }
         else{
             this.setState({message: "Select a Feature"})
@@ -54,19 +72,22 @@ export default class Violin extends Component{
         if (props.runID != state.runID){
             update.runID = props.runID;
         }
+        if (props.group != state.group){
+            update.group = props.group;
+        }
 
         // return the updated state or null if no change
         return Object.keys(update).length ? update : null;
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if((prevState.selectedFeature != this.state.selectedFeature) || (prevState.runID != this.state.runID)){
+        if((prevState.selectedFeature != this.state.selectedFeature) || (prevState.runID != this.state.runID) || (prevState.group != this.state.group)){
             this.fetchData();
         }
     }
 
     render() {
-        let {expressionData, message, hidden} = this.state;
+        let {expressionData, message, hidden, group} = this.state;
         let plotDisplay;
 
         if (hidden == true){
@@ -75,6 +96,8 @@ export default class Violin extends Component{
         else{
             plotDisplay = 'inline-block';
         }
+
+        let xlabel = (group) ? group : 'Clusters'
 
         return (
             <div hidden={hidden} style={{display: plotDisplay}}>
@@ -85,7 +108,7 @@ export default class Violin extends Component{
                         title: message, 
                         titlefont: {family: "Lato,sans-serif"}, 
                         yaxis:{zeroline: false, title: 'Normalized Expression'}, 
-                        xaxis:{tickmode: 'linear', title: 'Clusters'},
+                        xaxis:{tickmode: 'linear', title: {xlabel}},
                         hovermode: 'closest'
                     }}
                 />
