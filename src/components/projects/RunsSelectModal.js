@@ -65,15 +65,15 @@ const RunsSelectModal = ({
                       R.compose(
                         ({
                           singleCell,
-                          number_genes,
-                          percent_mito,
+                          numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+                          percentMito: {min: minPercentMito, max: maxPercentMito},
                           resolution,
                           principalDimensions,
                         }) => (
                           <Label.Group>
                             <Label content='Single Cell Input Type' detail={singleCell} />
-                            <Label content='Number of Genes' detail={number_genes} />
-                            <Label content='Mitochondrial Percentage' detail={percent_mito} />
+                            <Label content='Number of Genes' detail={`${minNumberGenes},${maxNumberGenes}`} />
+                            <Label content='Mitochondrial Percentage' detail={`${minPercentMito},${maxPercentMito}`} />
                             <Label content='Clustering Resolution' detail={resolution} />
                             <Label content='PCA Dimensions' detail={principalDimensions} />
 
