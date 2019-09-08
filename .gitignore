@@ -9,6 +9,7 @@ build/
 mongodb/
 crescent-initial.simg
 crescent-v3-july9.simg
+crescent-v3-sept5.simg
 
 package-lock.json
 
