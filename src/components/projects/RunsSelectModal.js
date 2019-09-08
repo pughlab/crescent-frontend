@@ -65,13 +65,18 @@ const RunsSelectModal = ({
                       R.compose(
                         ({
                           singleCell,
+                          number_genes,
+                          percent_mito,
                           resolution,
                           principalDimensions,
                         }) => (
                           <Label.Group>
                             <Label content='Single Cell Input Type' detail={singleCell} />
-                            <Label content='TSNE Resolution' detail={resolution} />
+                            <Label content='Number of Genes' detail={number_genes} />
+                            <Label content='Mitochondrial Percentage' detail={percent_mito} />
+                            <Label content='Clustering Resolution' detail={resolution} />
                             <Label content='PCA Dimensions' detail={principalDimensions} />
+
                           </Label.Group>
                         ),
                         JSON.parse

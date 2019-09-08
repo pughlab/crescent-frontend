@@ -87,7 +87,7 @@ const ProjectSelectModal = ({
   console.log(curatedProjects, userProjects)
   return (
     <Modal size='fullscreen' dimmer='blurring' open={R.isNil(currentProjectID)}>
-      <Modal.Header as={Header} textAlign='center' content="Projects/Datasets" />
+      <Modal.Header as={Header} textAlign='center' content="Projects" />
       <Modal.Header>
         <Button.Group fluid widths={3}>
         {
@@ -101,9 +101,9 @@ const ProjectSelectModal = ({
               />
             ),
             [
-              {label: 'Yours', key: 'uploaded'},
-              {label: 'Example', key: 'public'},
-              {label: 'Published', key: 'curated'}
+              {label: 'Your Data', key: 'uploaded'},
+              {label: 'Example Data', key: 'public'},
+              {label: 'Published Data', key: 'curated'}
             ]
           )
         }
