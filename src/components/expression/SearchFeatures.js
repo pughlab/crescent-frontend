@@ -104,7 +104,8 @@ export default class SearchFeature extends Component{
                         />
                     </Grid.Column>
                     <Grid.Column width={6}>
-                    <Dropdown
+                    <Dropdown 
+                        placeholder='Search genes'
                         fluid
                         multiple
                         search
