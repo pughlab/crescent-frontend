@@ -72,8 +72,8 @@ const RunsSelectModal = ({
                         }) => (
                           <Label.Group>
                             <Label content='Single Cell Input Type' detail={singleCell} />
-                            <Label content='Number of Genes' detail={`${minNumberGenes},${maxNumberGenes}`} />
-                            <Label content='Mitochondrial Percentage' detail={`${minPercentMito},${maxPercentMito}`} />
+                            <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
+                            <Label content='Mitochondrial Percentage' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
                             <Label content='Clustering Resolution' detail={resolution} />
                             <Label content='PCA Dimensions' detail={principalDimensions} />
 
