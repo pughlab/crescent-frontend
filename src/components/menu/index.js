@@ -62,7 +62,6 @@ const MenuComponent = ({
 }) => {
   return (
     <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='large'>
-      <InfoModal />
       <Menu.Item header content={<CrescentIcon />} />
 
       <Menu.Menu position='right'>
@@ -81,6 +80,7 @@ const MenuComponent = ({
             }}
           />
         </Menu.Item>
+        <InfoModal />
       </Menu.Menu>
     </Segment>
   )
