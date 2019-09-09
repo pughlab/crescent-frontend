@@ -18,34 +18,34 @@ export default class Violin extends Component{
     }
 
     fetchData = () => {
-        let runID = String(this.state.runID);
-        let feature = String(this.state.selectedFeature);
-        let group = String(this.state.group)
-        if (feature){
-            if (! group){
-                console.log('wrong call', group)
-                fetch(`/expressiongroup/${runID}/${feature}/${group}`)
+        console.log(this.state.selectedFeature)
+
+        if (this.state.selectedFeature){
+            if (! this.state.group){
+                console.log('fetching regular expression')
+                fetch(`/expression/${this.state.runID}/${this.state.selectedFeature}`)
                 .then(resp => resp.json(resp))
                 .then(data => {
                     if (data.length > 0){
-                        this.setState({expressionData: data, message: 'Expression for ' + String(feature)});
+                        this.setState({expressionData: data, message: 'Expression for ' + String(this.state.selectedFeature)});
                     }
                     else {
-                        this.setState({expressionData: data, message: 'No Expression for '+ String(feature)});
+                        this.setState({expressionData: data, message: 'No Expression for '+ String(this.state.selectedFeature)});
                     }
                     this.render();
                     this.props.callbackFromParent(false);
                 })
+
             }
-            else{
-                fetch(`/expression/${runID}/${feature}`)
+            else {
+                fetch(`/expressiongroup/${this.state.runID}/${this.state.selectedFeature}/${this.state.group}`)
                 .then(resp => resp.json(resp))
                 .then(data => {
                     if (data.length > 0){
-                        this.setState({expressionData: data, message: 'Expression for ' + String(feature)});
+                        this.setState({expressionData: data, message: 'Expression for ' + String(this.state.selectedFeature)});
                     }
                     else {
-                        this.setState({expressionData: data, message: 'No Expression for '+ String(feature)});
+                        this.setState({expressionData: data, message: 'No Expression for '+ String(this.state.selectedFeature)});
                     }
                     this.render();
                     this.props.callbackFromParent(false);
@@ -101,6 +101,7 @@ export default class Violin extends Component{
 
         let xlabel = (group) ? group : 'Clusters'
         console.log(expressionData)
+        console.log(group)
 
         return (
             <div hidden={hidden} style={{display: plotDisplay}}>
