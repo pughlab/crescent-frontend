@@ -27,9 +27,9 @@ const PARAMETERS = [
   ),
   parameter(
     'percent_mito',
-    'Mitochrondrial Percentage',
-    'Specify range of mitochondrial percentage',
-    'The minimum and maximum percentage of mitochondrial gene counts in a cell to be included in normalization and clustering analyses. For example, for whole cell scRNA-seq use 0 to 0.2, or for Nuc-seq use 0 to 0.05.'
+    'Mitochondrial Fraction',
+    'Specify range of mitochondrial fraction',
+    'The minimum and maximum fraction of mitochondrial gene counts in a cell to be included in normalization and clustering analyses. For example, for whole cell scRNA-seq use 0 to 0.2, or for Nuc-seq use 0 to 0.05.'
   ),
   parameter(
     'resolution',

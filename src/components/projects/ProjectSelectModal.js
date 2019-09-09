@@ -87,7 +87,7 @@ const ProjectSelectModal = ({
   console.log(curatedProjects, userProjects)
   return (
     <Modal size='fullscreen' dimmer='blurring' open={R.isNil(currentProjectID)}>
-      <Modal.Header as={Header} textAlign='center' content="Projects/Datasets" />
+      <Modal.Header as={Header} textAlign='center' content="Projects" />
       <Modal.Header>
         <Button.Group fluid widths={3}>
         {
@@ -101,9 +101,9 @@ const ProjectSelectModal = ({
               />
             ),
             [
-              {label: 'Yours', key: 'uploaded'},
-              {label: 'Example', key: 'public'},
-              {label: 'Published', key: 'curated'}
+              {label: 'Your Data', key: 'uploaded'},
+              {label: 'Example Data', key: 'public'},
+              {label: 'Published Data', key: 'curated'}
             ]
           )
         }
@@ -113,10 +113,14 @@ const ProjectSelectModal = ({
       {
         R.isNil(projectType) ?
           <Message>
-            <Header
-              textAlign='center'
-              content='Click above to select a project type or below to create a new project'
-            />
+            <Header>
+              <Header.Content content='Click above to select a project type or below to create a new project' />
+            </Header>
+            <Message.List>
+              <Message.Item content='Your Data: Upload your own scRNA-seq data for analysis and visualization' />
+              <Message.Item content='Example Data: Examples of data formats accepted by CReSCENT' />
+              <Message.Item content='Published Data: Select published, publicly available datasets to visualize' />
+            </Message.List>
           </Message>
           :
           <Card.Group itemsPerRow={3}>

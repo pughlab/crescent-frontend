@@ -19,7 +19,7 @@ const makeCWLJobJSON = (
 ) => ({
   R_script: {
     class: 'File',
-    path: '/usr/src/app/crescent/CWL_Runs_Seurat_v3.R'
+    path: '/usr/src/app/crescent/Runs_Seurat_v3.R'
 
   },
   sc_input: {

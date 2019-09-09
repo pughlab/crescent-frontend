@@ -65,13 +65,18 @@ const RunsSelectModal = ({
                       R.compose(
                         ({
                           singleCell,
+                          numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+                          percentMito: {min: minPercentMito, max: maxPercentMito},
                           resolution,
                           principalDimensions,
                         }) => (
                           <Label.Group>
                             <Label content='Single Cell Input Type' detail={singleCell} />
-                            <Label content='TSNE Resolution' detail={resolution} />
+                            <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
+                            <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
+                            <Label content='Clustering Resolution' detail={resolution} />
                             <Label content='PCA Dimensions' detail={principalDimensions} />
+
                           </Label.Group>
                         ),
                         JSON.parse
@@ -83,7 +88,8 @@ const RunsSelectModal = ({
                   <Button.Group fluid widths={2} color='violet' size='large'>
                     <Button icon='download' content='Download' labelPosition='left'
                       as='a'
-                      href={`/download?runID=${runID}`}
+                      //TODO: pass in proxied url into the href instead of directly pointing
+                      //href={`http://localhost:4001/download/${currentRunId}`}
                       download
                     />
                     <Button.Or />

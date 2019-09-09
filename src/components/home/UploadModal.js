@@ -76,7 +76,7 @@ const UploadModal = ({
             uploadedFile={uploadedBarcodesFile}
             setUploadedFile={setUploadedBarcodesFile}
           />
-          <UploadButton label='Genes'
+          <UploadButton label='Genes/Features'
             // url='/upload/genes' 
             url={`/projects/${currentProjectID}/upload/genes`}
             uploadedFile={uploadedGenesFile}

@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: /usr/src/app/crescent-v3-july9.simg
+    dockerImageId: /usr/src/app/crescent-v3-sept5.simg
 
 baseCommand: [Rscript]
 
@@ -91,6 +91,20 @@ inputs:
     inputBinding:
       position: 14
       prefix: -u
+
+  runs_cwl:
+    type: string
+    default: Y
+    inputBinding:
+      position: 15 
+      prefix: -w
+
+  outs_dir:
+    type: string
+    default: N
+    inputBinding:
+      position: 16
+      prefix: -o 
 
 outputs:
   seurat_output:

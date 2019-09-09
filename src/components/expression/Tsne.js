@@ -8,6 +8,7 @@ export default class Tsne extends Component{
         this.state = {
             runID : props.runID,
             selectedFeature : props.selectedFeature,
+            group: props.group,
             hidden: props.hidden,
             clusters : [],
             message: '',
@@ -16,29 +17,55 @@ export default class Tsne extends Component{
     }
 
     fetchData = () => {
-        let {runID, selectedFeature} = this.state;
+        let {runID, selectedFeature, group} = this.state;
 
         if (! selectedFeature || selectedFeature == ''){
-            fetch(`/tsne/${runID}`)
-            .then(resp => resp.json())
-            .then(data => {this.setState({clusters: data, message: ''})});
+            if (group) {
+                fetch(`/tsnegroups/${runID}/${group}`)
+                .then(resp => resp.json())
+                .then(data => {this.setState({clusters: data, message: ''})})
+            }
+            else{
+                fetch(`/tsne/${runID}`)
+                .then(resp => resp.json())
+                .then(data => {this.setState({clusters: data, message: ''})});
+            }
         }
         else{
-            // fetch the clusters with variable opacities
-            fetch(`/opacity/${runID}/${selectedFeature}`)
-            .then(resp => resp.json())
-            .then(data => {
-                if (data.length > 0){
-                    this.setState({clusters: data, message: ''});
-                    this.render();
-                    this.props.callbackFromParent(false);
-                }
-                else{
-                    this.setState({message: 'No gene expression data available - graph not updated'});
-                    this.render();
-                    this.props.callbackFromParent(false);
-                }
-            });
+            if (group){
+                // fetch the clusters with variable opacities
+                fetch(`/opacitygroup/${runID}/${selectedFeature}/${group}`)
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data.length > 0){
+                        this.setState({clusters: data, message: ''});
+                        this.render();
+                        this.props.callbackFromParent(false);
+                    }
+                    else{
+                        this.setState({message: 'No gene expression data available - graph not updated'});
+                        this.render();
+                        this.props.callbackFromParent(false);
+                    }
+                });
+            }
+            else{
+                // fetch the clusters with variable opacities
+                fetch(`/opacity/${runID}/${selectedFeature}`)
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data.length > 0){
+                        this.setState({clusters: data, message: ''});
+                        this.render();
+                        this.props.callbackFromParent(false);
+                    }
+                    else{
+                        this.setState({message: 'No gene expression data available - graph not updated'});
+                        this.render();
+                        this.props.callbackFromParent(false);
+                    }
+                });
+            }
         }
     }
 
@@ -57,19 +84,22 @@ export default class Tsne extends Component{
         if (props.runID != state.runID){
             update.runID = props.runID;
         }
+        if (props.group != state.group){
+            update.group = props.group;
+        }
 
         // return the updated state or null if no change
         return Object.keys(update).length ? update : null;
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if((prevState.selectedFeature != this.state.selectedFeature) || (prevState.runID != this.state.runID)){
+        if((prevState.selectedFeature != this.state.selectedFeature) || (prevState.runID != this.state.runID) || (prevState.group != this.state.group)){
             this.fetchData();
         }
     }
 
     render() {
-        let { clusters, message, hidden } = this.state;
+        let { clusters, message, hidden, group } = this.state;
         let plotDisplay;
 
         if (hidden == true){
@@ -82,9 +112,15 @@ export default class Tsne extends Component{
             <div hidden={hidden} style={{display: plotDisplay}}>
                 <Plot 
                 data={clusters}
-                layout={{title: 't-SNE', autosize: false, hovermode: 'closest', xaxis:{showgrid: false}, yaxis:{showgrid: false}}}
+                layout={{
+                    title: 't-SNE', 
+                    autosize: false, 
+                    hovermode: 'closest', 
+                    xaxis:{showgrid: false, ticks: '', showticklabels: false}, 
+                    yaxis:{showgrid: false, ticks: '', showticklabels: false}, 
+                    legend: {"orientation": "h"}
+                }}
                 useResizeHandler={false}
-                //style={{width:'100%', height: '90%'}}
                 {...this.props}
                 />
                 <p>{message}</p>
