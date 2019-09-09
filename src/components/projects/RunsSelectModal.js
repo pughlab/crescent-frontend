@@ -88,7 +88,8 @@ const RunsSelectModal = ({
                   <Button.Group fluid widths={2} color='violet' size='large'>
                     <Button icon='download' content='Download' labelPosition='left'
                       as='a'
-                      href={`/download?runID=${runID}`}
+                      //TODO: pass in proxied url into the href instead of directly pointing
+                      //href={`http://localhost:4001/download/${currentRunId}`}
                       download
                     />
                     <Button.Or />
