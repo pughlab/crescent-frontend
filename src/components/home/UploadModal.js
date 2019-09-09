@@ -9,9 +9,12 @@ const UploadButton = ({
     label,   
     url, // Minio url
     uploadedFile, setUploadedFile
-}) => (
+}) => {
+  const [loading, setLoading] = useState(false)
+  return (
   <>
     <Button icon='upload'
+      loading={loading}
       color={R.isNil(uploadedFile) ? undefined : 'blue'}
       active={RA.isNotNil(uploadedFile)}
       content={R.isNil(uploadedFile) ? label : uploadedFile.name}
@@ -30,15 +33,22 @@ const UploadButton = ({
           const formData = new FormData()
           formData.append('uploadedFile', file)
           xhr.send(formData)
+          xhr.onprogress = () => {
+            setLoading(true)
+          }
           xhr.onload = () => {
-            if (xhr.status == 200) {setUploadedFile(file)}
+            if (xhr.status == 200) {
+              setUploadedFile(file)
+              setLoading(false)
+            }
           }
           console.log(event.target.files)
         }
       }
     />
   </>
-)
+  )
+}
 
 const UploadModal = ({
   currentProjectID,
