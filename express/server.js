@@ -212,10 +212,8 @@ app.get(
     }
     Run.findOne({ runID }, (err, run) => {
       if (err) { console.log(err) }
-      console.log(run)
       const { runID, params } = run
       const { resolution } = JSON.parse(params)
-      console.log(runID, resolution)
 //const runPath = `/Users/smohanra/Documents/crescent/docker-crescent/${runID}/SEURAT`
       const runPath = `/usr/src/app/results/${runID}/SEURAT` 
       const vis = R.equals(visType, 'pca') ? 'SEURAT_PCElbowPlot' : R.equals(visType, 'markers') ? 'SEURAT_TSNEPlot_EachTopGene' : R.equals(visType, 'qc') ? 'SEURAT_QC_VlnPlot' : null
@@ -228,7 +226,6 @@ app.get(
 app.get(
   '/download/:runID',
   (req, res) => {
-    console.log(req.query)
     const runID = req.params.runID
     const zip = new AdmZip()
     //zip.addLocalFolder(`/Users/smohanra/Documents/crescent/docker-crescent/${runID}/SEURAT`)
@@ -286,8 +283,6 @@ app.get(
       
       // check if json of file exists, create it from zipped file if not
       if (! fs.existsSync(`./results/${runID}/features.json`)) {
-        console.log(`./minio/download/${projectID}/features.tsv.gz`)
-        console.log(fs.existsSync(`./minio/download/${projectID}/features.tsv.gz`))
         const fileContents = fs.createReadStream(`./minio/download/${projectID}/features.tsv.gz`);
         const writeStream = fs.createWriteStream(`./results/${runID}/features.tsv`);
         const unzip = zlib.createGunzip();
@@ -353,6 +348,44 @@ app.get('/search/features/:searchInput',
   }
 );
 */
+
+/*
+Given a runID, return the number of cells for the run's project dataset
+This is used to determine whether opacity/violins should be shown on the front-end
+*/
+app.get(
+  '/cellcount/:runID',
+  async (req, res) => {
+    const {
+      params: {runID}
+    } = req
+    const run = await Run.findOne({runID})
+    const { projectID } = run
+    
+    if (! fs.existsSync(`./results/${runID}/cellcount.txt`)){
+      const fileContents = fs.createReadStream(`./minio/download/${projectID}/barcodes.tsv.gz`);
+      const writeStream = fs.createWriteStream(`./results/${runID}/barcodes.tsv`);
+      const unzip = zlib.createGunzip();
+      let stream = fileContents.pipe(unzip).pipe(writeStream)
+      stream.on('finish', () => {
+        // count number of cells, store in text file
+        fs.readFile(`./results/${runID}/barcodes.tsv`, 'utf-8', (err, contents) => {
+          if (err) { res.send(err); }
+          let barcodes = R.split("\n", contents).length;
+          fs.writeFile(`./results/${runID}/cellcount.txt`, String(barcodes), (err) => {if (err) console.log(err);})
+          res.send(String(barcodes));
+          return
+        })
+      })
+    }
+    else{
+      fs.readFile(`./results/${runID}/cellcount.txt`, 'utf-8', (err, contents) => {
+        if (err) { res.send(err); }
+        res.send(contents)      
+      })
+    }
+  }
+);
 
  app.get(
   '/tsnegroups/:runID/:group', 
@@ -580,8 +613,7 @@ app.get(
   (req, res) => {
     const queryFeature = req.params.feature;
     const runID = req.params.runID;
-    // extract normalized expression for every barcode
-
+    // extract normalized expression for every barcode given the feature
     fs.readFile(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`, 'utf-8',
       (err, contents) => {
         let result = [];
@@ -694,7 +726,6 @@ app.get(
           line[0] = unquote(line[0]);
           // if matches, zip with barcodes and return
           if (String(line[0]) == String(feature)){
-            console.log('found');
             // open up the json file to append the opacities
             found = true
             fs.readFile(`/usr/src/app/results/${runID}/${group}.json`,"utf-8", (err, jsonContents) => {
@@ -806,7 +837,6 @@ app.get(
                   }
                 });
                   if (clustersParsed == obj.length){
-                  console.log('Complete');
                   res.send(obj);
                 }
                 }); 

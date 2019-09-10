@@ -16,7 +16,8 @@ export default class Expression extends Component{
             loading : false,
             plotOptions: [{plot: 't-SNE', selected: true}, {plot: 'Violin', selected: false}],
             altGroups: null,
-            selectedGroup: null 
+            selectedGroup: null,
+            cellcount: null
         }
     }
 
@@ -51,28 +52,36 @@ export default class Expression extends Component{
         }
     }
     
+    getCellCount = () => {
+        if(this.state.runID !== null){
+            fetch(`/cellcount/${this.state.runID}`)
+            .then(resp => resp.json())
+            .then((data) => {
+                this.setState({cellcount: data})
+            })
+        } 
+    }
     componentDidMount() {
         if(this.state.runID !== null){
             this.hasMetadata();
+            this.getCellCount();
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
         if((prevState.runID != this.state.runID)){
             this.hasMetadata();
+            this.getCellCount();
         }
     }
 
     static getDerivedStateFromProps(props, state){
-        if (props.parentcurrentRunId != state.runID){
-            return {runID: props.parentcurrentRunId};
-        }
+        if (props.parentcurrentRunId != state.runID){return {runID: props.parentcurrentRunId};}
         else { return null }
     }
-
    
     render() {
-        let {runID, selectedFeature, loading, plotOptions, altGroups, selectedGroup} = this.state;
+        let {runID, selectedFeature, loading, plotOptions, altGroups, selectedGroup, cellcount} = this.state;
         let groups = ''
         const hidePlot = plotType => R.compose(
             R.not,
@@ -88,8 +97,8 @@ export default class Expression extends Component{
             <div>
                 <div style={{width:'100%', height: '90%', textAlign: 'center'}} >
                     { groups }
-                    <Tsne callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('t-SNE')}></Tsne>
-                    <Violin callbackFromParent={this.changeLoading} selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('Violin')}></Violin>
+                    <Tsne callbackFromParent={this.changeLoading} cellcount={ cellcount } selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('t-SNE')}></Tsne>
+                    <Violin callbackFromParent={this.changeLoading} cellcount={ cellcount }selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('Violin')}></Violin>
                     <SearchFeatures plotOptions={plotOptions} runID={ runID } loading={ loading } callbackFromParent={this.updateVariables}></SearchFeatures>
                 </div>
             </div>

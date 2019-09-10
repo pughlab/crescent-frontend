@@ -12,12 +12,13 @@ export default class Tsne extends Component{
             hidden: props.hidden,
             clusters : [],
             message: '',
-            plotting: false
+            plotting: false,
+            cellcount: props.cellcount
         }
     }
 
     fetchData = () => {
-        let {runID, selectedFeature, group} = this.state;
+        let {runID, selectedFeature, group, cellcount} = this.state;
 
         if (! selectedFeature || selectedFeature == ''){
             if (group) {
@@ -32,7 +33,12 @@ export default class Tsne extends Component{
             }
         }
         else{
-            if (group){
+            if (cellcount > 3000){
+                this.setState({message: 'Currently interactive expression is only supported for datasets with < 3k cells'})
+                this.render();
+                this.props.callbackFromParent(false);
+            }
+            else if (group){
                 // fetch the clusters with variable opacities
                 fetch(`/opacitygroup/${runID}/${selectedFeature}/${group}`)
                 .then(resp => resp.json())
@@ -87,6 +93,9 @@ export default class Tsne extends Component{
         if (props.group != state.group){
             update.group = props.group;
         }
+        if (props.cellcount != state.cellcount){
+            update.cellcount = props.cellcount;
+        }
 
         // return the updated state or null if no change
         return Object.keys(update).length ? update : null;
@@ -99,7 +108,7 @@ export default class Tsne extends Component{
     }
 
     render() {
-        let { clusters, message, hidden, group } = this.state;
+        let { clusters, message, hidden } = this.state;
         let plotDisplay;
 
         if (hidden == true){

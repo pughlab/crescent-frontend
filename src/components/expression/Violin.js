@@ -13,16 +13,17 @@ export default class Violin extends Component{
             hidden: props.hidden,
             group: props.group,
             expressionData : [],
-            message: ''
+            message: '',
+            cellcount: props.cellcount
         }
     }
 
     fetchData = () => {
-        console.log(this.state.selectedFeature)
-
-        if (this.state.selectedFeature){
+        if (this.state.cellcount > 3000){
+            this.setState({message: 'Currently interactive expression is only supported for datasets with < 3k cells'})
+        }
+        else if (this.state.selectedFeature){
             if (! this.state.group){
-                console.log('fetching regular expression')
                 fetch(`/expression/${this.state.runID}/${this.state.selectedFeature}`)
                 .then(resp => resp.json(resp))
                 .then(data => {
@@ -76,6 +77,9 @@ export default class Violin extends Component{
         }
         if (props.group != state.group){
             update.group = props.group;
+        }
+        if (props.cellcount != state.cellcount){
+            update.cellcount = props.cellcount;
         }
 
         // return the updated state or null if no change
