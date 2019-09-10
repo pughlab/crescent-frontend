@@ -24,6 +24,7 @@ const UploadButton = ({
     <input hidden id={label} type='file'
       onChange={
         (event) => {
+          setLoading(true)
           const file = R.head(event.target.files)
           // Send file to minio
           const xhr = new XMLHttpRequest ()
@@ -33,9 +34,7 @@ const UploadButton = ({
           const formData = new FormData()
           formData.append('uploadedFile', file)
           xhr.send(formData)
-          xhr.onprogress = () => {
-            setLoading(true)
-          }
+          // xhr.onprogress = () => {}
           xhr.onload = () => {
             if (xhr.status == 200) {
               setUploadedFile(file)
