@@ -20,7 +20,8 @@ const App = ({session}) => {
       {...{
         userID, setUserID,
         loggedIn, setLoggedIn,
-        currentProjectID, setCurrentProjectID
+        currentProjectID, setCurrentProjectID,
+        currentRunId, setCurrentRunId
       }}
     /> :
     <Segment style={{height: '100%', padding: 0}}>

@@ -7,12 +7,13 @@ const LandingPageComponent = ({
   userID, setUserID,
   loggedIn, setLoggedIn,
   currentProjectID, setCurrentProjectID,
+  currentRunId, setCurrentRunId
 }) => {
   const [showLogin, setShowLogin] = useState(true)
 
   return (
     loggedIn ?
-      <ProjectSelectModal {...{currentProjectID, setCurrentProjectID, userID}} />
+      <ProjectSelectModal {...{currentProjectID, setCurrentProjectID, userID, setCurrentRunId}} />
     : showLogin ?
       <LoginForm {...{setLoggedIn, setShowLogin, setUserID}} />
     : <RegisterForm {...{setShowLogin}} />
