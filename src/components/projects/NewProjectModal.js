@@ -9,6 +9,7 @@ import * as RA from 'ramda-adjunct'
 import {queryIsNotNil} from '../../utils'
 
 const NewProjectModal = ({
+  setCurrentRunId,
   setCurrentProjectID,
   userID
 }) => {
@@ -27,6 +28,7 @@ const NewProjectModal = ({
   useEffect(() => {
     if (queryIsNotNil('createProject', data)) {
       setCurrentProjectID(R.path(['createProject','projectID'], data))
+      setCurrentRunId(null)
     }
   }, [data])
   return (

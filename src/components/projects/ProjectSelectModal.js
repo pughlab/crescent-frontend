@@ -19,7 +19,8 @@ const ProjectCard = ({
     createdBy: {name: creatorName},
     createdOn
   },
-  setCurrentProjectID
+  setCurrentProjectID,
+  setCurrentRunId
 }) => {
   return (
     <Card key={projectID} link>
@@ -30,7 +31,10 @@ const ProjectCard = ({
       <Card.Content extra content={description} />
       <Card.Content extra>
         <Button fluid color='grey' icon='eye'
-          onClick={() => setCurrentProjectID(projectID)}
+          onClick={() => {
+            setCurrentProjectID(projectID)
+            setCurrentRunId(null)
+          }}
         />
       </Card.Content>
     </Card>
@@ -38,6 +42,7 @@ const ProjectCard = ({
 }
 
 const ProjectSelectModal = ({
+  setCurrentRunId,
   currentProjectID, setCurrentProjectID,
   userID
 }) => {
@@ -126,7 +131,7 @@ const ProjectSelectModal = ({
           <Card.Group itemsPerRow={3}>
           {
             R.map(
-              project => <ProjectCard key={R.prop('projectID', project)} {...{project, setCurrentProjectID}} />,
+              project => <ProjectCard key={R.prop('projectID', project)} {...{project, setCurrentProjectID, setCurrentRunId}} />,
               isActiveProjectType('uploaded') ? userProjects
               : isActiveProjectType('curated') ? curatedProjects
               : []
@@ -136,7 +141,7 @@ const ProjectSelectModal = ({
       }
       </Modal.Content>
       <Modal.Actions>
-        <NewProjectModal {...{setCurrentProjectID, userID}} />
+        <NewProjectModal {...{setCurrentProjectID, userID, setCurrentRunId}} />
       </Modal.Actions>
     </Modal>
   )

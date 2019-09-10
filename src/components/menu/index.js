@@ -84,6 +84,7 @@ const MenuComponent = ({
           <ProjectSelectModal 
             {...{
               currentProjectID, setCurrentProjectID,
+              setCurrentRunId,
               userID
             }}
           />
