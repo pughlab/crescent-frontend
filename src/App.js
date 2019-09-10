@@ -13,6 +13,11 @@ const App = ({session}) => {
   const [loggedIn, setLoggedIn] = useState(false)
   const [currentProjectID, setCurrentProjectID] = useState(null)
   const [userID, setUserID] = useState(null)
+  const logout = () => {
+    setLoggedIn(false)
+    setCurrentProjectID(null)
+    setCurrentRunId(null)
+  }
   return (
     // loggedIn ?
     R.isNil(currentProjectID) ?
@@ -35,7 +40,8 @@ const App = ({session}) => {
         {...{
           userID, setUserID,
           currentRunId, setCurrentRunId,
-          currentProjectID, setCurrentProjectID
+          currentProjectID, setCurrentProjectID,
+          logout
         }}
       />
     </Segment>
