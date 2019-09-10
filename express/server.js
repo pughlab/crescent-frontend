@@ -387,6 +387,58 @@ app.get(
   }
 );
 
+app.get(
+  '/umapgroups/:runID/:group', 
+  async (req, res) => {
+    const {
+      params: {runID, group}
+    } = req
+    const readFiles = (callback) => {
+      let cell_clusters = [] // store list of clusters with the coordinates of the cells
+      fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_UMAPCoordinates.tsv`), "utf8", (err, contents) => {
+          if (err) {res.send(err);}
+          else{
+              // put coords into 2d array
+              let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
+              coords.shift(); // discard header
+              // read in metadata file
+              fs.readFile(path.resolve(`/usr/src/app/results/${runID}/metadata.tsv`), "utf-8", (err, contents) => {
+                  if (err) {res.send(err);}
+                  else{
+                      // put the cell cluster labels into an object
+                      cluster_dict = {}
+                      let labels = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)));
+                      let labelIdx = labels[0].indexOf(group)
+                      labels.shift(); // discard header
+                      coords.forEach((barcode) => {
+                          let idx = labels.find(k => k[0]==barcode[0])
+                          barcode_cluster = String(idx[labelIdx]);
+                          if(barcode_cluster in cluster_dict){
+                              // append existing cluster with coords
+                              cluster_dict[barcode_cluster]['x'].push(parseFloat(barcode[1]));
+                              cluster_dict[barcode_cluster]['y'].push(parseFloat(barcode[2]));
+                              cluster_dict[barcode_cluster]['text'].push(barcode[0]);
+                          }
+                          // create new entry for the cluster
+                          else{cluster_dict[barcode_cluster] = {'name': barcode_cluster, 'mode': 'markers','x': [parseFloat(barcode[1])],'y': [parseFloat(barcode[2])], 'text': [barcode[0]]};}
+                      })
+                      cell_clusters = R.values(cluster_dict);
+                      const sortByCluster = R.sortBy(R.compose(parseInt, R.prop('name')))
+                      cell_clusters = sortByCluster(cell_clusters)
+                      callback(cell_clusters); // callback is to send the data
+                  }
+              })
+          }
+      });
+}
+cell_clusters = readFiles((data) => {
+  // send and then write for future use
+  res.send(JSON.stringify(data)); 
+  fs.writeFile(`/usr/src/app/results/${runID}/umap_${group}.json`, JSON.stringify(data), 'utf8', (err) => console.log(err))
+})
+});
+
+
  app.get(
   '/tsnegroups/:runID/:group', 
   async (req, res) => {
@@ -437,7 +489,60 @@ cell_clusters = readFiles((data) => {
   fs.writeFile(`/usr/src/app/results/${runID}/${group}.json`, JSON.stringify(data), 'utf8', (err) => console.log(err))
 })
 });
-
+  app.get(
+    '/umap/:runID',
+    async (req, res) => {
+      const {
+        params: {runID}
+      } = req
+    const readFiles = (callback) => {
+      let cell_clusters = [] // store list of clusters with the coordinates of the cells
+      fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_UMAPCoordinates.tsv`), "utf8", (err, contents) => {
+          if (err) {res.send(err);}
+          else{
+              // put coords into 2d array
+              let coords = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)))
+              coords.shift(); // discard header
+              // read in other file
+              fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_CellClusters.tsv`), "utf-8", (err, contents) => {
+                  if (err) {res.send(err);}
+                  else{
+                      // put the cell cluster labels into an object
+                      cluster_dict = {}
+                      labels = R.map(R.split("\t"), R.split("\n", contents.slice(0,-1)));
+                      labels.shift(); // discard header
+                      coords.forEach((barcode) => {
+                          let idx = labels.find(k => k[0]==barcode[0])
+                          if (! idx){
+                            console.log("Problem with barcodes not matching")
+                            res.send("ERROR")
+                          }
+                          barcode_cluster = String(idx[1]);
+                          if(barcode_cluster in cluster_dict){
+                              // append existing cluster with coords
+                              cluster_dict[barcode_cluster]['x'].push(parseFloat(barcode[1]));
+                              cluster_dict[barcode_cluster]['y'].push(parseFloat(barcode[2]));
+                              cluster_dict[barcode_cluster]['text'].push(barcode[0]);
+                          }
+                          // create new entry for the cluster
+                          else{cluster_dict[barcode_cluster] = {'name': barcode_cluster, 'mode': 'markers','x': [parseFloat(barcode[1])],'y': [parseFloat(barcode[2])], 'text': [barcode[0]]};}
+                      })
+                      cell_clusters = R.values(cluster_dict);
+                      const sortByCluster = R.sortBy(R.compose(parseInt, R.prop('name')))
+                      cell_clusters = sortByCluster(cell_clusters)
+                      callback(cell_clusters); // callback is to send the data
+                  }
+              })
+          }
+      });
+    }
+    cell_clusters = readFiles((data) => {
+      // send and then write for future use
+      res.send(JSON.stringify(data)); 
+      fs.writeFile(`/usr/src/app/results/${runID}/umap_clusters.json`, JSON.stringify(data), 'utf8', (err) => console.log(err))
+    })
+  }
+)
   app.get(
     '/tsne/:runID', 
     (req, res) => {
@@ -609,6 +714,23 @@ app.get(
 );
 
 app.get(
+  '/availablePlots/:runID',
+  async (req, res) => {
+    const {
+      params: {runID}
+    } = req
+    const plotTypes = ['TSNE','UMAP','BISNE'];
+    let plots = [];
+    plotTypes.forEach(plot => {
+      if (fs.existsSync(`./results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_${plot}Coordinates.tsv`)){
+        plots.push(plot);
+      }
+    });
+    res.send(plots)
+  }
+)
+
+app.get(
   '/expression/:runID/:feature',
   (req, res) => {
     const queryFeature = req.params.feature;
@@ -704,6 +826,82 @@ app.get(
 );
 
 app.get(
+  '/opacitygroupumap/:runID/:feature/:group',
+  async (req, res) => {
+    const {
+      params: {runID, feature, group}
+    } = req
+    // given a feature name, extract the normalized expression for each cell (barcode)
+    fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`), "utf8", 
+    (err, contents) => {
+      let result = [];
+      if (err) {res.send(err); return;}
+      // will need to unquote barcodes and features
+      const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
+      // convert contents to 2d-array
+      features = R.map(R.split("\t"), R.split("\n", contents));
+      // grab barcodes and unquote them
+      barcodes = R.map(unquote, features.shift());
+      let found = false
+      for (const line of features){
+          // unquote the featuregroup
+          line[0] = unquote(line[0]);
+          // if matches, zip with barcodes and return
+          if (String(line[0]) == String(feature)){
+            // open up the json file to append the opacities
+            found = true
+            fs.readFile(`/usr/src/app/results/${runID}/umap_${group}.json`,"utf-8", (err, jsonContents) => {
+              obj = JSON.parse(jsonContents);
+              let counts = line.slice(1);
+              // divide by max, multiply by .90 and add .10 to derive opacities (0.1 - 1.0 scale)
+              let max = 0;
+              let min = 0.05
+              counts.forEach(count => {
+                if(count != '-Inf' & count > max){max = parseFloat(count);}
+              });
+              opacityMap = R.zip(barcodes, R.map((c) => ((c*.9/max) + min).toFixed(2), counts));
+              let clustersParsed = 0;
+              // knit them together
+              obj.forEach((itm) => {
+                // for each cluster, fill in the opacities of the marker
+                let orderedOpacities = [];
+                let barcodesParsed = 0;
+                itm['text'].forEach(barcode => {
+                  barcodesParsed++;
+                  opacityMap.filter((map) => {
+                    if(map[0] == barcode){
+                      if (map[1] != 'NaN'){
+                        orderedOpacities.push(map[1]);
+                      }
+                      else{
+                        orderedOpacities.push(min);
+                      }
+                    }
+                  });
+                  if (barcodesParsed == itm['text'].length){
+                    itm['marker'] = {'opacity': orderedOpacities}
+                    clustersParsed++;
+                  }
+                });
+                  if (clustersParsed == obj.length){
+                  console.log('Complete');
+                  res.send(obj);
+                }
+                }); 
+            });                            
+          }
+      }
+      if (! found){
+        // send blank
+        console.log('Opacity: feature not found');
+        res.send(result)
+        return
+      }
+    });
+  }
+);
+
+app.get(
   '/opacitygroup/:runID/:feature/:group',
   async (req, res) => {
     const {
@@ -722,7 +920,7 @@ app.get(
       barcodes = R.map(unquote, features.shift());
       let found = false
       for (const line of features){
-          // unquote the feature
+          // unquote the featuregroup
           line[0] = unquote(line[0]);
           // if matches, zip with barcodes and return
           if (String(line[0]) == String(feature)){
@@ -778,6 +976,82 @@ app.get(
     });
   }
 );
+
+app.get(
+  '/opacityumap/:runID/:feature',
+  (req, res) => {
+    const queryFeature = req.params.feature;
+    const runID = req.params.runID;
+    console.log('line 985')
+    // given a feature name, extract the normalized expression for each cell (barcode)
+    fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`), "utf8", 
+    (err, contents) => {
+      let result = [];
+      if (err) {res.send(err); return;}
+      // will need to unquote barcodes and features
+      const unquote = (elem) => {return R.replace(/['"]+/g, '', elem);};
+      // convert contents to 2d-array
+      features = R.map(R.split("\t"), R.split("\n", contents));
+      // grab barcodes and unquote them
+      barcodes = R.map(unquote, features.shift());
+      let found = false
+      for (const line of features){
+          // unquote the feature
+          line[0] = unquote(line[0]);
+          // if matches, zip with barcodes and return
+          if (String(line[0]) == String(queryFeature)){
+            // open up the json file to append the opacities
+            found = true
+            fs.readFile(`/usr/src/app/results/${runID}/umap_clusters.json`,"utf-8", (err, jsonContents) => {
+              obj = JSON.parse(jsonContents);
+              let counts = line.slice(1);
+              // divide by max, multiply by .90 and add .10 to derive opacities (0.1 - 1.0 scale)
+              let max = 0;
+              let min = 0.05
+              counts.forEach(count => {
+                if(count != '-Inf' & count > max){max = parseFloat(count);}
+              });
+              opacityMap = R.zip(barcodes, R.map((c) => ((c*.9/max) + min).toFixed(2), counts));
+              let clustersParsed = 0;
+              // knit them together
+              obj.forEach((itm) => {
+                // for each cluster, fill in the opacities of the marker
+                let orderedOpacities = [];
+                let barcodesParsed = 0;
+                itm['text'].forEach(barcode => {
+                  barcodesParsed++;
+                  opacityMap.filter((map) => {
+                    if(map[0] == barcode){
+                      if (map[1] != 'NaN'){
+                        orderedOpacities.push(map[1]);
+                      }
+                      else{
+                        orderedOpacities.push(min);
+                      }
+                    }
+                  });
+                  if (barcodesParsed == itm['text'].length){
+                    itm['marker'] = {'opacity': orderedOpacities}
+                    clustersParsed++;
+                  }
+                });
+                  if (clustersParsed == obj.length){
+                  res.send(obj);
+                }
+                }); 
+            });                            
+          }
+      }
+      if (! found){
+        // send blank
+        console.log('Opacity: feature not found');
+        res.send(result)
+        return
+      }
+    });
+  }
+);
+
 
 app.get(
   '/opacity/:runID/:feature',

@@ -28,7 +28,6 @@ export default class SearchFeature extends Component{
                 option['selected'] = false
             }
         })
-        console.log(plotOptions)
         this.props.callbackFromParent(null, this.state.loading, plotOptions);
     }
 
@@ -68,7 +67,7 @@ export default class SearchFeature extends Component{
             firstSelection = String(selectedOptions[0]['text']);
         }
         else {
-        
+            
         }
         this.props.callbackFromParent(firstSelection, true, this.state.plotOptions); 
         this.render()
@@ -78,6 +77,9 @@ export default class SearchFeature extends Component{
         if (props.loading != state.loading){
             return {loading: props.loading};
         }
+        if (props.plotOptions != state.plotOptions){
+            return {plotOptions: props.plotOptions}
+        }
         else{
             return null
         }
@@ -86,10 +88,12 @@ export default class SearchFeature extends Component{
     render() {
         let {searchQuery, searchOptions, selectedOptions, value, message, loading, plotOptions } = this.state;
         let options = [];
-        plotOptions.forEach((option) =>{
-            options.push({key: option['plot'], text: option['plot'], value: option['plot']})
-        })
-       
+        if (plotOptions != null){
+            plotOptions.forEach((option) => {
+                options.push({key: option['plot'], text: option['plot'], value: option['plot']})
+            }
+        )}
+      
         return (
             <Grid>    
                 <Grid.Row >                
@@ -98,7 +102,7 @@ export default class SearchFeature extends Component{
                         <Dropdown
                             fluid
                             selection
-                            defaultValue={'t-SNE'}
+                            defaultValue={'TSNE'}
                             options={options}
                             onChange={this.handleChangePlot}
                         />

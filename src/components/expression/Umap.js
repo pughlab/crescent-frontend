@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Plot from 'react-plotly.js'
 
 
-export default class Tsne extends Component{
+export default class Umap extends Component{
     constructor(props){
         super(props);
         this.state = {
@@ -22,18 +22,17 @@ export default class Tsne extends Component{
 
         if (! selectedFeature || selectedFeature == ''){
             if (group) {
-                fetch(`/tsnegroups/${runID}/${group}`)
+                fetch(`/umapgroups/${runID}/${group}`)
                 .then(resp => resp.json())
                 .then(data => {this.setState({clusters: data, message: ''})})
             }
             else{
-                fetch(`/tsne/${runID}`)
+                fetch(`/umap/${runID}`)
                 .then(resp => resp.json())
                 .then(data => {this.setState({clusters: data, message: ''})});
             }
         }
         else{
-            
             if (cellcount > 10000){
                 this.setState({message: 'Currently interactive expression is only supported for datasets with < 10k cells'})
                 this.render();
@@ -41,7 +40,7 @@ export default class Tsne extends Component{
             }
             else if (group){
                 // fetch the clusters with variable opacities
-                fetch(`/opacitygroup/${runID}/${selectedFeature}/${group}`)
+                fetch(`/opacitygroupumap/${runID}/${selectedFeature}/${group}`)
                 .then(resp => resp.json())
                 .then(data => {
                     if (data.length > 0){
@@ -57,8 +56,9 @@ export default class Tsne extends Component{
                 });
             }
             else{
+                console.log('line 59')
                 // fetch the clusters with variable opacities
-                fetch(`/opacity/${runID}/${selectedFeature}`)
+                fetch(`/opacityumap/${runID}/${selectedFeature}`)
                 .then(resp => resp.json())
                 .then(data => {
                     if (data.length > 0){
@@ -123,7 +123,7 @@ export default class Tsne extends Component{
                 <Plot 
                 data={clusters}
                 layout={{
-                    title: 't-SNE', 
+                    title: 'UMAP', 
                     autosize: false, 
                     hovermode: 'closest', 
                     xaxis:{showgrid: false, ticks: '', showticklabels: false}, 
