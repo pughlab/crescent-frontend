@@ -189,7 +189,7 @@ const VisualizationComponent = ({
               //     .then(response => response.blob())
               //     .then(objectURL = URL.createObjectURL(blob))
               // }
-              // //href={`http://localhost:4001/download/${currentRunId}`}
+              href={`/download/${currentRunId}`}
               // href={objectURL}
               download
             />
