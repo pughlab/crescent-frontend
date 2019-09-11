@@ -60,14 +60,13 @@ export default class SearchFeature extends Component{
     }
 
     handleApply = () => {
-        //this.setState({loading: true})
         const selectedOptions = this.state.selectedOptions;
         let firstSelection;
         if (selectedOptions.length > 0){
             firstSelection = String(selectedOptions[0]['text']);
         }
         else {
-            
+            return
         }
         this.props.callbackFromParent(firstSelection, true, this.state.plotOptions); 
         this.render()

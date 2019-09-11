@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Grid, Header } from 'semantic-ui-react'
 import Plot from 'react-plotly.js'
-import { expression } from '@babel/template';
 
 
 export default class Violin extends Component{
@@ -105,8 +104,6 @@ export default class Violin extends Component{
         }
 
         let xlabel = (group) ? group : 'Clusters'
-        console.log(expressionData)
-        console.log(group)
 
         return (
             <div hidden={hidden} style={{display: plotDisplay}}>

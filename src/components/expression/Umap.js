@@ -56,7 +56,6 @@ export default class Umap extends Component{
                 });
             }
             else{
-                console.log('line 59')
                 // fetch the clusters with variable opacities
                 fetch(`/opacityumap/${runID}/${selectedFeature}`)
                 .then(resp => resp.json())
