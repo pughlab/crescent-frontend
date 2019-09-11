@@ -26,9 +26,6 @@ export default class ChangeGroup extends Component{
         options.forEach((option) =>{
             formattedOptions.push({key: option, text: option, value: option})
         })
-
-        console.log(options);
-
         return (
             <Grid verticalAlign='middle' padded='vertically'>
                 <Grid.Row>

@@ -32,7 +32,9 @@ export default class Expression extends Component{
 
     updateVariables = (newFeature, isLoading, plotChange) => {
         if (newFeature !== null){
-        this.setState({selectedFeature: newFeature, loading: isLoading, plotOptions: plotChange});
+            if (newFeature != this.state.selectedFeature){
+                this.setState({selectedFeature: newFeature, loading: isLoading, plotOptions: plotChange});
+            }
         }
         else{
             this.setState({loading: isLoading, plotOptions: plotChange});
@@ -130,8 +132,7 @@ export default class Expression extends Component{
                     break;
             }
        })
-       console.log(tsne, violin, umap)
-     
+    
         return (
             <div>
                 <div style={{width:'100%', height: '90%', textAlign: 'center'}} >
