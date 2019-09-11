@@ -62,12 +62,16 @@ export default class Expression extends Component{
                 data.forEach(plotType => {
                    plotOptions.push({plot: plotType, selected: false})
                    if (plotOptions.length == 1){
+                       // just select the first by default
                        plotOptions[0]['selected'] = true;
                    }
                 })
+                /*
                 if (count < 15000){
                     plotOptions.push({plot: 'Violin', selected: false})
                 }
+                */
+                console.log(plotOptions)
                 this.setState({plotOptions: plotOptions})
             })
 

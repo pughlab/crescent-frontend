@@ -726,6 +726,8 @@ app.get(
         plots.push(plot);
       }
     });
+    // violin always available
+    plots.push('Violin')
     res.send(plots)
   }
 )

@@ -20,8 +20,8 @@ export default class Violin extends Component{
 
     fetchData = () => {
         
-        if (this.state.cellcount > 3000){
-            this.setState({message: 'Currently interactive expression is only supported for datasets with < 3k cells'})
+        if (this.state.cellcount > 10000){
+            this.setState({message: 'Currently interactive violin plots are only supported for datasets with < 10k cells'})
         }
         else if (this.state.selectedFeature){
             if (! this.state.group){
