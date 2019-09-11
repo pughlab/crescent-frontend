@@ -984,7 +984,6 @@ app.get(
   (req, res) => {
     const queryFeature = req.params.feature;
     const runID = req.params.runID;
-    console.log('line 985')
     // given a feature name, extract the normalized expression for each cell (barcode)
     fs.readFile(path.resolve(`/usr/src/app/results/${runID}/SEURAT/frontend_example_mac_10x_cwl.SEURAT_normalized_count_matrix.tsv`), "utf8", 
     (err, contents) => {

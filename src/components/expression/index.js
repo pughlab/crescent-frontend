@@ -66,12 +66,6 @@ export default class Expression extends Component{
                        plotOptions[0]['selected'] = true;
                    }
                 })
-                /*
-                if (count < 15000){
-                    plotOptions.push({plot: 'Violin', selected: false})
-                }
-                */
-                console.log(plotOptions)
                 this.setState({plotOptions: plotOptions})
             })
 
@@ -83,7 +77,6 @@ export default class Expression extends Component{
             fetch(`/cellcount/${this.state.runID}`)
             .then(resp => resp.json())
             .then((data) => {
-                console.log(data)
                 this.setState({cellcount: data})
             })
         } 
@@ -117,18 +110,35 @@ export default class Expression extends Component{
             R.find(R.propEq("plot", plotType))
          )(plotOptions)
            
-        console.log(plotOptions)
         if (altGroups && altGroups.length > 0){
             groups = <ChangeGroup runID={ runID } options={ altGroups } callbackFromParent={ this.changeGroup }/>
         }
+        let plotComponents = '';
+        let tsne = '';
+        let umap = '';
+        let violin = '';
+        plotOptions.forEach(option => {
+            switch (option['plot']) {
+                case 'TSNE':
+                    tsne = <Tsne callbackFromParent={this.changeLoading} cellcount={ cellcount } selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('TSNE')}></Tsne>
+                    break;
+                case 'UMAP':
+                    umap = <Umap callbackFromParent={this.changeLoading} cellcount={ cellcount } selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('UMAP')}></Umap>
+                    break;
+                case 'Violin':
+                    violin = <Violin callbackFromParent={this.changeLoading} cellcount={ cellcount }selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('Violin')}></Violin>
+                    break;
+            }
+       })
+       console.log(tsne, violin, umap)
      
         return (
             <div>
                 <div style={{width:'100%', height: '90%', textAlign: 'center'}} >
                     { groups }
-                    <Tsne callbackFromParent={this.changeLoading} cellcount={ cellcount } selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('TSNE')}></Tsne>
-                    <Umap callbackFromParent={this.changeLoading} cellcount={ cellcount } selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('UMAP')}></Umap>
-                    <Violin callbackFromParent={this.changeLoading} cellcount={ cellcount }selectedFeature={ selectedFeature } group={ selectedGroup } runID={ runID } hidden={hidePlot('Violin')}></Violin>
+                    { tsne }
+                    { umap }
+                    { violin }
                     <SearchFeatures plotOptions={plotOptions} runID={ runID } loading={ loading } callbackFromParent={this.updateVariables}></SearchFeatures>
                 </div>
             </div>
