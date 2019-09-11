@@ -22,6 +22,14 @@ const ProjectCard = ({
   setCurrentProjectID,
   setCurrentRunId
 }) => {
+  const {data} = useQuery(gql`
+    query RunsByProjectID($projectID: ID!) {
+      runs(projectID: $projectID) {
+        runID
+      }
+    }
+  `, {variables: {projectID: projectID}})
+  let defaultRunId = R.isNil(data['runs']) || data['runs'].length == 0 ? null : data['runs'][0]['runID']
   return (
     <Card key={projectID} link>
       <Card.Content>
@@ -33,7 +41,7 @@ const ProjectCard = ({
         <Button fluid color='grey' icon='eye'
           onClick={() => {
             setCurrentProjectID(projectID)
-            setCurrentRunId(null)
+            setCurrentRunId(defaultRunId)
           }}
         />
       </Card.Content>
@@ -89,7 +97,6 @@ const ProjectSelectModal = ({
       R.always([])
     )(data)
 
-  console.log(curatedProjects, userProjects)
   return (
     <Modal size='fullscreen' dimmer='blurring' open={R.isNil(currentProjectID)}>
       <Modal.Header as={Header} textAlign='center' content="Projects" />
