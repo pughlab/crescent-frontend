@@ -131,9 +131,9 @@ const NewProjectCard = withRedux(({
   return (
     <Modal
       trigger={
-        <Card link>
+        <Card link color='black'>
           <Card.Content>
-            <Card.Header content={'Create New Project'} />
+            <Card.Header as={Header} icon><Icon name='add' circular />Create New Project</Card.Header>
             <Card.Meta content={'Upload your own files to create a new project'} />
           </Card.Content>
         </Card>

@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Menu, Container, Card, Header, Form, Button, Grid, Modal, Label, Divider, Icon} from 'semantic-ui-react'
+import {Menu, Container, Card, Header, Form, Button, Modal, Label, Divider, Icon} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -49,9 +49,9 @@ const NewRunCard = withRedux(({
   return (
     <Modal
       trigger={
-        <Card link>
+        <Card link color='black'>
           <Card.Content>
-            <Card.Header content={'Create New Run'} />
+          <Card.Header as={Header} icon><Icon name='add' circular />Create New Run</Card.Header>
             <Card.Meta content={'Configure a pipeline and run on the cloud'} />
           </Card.Content>
         </Card>

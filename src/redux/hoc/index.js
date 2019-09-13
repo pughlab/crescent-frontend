@@ -15,7 +15,8 @@ export default connect(
       setRun: run => dispatch(Actions.setRun({run})),
       toggleProjects: () => dispatch(Actions.toggleProjects()),
       toggleRuns: () => dispatch(Actions.toggleRuns()),
-      toggleSidebar: sidebar => dispatch(Actions.toggleSidebar({sidebar}))
+      toggleSidebar: sidebar => dispatch(Actions.toggleSidebar({sidebar})),
+      setParameters: parameters => dispatch(Actions.setParameters({parameters}))
     }
   })
 )

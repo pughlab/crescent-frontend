@@ -37,6 +37,13 @@ const toggleSidebar = ({sidebar}) => ({
   }
 })
 
+const setParameters = ({parameters}) => ({
+  type: 'SET_PARAMETERS',
+  payload: {
+    parameters
+  }
+})
+
 export default {
   logout,
   setProject,
@@ -44,5 +51,6 @@ export default {
   setUser,
   toggleProjects,
   toggleRuns,
-  toggleSidebar
+  toggleSidebar,
+  setParameters
 }

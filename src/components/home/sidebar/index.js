@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Grid, Divider, Step } from 'semantic-ui-react'
+import { Segment, Button, Label, Divider, Step } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -22,7 +22,7 @@ const ResultsMenu = withRedux(
     }
   }) => {
     return (
-      <Step.Group vertical fluid ordered>
+      <Step.Group vertical fluid ordered size='small'>
       {
         R.map(
           ({key, label}) => (
@@ -41,22 +41,26 @@ const ResultsMenu = withRedux(
 const PipelineMenu = withRedux(
   ({
     app: {
-      view: {sidebar}
+      view: {sidebar},
+      sidebar: {
+        parameters: {
+          singleCell,
+          numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+          percentMito: {min: minPercentMito, max: maxPercentMito},
+          resolution,
+          principalDimensions,
+        }
+      }
     }
   }) => {
     return (
-      <Step.Group vertical fluid ordered>
-      {
-        R.map(
-          ({key, label}) => (
-            <Step key={key}>
-              <Step.Content title={label} description={'Seurat'} />
-            </Step>
-          ),
-          STEPS
-        )
-      }
-      </Step.Group>
+      <Label.Group size='large' basic>
+        <Label basic color='blue' content='Single Cell Input Type' detail={singleCell} />
+        <Label basic color='blue' content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
+        <Label basic color='blue' content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
+        <Label basic color='blue' content='Clustering Resolution' detail={resolution} />
+        <Label basic color='blue' content='PCA Dimensions' detail={principalDimensions} />
+      </Label.Group>
     )
   }
 )
@@ -82,6 +86,13 @@ const SidebarComponent = withRedux(
           active={isSidebarView('dataset')}
           onClick={() => toggleSidebar('dataset')}
         />
+        {
+          isSidebarView('pipeline') ? 
+            <Button fluid attached='bottom' content='Submit' />
+          : isSidebarView('results') ?
+            <Button fluid attached='bottom' content='Download' />
+          : null
+        }
         <Divider />
         <Segment attached='top'>
           <Button.Group fluid widths={2}>
@@ -99,16 +110,15 @@ const SidebarComponent = withRedux(
             />
           </Button.Group>
         </Segment>
-        <Segment attached style={{height: '65%', overflowY: 'scroll'}}>
+        <Segment attached style={{height: '70%', overflowY: 'scroll'}}>
         {
           isSidebarView('pipeline') ? 
-           <PipelineMenu />
+            <PipelineMenu />
           : isSidebarView('results') ?
             <ResultsMenu />
           : null
         }
         </Segment>
-        <Button fluid attached='bottom' content='Download' />
       </Segment>
     )
   }
