@@ -12,6 +12,7 @@ const typeDefs = gql`
     email: Email
     name: String
     sessionToken: ID
+    projects: [Project]
   }
 
   # 'Query' type is main definition for GQL

@@ -10,6 +10,10 @@ import SK from './SK.png'
 import GC from './GC.jpeg'
 import MBD from './MBD.jpg'
 
+import * as R from 'ramda'
+
+import withRedux from '../../redux/hoc'
+
 const CrescentIcon = () => (
   <Icon.Group style={{marginTop: -3}} >
     <Icon name='cloud' size='big'  />
@@ -61,7 +65,10 @@ const InfoModal = () => (
   </Modal>
 )
 
-const MenuComponent = ({
+const MenuComponent = withRedux(({
+  app: {
+    view: {main}
+  },
   currentRunId, setCurrentRunId,
   currentProjectID, setCurrentProjectID,
   userID,
@@ -70,10 +77,11 @@ const MenuComponent = ({
   return (
     <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='large'>
       <Menu.Item header content={<CrescentIcon />} />
+      <InfoModal />
       <Menu.Item content='Logout' onClick={() => logout()} />
 
-      <Menu.Menu position='right'>
-        <RunsSelectModal
+      {/* <Menu.Menu position='right'> */}
+        {/* <RunsSelectModal
           {...{
             currentRunId, setCurrentRunId,
             currentProjectID
@@ -88,11 +96,10 @@ const MenuComponent = ({
               userID
             }}
           />
-        </Menu.Item>
-        <InfoModal />
-      </Menu.Menu>
+        </Menu.Item> */}
+      {/* </Menu.Menu> */}
     </Segment>
   )
-}
+})
 
 export default MenuComponent

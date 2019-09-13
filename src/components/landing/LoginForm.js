@@ -12,6 +12,8 @@ import * as Yup from 'yup'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
+import withRedux from '../../redux/hoc'
+
 // Yup form validation
 const LoginValidationSchema = Yup.object().shape({
   email: Yup.string()
@@ -21,16 +23,32 @@ const LoginValidationSchema = Yup.object().shape({
     .required('Required')
 })
 
-const LoginForm = ({
-  setLoggedIn, //For navigating to portal on success
+const LoginForm = withRedux(({
+  app: {
+    user
+  },
+  actions: {
+    setUser
+  },
+  // setLoggedIn, //For navigating to portal on success
   setShowLogin, //For toggling to registration
-  setUserID
+  // setUserID
 }) => {
   // GraphQL mutation hook to call mutation and use result
   const [authenticateUser, {loading, data, error}] = useMutation(gql`
     mutation AuthenticateUser($email: Email!, $password: String!) {
       authenticateUser(email: $email, password: $password) {
         userID
+        sessionToken
+        projects {
+          projectID
+          name
+          description
+          createdOn
+          createdBy {
+            name
+          }
+        }
       }
     }
   `)
@@ -43,8 +61,11 @@ const LoginForm = ({
         R.propSatisfies(RA.isNotNil, 'authenticateUser')
       )(data)
     ) {
-      setUserID(R.path(['authenticateUser','userID'], data))
-      setLoggedIn(true)
+      const {authenticateUser} = data
+      setUser(authenticateUser)
+
+      // setUserID(R.path(['authenticateUser','userID'], data))
+      // setLoggedIn(true)
     }
   }, [data])
   return (
@@ -127,6 +148,6 @@ const LoginForm = ({
       </Grid.Column>
     </Grid>
   )
-}
+})
 
 export default LoginForm

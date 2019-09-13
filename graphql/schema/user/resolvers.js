@@ -45,6 +45,12 @@ const resolvers = {
     // Concatenate first and last name
     name: async ({firstName, lastName}, variables, context) => {
       return firstName + ' ' + lastName
+    },
+    projects: async ({userID}, variables, {Projects}) => {
+      return await Projects.find({
+        $or: [{createdBy: userID}, {members: {$elemMatch: {$eq: userID}}}],
+        kind: 'uploaded'
+      })
     }
   }
 }

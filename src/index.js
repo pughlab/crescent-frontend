@@ -7,6 +7,10 @@ import * as serviceWorker from './serviceWorker';
 import ApolloClient from 'apollo-boost'
 import { ApolloProvider } from '@apollo/react-hooks'
 
+import { Provider as ReduxProvider } from 'react-redux'
+import { createStore } from 'redux'
+import rootReducer from './redux/reducers'
+
 import autobahn from 'autobahn'
 
 const client = new ApolloClient({
@@ -15,6 +19,12 @@ const client = new ApolloClient({
 // ENV CHANGE HERE (comment one out)
 // const connection = new autobahn.Connection({url: 'ws://205.189.56.181:4000/', realm: 'realm1'})
 const connection = new autobahn.Connection({url: 'ws://127.0.0.1:4000/', realm: 'realm1'})
+
+// Redux store
+const store = createStore(
+  rootReducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+)
 
 connection.onopen = function (session) {
 
@@ -27,9 +37,11 @@ connection.onopen = function (session) {
   // session.publish('com.myapp.hello', ['Hello, world!']);
 
   ReactDOM.render(
-    <ApolloProvider client={client}>
-      <App session={session} />
-    </ApolloProvider>,
+    <ReduxProvider store={store}>
+      <ApolloProvider client={client}>
+        <App session={session} />
+      </ApolloProvider>
+    </ReduxProvider>,
     document.getElementById('root')
   )
 }
