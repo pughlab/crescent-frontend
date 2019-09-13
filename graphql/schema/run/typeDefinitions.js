@@ -19,6 +19,10 @@ const typeDefs = gql`
     ): Run
   }
   type Mutation {
+    createUnsubmittedRun(
+      name: String,
+      projectID: ID
+    ): Run,
     createRun(
       name: String,
       params: String,

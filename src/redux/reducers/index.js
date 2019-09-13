@@ -50,7 +50,7 @@ const app = (state = initialState, action) => {
     case 'SET_RUN':
         const {run} = payload
         const setRunFromGQL = R.set(
-          R.lensPath(['view', 'runID']),
+          R.lensPath(['view', 'run']),
           run
         )
         const setViewToVis = R.set(

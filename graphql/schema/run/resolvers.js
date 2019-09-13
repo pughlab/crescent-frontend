@@ -21,6 +21,11 @@ const resolvers = {
     },
   },
   Mutation: {
+    createUnsubmittedRun: async (parent, {name, projectID}, {Runs}) => {
+      const run = await Runs.create({name, projectID})
+      return run
+    },
+
     createRun: async (parent, {name, params, projectID}, {Runs}) => {
       const run = await Runs.create({name, params, projectID})
       const {runID} = run

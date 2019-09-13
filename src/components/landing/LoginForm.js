@@ -48,6 +48,11 @@ const LoginForm = withRedux(({
           createdBy {
             name
           }
+          runs {
+            runID
+            name
+            params
+          }
         }
       }
     }

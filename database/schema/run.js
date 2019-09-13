@@ -11,7 +11,7 @@ const RunSchema = new mongoose.Schema({
   },
   params: {
     type: String,
-    required: true
+    // required: true
   },
   projectID: {
     type: mongoose.Schema.Types.ObjectId,
