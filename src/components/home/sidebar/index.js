@@ -78,7 +78,7 @@ const SidebarComponent = withRedux(
       <Segment style={{height: '100%'}}>
         <Button fluid compact
           content='Project Data'
-          color={isSidebarView('dataset') ? 'blue' : undefined}
+          color={isSidebarView('dataset') ? 'teal' : undefined}
           active={isSidebarView('dataset')}
           onClick={() => toggleSidebar('dataset')}
         />
@@ -87,7 +87,7 @@ const SidebarComponent = withRedux(
           <Button.Group fluid widths={2}>
             <Button compact
               content='Pipeline'
-              color={isSidebarView('pipeline') ? 'teal' : undefined}
+              color={isSidebarView('pipeline') ? 'blue' : undefined}
               active={isSidebarView('pipeline')}
               onClick={() => toggleSidebar('pipeline')}
             />

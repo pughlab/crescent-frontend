@@ -33,16 +33,8 @@ const App = withRedux(
     const isLoggedIn = RA.isNotNilOrEmpty(user)
     console.log('isLoggedIn', isLoggedIn)
     return (
-      // R.isNil(currentProjectID) ?
       R.not(isLoggedIn) ?
-        <LandingComponent
-          // {...{
-          //   userID, setUserID,
-          //   loggedIn, setLoggedIn,
-          //   currentProjectID, setCurrentProjectID,
-          //   currentRunId, setCurrentRunId
-          // }}
-        />
+        <LandingComponent />
       :
         <Segment style={{height: '100%', padding: 0}}>
           <VisualizationComponent
@@ -52,14 +44,7 @@ const App = withRedux(
               currentProjectID
             }}
           />
-          <MenuComponent
-            {...{
-              userID, setUserID,
-              currentRunId, setCurrentRunId,
-              currentProjectID, setCurrentProjectID,
-              logout
-            }}
-          />
+          <MenuComponent />
         </Segment>
     )
   }

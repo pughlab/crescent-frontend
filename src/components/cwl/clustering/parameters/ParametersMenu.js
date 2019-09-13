@@ -25,24 +25,9 @@ const ClusteringParameterMenu = ({
   const [activeParameter, setActiveParameter] = useState(null)
   const isActiveParameter = R.equals(activeParameter)
   return (
+    <Segment color='blue'>
+    <Header textAlign='center' content='Set pipeline parameters' />
     <Grid>
-      <Grid.Column width={4}>
-        <Menu fluid vertical tabular>
-        {
-          R.map(
-            // prompt and description used for input components
-            ({parameter, label, prompt, description}) => (
-              <Menu.Item key={parameter}
-                active={isActiveParameter(parameter)}
-                onClick={() => setActiveParameter(parameter)}
-                content={<Header content={label} />}
-              />
-            ),
-            PARAMETERS
-          )
-        }
-        </Menu>
-      </Grid.Column>
       <Grid.Column width={12} stretched>
       <Segment basic >
       {
@@ -56,14 +41,29 @@ const ClusteringParameterMenu = ({
             <Resolution {...{resolution, setResolution}} />
           : isActiveParameter('pca_dimensions') ?
             <PCADimensions {...{principalDimensions, setPrincipalDimensions}} />
-          :
-            <Segment placeholder>
-              <Header textAlign='center' content='Select a parameter on the left menu' />
-            </Segment>
+          : null
       }
       </Segment>
       </Grid.Column>
+      <Grid.Column width={4}>
+        <Menu fluid vertical tabular='right'>
+        {
+          R.map(
+            // prompt and description used for input components
+            ({parameter, label, prompt, description}) => (
+              <Menu.Item key={parameter}
+                active={isActiveParameter(parameter)}
+                onClick={() => setActiveParameter(parameter)}
+                content={label}
+              />
+            ),
+            PARAMETERS
+          )
+        }
+        </Menu>
+      </Grid.Column>
     </Grid>
+    </Segment>
   )
 }
 

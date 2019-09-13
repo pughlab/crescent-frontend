@@ -22,6 +22,7 @@ import ProjectsCardList from './projects'
 import RunsCardList from './runs'
 
 import SidebarComponent from './sidebar'
+import ParametersComponent from './Parameters'
 
 const VisualizationComponent = withRedux(
   ({
@@ -37,49 +38,49 @@ const VisualizationComponent = withRedux(
     const isMainView = R.equals(R.prop('main', view))
     const isSidebarView = R.equals(R.prop('sidebar', view))
 
-    // PARAMETERS TO SEND TO RPC
+    // CWL PARAMETERS
     const [singleCell, setSingleCell] = useState('MTX')
     const [numberGenes, setNumberGenes] = useState({min: 50, max: 8000})
     const [percentMito, setPercentMito] = useState({min: 0, max: 0.2})
     const [resolution, setResolution] = useState(1)
     const [principalDimensions, setPrincipalDimensions] = useState(10)
 
-    // Uploaded files
-    const [uploadedBarcodesFile, setUploadedBarcodesFile] = useState(null)    
-    const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
-    const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
-    const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
+    // // Uploaded files
+    // const [uploadedBarcodesFile, setUploadedBarcodesFile] = useState(null)    
+    // const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
+    // const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
+    // const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
 
-    // Local state for notification the result is done
-    const [submitted, setSubmitted] = useState(false)
-    useEffect(() => setSubmitted(false), [singleCell, resolution, principalDimensions])
-    const [loading, setLoading]= useState(false)
-    const [result, setResult] = useState(null)
-    const [activeToggle, setActiveToggle] = useState('params')
-    const isActiveToggle = R.equals(activeToggle)
+    // // Local state for notification the result is done
+    // const [submitted, setSubmitted] = useState(false)
+    // useEffect(() => setSubmitted(false), [singleCell, resolution, principalDimensions])
+    // const [loading, setLoading]= useState(false)
+    // const [result, setResult] = useState(null)
+    // const [activeToggle, setActiveToggle] = useState('params')
+    // const isActiveToggle = R.equals(activeToggle)
 
-    useEffect(() => {
-      session.subscribe(
-        'crescent.result',
-        (args, {runID}) => {
-          console.log('crescent.result')
-          setActiveToggle('results')
-          setCurrentRunId(runID)
-          setLoading(false)
-          setSubmitted(false)
-        }
-      )
-    }, [])
+    // useEffect(() => {
+    //   session.subscribe(
+    //     'crescent.result',
+    //     (args, {runID}) => {
+    //       console.log('crescent.result')
+    //       setActiveToggle('results')
+    //       setCurrentRunId(runID)
+    //       setLoading(false)
+    //       setSubmitted(false)
+    //     }
+    //   )
+    // }, [])
 
-    const [visType, setVisType] = useState('tsne')
-    const isCurrentVisType = R.equals(visType)
-    useEffect(() => {
-      RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
-      && fetch(`/result?runID=${currentRunId}&visType=${visType}`)
-        .then(response => response.blob())
-        .then(R.compose(setResult, URL.createObjectURL))
-      && setLoading(false)
-    }, [currentRunId, visType])
+    // const [visType, setVisType] = useState('tsne')
+    // const isCurrentVisType = R.equals(visType)
+    // useEffect(() => {
+    //   RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
+    //   && fetch(`/result?runID=${currentRunId}&visType=${visType}`)
+    //     .then(response => response.blob())
+    //     .then(R.compose(setResult, URL.createObjectURL))
+    //   && setLoading(false)
+    // }, [currentRunId, visType])
 
     return (
       <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
@@ -99,7 +100,19 @@ const VisualizationComponent = withRedux(
           isMainView('vis') &&
           <>
             <Grid.Column width={12} style={{height: '100%'}}>
-              {view.sidebar}
+              {/* {view.sidebar} */}
+            {
+              isSidebarView('pipeline') &&
+              <ParametersComponent
+                {...{
+                  singleCell, setSingleCell,
+                  numberGenes, setNumberGenes,
+                  percentMito, setPercentMito,
+                  resolution, setResolution,
+                  principalDimensions, setPrincipalDimensions
+                }}
+              />
+            }
             </Grid.Column>
             <Grid.Column width={4} style={{height: '100%'}}>
               <SidebarComponent />
