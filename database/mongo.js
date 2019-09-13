@@ -11,11 +11,14 @@ const {
   UserSchema,
   RunSchema,
   ProjectSchema,
-  DatasetSchema
+  DatasetSchema,
+  UploadSchema
 } = Schemas
 mongoose.connection.model('user', UserSchema)
 mongoose.connection.model('run', RunSchema)
 mongoose.connection.model('project', ProjectSchema)
 mongoose.connection.model('dataset', DatasetSchema)
+mongoose.connection.model('upload', UploadSchema)
+
 
 module.exports = mongoose

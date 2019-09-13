@@ -2,5 +2,6 @@ module.exports = {
   UserSchema: require('./user'),
   RunSchema: require('./run'),
   ProjectSchema: require('./project'),
-  DatasetSchema: require('./dataset')
+  DatasetSchema: require('./dataset'),
+  UploadSchema: require('./upload')
 }

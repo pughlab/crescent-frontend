@@ -22,7 +22,21 @@ const resolvers = {
   Mutation: {
     // Create a project given a userID
     // TODO: move userID into context
-    createProject: async (parent, {userID, name, description}, {Projects}) => {
+    createProject: async (
+      parent,
+      {
+        userID,
+        name,
+        description,
+        barcodesObjectName,
+        genesObjectName,
+        matrixObjectName,
+      },
+      {
+        Projects
+      }
+    ) => {
+      // console.log(barcodesObjectName, genesObjectName, matrixObjectName)
       const project = await Projects.create({name, description, createdBy: userID})
       return project
     },

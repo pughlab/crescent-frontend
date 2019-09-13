@@ -14,6 +14,7 @@ const typeDefs = gql`
   type Query {
     project(projectID: ID): Project
     
+    # remove this
     uploadedProjects(userID: ID): [Project]
 
     curatedProjects: [Project]
@@ -22,7 +23,10 @@ const typeDefs = gql`
     createProject(
       userID: ID,
       name: String,
-      description: String
+      description: String,
+      barcodesObjectName: ID!,
+      genesObjectName: ID!,
+      matrixObjectName: ID!,
     ): Project
 
     addUserToProject(

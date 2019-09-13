@@ -29,6 +29,7 @@ const db = mongooseConnection.connection
 // Mongo collections
 const Run = db.model('run')
 const Project = db.model('project')
+const Upload = db.model('upload')
 
 // Minio client
 // Instantiate the minio client with the endpoint
@@ -46,9 +47,12 @@ minioClient.makeBucket('crescent', 'us-east-1', function(err) {
   if (err) return console.log(err)
   console.log('Bucket created successfully in "us-east-1".')
 })
+minioClient.makeBucket('temporary', 'us-east-1', function(err) {
+  if (err) return console.log(err)
+  console.log('Bucket created successfully in "us-east-1".')
+})
 const bucketName = 'crescent'
-const expressPath = '/usr/src/app'
-const minioPath = `${expressPath}/minio/download`
+const minioPath = '/usr/src/app/minio/download'
 
 const colours = [
   '#1f77b4',  // muted blue
@@ -85,6 +89,48 @@ app.post(
     submitCWL(kwargs, projectID, runID, session)
     res.sendStatus(200)
   }
+)
+
+// API endpoint for temporary uploading files
+app.put(
+  '/upload/:kind',
+  upload.single('uploadedFile'),
+  async (req, res, next) => {
+    // File that needs to be uploaded.
+    const {
+      params: {kind}, // 'barcodes', 'genes', 'matrix'
+      file: {path: filePath}
+    } = req
+    // Upload type
+    // Create temporary directory inside minio if doesn't exist
+    const upload = await new Upload()
+    console.log('upload', upload)
+    const {uploadID} = upload
+    // const tempDirPath = `${minioPath}/temp`
+    // try {
+    //   await fsp.stat(tempDirPath)
+    // } catch (err) {
+    //   await fsp.mkdir(tempDirPath)
+    // }
+    // res.sendStatus(200)
+    const metaData = {
+      'Content-Type': 'application/octet-stream',
+      'X-Amz-Meta-Testing': 1235,
+      'example': 5678
+    }
+    // Using fPutObject API upload your file to the bucket
+    minioClient.fPutObject('temporary', `${uploadID}`, filePath, metaData, function(err, etag) {
+      if (err) return console.log(err, etag)
+      console.log('File uploaded successfully.')
+      res.json(uploadID)
+      // minioClient.fGetObject('temporary', `${uploadID}`, `${tempDirPath}/${uploadID}`,
+      //   err => {
+      //     if (err) { return console.log(err) }
+      //     console.log('File successfully downloaded')
+      //   }
+      // )
+    })
+  } 
 )
 
 // API endpoint for uploading files given a projectID

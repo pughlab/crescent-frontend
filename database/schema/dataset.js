@@ -6,22 +6,18 @@ const DatasetSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true
   },
-  projectID: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true
-  },
   // MinIO object names
   barcodesID: {
-    type: String,
-    default: null
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
   },
   featuresID: {
-    type: String,
-    default: null
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
   },
   matrixID: {
-    type: String,
-    default: null
+    type: mongoose.Schema.Types.ObjectId,
+    auto: true
   }
 })
 
