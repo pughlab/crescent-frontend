@@ -5,12 +5,7 @@ import {Menu, Container, Card, Header, Segment, Button, Grid, Modal, Label, Divi
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import { useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
-
 import withRedux from '../../../redux/hoc'
-
-import {queryIsNotNil} from '../../../utils'
 
 const RunCard = withRedux(({
   actions: {
@@ -64,26 +59,10 @@ const RunCard = withRedux(({
 const RunsCardList = withRedux(({
   app: {
     project: {
-      projectID
+      runs
     },
   }
 }) => {
-  const {loading, data, error, refetch} = useQuery(gql`
-    query RunsByProjectID($projectID: ID!) {
-      runs(projectID: $projectID) {
-        runID
-        name
-        params
-      }
-    }
-  `, {variables: {projectID}})
-
-  const runs = R.ifElse(
-    queryIsNotNil('runs'),
-    R.prop('runs'),
-    R.always([])
-  )(data)
-
   return (
     <Container>
       <Header textAlign='center' content='Runs' />

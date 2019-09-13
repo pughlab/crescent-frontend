@@ -92,6 +92,17 @@ const NewProjectCard = withRedux(({
         matrixObjectName: $matrixObjectName,
       ) {
         projectID
+        name
+        description
+        createdOn
+        createdBy {
+          name
+        }
+        runs {
+          runID
+          name
+          params
+        }
       }
     }
   `, {
@@ -113,6 +124,7 @@ const NewProjectCard = withRedux(({
   useEffect(() => {
     if (queryIsNotNil('createProject', data)) {
       const {createProject} = data
+      console.log('query not nil', data)
       setProject(createProject)
     }
   }, [data])

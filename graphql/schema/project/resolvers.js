@@ -6,13 +6,6 @@ const resolvers = {
     project: async (parent, {projectID}, {Projects}) => {
       return await Projects.findOne({projectID})
     },
-    // Query multiple projects
-    uploadedProjects: async (parent, {userID}, {Projects}) => {
-      return await Projects.find({
-        $or: [{createdBy: userID}, {members: {$elemMatch: {$eq: userID}}}],
-        kind: 'uploaded'
-      })
-    },
     curatedProjects: async (parent, variables, {Projects}) => {
       return await Projects.find({
         kind: 'curated'
@@ -57,11 +50,14 @@ const resolvers = {
   Project: {
     // Query `User` types on a `Project` type in the `members` field
     members: async ({members}, variables, {Users}) => {
-      const userMembers = await Users.find({userID: {$in: members}})
-      return userMembers
+      return await Users.find({userID: {$in: members}})
     },
     createdBy: async ({createdBy}, variables, {Users}) => {
-      return Users.findOne({userID: createdBy})
+      return await Users.findOne({userID: createdBy})
+    },
+    runs: async ({projectID}, variables, {Runs}) => {
+      console.log('find runs', projectID)
+      return await Runs.find({projectID})
     }
   }
 }

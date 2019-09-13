@@ -10,12 +10,11 @@ const typeDefs = gql`
     members: [User]
     createdBy: User
     createdOn: Date
+
+    runs: [Run]
   }
   type Query {
     project(projectID: ID): Project
-    
-    # remove this
-    uploadedProjects(userID: ID): [Project]
 
     curatedProjects: [Project]
   }
