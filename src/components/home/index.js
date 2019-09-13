@@ -22,35 +22,20 @@ import ProjectsCardList from './projects'
 import RunsCardList from './runs'
 
 import SidebarComponent from './sidebar'
-import ParametersComponent from './Parameters'
+import {
+  ParametersComponent,
+  DatasetComponent,
+  ResultsComponent
+} from './main'
 
 const VisualizationComponent = withRedux(
   ({
     app: {
       user,
-      view
+      view: {main: mainView, sidebar: sidebarView}
     },
     session,
-    currentRunId, setCurrentRunId,
-    currentProjectID
   }) => {
-    // console.log('vis component', user, view)
-    const isMainView = R.equals(R.prop('main', view))
-    const isSidebarView = R.equals(R.prop('sidebar', view))
-
-    // CWL PARAMETERS
-    const [singleCell, setSingleCell] = useState('MTX')
-    const [numberGenes, setNumberGenes] = useState({min: 50, max: 8000})
-    const [percentMito, setPercentMito] = useState({min: 0, max: 0.2})
-    const [resolution, setResolution] = useState(1)
-    const [principalDimensions, setPrincipalDimensions] = useState(10)
-
-    // // Uploaded files
-    // const [uploadedBarcodesFile, setUploadedBarcodesFile] = useState(null)    
-    // const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
-    // const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
-    // const notUploaded = R.any(R.isNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
-
     // // Local state for notification the result is done
     // const [submitted, setSubmitted] = useState(false)
     // useEffect(() => setSubmitted(false), [singleCell, resolution, principalDimensions])
@@ -84,42 +69,42 @@ const VisualizationComponent = withRedux(
 
     return (
       <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
-        {
-          isMainView('projects') ?
+      {
+        R.cond([
+          [R.equals('projects'), R.always(
             <Grid.Column width={16} style={{height: '100%'}}>
               <ProjectsCardList />
             </Grid.Column>
-          : isMainView('runs') ?
+          )],
+          [R.equals('runs'), R.always(
             <Grid.Column width={16} style={{height: '100%'}}>
               <RunsCardList />
-            </Grid.Column>            
-          : null
-        }
-        {/* Otherwise show sidebar */}
-        {
-          isMainView('vis') &&
-          <>
-            <Grid.Column width={12} style={{height: '100%'}}>
-              {/* {view.sidebar} */}
-            {
-              isSidebarView('pipeline') &&
-              <ParametersComponent
-                {...{
-                  singleCell, setSingleCell,
-                  numberGenes, setNumberGenes,
-                  percentMito, setPercentMito,
-                  resolution, setResolution,
-                  principalDimensions, setPrincipalDimensions
-                }}
-              />
-            }
             </Grid.Column>
-            <Grid.Column width={4} style={{height: '100%'}}>
-              <SidebarComponent />
-            </Grid.Column>
-          </>
-        }
-        
+          )],
+          [R.equals('vis'), R.always(
+            <>
+              <Grid.Column width={12} style={{height: '100%'}}>
+              {
+                R.cond([
+                  [R.equals('dataset'), R.always(
+                    <DatasetComponent />
+                  )],
+                  [R.equals('pipeline'), R.always(
+                    <ParametersComponent />
+                  )],
+                  [R.equals('results'), R.always(
+                    <ResultsComponent />
+                  )],
+                ])(sidebarView)
+              }
+              </Grid.Column>
+              <Grid.Column width={4} style={{height: '100%'}}>
+                <SidebarComponent />
+              </Grid.Column>
+            </>
+          )],
+        ])(mainView)
+      }
 
         
         {/* <Grid.Column width={12} style={{height: '100%'}}>

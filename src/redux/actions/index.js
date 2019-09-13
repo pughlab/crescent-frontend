@@ -44,6 +44,45 @@ const setParameters = ({parameters}) => ({
   }
 })
 
+// TOGGLES
+// rendering as well
+const setActiveProjectKind = ({projectKind}) => ({
+  type: 'TOGGLE_PROJECT_ACTIVE_KIND',
+  payload: {
+    projectKind
+  }
+})
+const setActivePipelineStep = ({step}) => ({
+  type: 'TOGGLE_PIPELINE_ACTIVE_STEP',
+  payload: {
+    step
+  }
+})
+const setActivePipelineParameter = ({parameter}) => ({
+  type: 'TOGGLE_PIPELINE_ACTIVE_PARAMETER',
+  payload: {
+    parameter
+  }
+})
+const setActiveResult = ({result}) => ({
+  type: 'TOGGLE_RESULT_ACTIVE_RESULT',
+  payload: {
+    result
+  }
+})
+const toggle = {
+  project: {setActiveProjectKind},
+  runs: {},
+  vis: {
+    dataset: {},
+    pipeline: {
+      setActivePipelineStep,
+      setActivePipelineParameter
+    },
+    results: {setActiveResult}
+  }
+}
+
 export default {
   logout,
   setProject,
@@ -52,5 +91,7 @@ export default {
   toggleProjects,
   toggleRuns,
   toggleSidebar,
-  setParameters
+  setParameters,
+
+  toggle
 }

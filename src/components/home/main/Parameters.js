@@ -4,7 +4,7 @@ import * as R from 'ramda'
 
 import {Grid, Menu, Segment, Button, Label, Divider, Dropdown} from 'semantic-ui-react'
 
-import withRedux from '../../redux/hoc'
+import withRedux from '../../../redux/hoc'
 import {
   STEPS,
   PARAMETERS,
@@ -13,7 +13,7 @@ import {
   PercentMito,
   Resolution,
   PCADimensions,
-} from '../cwl/clustering/parameters/Inputs'
+} from '../../cwl/clustering/parameters/Inputs'
 
 const ParametersComponent = withRedux(
   ({
@@ -54,6 +54,7 @@ const ParametersComponent = withRedux(
     const isActivePipelineParameter = R.equals(activePipelineParameter)
        
     return (
+      <Segment inverted style={{height: '100%'}} color='blue'>
       <Segment style={{height: '100%'}}>
       <Grid>
         <Grid.Row columns={2}>
@@ -151,6 +152,7 @@ const ParametersComponent = withRedux(
           </Grid.Column>
         </Grid.Row>
       </Grid>
+      </Segment>
       </Segment>
     )
   }

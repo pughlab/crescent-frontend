@@ -14,16 +14,21 @@ const initialState = {
   },
   toggle: {
     projects: {
-      activeKind: null
+      // "Explore" part of crescent
+      activeKind: 'published' // 'example', 'uploaded' 
     },
     runs: {},
     vis: {
       dataset: {},
-      pipeline: {activeParameter: null},
-      result: {activeStep: null}
+      pipeline: {
+        activeStep: null,
+        activeParameter: null
+      },
+      results: {activeResult: null}
     }
   },
   // Local or mutable data
+  // TODO: revise
   sidebar: {
     parameters: {
       singleCell: 'MTX',
@@ -91,6 +96,41 @@ const app = (state = initialState, action) => {
         setSidebarView(sidebar)
       )(state)
     // Toggling different subviews
+    case 'TOGGLE_PROJECT_ACTIVE_KIND':
+      const {projectKind} = payload
+      const setActiveProjectKind = R.set(
+        R.lensPath(['toggle','projects','activeKind']),
+        projectKind
+      )
+      return setActiveProjectKind(state)
+    case 'TOGGLE_PIPELINE_ACTIVE_STEP':
+      const {step} = payload 
+      const setActivePipelineStep = R.set(
+        R.lensPath(['toggle','vis','pipeline','activeStep']),
+        step,
+      )
+      const resetActivePipelineParameter = R.set(
+        R.lensPath(['toggle','vis','pipeline','activeParameter']),
+        null
+      )
+      return R.compose(
+        resetActivePipelineParameter,
+        setActivePipelineStep
+      )(state)
+    case 'TOGGLE_PIPELINE_ACTIVE_PARAMETER':
+      const {parameter} = payload 
+      const setActivePipelineParameter = R.set(
+        R.lensPath(['toggle','vis','pipeline','activeParameter']),
+        parameter,
+      )
+      return setActivePipelineParameter(state)
+    case 'TOGGLE_RESULT_ACTIVE_RESULT':
+      const {result} = payload
+      const setActiveResultToggle = R.set(
+        R.lensPath(['toggle','vis','results','activeResult']),
+        result
+      )
+      return setActiveResultToggle(state)
 
     // Local data
     case 'SET_PARAMETERS':

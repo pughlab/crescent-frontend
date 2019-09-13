@@ -16,7 +16,14 @@ export default connect(
       toggleProjects: () => dispatch(Actions.toggleProjects()),
       toggleRuns: () => dispatch(Actions.toggleRuns()),
       toggleSidebar: sidebar => dispatch(Actions.toggleSidebar({sidebar})),
-      setParameters: parameters => dispatch(Actions.setParameters({parameters}))
+      setParameters: parameters => dispatch(Actions.setParameters({parameters})),
+
+      toggle: {
+        setActiveProjectKind: projectKind => dispatch(Actions.toggle.project.setActiveProjectKind({projectKind})),
+        setActivePipelineStep: step => dispatch(Actions.toggle.vis.pipeline.setActivePipelineStep({step})),
+        setActivePipelineParameter: parameter => dispatch(Actions.toggle.vis.pipeline.setActivePipelineParameter({parameter})),
+        setActiveResult: result => dispatch(Actions.toggle.vis.result.setActiveResult({result})),
+      }
     }
   })
 )

@@ -209,16 +209,19 @@ const ProjectCard = withRedux(({
 
 const ProjectsCardList = withRedux(({
   app: {
-    user: {projects: userProjects}
+    user: {projects: userProjects},
+    toggle: {projects: {activeKind: activeProjectKind}}
+  },
+  actions: {
+    toggle: {setActiveProjectKind}
   }
 }) => {
-  const projectTypes = [
-    {key: 'uploaded', label:'Uploaded Data'},
+  const projectKinds = [
+    {key: 'published', label:'Published Data'},
     {key: 'example', label:'Example Data'},
-    {key: 'published', label:'Published Data'}
+    {key: 'uploaded', label:'Uploaded Data'},
   ]
-  const [projectType, setProjectType] = useState('uploaded') // 'uploaded' || 'public' || 'published'
-  const isActiveProjectType = R.equals(projectType)
+  const isActiveProjectKind = R.equals(activeProjectKind)
 
   // GQL query to find all projects of which user is a member of
   const {loading, data, error} = useQuery(gql`
@@ -251,11 +254,11 @@ const ProjectsCardList = withRedux(({
               ({key, label}) => (
                 <Button key={key}
                   content={label}
-                  active={isActiveProjectType(key)}
-                  onClick={() => setProjectType(key)}
+                  active={isActiveProjectKind(key)}
+                  onClick={() => setActiveProjectKind(key)}
                 />
               ),
-              projectTypes
+              projectKinds
             )
           }
         </Button.Group>
@@ -272,14 +275,16 @@ const ProjectsCardList = withRedux(({
       <Divider />
       <Card.Group itemsPerRow={3}>
       {
-        isActiveProjectType('uploaded') && <NewProjectCard />
+        isActiveProjectKind('uploaded') && <NewProjectCard />
       }
       {
         R.map(
-          project => <ProjectCard key={R.prop('projectID', project)} {...{project}} />,
-          isActiveProjectType('uploaded') ?
+          project => (
+            <ProjectCard key={R.prop('projectID', project)} {...{project}} />
+          ),
+          isActiveProjectKind('uploaded') ?
             userProjects
-          : isActiveProjectType('published') ?
+          : isActiveProjectKind('published') ?
             curatedProjects
           : []
         )
