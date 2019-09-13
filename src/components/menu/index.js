@@ -2,15 +2,13 @@ import React, {useState, useEffect} from 'react';
 
 import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, Image} from 'semantic-ui-react'
 
-import ProjectSelectModal from '../projects/ProjectSelectModal'
-import RunsSelectModal from '../projects/RunsSelectModal'
-
 import UHN from './UHN.png'
 import SK from './SK.png'
 import GC from './GC.jpeg'
 import MBD from './MBD.jpg'
 
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../redux/hoc'
 
@@ -67,37 +65,40 @@ const InfoModal = () => (
 
 const MenuComponent = withRedux(({
   app: {
-    view: {main}
+    user,
+    project,
+    run,
+    view: {main, sidebar}
   },
-  currentRunId, setCurrentRunId,
-  currentProjectID, setCurrentProjectID,
-  userID,
-  logout
+  actions: {
+    logout,
+    setRun,
+    toggleProjects,
+    toggleRuns
+  }
 }) => {
+  const isMainView = R.equals(main)
   return (
     <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='large'>
       <Menu.Item header content={<CrescentIcon />} />
       <InfoModal />
       <Menu.Item content='Logout' onClick={() => logout()} />
 
-      {/* <Menu.Menu position='right'> */}
-        {/* <RunsSelectModal
-          {...{
-            currentRunId, setCurrentRunId,
-            currentProjectID
-          }}
-        />
-        <Menu.Item onClick={() => setCurrentProjectID(null)}>
-          {'Projects'}
-          <ProjectSelectModal 
-            {...{
-              currentProjectID, setCurrentProjectID,
-              setCurrentRunId,
-              userID
-            }}
-          />
-        </Menu.Item> */}
-      {/* </Menu.Menu> */}
+      <Menu.Menu position='right'>
+      {
+        isMainView('vis') &&
+        <Menu.Item content='Projects' onClick={() => toggleProjects()} />
+      }
+      {
+        isMainView('vis') &&
+        <Menu.Item content='Runs' onClick={() => toggleRuns()} />
+      }
+      {
+        R.not(isMainView('vis')) && RA.isNotNil(run) && RA.isNotNil(project) && 
+        // Set to current run to reset from toggle projects/runs
+        <Menu.Item content='Cancel' onClick={() => setRun(run)} />
+      }
+      </Menu.Menu>
     </Segment>
   )
 })

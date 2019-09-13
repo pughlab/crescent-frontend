@@ -1,3 +1,6 @@
+const logout = () => ({
+  type: 'LOGOUT'
+})
 
 const setUser = ({user}) => ({
   type: 'SET_USER',
@@ -23,6 +26,9 @@ const setRun = ({run}) => ({
 const toggleProjects = () => ({
   type: 'TOGGLE_PROJECTS'
 })
+const toggleRuns = () => ({
+  type: 'TOGGLE_RUNS'
+})
 
 const toggleSidebar = ({sidebar}) => ({
   type: 'TOGGLE_SIDEBAR',
@@ -32,9 +38,11 @@ const toggleSidebar = ({sidebar}) => ({
 })
 
 export default {
+  logout,
   setProject,
   setRun,
   setUser,
   toggleProjects,
+  toggleRuns,
   toggleSidebar
 }

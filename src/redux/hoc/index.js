@@ -9,10 +9,12 @@ export default connect(
   state => state,
   dispatch => ({
     actions: {
+      logout: () => dispatch(Actions.logout()),
       setProject: project => dispatch(Actions.setProject({project})),
       setUser: user =>  dispatch(Actions.setUser({user})),
       setRun: run => dispatch(Actions.setRun({run})),
       toggleProjects: () => dispatch(Actions.toggleProjects()),
+      toggleRuns: () => dispatch(Actions.toggleRuns()),
       toggleSidebar: sidebar => dispatch(Actions.toggleSidebar({sidebar}))
     }
   })
