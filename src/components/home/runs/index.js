@@ -11,6 +11,15 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../utils'
 
+const BackToProjectsButton = withRedux(({
+  actions: {
+    toggleProjects
+  }
+}) => {
+  return (
+    <Button content='Back to Projects' onClick={() => toggleProjects()} />
+  )
+})
 
 const NewRunCard = withRedux(({
   app: {
@@ -127,6 +136,8 @@ const RunsCardList = withRedux(({
   return (
     <Container>
       <Header textAlign='center' content='Runs' />
+      <Divider />
+      <BackToProjectsButton />
       <Divider />
       <Card.Group itemsPerRow={3}>
         <NewRunCard />

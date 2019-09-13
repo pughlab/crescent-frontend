@@ -12,6 +12,8 @@ export default connect(
       setProject: project => dispatch(Actions.setProject({project})),
       setUser: user =>  dispatch(Actions.setUser({user})),
       setRun: run => dispatch(Actions.setRun({run})),
+      toggleProjects: () => dispatch(Actions.toggleProjects()),
+      toggleSidebar: sidebar => dispatch(Actions.toggleSidebar({sidebar}))
     }
   })
 )

@@ -20,9 +20,21 @@ const setRun = ({run}) => ({
   }
 })
 
+const toggleProjects = () => ({
+  type: 'TOGGLE_PROJECTS'
+})
+
+const toggleSidebar = ({sidebar}) => ({
+  type: 'TOGGLE_SIDEBAR',
+  payload: {
+    sidebar
+  }
+})
 
 export default {
   setProject,
   setRun,
-  setUser
+  setUser,
+  toggleProjects,
+  toggleSidebar
 }
