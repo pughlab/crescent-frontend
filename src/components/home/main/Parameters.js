@@ -54,13 +54,12 @@ const ParametersComponent = withRedux(
     const isActivePipelineParameter = R.equals(activePipelineParameter)
        
     return (
-      <Segment inverted style={{height: '100%'}} color='blue'>
-      <Segment style={{height: '100%'}}>
+      <Segment style={{height: '100%'}} color='blue'>
       <Grid>
         <Grid.Row columns={2}>
           <Grid.Column>
             <Button fluid as='div' labelPosition='left'>
-              <Label basic content='Pipeline Step' />
+              <Label color='blue' content='Pipeline Step' />
               <Dropdown
                 button
                 fluid
@@ -92,7 +91,7 @@ const ParametersComponent = withRedux(
           <Divider horizontal />
           <Grid.Column>
           <Button fluid as='div' labelPosition='left'>
-              <Label basic content='Step Parameter' />
+              <Label color='blue' content='Step Parameter' />
               <Dropdown
                 button
                 fluid
@@ -152,7 +151,6 @@ const ParametersComponent = withRedux(
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      </Segment>
       </Segment>
     )
   }

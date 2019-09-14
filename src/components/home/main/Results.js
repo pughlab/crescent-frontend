@@ -17,10 +17,8 @@ const ResultsComponent = withRedux(
     }
   }) => {
     return (
-      <Segment inverted style={{height: '100%'}} color='violet'>
-        <Segment style={{height: '100%'}}>
+      <Segment style={{height: '100%'}} color='violet'>
           Show results here
-        </Segment>
       </Segment>
     )
   }
