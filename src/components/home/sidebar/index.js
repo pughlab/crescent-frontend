@@ -7,7 +7,7 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../redux/hoc'
 
-import {STEPS} from '../../cwl/clustering/parameters/Inputs'
+import {STEPS} from '../main/parameters/Inputs'
 
 const DatasetMenu = withRedux(
   ({

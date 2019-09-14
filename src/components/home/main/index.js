@@ -1,6 +1,6 @@
-import ParametersComponent from './Parameters'
-import DatasetComponent from './Dataset'
-import ResultsComponent from './Results'
+import ParametersComponent from './parameters'
+import DatasetComponent from './dataset'
+import ResultsComponent from './results'
 
 export {
   ParametersComponent,

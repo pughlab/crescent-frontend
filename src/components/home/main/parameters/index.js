@@ -1,10 +1,11 @@
 import React, {useState} from 'react'
 
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
-import {Grid, Menu, Segment, Button, Label, Divider, Dropdown} from 'semantic-ui-react'
+import {Grid, Menu, Segment, Button, Label, Divider, Dropdown, Header} from 'semantic-ui-react'
 
-import withRedux from '../../../redux/hoc'
+import withRedux from '../../../../redux/hoc'
 import {
   STEPS,
   PARAMETERS,
@@ -13,7 +14,7 @@ import {
   PercentMito,
   Resolution,
   PCADimensions,
-} from '../../cwl/clustering/parameters/Inputs'
+} from './Inputs'
 
 const ParametersComponent = withRedux(
   ({
@@ -53,13 +54,18 @@ const ParametersComponent = withRedux(
     const isActivePipelineStep = R.equals(activePipelineStep)
     const isActivePipelineParameter = R.equals(activePipelineParameter)
        
+    const stepHasNoParameter = R.compose(
+      R.and(RA.isNotNil(activePipelineStep)),
+      R.isEmpty,
+      R.filter(R.propEq('step', activePipelineStep))
+    )(PARAMETERS)
     return (
       <Segment style={{height: '100%'}} color='blue'>
       <Grid>
         <Grid.Row columns={2}>
           <Grid.Column>
             <Button fluid as='div' labelPosition='left'>
-              <Label color='blue' content='Pipeline Step' />
+              <Label color='blue' content='Step' />
               <Dropdown
                 button
                 fluid
@@ -88,44 +94,52 @@ const ParametersComponent = withRedux(
               </Dropdown>
             </Button>
           </Grid.Column>
-          <Divider horizontal />
           <Grid.Column>
-          <Button fluid as='div' labelPosition='left'>
-              <Label color='blue' content='Step Parameter' />
-              <Dropdown
-                button
-                fluid
-                text={
-                  R.compose(
-                    R.prop('label'),
-                    R.find(R.propEq('parameter', activePipelineParameter))
-                  )(PARAMETERS)
-                }
-              >
-                <Dropdown.Menu>
-                {
-                  R.compose(
-                    R.map(
-                      // prompt and description used for input components
-                      ({parameter, label, prompt, description}) => (
-                        <Dropdown.Item key={parameter}
-                          active={isActivePipelineParameter(parameter)}
-                          onClick={() => setActivePipelineParameter(parameter)}
-                          content={label}
-                        />
-                      )
-                    ),
-                    R.filter(R.propEq('step', activePipelineStep))
-                  )(PARAMETERS)
-                }
-                </Dropdown.Menu>
-              </Dropdown>
-            </Button>
+          {
+            stepHasNoParameter ?
+              <Button fluid disabled color='blue' content='Step has no parameters' />
+            :
+              <Button fluid as='div' labelPosition='left'>
+                <Label color='blue' content='Parameter' />
+                <Dropdown
+                  button
+                  fluid
+                  text={
+                    R.compose(
+                      R.prop('label'),
+                      R.find(R.propEq('parameter', activePipelineParameter))
+                    )(PARAMETERS)
+                  }
+                >
+                  <Dropdown.Menu>
+                  {
+                    R.compose(
+                      R.map(
+                        // prompt and description used for input components
+                        ({parameter, label, prompt, description}) => (
+                          <Dropdown.Item key={parameter}
+                            active={isActivePipelineParameter(parameter)}
+                            onClick={() => setActivePipelineParameter(parameter)}
+                            content={label}
+                          />
+                        )
+                      ),
+                      R.filter(R.propEq('step', activePipelineStep))
+                    )(PARAMETERS)
+                  }
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Button>
+          }
           </Grid.Column>
         </Grid.Row>
         <Grid.Row columns={1}>
           <Grid.Column>
             <Segment basic >
+            {
+              R.isNil(activePipelineStep)
+              && <Header content='Select a step to configure parameters' />
+            }
             {
               isActivePipelineStep('quality') && (
                 isActivePipelineParameter('sc_input_type') ?
