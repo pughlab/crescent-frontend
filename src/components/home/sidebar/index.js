@@ -165,19 +165,19 @@ const SidebarComponent = withRedux(
           R.cond([
             [R.equals('dataset'), R.always(
               <Button fluid 
-                content='Download'
+                content='Download Dataset'
                 color='teal'
               />
             )],
             [R.equals('pipeline'), R.always(
               <Button fluid
-                content='Submit'
+                content='Submit Run'
                 color='blue'
               />
             )],
             [R.equals('results'), R.always(
               <Button fluid 
-                content='Download'
+                content='Download Results'
                 color='violet'
               />
             )]
