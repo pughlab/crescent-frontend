@@ -30,7 +30,9 @@ const initialState = {
         activeStep: null,
         activeParameter: null
       },
-      results: {activeResult: null}
+      results: {
+        activeResult: null, // 'tsne', 'violin', 'umap'
+      }
     }
   },
   // Local or mutable data
