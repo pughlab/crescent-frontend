@@ -59,6 +59,14 @@ const ParametersComponent = withRedux(
       R.isEmpty,
       R.filter(R.propEq('step', activePipelineStep))
     )(PARAMETERS)
+
+    if (R.isNil(activePipelineStep)) {
+      return (
+        <Segment basic placeholder style={{height: '100%'}}>
+          <Header textAlign='center' content='Select a pipeline step to configure parameters' />
+        </Segment>
+      )
+    }
     return (
       <Grid>
         <Grid.Row columns={2}>
@@ -135,10 +143,6 @@ const ParametersComponent = withRedux(
         <Grid.Row columns={1}>
           <Grid.Column>
             <Segment basic >
-            {
-              R.isNil(activePipelineStep)
-              && <Header content='Select a step to configure parameters' />
-            }
             {
               isActivePipelineStep('quality') && (
                 isActivePipelineParameter('sc_input_type') ?
