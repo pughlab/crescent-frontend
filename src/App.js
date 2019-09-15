@@ -1,4 +1,5 @@
 import './App.css'
+import 'semantic-ui-css/semantic.min.css'
 import React, {useState} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'

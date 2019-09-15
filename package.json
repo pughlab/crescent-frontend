@@ -36,6 +36,7 @@
     "react-redux": "^7.1.1",
     "react-scripts": "3.0.0",
     "redux": "^4.0.4",
+    "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.86.0",
     "typescript": "^3.4.5",
     "xmlhttprequest": "^1.8.0",
