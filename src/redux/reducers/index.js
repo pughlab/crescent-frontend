@@ -1,6 +1,12 @@
 import { combineReducers } from 'redux'
 import * as R from 'ramda'
 
+// PIPELINE STEP AND PARAMETER DATA
+import {
+  STEPS,
+  PARAMETERS
+} from '../../components/home/main/parameters/Inputs'
+
 // Reducer
 const initialState = {
   // Data from GQL
@@ -93,6 +99,7 @@ const app = (state = initialState, action) => {
     case 'TOGGLE_SIDEBAR':
       const {sidebar} = payload
       return R.compose(
+
         setSidebarView(sidebar)
       )(state)
     // Toggling different subviews
@@ -109,9 +116,19 @@ const app = (state = initialState, action) => {
         R.lensPath(['toggle','vis','pipeline','activeStep']),
         step,
       )
+      // Find if pipeline step has parameters and set to first
+      // Otherwise null
+      const stepParameter = R.compose(
+        R.ifElse(
+          R.isNil,
+          R.identity,
+          R.prop('parameter')
+        ),
+        R.find(R.propEq('step', step))
+      )(PARAMETERS)
       const resetActivePipelineParameter = R.set(
         R.lensPath(['toggle','vis','pipeline','activeParameter']),
-        null
+        stepParameter
       )
       return R.compose(
         resetActivePipelineParameter,
