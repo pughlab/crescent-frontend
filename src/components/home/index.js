@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Grid, Image, Step } from 'semantic-ui-react'
+import { Segment, Button, Grid, Image, Step, Header } from 'semantic-ui-react'
 
-import VisHeader from './Header'
+// import VisHeader from './Header'
 
 import Expression from '../expression'
 
@@ -21,10 +21,31 @@ import {
   ResultsComponent
 } from './main'
 
+const VisHeader = withRedux(
+  ({
+    app: {
+      project: {
+        name: projectName
+      },
+      run: {
+        name: runName
+      },
+    }
+  }) => {
+    return (
+      <Segment attached='top'>
+        <Header content={projectName} subheader={runName} />
+      </Segment>
+    )
+  }
+)
+
 const VisualizationComponent = withRedux(
   ({
     app: {
       user,
+      project,
+      run,
       view: {main: mainView, sidebar: sidebarView}
     },
     session,
@@ -51,7 +72,6 @@ const VisualizationComponent = withRedux(
     //     .then(R.compose(setResult, URL.createObjectURL))
     //   && setLoading(false)
     // }, [currentRunId, visType])
-
     return (
       <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
       {
@@ -69,19 +89,27 @@ const VisualizationComponent = withRedux(
           [R.equals('vis'), R.always(
             <>
               <Grid.Column width={12} style={{height: '100%'}}>
-              {
-                R.cond([
-                  [R.equals('dataset'), R.always(
-                    <DatasetComponent />
-                  )],
-                  [R.equals('pipeline'), R.always(
-                    <ParametersComponent />
-                  )],
-                  [R.equals('results'), R.always(
-                    <ResultsComponent />
-                  )],
-                ])(sidebarView)
-              }
+                {
+                  RA.isNotNil(project)
+                  && RA.isNotNil(run)
+                  && <VisHeader />
+                }
+                
+                <Segment attached='bottom' style={{height: '90%'}}>
+                {
+                  R.cond([
+                    [R.equals('dataset'), R.always(
+                      <DatasetComponent />
+                    )],
+                    [R.equals('pipeline'), R.always(
+                      <ParametersComponent />
+                    )],
+                    [R.equals('results'), R.always(
+                      <ResultsComponent />
+                    )],
+                  ])(sidebarView)
+                }
+                </Segment>
               </Grid.Column>
               <Grid.Column width={4} style={{height: '100%'}}>
                 <SidebarComponent />
