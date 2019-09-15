@@ -21,30 +21,13 @@ const App = withRedux(
     actions,
     session,
   }) => {
-    const [currentRunId, setCurrentRunId] = useState(null)
-    const [loggedIn, setLoggedIn] = useState(false)
-    const [currentProjectID, setCurrentProjectID] = useState(null)
-    const [userID, setUserID] = useState(null)
-    const logout = () => {
-      setLoggedIn(false)
-      setCurrentProjectID(null)
-      setCurrentRunId(null)
-    }
-  
     const isLoggedIn = RA.isNotNilOrEmpty(user)
-    console.log('isLoggedIn', isLoggedIn)
     return (
       R.not(isLoggedIn) ?
         <LandingComponent />
       :
         <Segment style={{height: '100%', padding: 0}}>
-          <VisualizationComponent
-            {...{
-              session,
-              currentRunId, setCurrentRunId,
-              currentProjectID
-            }}
-          />
+          <VisualizationComponent {...{session}} />
           <MenuComponent />
         </Segment>
     )
