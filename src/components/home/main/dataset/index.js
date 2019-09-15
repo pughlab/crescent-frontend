@@ -17,9 +17,8 @@ const DatasetComponent = withRedux(
     }
   }) => {
     return (
-      <Segment style={{height: '100%'}} color='teal'>
-        Merge datasets here
-      </Segment>
+
+        'Merge datasets here'
     )
   }
 )

@@ -60,7 +60,6 @@ const ParametersComponent = withRedux(
       R.filter(R.propEq('step', activePipelineStep))
     )(PARAMETERS)
     return (
-      <Segment style={{height: '100%'}} color='blue'>
       <Grid>
         <Grid.Row columns={2}>
           <Grid.Column>
@@ -165,7 +164,6 @@ const ParametersComponent = withRedux(
           </Grid.Column>
         </Grid.Row>
       </Grid>
-      </Segment>
     )
   }
 )
