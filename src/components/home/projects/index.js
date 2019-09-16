@@ -217,9 +217,9 @@ const ProjectsCardList = withRedux(({
   }
 }) => {
   const projectKinds = [
-    {key: 'published', label:'Published Data'},
-    {key: 'example', label:'Example Data'},
-    {key: 'uploaded', label:'Uploaded Data'},
+    {key: 'published', label:'Published Data', description: 'Publicly available published datasets to visualize'},
+    {key: 'example', label:'Example Data', description: 'Example data formats accepted by CReSCENT'},
+    {key: 'uploaded', label:'Uploaded Data', description: 'Upload your own scRNA-seq data'},
   ]
   const isActiveProjectKind = R.equals(activeProjectKind)
 
@@ -246,14 +246,19 @@ const ProjectsCardList = withRedux(({
     )(data)
   return (
     <Container>
-      <Header textAlign='center' content='Projects' />
+      <Header size='large' textAlign='center' icon>
+        <Icon name='archive' />
+        PROJECTS
+      </Header>
       <Divider />
-        <Button.Group fluid widths={3} attached='top'>
+        <Button.Group fluid widths={3}>
           {
             R.map(
-              ({key, label}) => (
+              ({key, label, description}) => (
                 <Button key={key}
-                  content={label}
+                  content={
+                    <Header content={label} subheader={description} />
+                  }
                   active={isActiveProjectKind(key)}
                   onClick={() => setActiveProjectKind(key)}
                 />
@@ -262,16 +267,6 @@ const ProjectsCardList = withRedux(({
             )
           }
         </Button.Group>
-        <Message attached='bottom'>
-          <Header>
-            <Header.Content content='Click above to select a project type or below to create a new project' />
-          </Header>
-          <Message.List>
-            <Message.Item content='Your Data: Upload your own scRNA-seq data for analysis and visualization' />
-            <Message.Item content='Example Data: Examples of data formats accepted by CReSCENT' />
-            <Message.Item content='Published Data: Select published, publicly available datasets to visualize' />
-          </Message.List>
-        </Message>
       <Divider />
       <Card.Group itemsPerRow={3}>
       {

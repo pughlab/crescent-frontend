@@ -17,7 +17,7 @@ const BackToProjectsButton = withRedux(({
   }
 }) => {
   return (
-    <Button content='Back to Projects' onClick={() => toggleProjects()} />
+    <Button fluid content={<Header content='Back' subheader='Go back to reselect a project' />} onClick={() => toggleProjects()} />
   )
 })
 
@@ -135,7 +135,10 @@ const RunsCardList = withRedux(({
 }) => {
   return (
     <Container>
-      <Header textAlign='center' content='Runs' />
+      <Header size='large' textAlign='center' icon>
+        <Icon name='paper plane' />
+        RUNS
+      </Header>
       <Divider />
       <BackToProjectsButton />
       <Divider />
