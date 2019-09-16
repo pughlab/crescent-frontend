@@ -70,6 +70,10 @@ const app = (state = initialState, action) => {
     case 'SET_USER':
       const {user} = payload
       return R.compose(
+        R.set(
+          R.lensPath(['toggle','projects','activeKind']),
+          'uploaded',
+        ),
         setMainView('projects'),
         setRunFromGQL(null),
         setProjectFromGQL(null),
