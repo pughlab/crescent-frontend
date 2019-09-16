@@ -21,11 +21,8 @@ const App = withRedux(
     actions,
     session,
   }) => {
-    const isLoggedIn = RA.isNotNilOrEmpty(user)
+    // const isLoggedIn = RA.isNotNilOrEmpty(user)
     return (
-      R.not(isLoggedIn) ?
-        <LandingComponent />
-      :
         <Segment style={{height: '100%', padding: 0}}>
           <VisualizationComponent {...{session}} />
           <MenuComponent />

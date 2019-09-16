@@ -209,7 +209,8 @@ const ProjectCard = withRedux(({
 
 const ProjectsCardList = withRedux(({
   app: {
-    user: {projects: userProjects},
+    // user: {projects: userProjects},
+    user,
     toggle: {projects: {activeKind: activeProjectKind}}
   },
   actions: {
@@ -244,6 +245,11 @@ const ProjectsCardList = withRedux(({
       R.prop('curatedProjects'),
       R.always([])
     )(data)
+  const userProjects = R.ifElse(
+    R.isNil,
+    R.always([]),
+    R.prop('projects')
+  )(user)
   return (
     <Container>
       <Header size='large' textAlign='center' icon>
@@ -259,6 +265,7 @@ const ProjectsCardList = withRedux(({
                   content={
                     <Header content={label} subheader={description} />
                   }
+                  disabled={R.and(R.isNil(user), R.equals(key, 'uploaded'))}
                   active={isActiveProjectKind(key)}
                   onClick={() => setActiveProjectKind(key)}
                 />

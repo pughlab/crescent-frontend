@@ -13,6 +13,7 @@ import withRedux from '../../redux/hoc'
 
 import ProjectsCardList from './projects'
 import RunsCardList from './runs'
+import LandingPageComponent from '../landing'
 
 import SidebarComponent from './sidebar'
 import {
@@ -83,6 +84,9 @@ const VisualizationComponent = withRedux(
       <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
       {
         R.cond([
+          [R.equals('login'), R.always(
+            <LandingPageComponent />
+          )],  
           [R.equals('projects'), R.always(
             <Grid.Column width={16} style={{height: '100%'}}>
               <ProjectsCardList />

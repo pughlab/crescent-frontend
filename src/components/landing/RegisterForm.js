@@ -53,8 +53,10 @@ const RegisterForm = ({
     }
   }, [data])
   return (
-    <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
-      <Grid.Column style={{ maxWidth: 450 }}>
+    <Grid centered textAlign='center' verticalAlign='middle'
+      columns={1}
+    >
+      <Grid.Column>
         <Formik
           intialValues={{
             firstName: '', lastName: '',
@@ -83,9 +85,9 @@ const RegisterForm = ({
               )(errors)
             )
             return (
-              <Form size='large' onSubmit={handleSubmit}>
-                <Card fluid>
-                  <Card.Content>
+              <Segment.Group>
+                <Segment>
+                  <Form size='large' onSubmit={handleSubmit}>
                     <Form.Input
                       fluid iconPosition='left'
                       placeholder='First name'
@@ -136,9 +138,8 @@ const RegisterForm = ({
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
-                  </Card.Content>
-                  <Card.Content>
-                    <Button
+
+                    <Form.Button
                       fluid color='grey' size='large'
                       type='submit'
                       disabled={
@@ -157,17 +158,19 @@ const RegisterForm = ({
                       }
                       content='Register'
                     />
-                  </Card.Content>
-                  <Card.Content extra>
-                    <Button
-                      fluid color='grey'
-                      type='button'
-                      onClick={() => setShowLogin(true)}
-                      content='Click to login'
-                    />
-                  </Card.Content>
-                </Card>
-              </Form>
+                  </Form>
+                </Segment>
+                <Segment>
+                  <Button animated='fade'
+                    fluid color='grey'
+                    type='button'
+                    onClick={() => setShowLogin(true)}
+                  >
+                    <Button.Content visible content='Already have an account?' />
+                    <Button.Content hidden content='Click to login' />
+                  </Button>
+                </Segment>
+              </Segment.Group>
             )
           }}
         />

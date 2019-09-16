@@ -22,7 +22,10 @@ const setRun = ({run}) => ({
     run
   }
 })
-
+// TODO: main view toggles should be consolidate
+const toggleLogin = () => ({
+  type: 'TOGGLE_LOGIN'
+})
 const toggleProjects = () => ({
   type: 'TOGGLE_PROJECTS'
 })
@@ -88,6 +91,7 @@ export default {
   setProject,
   setRun,
   setUser,
+  toggleLogin,
   toggleProjects,
   toggleRuns,
   toggleSidebar,

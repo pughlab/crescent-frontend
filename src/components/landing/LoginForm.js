@@ -30,9 +30,7 @@ const LoginForm = withRedux(({
   actions: {
     setUser
   },
-  // setLoggedIn, //For navigating to portal on success
   setShowLogin, //For toggling to registration
-  // setUserID
 }) => {
   // GraphQL mutation hook to call mutation and use result
   const [authenticateUser, {loading, data, error}] = useMutation(gql`
@@ -68,14 +66,13 @@ const LoginForm = withRedux(({
     ) {
       const {authenticateUser} = data
       setUser(authenticateUser)
-
-      // setUserID(R.path(['authenticateUser','userID'], data))
-      // setLoggedIn(true)
     }
   }, [data])
   return (
-    <Grid textAlign='center' style={{ height: '100vh' }} verticalAlign='middle'>
-      <Grid.Column style={{ maxWidth: 450 }}>
+    <Grid textAlign='center' centered verticalAlign='middle'
+      columns={1}
+    >
+      <Grid.Column>
       <Formik
         initialValues={{ email: '', password: '' }}
         // Call GQL mutation on form submit
@@ -100,12 +97,9 @@ const LoginForm = withRedux(({
             )(errors)
           )
           return (
-            <Form size='large' onSubmit={handleSubmit}>
-              <Card fluid>
-                <Image src={Logo} size='tiny' wrapped ui={false} />
-                <Card.Content>
-                  <Card.Header content='CReSCENT: CanceR Single Cell ExpressioN Toolkit' />
-                  <Divider/>
+            <Segment.Group>
+              <Segment>
+                <Form onSubmit={handleSubmit}>
                   <Form.Input
                     fluid icon='user' iconPosition='left'
                     placeholder='E-mail address'
@@ -123,9 +117,8 @@ const LoginForm = withRedux(({
                     onChange={handleChange}
                     onBlur={handleBlur}
                   />
-                </Card.Content>
-                <Card.Content>
-                  <Button
+
+                  <Form.Button
                     fluid color='grey' size='large'
                     disabled={
                       R.any(RA.isTrue, [
@@ -136,17 +129,19 @@ const LoginForm = withRedux(({
                     type='submit'
                     content='Login'
                   />
-                </Card.Content>
-                <Card.Content extra>
-                  <Button
-                    fluid color='grey'
-                    type='button'
-                    onClick={() => setShowLogin(false)}
-                    content='Click to register'
-                  />
-                </Card.Content>
-              </Card>
-            </Form>
+                </Form>
+              </Segment>
+              <Segment>
+                <Button animated='fade'
+                  fluid color='grey'
+                  type='button'
+                  onClick={() => setShowLogin(false)}
+                >
+                  <Button.Content visible content="No account?" />
+                  <Button.Content hidden content='Click to register' />  
+                </Button>
+              </Segment>
+            </Segment.Group>
           )
         }}
       />

@@ -71,18 +71,24 @@ const MenuComponent = withRedux(({
     view: {main, sidebar}
   },
   actions: {
-    logout,
+    // logout,
     setRun,
     toggleProjects,
-    toggleRuns
+    toggleRuns,
+    toggleLogin
   }
 }) => {
   const isMainView = R.equals(main)
   return (
     <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='large'>
-      <Menu.Item header content={<CrescentIcon />} />
-      <InfoModal />
-      <Menu.Item content='Logout' onClick={() => logout()} />
+      {/* <Menu.Item header content={<CrescentIcon />} /> */}
+      <Menu.Item
+        onClick={() => isMainView('login') ? toggleProjects() : toggleLogin()}
+      >
+        <Icon size='large'
+          name={isMainView('login') ? 'left arrow circle' : 'user circle'}
+        />
+      </Menu.Item>
 
       <Menu.Menu position='right'>
       {
@@ -98,6 +104,7 @@ const MenuComponent = withRedux(({
         // Set to current run to reset from toggle projects/runs
         <Menu.Item content='Cancel' onClick={() => setRun(run)} />
       }
+        <InfoModal />
       </Menu.Menu>
     </Segment>
   )

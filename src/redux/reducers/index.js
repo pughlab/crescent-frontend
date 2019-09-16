@@ -15,7 +15,7 @@ const initialState = {
   run: null,
   // View management
   view: {
-    main: null, // 'projects', 'runs', 'vis'
+    main: 'projects', // 'login', 'projects', 'runs', 'vis'
     sidebar: null, // 'dataset', 'pipeline', 'results'
   },
   toggle: {
@@ -60,6 +60,7 @@ const setRunFromGQL = R.set(R.lensProp('run'))
 
 const app = (state = initialState, action) => {
   const {type, payload} = action
+
   switch (type) {
     case 'LOGOUT':
       return initialState
@@ -90,6 +91,10 @@ const app = (state = initialState, action) => {
       )(state)
     // App can either be selecting projects and selecting/inspecting runs
     // Inspecting runs require sidebar
+    case 'TOGGLE_LOGIN':
+      return R.compose(
+        setMainView('login')
+      )(state)
     case 'TOGGLE_PROJECTS':
       return R.compose(
         setMainView('projects')

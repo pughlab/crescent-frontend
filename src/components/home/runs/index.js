@@ -17,7 +17,7 @@ const BackToProjectsButton = withRedux(({
   }
 }) => {
   return (
-    <Button fluid content={<Header content='Back' subheader='Go back to reselect a project' />} onClick={() => toggleProjects()} />
+    <Button fluid content={<Header content='Back' subheader='Go back to select a different project' />} onClick={() => toggleProjects()} />
   )
 })
 
