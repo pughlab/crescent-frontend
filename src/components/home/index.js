@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Grid, Image, Step, Header } from 'semantic-ui-react'
+import { Segment, Button, Grid, Image, Step, Header, Label } from 'semantic-ui-react'
 
 // import VisHeader from './Header'
 
@@ -30,11 +30,18 @@ const VisHeader = withRedux(
       run: {
         name: runName
       },
+      view: {main: mainView, sidebar: sidebarView}
     }
   }) => {
+    const color = R.cond([
+      [R.isNil, R.always(undefined)],
+      [R.equals('dataset'), R.always('teal')],
+      [R.equals('pipeline'), R.always('blue')],
+      [R.equals('results'), R.always('violet')]
+    ])(sidebarView)
     return (
-      <Segment attached='top'>
-        <Header content={projectName} subheader={runName} />
+      <Segment attached='top' color={color}>
+          <Label color={color} content={projectName} detail={runName} />
       </Segment>
     )
   }
