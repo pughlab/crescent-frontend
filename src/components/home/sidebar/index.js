@@ -59,12 +59,11 @@ const ResultsMenu = withRedux(
         R.map(
           ({result, label, description}) => (
             <Step key={result}
-              active={isActiveResult(result)}
               onClick={() => setActiveResult(result)}
             >
               {
                 isActiveResult(result)
-                && <Icon name='eye' />
+                && <Icon name='eye' color='violet'/>
               }
               <Step.Content title={label} description={description} />
             </Step>
@@ -105,12 +104,11 @@ const PipelineMenu = withRedux(
         R.map(
           ({step, label}) => (
             <Step key={step}
-              active={isActivePipelineStep(step)}
               onClick={() => setActivePipelineStep(step)}
             >
               {
                 isActivePipelineStep(step) &&
-                <Icon name='eye' />
+                <Icon name='eye' color='blue'/>
               }
               <Step.Content title={label} description={'Seurat'} />
             </Step>
