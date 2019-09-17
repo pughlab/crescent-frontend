@@ -7,7 +7,7 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../redux/hoc'
 
-import {STEPS} from '../main'
+import {STEPS, RESULTS} from '../main'
 
 const DatasetMenu = withRedux(
   ({
@@ -43,19 +43,33 @@ const DatasetMenu = withRedux(
 const ResultsMenu = withRedux(
   ({
     app: {
-      view: {sidebar}
+      view: {sidebar},
+      toggle: {vis: {results: {activeResult}}}
+    },
+    actions: {
+      toggle: {
+        setActiveResult
+      }
     }
   }) => {
+    const isActiveResult = R.equals(activeResult)
     return (
-      <Step.Group vertical fluid ordered size='small'>
+      <Step.Group vertical fluid size='small'>
       {
         R.map(
-          ({step, label}) => (
-            <Step key={step}>
-              <Step.Content title={label} description={'Seurat'} />
+          ({result, label, description}) => (
+            <Step key={result}
+              active={isActiveResult(result)}
+              onClick={() => setActiveResult(result)}
+            >
+              {
+                isActiveResult(result)
+                && <Icon name='eye' />
+              }
+              <Step.Content title={label} description={description} />
             </Step>
           ),
-          STEPS
+          RESULTS
         )
       }
       </Step.Group>
@@ -91,6 +105,7 @@ const PipelineMenu = withRedux(
         R.map(
           ({step, label}) => (
             <Step key={step}
+              active={isActivePipelineStep(step)}
               onClick={() => setActivePipelineStep(step)}
             >
               {

@@ -9,6 +9,8 @@ import withRedux from '../../../../redux/hoc'
 import {
   STEPS,
   PARAMETERS,
+} from '../../main'
+import {
   SingleCellInputType,
   NumberGenes,
   PercentMito,

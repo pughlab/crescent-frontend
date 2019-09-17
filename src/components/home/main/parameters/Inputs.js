@@ -93,8 +93,6 @@ const PCADimensions = ({
 }
 
 export {
-  STEPS,
-  PARAMETERS,
   SingleCellInputType,
   NumberGenes,
   PercentMito,
