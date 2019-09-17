@@ -78,9 +78,14 @@ const MenuComponent = withRedux(({
     toggleLogin
   }
 }) => {
+  const nameIfNotNil = R.ifElse(
+    R.isNil,
+    R.always(''),
+    R.prop('name')
+  )
   const isMainView = R.equals(main)
   return (
-    <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='large'>
+    <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='huge'>
       {/* <Menu.Item header content={<CrescentIcon />} /> */}
       <Menu.Item
         onClick={() => isMainView('login') ? toggleProjects() : toggleLogin()}
@@ -93,11 +98,17 @@ const MenuComponent = withRedux(({
       <Menu.Menu position='right'>
       {
         isMainView('vis') &&
-        <Menu.Item content='Projects' onClick={() => toggleProjects()} />
+        <Menu.Item as={Button} animated='fade' onClick={() => toggleProjects()}>
+          <Button.Content visible content={<b>{nameIfNotNil(project)}</b>}/>
+          <Button.Content hidden content='Change project?' />
+        </Menu.Item>
       }
       {
         isMainView('vis') &&
-        <Menu.Item content='Runs' onClick={() => toggleRuns()} />
+        <Menu.Item as={Button} animated='fade' onClick={() => toggleRuns()}>
+          <Button.Content visible content={<i>{nameIfNotNil(run)}</i>} />
+          <Button.Content hidden content='Change run?' />
+        </Menu.Item>
       }
       {
         R.not(isMainView('vis')) && RA.isNotNil(run) && RA.isNotNil(project) && 

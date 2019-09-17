@@ -142,7 +142,15 @@ const SidebarComponent = withRedux(
     ]
     return (
       <Segment basic style={{height: '100%', padding: 0}}>
-        <Segment attached='top'>
+        <Segment attached='top'
+          color={
+            R.cond([
+              [R.equals('dataset'), R.always('teal')],
+              [R.equals('pipeline'), R.always('blue')],
+              [R.equals('results'), R.always('violet')],
+            ])(sidebarView)                    
+          }
+        >
           <Button.Group fluid widths={3}>
           {
             R.map(

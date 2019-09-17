@@ -22,6 +22,8 @@ import {
   ResultsComponent
 } from './main'
 
+console.log(ResultsComponent)
+
 const VisHeader = withRedux(
   ({
     app: {
@@ -100,13 +102,15 @@ const VisualizationComponent = withRedux(
           [R.equals('vis'), R.always(
             <>
               <Grid.Column width={10} style={{height: '100%'}}>
-                {
-                  RA.isNotNil(project)
-                  && RA.isNotNil(run)
-                  && <VisHeader />
-                }
-                
-                <Segment attached='bottom' style={{height: '90%'}}>
+                <Segment raised style={{height: '100%'}}
+                  color={
+                    R.cond([
+                      [R.equals('dataset'), R.always('teal')],
+                      [R.equals('pipeline'), R.always('blue')],
+                      [R.equals('results'), R.always('violet')],
+                    ])(sidebarView)                    
+                  }
+                >
                 {
                   R.cond([
                     [R.equals('dataset'), R.always(
