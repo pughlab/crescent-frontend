@@ -99,7 +99,7 @@ const VisualizationComponent = withRedux(
           )],
           [R.equals('vis'), R.always(
             <>
-              <Grid.Column width={12} style={{height: '100%'}}>
+              <Grid.Column width={10} style={{height: '100%'}}>
                 {
                   RA.isNotNil(project)
                   && RA.isNotNil(run)
@@ -122,7 +122,7 @@ const VisualizationComponent = withRedux(
                 }
                 </Segment>
               </Grid.Column>
-              <Grid.Column width={4} style={{height: '100%'}}>
+              <Grid.Column width={6} style={{height: '100%'}}>
                 <SidebarComponent />
               </Grid.Column>
             </>
