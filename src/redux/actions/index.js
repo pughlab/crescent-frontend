@@ -82,7 +82,9 @@ const toggle = {
       setActivePipelineStep,
       setActivePipelineParameter
     },
-    results: {setActiveResult}
+    results: {
+      setActiveResult
+    }
   }
 }
 

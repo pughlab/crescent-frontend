@@ -23,7 +23,7 @@ export default connect(
         setActiveProjectKind: projectKind => dispatch(Actions.toggle.project.setActiveProjectKind({projectKind})),
         setActivePipelineStep: step => dispatch(Actions.toggle.vis.pipeline.setActivePipelineStep({step})),
         setActivePipelineParameter: parameter => dispatch(Actions.toggle.vis.pipeline.setActivePipelineParameter({parameter})),
-        setActiveResult: result => dispatch(Actions.toggle.vis.result.setActiveResult({result})),
+        setActiveResult: result => dispatch(Actions.toggle.vis.results.setActiveResult({result})),
       }
     }
   })

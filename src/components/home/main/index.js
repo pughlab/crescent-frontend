@@ -58,9 +58,9 @@ const STEPS = [
 
 
 const RESULTS = [
-    {label: 't-SNE', result: 'tsne'},
-    {label: 'UMAP', result: 'umap'},
-    {label: 'Violin', result: 'violin'},
+    {label: 't-SNE', result: 'tsne', description: 't-Distributed Stochastic Neighbour Embedding'},
+    {label: 'UMAP', result: 'umap', description: 'Uniform Manifold Approximation and Projection for Dimension Reduction'},
+    {label: 'Violin', result: 'violin', Description: 'Violin Plots'},
 ]
 
 export {
