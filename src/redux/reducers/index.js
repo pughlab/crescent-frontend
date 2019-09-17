@@ -1,11 +1,10 @@
 import { combineReducers } from 'redux'
 import * as R from 'ramda'
 
-// PIPELINE STEP AND PARAMETER DATA
+// CONSTANTS
 import {
-  STEPS,
-  PARAMETERS
-} from '../../components/home/main/parameters/Inputs'
+  STEPS, PARAMETERS, RESULTS
+} from '../../components/home/main'
 
 // Reducer
 const initialState = {
