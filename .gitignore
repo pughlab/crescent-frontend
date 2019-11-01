@@ -13,9 +13,9 @@ crescent-v3-sept5.simg
 
 package-lock.json
 
-results/*
+/results
 minio/download/*
 minio/upload/*
 SEURAT/
 frontend_seurat_inputs.json
-results/
+# results/
