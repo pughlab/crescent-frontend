@@ -35,7 +35,7 @@ const App = withRedux(
           </Modal.Content>
           <Modal.Content>
             <Button animated='fade' fluid size='huge' color='grey' onClick={() => setIntroduction(false)}>
-              <Button.Content visible content={'CReSCENT: CanceR Single Cell ExpressionN Toolkit'} />
+              <Button.Content visible content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'} />
               <Button.Content hidden content='Enter' />
             </Button>
           </Modal.Content>
