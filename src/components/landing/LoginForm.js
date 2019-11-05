@@ -99,6 +99,10 @@ const LoginForm = withRedux(({
           return (
             <Segment.Group>
               <Segment>
+                <Image src={Logo} size='medium' centered/>
+                <Header textAlign='center' content='CReSCENT: CanceR Single Cell ExpressionN Toolkit' />
+              </Segment>
+              <Segment>
                 <Form onSubmit={handleSubmit}>
                   <Form.Input
                     fluid icon='user' iconPosition='left'
