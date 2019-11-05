@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Menu, Container, Card, Header, Form, Button, Modal, Label, Divider, Icon} from 'semantic-ui-react'
+import {Transition, Container, Card, Header, Form, Button, Modal, Label, Divider, Icon} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -17,7 +17,7 @@ const BackToProjectsButton = withRedux(({
   }
 }) => {
   return (
-    <Button fluid content={<Header content='Back' subheader='Go back to select a different project' />} onClick={() => toggleProjects()} />
+    <Button size='mini' fluid content={<Header content='Back' subheader='Go back to select a different project' />} onClick={() => toggleProjects()} />
   )
 })
 
@@ -49,12 +49,16 @@ const NewRunCard = withRedux(({
   return (
     <Modal
       trigger={
+        <Transition
+          visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}
+        >
         <Card link color='black'>
           <Card.Content>
           <Card.Header as={Header} icon><Icon name='add' circular />Create New Run</Card.Header>
             <Card.Meta content={'Configure a pipeline and run on the cloud'} />
           </Card.Content>
         </Card>
+        </Transition>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Run' />
@@ -85,6 +89,9 @@ const RunCard = withRedux(({
     runID, name, params
   } = run
   return (
+    <Transition
+      visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}
+    >
     <Card link onClick={() => setRun(run)} >
       <Card.Content>
         <Card.Header as={Header}>
@@ -123,6 +130,7 @@ const RunCard = withRedux(({
         </Card.Content>
       }
     </Card>
+    </Transition>
   )
 })
 
@@ -135,18 +143,17 @@ const RunsCardList = withRedux(({
 }) => {
   return (
     <Container>
-      <Header size='large' textAlign='center' icon>
+      <Header textAlign='center' icon>
         <Icon name='paper plane' />
-        RUNS
+        Runs
+        <BackToProjectsButton />
       </Header>
       <Divider />
-      <BackToProjectsButton />
-      <Divider />
-      <Card.Group itemsPerRow={3}>
+      <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
         <NewRunCard />
       {
-        R.map(
-          run => <RunCard key={R.prop('runID', run)} {...{run}} />,
+        R.addIndex(R.map)(
+          (run, index) => <RunCard key={index} {...{run}} />,
           runs
         )
       }

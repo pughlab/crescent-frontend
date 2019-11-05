@@ -12,7 +12,7 @@ import moment from 'moment'
 import {queryIsNotNil} from '../../../utils'
 
 
-import {Form, Card, Header, Message, Button, Container, Modal, Label, Divider, Icon, Image} from 'semantic-ui-react'
+import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image} from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -131,12 +131,16 @@ const NewProjectCard = withRedux(({
   return (
     <Modal
       trigger={
+        <Transition
+          visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}
+        >
         <Card link color='black'>
           <Card.Content>
             <Card.Header as={Header} icon><Icon name='add' circular />Create New Project</Card.Header>
             <Card.Meta content={'Upload your own files to create a new project'} />
           </Card.Content>
         </Card>
+        </Transition>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Uploaded Project' />
@@ -197,6 +201,9 @@ const ProjectCard = withRedux(({
     createdOn
   } = project
   return (
+    <Transition
+      visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}
+    >
     <Card link onClick={() => setProject(project)}>
       <Card.Content>
         <Card.Header content={name} />
@@ -204,6 +211,7 @@ const ProjectCard = withRedux(({
       </Card.Content>
       <Card.Content extra content={description} />
     </Card>
+    </Transition>
   )
 })
 
@@ -252,12 +260,10 @@ const ProjectsCardList = withRedux(({
   )(user)
   return (
     <Container>
-      <Header size='large' textAlign='center' icon>
+      <Header textAlign='center' icon>
         <Icon name='archive' />
-        PROJECTS
-      </Header>
-      <Divider />
-        <Button.Group fluid widths={3}>
+        Projects
+        <Button.Group size='mini' fluid widths={3}>
           {
             R.map(
               ({key, label, description}) => (
@@ -274,18 +280,19 @@ const ProjectsCardList = withRedux(({
             )
           }
         </Button.Group>
+      </Header>
       <Divider />
-      <Card.Group itemsPerRow={3}>
+      <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
       {
         isActiveProjectKind('uploaded') && <NewProjectCard />
       }
       {
-        R.map(
-          project => (
-            <ProjectCard key={R.prop('projectID', project)} {...{project}} />
+        R.addIndex(R.map)(
+          (project, index) => (
+            <ProjectCard key={index} {...{project}} />
           ),
           isActiveProjectKind('uploaded') ?
-            userProjects
+            [...userProjects, ...userProjects]
           : isActiveProjectKind('published') ?
             curatedProjects
           : []
