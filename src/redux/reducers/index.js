@@ -31,6 +31,15 @@ const initialState = {
       },
       results: {
         activeResult: null, // 'tsne', 'violin', 'umap'
+        availableResults: [],
+        // Available ways to label data (i.e. cluster)
+        groups: [],
+        selectedGroup: null,
+        // Gene of interest
+        selectedFeature: null,
+        // Data structures for Plotly
+        scatterPlots: [], // to define
+        violin: null,
       }
     }
   },
@@ -43,7 +52,9 @@ const initialState = {
       percentMito: {min: 0, max: 0.2},
       resolution: 1,
       principalDimensions: 10,
-    }
+    },
+
+
   }
 }
 
@@ -165,6 +176,16 @@ const app = (state = initialState, action) => {
       return R.compose(
         setParameters(parameters)
       )(state)
+    
+    // visualization stuff
+    case 'SET_AVAILABLE_GROUPS':
+      const {groups} = payload
+      const setAvailableGroups = R.set(
+        R.lensProp('groups'),
+        groups 
+      )
+      return setAvailableGroups(state) 
+    
     default:
       return state
   }

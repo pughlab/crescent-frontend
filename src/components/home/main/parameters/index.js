@@ -65,7 +65,7 @@ const ParametersComponent = withRedux(
     if (R.isNil(activePipelineStep)) {
       return (
         <Segment basic placeholder style={{height: '100%'}}>
-          <Header textAlign='center' content='Select a pipeline step on the left to configure parameters' />
+          <Header textAlign='center' content='Select a pipeline step on the right to configure parameters' />
         </Segment>
       )
     }

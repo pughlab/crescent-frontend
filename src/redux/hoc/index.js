@@ -18,6 +18,7 @@ export default connect(
       toggleRuns: () => dispatch(Actions.toggleRuns()),
       toggleSidebar: sidebar => dispatch(Actions.toggleSidebar({sidebar})),
       setParameters: parameters => dispatch(Actions.setParameters({parameters})),
+      setAvailableGroups: groups => dispatch(Actions.setAvailableGroups({groups})),
 
       toggle: {
         setActiveProjectKind: projectKind => dispatch(Actions.toggle.project.setActiveProjectKind({projectKind})),

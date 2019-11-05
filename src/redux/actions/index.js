@@ -73,6 +73,14 @@ const setActiveResult = ({result}) => ({
     result
   }
 })
+
+const setAvailableGroups = ({groups}) => ({
+  type: 'SET_AVAILABLE_GROUPS',
+  payload: {
+    groups
+  }
+})
+
 const toggle = {
   project: {setActiveProjectKind},
   runs: {},
@@ -98,6 +106,7 @@ export default {
   toggleRuns,
   toggleSidebar,
   setParameters,
+  setAvailableGroups,
 
   toggle
 }

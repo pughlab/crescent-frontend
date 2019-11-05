@@ -33,7 +33,7 @@ def main():
 		sys.exit()
 
 	groups = read_groups_file(runID)
-	print({"groups": groups})
+	print(json.dumps({"groups": groups}))
 	sys.stdout.flush()
 
 if __name__ == "__main__":

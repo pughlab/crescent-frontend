@@ -44,7 +44,7 @@ const ResultsMenu = withRedux(
   ({
     app: {
       view: {sidebar},
-      toggle: {vis: {results: {activeResult}}}
+      toggle: {vis: {results: {activeResult, availableResults}}}
     },
     actions: {
       toggle: {
@@ -52,6 +52,7 @@ const ResultsMenu = withRedux(
       }
     }
   }) => {
+    
     const isActiveResult = R.equals(activeResult)
     return (
       <Step.Group vertical fluid size='small'>
