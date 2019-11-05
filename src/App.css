@@ -31,3 +31,9 @@
     transform: rotate(360deg);
   }
 }
+
+.ui.inverted.page.modals.dimmer.transition.visible.active {
+  /* background-color: #282c54 !important; */
+  background-image: url("./memphis-mini.png") !important;
+  background-repeat: repeat !important;
+}

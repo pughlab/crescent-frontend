@@ -4,11 +4,15 @@ import React, {useState} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Segment} from 'semantic-ui-react'
+import {Segment, Modal, Button, Image, Header} from 'semantic-ui-react'
 
 import MenuComponent from './components/menu'
 import VisualizationComponent from './components/home'
 import LandingComponent from './components/landing'
+
+import Logo from './components/landing/logo.jpg'
+
+
 
 import withRedux from './redux/hoc'
 
@@ -21,8 +25,22 @@ const App = withRedux(
     actions,
     session,
   }) => {
-    // const isLoggedIn = RA.isNotNilOrEmpty(user)
+    const [introduction, setIntroduction] = useState(true)
+    
     return (
+      introduction ?
+        <Modal open={introduction} dimmer='inverted'>
+          <Modal.Content>
+            <Image src={Logo} size='medium' centered/>
+          </Modal.Content>
+          <Modal.Content>
+            <Button animated='fade' fluid size='huge' color='grey' onClick={() => setIntroduction(false)}>
+              <Button.Content visible content={'CReSCENT: CanceR Single Cell ExpressionN Toolkit'} />
+              <Button.Content hidden content='Enter' />
+            </Button>
+          </Modal.Content>
+        </Modal>
+        :
         <Segment style={{height: '100%', padding: 0}}>
           <VisualizationComponent {...{session}} />
           <MenuComponent />

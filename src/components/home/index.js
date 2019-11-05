@@ -3,6 +3,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import { Segment, Button, Grid, Image, Step, Header, Label } from 'semantic-ui-react'
 
 // import VisHeader from './Header'
+import memphisMini from '../../memphis-mini.png'
 
 import Expression from '../expression'
 
@@ -83,7 +84,7 @@ const VisualizationComponent = withRedux(
     //   && setLoading(false)
     // }, [currentRunId, visType])
     return (
-      <Segment basic attached='top' style={{height: '92%'}} as={Grid}>
+      <Segment basic attached='top' style={{height: '92%', backgroundImage: `url(${memphisMini})`}} as={Grid}>
       {
         R.cond([
           [R.equals('login'), R.always(

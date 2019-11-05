@@ -144,8 +144,8 @@ const RunsCardList = withRedux(({
   return (
     <Container>
       <Header textAlign='center' icon>
-        <Icon name='paper plane' />
         Runs
+        <Icon name='paper plane' />
         <BackToProjectsButton />
       </Header>
       <Divider />

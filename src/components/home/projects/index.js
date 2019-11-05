@@ -261,8 +261,8 @@ const ProjectsCardList = withRedux(({
   return (
     <Container>
       <Header textAlign='center' icon>
-        <Icon name='archive' />
         Projects
+        <Icon name='archive' />
         <Button.Group size='mini' fluid widths={3}>
           {
             R.map(
