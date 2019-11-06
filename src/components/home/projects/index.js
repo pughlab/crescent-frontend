@@ -236,11 +236,6 @@ const ProjectsCardList = withRedux(({
     toggle: {setActiveProjectKind}
   }
 }) => {
-  const projectKinds = [
-    {key: 'published', label:'Published Data', description: 'Publicly available published datasets to visualize'},
-    {key: 'example', label:'Example Data', description: 'Example data formats accepted by CReSCENT'},
-    {key: 'uploaded', label:'Uploaded Data', description: 'Upload your own scRNA-seq data'},
-  ]
   const isActiveProjectKind = R.equals(activeProjectKind)
 
   // GQL query to find all projects of which user is a member of
@@ -272,23 +267,21 @@ const ProjectsCardList = withRedux(({
   return (
     <Container>
       <Button.Group size='mini' fluid widths={3}>
-        {
-          R.map(
-            ({key, label, description}) => (
-              <Button key={key}
-                content={
-                  <Header content={label} subheader={description} />
-                }
-                disabled={R.and(R.isNil(user), R.equals(key, 'uploaded'))}
-                active={isActiveProjectKind(key)}
-                onClick={() => setActiveProjectKind(key)}
-              />
-            ),
-            projectKinds
-          )
-        }
+        <Button
+          onClick={() => setActiveProjectKind('published')}
+          active={isActiveProjectKind('published')} 
+        >
+          <Header content='Public Data' subheader='Published/example datasets accepted by CReSCENT' />
+        </Button>
+        <Button
+          disabled={R.isNil(user)}
+          onClick={() => setActiveProjectKind('uploaded')}
+          active={isActiveProjectKind('uploaded')} 
+        >
+          <Header content='Uploaded Data' subheader={R.isNil(user) ? 'Register and sign in to upload your own data' : 'Upload your own scRNA-seq data'} />
+        </Button>
       </Button.Group>
-      <Divider/>
+      <Divider />
       <Card.Group itemsPerRow={3} style={{maxHeight: '70vh', overflowY: 'scroll'}}>
       {
         isActiveProjectKind('uploaded') && <NewProjectCard />
