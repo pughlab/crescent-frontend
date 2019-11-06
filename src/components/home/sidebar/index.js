@@ -12,13 +12,10 @@ import {STEPS, RESULTS} from '../main'
 const ResultsMenu = withRedux(
   ({
     app: {
-      view: {sidebar},
       toggle: {vis: {results: {activeResult, availableResults}}}
     },
     actions: {
-      toggle: {
-        setActiveResult
-      }
+      toggle: {setActiveResult}
     }
   }) => {
     
@@ -49,22 +46,10 @@ const ResultsMenu = withRedux(
 const PipelineMenu = withRedux(
   ({
     app: {
-      view: {sidebar},
       toggle: {vis: {pipeline: {activeStep: activePipelineStep}}},
-      sidebar: {
-        parameters: {
-          singleCell,
-          numberGenes: {min: minNumberGenes, max: maxNumberGenes},
-          percentMito: {min: minPercentMito, max: maxPercentMito},
-          resolution,
-          principalDimensions,
-        }
-      }
     },
     actions: {
-      toggle: {
-        setActivePipelineStep,
-      }
+      toggle: {setActivePipelineStep,}
     }
   }) => {
     const isActivePipelineStep = R.equals(activePipelineStep)
@@ -98,13 +83,9 @@ const PipelineMenu = withRedux(
 const SidebarComponent = withRedux(
   ({
     app: {
-      project,
-      run,
       view: {sidebar: sidebarView}
     },
-    actions: {
-      toggleSidebar
-    }
+    actions: {toggleSidebar}
   }) => {
     const isSidebarView = R.equals(sidebarView)
     return (
