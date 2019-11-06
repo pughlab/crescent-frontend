@@ -106,7 +106,6 @@ const VisualizationComponent = withRedux(
                 <Segment raised style={{height: '100%'}}
                   color={
                     R.cond([
-                      [R.equals('dataset'), R.always('teal')],
                       [R.equals('pipeline'), R.always('blue')],
                       [R.equals('results'), R.always('violet')],
                     ])(sidebarView)                    
