@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Icon, Divider, Step, Menu } from 'semantic-ui-react'
+import { Segment, Button, Icon, Divider, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -99,25 +99,49 @@ const PipelineMenu = withRedux(
     }
   }) => {
     const isActivePipelineStep = R.equals(activePipelineStep)
+    const StepAccordion = ({step, label}) => (
+      <>
+        <Accordion.Title active={isActivePipelineStep(step)} onClick={() => setActivePipelineStep(step)}>
+          {label}
+          {
+            isActivePipelineStep(step) &&
+              <Icon name='eye' color='blue' style={{paddingLeft: 10}} />
+          }
+        </Accordion.Title>
+        <Accordion.Content active={isActivePipelineStep(step)}>
+          <Dropdown options={[]} fluid selection placeholder='Select Tool' />
+        </Accordion.Content>
+      </>
+    )
     return (
-      <Step.Group vertical fluid ordered size='small'>
+      <Accordion styled>
       {
         R.map(
-          ({step, label}) => (
-            <Step key={step}
-              onClick={() => setActivePipelineStep(step)}
-            >
-              {
-                isActivePipelineStep(step) &&
-                <Icon name='eye' color='blue'/>
-              }
-              <Step.Content title={label} description={'Seurat'} />
-            </Step>
-          ),
+          ({step, label}) => <StepAccordion {...{step, label}} />,
           STEPS
         )
       }
-      </Step.Group>
+      </Accordion>
+      // <Menu vertical fluid size='small' >
+      // {
+      //   R.map(
+      //     ({step, label}) => (
+      //       <Menu.Item key={step}
+      //         color='blue'
+      //         active={isActivePipelineStep(step)}
+      //         onClick={() => setActivePipelineStep(step)}
+      //       >
+      //         {label}
+      //         {
+      //           isActivePipelineStep(step) &&
+      //             <Icon name='eye' color='blue' />
+      //         }
+      //       </Menu.Item>
+      //     ),
+      //     STEPS
+      //   )
+      // }
+      // </Menu>
     )
   }
 )
@@ -136,14 +160,7 @@ const SidebarComponent = withRedux(
     const isSidebarView = R.equals(sidebarView)
     return (
       <Segment basic style={{height: '100%', padding: 0}}>
-        <Segment attached='top'
-          color={
-            R.cond([
-              [R.equals('pipeline'), R.always('blue')],
-              [R.equals('results'), R.always('violet')],
-            ])(sidebarView)                    
-          }
-        >
+        <Segment attached='top'>
           <Button.Group fluid widths={2}>
             <Button compact content='Pipeline' 
               color={isSidebarView('pipeline') ? 'blue' : undefined}

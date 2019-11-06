@@ -35,7 +35,10 @@ const ResultsComponent = withRedux(
           )],
           [R.isNil, R.always(
             <Segment basic placeholder style={{height: '100%'}}>
-              <Header textAlign='center' content='Select a visualization on the left' />
+              <Header textAlign='center' icon>
+                <Icon name='right arrow' />
+                Select a visualization on the right
+              </Header>
             </Segment>
           )]
         ])(activeResult)

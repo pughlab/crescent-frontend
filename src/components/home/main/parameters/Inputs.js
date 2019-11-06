@@ -11,7 +11,6 @@ const withMessageAbove = R.curry(
     ({parameter, label, prompt, description}, InputComponent) => (
         <Segment basic>
             <Message header={prompt} content={description} color='blue' />
-            <Divider />
             {InputComponent}
         </Segment>
     ) 
