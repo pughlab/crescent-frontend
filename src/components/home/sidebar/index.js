@@ -9,37 +9,6 @@ import withRedux from '../../../redux/hoc'
 
 import {STEPS, RESULTS} from '../main'
 
-const DatasetMenu = withRedux(
-  ({
-    app: {
-      view: {sidebar}
-    }
-  }) => {
-    return (
-      <Step.Group vertical fluid size='small'>
-            <Step>
-              <Icon name='upload' />
-              <Step.Content title={'genes'}
-                description='filename'
-              />
-            </Step>
-            <Step>
-              <Icon name='upload' />
-              <Step.Content title={'features'}
-                description='filename'
-              />
-            </Step>
-            <Step>
-              <Icon name='upload' />
-              <Step.Content title={'matrix'}
-                description='filename'
-              />
-            </Step>
-      </Step.Group>
-    )
-  }
-)
-
 const ResultsMenu = withRedux(
   ({
     app: {
@@ -122,26 +91,6 @@ const PipelineMenu = withRedux(
         )
       }
       </Accordion>
-      // <Menu vertical fluid size='small' >
-      // {
-      //   R.map(
-      //     ({step, label}) => (
-      //       <Menu.Item key={step}
-      //         color='blue'
-      //         active={isActivePipelineStep(step)}
-      //         onClick={() => setActivePipelineStep(step)}
-      //       >
-      //         {label}
-      //         {
-      //           isActivePipelineStep(step) &&
-      //             <Icon name='eye' color='blue' />
-      //         }
-      //       </Menu.Item>
-      //     ),
-      //     STEPS
-      //   )
-      // }
-      // </Menu>
     )
   }
 )

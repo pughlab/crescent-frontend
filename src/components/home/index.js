@@ -19,7 +19,6 @@ import LandingPageComponent from '../landing'
 import SidebarComponent from './sidebar'
 import {
   ParametersComponent,
-  DatasetComponent,
   ResultsComponent
 } from './main'
 
@@ -113,9 +112,6 @@ const VisualizationComponent = withRedux(
                 >
                 {
                   R.cond([
-                    [R.equals('dataset'), R.always(
-                      <DatasetComponent />
-                    )],
                     [R.equals('pipeline'), R.always(
                       <ParametersComponent />
                     )],
