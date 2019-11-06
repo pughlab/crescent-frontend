@@ -24,7 +24,6 @@ const initialState = {
     },
     runs: {},
     vis: {
-      dataset: {},
       pipeline: {
         activeStep: null,
         activeParameter: null
@@ -99,7 +98,7 @@ const app = (state = initialState, action) => {
     case 'SET_RUN':
       const {run} = payload
       return R.compose(
-        setSidebarView('dataset'),
+        setSidebarView('pipeline'),
         setMainView('vis'),
         setRunFromGQL(run), 
       )(state)

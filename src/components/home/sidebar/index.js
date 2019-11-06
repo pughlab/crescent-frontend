@@ -134,74 +134,45 @@ const SidebarComponent = withRedux(
     }
   }) => {
     const isSidebarView = R.equals(sidebarView)
-    const sidebarKinds = [
-      {key: 'dataset', label: 'Dataset', color: 'teal'},
-      {key: 'pipeline', label: 'Pipeline', color: 'blue'},
-      {key: 'results', label: 'Results', color: 'violet'},
-    ]
     return (
       <Segment basic style={{height: '100%', padding: 0}}>
         <Segment attached='top'
           color={
             R.cond([
-              [R.equals('dataset'), R.always('teal')],
               [R.equals('pipeline'), R.always('blue')],
               [R.equals('results'), R.always('violet')],
             ])(sidebarView)                    
           }
         >
-          <Button.Group fluid widths={3}>
-          {
-            R.map(
-              ({key, label, color}) => (
-                <Button key={key}
-                  compact
-                  content={label}
-                  color={isSidebarView(key) ? color : undefined}
-                  active={isSidebarView(key)}
-                  onClick={() => toggleSidebar(key)}
-                />
-              ),
-              sidebarKinds
-            )
-          }
+          <Button.Group fluid widths={2}>
+            <Button compact content='Pipeline' 
+              color={isSidebarView('pipeline') ? 'blue' : undefined}
+              active={isSidebarView('pipeline')}
+              onClick={() => toggleSidebar('pipeline')}
+            />
+            <Button compact content='Results' 
+              color={isSidebarView('results') ? 'violet' : undefined}
+              active={isSidebarView('results')}
+              onClick={() => toggleSidebar('results')}
+            />
           </Button.Group>
         </Segment>
         <Segment attached style={{height: '80%', overflowY: 'scroll'}}>
         {
           R.cond([
-            [R.equals('dataset'), R.always(
-              <DatasetMenu />
-            )],
-            [R.equals('pipeline'), R.always(
-              <PipelineMenu />
-            )],
-            [R.equals('results'), R.always(
-              <ResultsMenu />
-            )],
+            [R.equals('pipeline'), R.always(<PipelineMenu />)],
+            [R.equals('results'), R.always(<ResultsMenu />)],
           ])(sidebarView)
         }
         </Segment>
         <Segment attached='bottom'>
         {
           R.cond([
-            [R.equals('dataset'), R.always(
-              <Button fluid 
-                content='Download Dataset'
-                color='teal'
-              />
-            )],
             [R.equals('pipeline'), R.always(
-              <Button fluid
-                content='Submit Run'
-                color='blue'
-              />
+              <Button fluid content='Submit Run' color='blue' />
             )],
             [R.equals('results'), R.always(
-              <Button fluid 
-                content='Download Results'
-                color='violet'
-              />
+              <Button fluid content='Download Results' color='violet' />
             )]
           ])(sidebarView)
         }
