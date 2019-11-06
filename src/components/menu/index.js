@@ -89,7 +89,13 @@ const MenuComponent = withRedux(({
       <Grid.Column width={3}>
         <Button.Group fluid widths={3} size='small'>
           <Button icon basic color='black'
-            onClick={() => toggleRuns()}
+            disabled={isMainView('projects')}
+            onClick={() => 
+              isMainView('login') ? toggleProjects()
+              : isMainView('vis') ? toggleRuns()
+              : isMainView('runs') ? toggleProjects()
+              : isMainView('projects') ? toggleProjects() : null
+            }
           >
             <Icon name='double angle left' size='large'/>
           </Button>
@@ -127,7 +133,12 @@ const MenuComponent = withRedux(({
               <Icon name='sign in' />
               Sign In
             </Header>
-          : ''
+          : isMainView('vis') ?
+            <Header textAlign='center'>
+              <Icon name='paper plane' />
+              {R.prop('name', run)}
+            </Header>
+          : null
         }
       </Grid.Column>
       <Grid.Column width={2}>
