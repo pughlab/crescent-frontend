@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, Image} from 'semantic-ui-react'
+import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
 
 import UHN from './UHN.png'
 import SK from './SK.png'
@@ -21,7 +21,7 @@ const CrescentIcon = () => (
 
 const InfoModal = () => (
   <Modal
-    trigger={<Menu.Item><Icon size='large' name='info circle' /></Menu.Item>}
+    trigger={<Button color='black' floated='right' basic icon><Icon size='large' name='info circle' /></Button>}
   >
     <Modal.Content>
     <Header content='Help'/>
@@ -85,38 +85,65 @@ const MenuComponent = withRedux(({
   )
   const isMainView = R.equals(main)
   return (
-    <Segment attached='bottom' style={{height: '8%'}} as={Menu} size='huge'>
-      {/* <Menu.Item header content={<CrescentIcon />} /> */}
-      <Menu.Item
-        onClick={() => isMainView('login') ? toggleProjects() : toggleLogin()}
-      >
-        <Icon size='large'
-          name={isMainView('login') ? 'left arrow circle' : 'user circle'}
-        />
-      </Menu.Item>
+    <Segment attached='top' style={{height: '10%'}} as={Grid}>
+      <Grid.Column width={3}>
+        <Button.Group fluid widths={3} size='small'>
+          <Button icon basic color='black'
+            onClick={() => toggleRuns()}
+          >
+            <Icon name='double angle left' size='large'/>
+          </Button>
+          <Button icon basic color='black'
+            onClick={() => toggleProjects()}
+            disabled={isMainView('projects')}
+          >
+            <Icon name='archive' size='large'/>
+          </Button>
+          <Button icon basic color='black'
+            onClick={() => toggleRuns()}
+            disabled={R.isNil(project)}
+          >
+            <Icon name='paper plane' size='large'/>
+          </Button>
+        </Button.Group>
+      </Grid.Column>
+      <Grid.Column width={2}>
 
-      <Menu.Menu position='right'>
-      {
-        isMainView('vis') &&
-        <Menu.Item as={Button} animated='fade' onClick={() => toggleProjects()}>
-          <Button.Content visible content={<b>{nameIfNotNil(project)}</b>}/>
-          <Button.Content hidden content='Change project?' />
-        </Menu.Item>
-      }
-      {
-        isMainView('vis') &&
-        <Menu.Item as={Button} animated='fade' onClick={() => toggleRuns()}>
-          <Button.Content visible content={<i>{nameIfNotNil(run)}</i>} />
-          <Button.Content hidden content='Change run?' />
-        </Menu.Item>
-      }
-      {
-        R.not(isMainView('vis')) && RA.isNotNil(run) && RA.isNotNil(project) && 
-        // Set to current run to reset from toggle projects/runs
-        <Menu.Item content='Cancel' onClick={() => setRun(run)} />
-      }
-        <InfoModal />
-      </Menu.Menu>
+      </Grid.Column>
+      <Grid.Column width={6} verticalAlign='middle'>
+        {
+          isMainView('projects')  ? 
+            <Header textAlign='center'>
+              <Icon name='archive' />
+              Projects
+            </Header>
+          : isMainView('runs')  ?
+            <Header textAlign='center'>
+              <Icon name='archive' />
+              {R.prop('name', project)}
+            </Header>
+          : isMainView('login') ?
+            <Header textAlign='center'>
+              <Icon name='sign in' />
+              Sign In
+            </Header>
+          : ''
+        }
+      </Grid.Column>
+      <Grid.Column width={2}>
+
+      </Grid.Column>
+      <Grid.Column width={3} verticalAlign='middle'>
+        <Button.Group fluid widths={2} size='small'>
+          <InfoModal />
+          <Button color='black' icon
+            basic
+            onClick={() => toggleLogin()}
+          >
+            <Icon size='large' name={'user circle'} />
+          </Button>
+        </Button.Group>
+      </Grid.Column>
     </Segment>
   )
 })

@@ -12,7 +12,7 @@ import moment from 'moment'
 import {queryIsNotNil} from '../../../utils'
 
 
-import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image} from 'semantic-ui-react'
+import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -131,16 +131,17 @@ const NewProjectCard = withRedux(({
   return (
     <Modal
       trigger={
-        <Transition
-          visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}
-        >
         <Card link color='black'>
           <Card.Content>
-            <Card.Header as={Header} icon><Icon name='add' circular />Create New Project</Card.Header>
-            <Card.Meta content={'Upload your own files to create a new project'} />
+            <Card.Header as={Header}>
+              <Icon name='add' circular />
+              <Header.Content>
+                Create New Project
+                <Header.Subheader content={'Upload your own files to create a new project'} />
+              </Header.Content>
+            </Card.Header>
           </Card.Content>
         </Card>
-        </Transition>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Uploaded Project' />
@@ -201,17 +202,27 @@ const ProjectCard = withRedux(({
     createdOn
   } = project
   return (
-    <Transition
-      visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}
-    >
-    <Card link onClick={() => setProject(project)}>
-      <Card.Content>
-        <Card.Header content={name} />
-        <Card.Meta content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} />
-      </Card.Content>
-      <Card.Content extra content={description} />
-    </Card>
-    </Transition>
+
+    <Popup wide
+      trigger={
+        <Transition
+          visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}
+        >
+        <Card link onClick={() => setProject(project)}>
+          <Card.Content>
+              <Card.Header as={Header}>
+                <Icon name='archive' circular />
+                <Header.Content>
+                  {name}
+                  <Header.Subheader content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} />
+                </Header.Content>
+              </Card.Header>
+          </Card.Content>
+        </Card>
+        </Transition>
+      }
+      content={description}
+    />
   )
 })
 
@@ -260,29 +271,25 @@ const ProjectsCardList = withRedux(({
   )(user)
   return (
     <Container>
-      <Header textAlign='center' icon>
-        Projects
-        <Icon name='archive' />
-        <Button.Group size='mini' fluid widths={3}>
-          {
-            R.map(
-              ({key, label, description}) => (
-                <Button key={key}
-                  content={
-                    <Header content={label} subheader={description} />
-                  }
-                  disabled={R.and(R.isNil(user), R.equals(key, 'uploaded'))}
-                  active={isActiveProjectKind(key)}
-                  onClick={() => setActiveProjectKind(key)}
-                />
-              ),
-              projectKinds
-            )
-          }
-        </Button.Group>
-      </Header>
-      <Divider />
-      <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
+      <Button.Group size='mini' fluid widths={3}>
+        {
+          R.map(
+            ({key, label, description}) => (
+              <Button key={key}
+                content={
+                  <Header content={label} subheader={description} />
+                }
+                disabled={R.and(R.isNil(user), R.equals(key, 'uploaded'))}
+                active={isActiveProjectKind(key)}
+                onClick={() => setActiveProjectKind(key)}
+              />
+            ),
+            projectKinds
+          )
+        }
+      </Button.Group>
+      <Divider/>
+      <Card.Group itemsPerRow={3} style={{maxHeight: '70vh', overflowY: 'scroll'}}>
       {
         isActiveProjectKind('uploaded') && <NewProjectCard />
       }

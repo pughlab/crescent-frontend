@@ -11,16 +11,6 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../utils'
 
-const BackToProjectsButton = withRedux(({
-  actions: {
-    toggleProjects
-  }
-}) => {
-  return (
-    <Button size='mini' fluid content={<Header content='Back' subheader='Go back to select a different project' />} onClick={() => toggleProjects()} />
-  )
-})
-
 const NewRunCard = withRedux(({
   app: {
     project: {projectID}
@@ -49,16 +39,17 @@ const NewRunCard = withRedux(({
   return (
     <Modal
       trigger={
-        <Transition
-          visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}
-        >
         <Card link color='black'>
           <Card.Content>
-          <Card.Header as={Header} icon><Icon name='add' circular />Create New Run</Card.Header>
-            <Card.Meta content={'Configure a pipeline and run on the cloud'} />
+          <Card.Header as={Header}>
+            <Icon name='add' circular />
+            <Header.Content>
+              Create New Run
+              <Header.Subheader content={'Configure a pipeline and run on the cloud'} />
+            </Header.Content>
+          </Card.Header>
           </Card.Content>
         </Card>
-        </Transition>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Run' />
@@ -95,6 +86,7 @@ const RunCard = withRedux(({
     <Card link onClick={() => setRun(run)} >
       <Card.Content>
         <Card.Header as={Header}>
+          <Icon name='paper plane' circular />
           <Header.Content>
             {name}
             <Header.Subheader content={runID} />
@@ -143,13 +135,8 @@ const RunsCardList = withRedux(({
 }) => {
   return (
     <Container>
-      <Header textAlign='center' icon>
-        Runs
-        <Icon name='paper plane' />
-        <BackToProjectsButton />
-      </Header>
-      <Divider />
-      <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
+      <Divider content='Viewing Runs' horizontal/>
+      <Card.Group itemsPerRow={3} style={{maxHeight: '75vh', overflowY: 'scroll'}}>
         <NewRunCard />
       {
         R.addIndex(R.map)(

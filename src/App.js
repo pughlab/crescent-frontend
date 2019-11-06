@@ -42,8 +42,9 @@ const App = withRedux(
         </Modal>
         :
         <Segment style={{height: '100%', padding: 0}}>
-          <VisualizationComponent {...{session}} />
           <MenuComponent />
+          <VisualizationComponent {...{session}} />
+
         </Segment>
     )
   }

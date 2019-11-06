@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import { Button, Form, Grid, Header, Image, Message, Segment, Card, Divider } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Image, Message, Segment, Card, Divider, Container } from 'semantic-ui-react'
 
 import Logo from './logo.jpg'
 
@@ -97,12 +97,10 @@ const LoginForm = withRedux(({
             )(errors)
           )
           return (
+            <Container>
             <Segment.Group>
               <Segment>
-                <Image src={Logo} size='medium' centered/>
-                <Header textAlign='center' content='CReSCENT: CanceR Single Cell ExpressionN Toolkit' />
-              </Segment>
-              <Segment>
+                
                 <Form onSubmit={handleSubmit}>
                   <Form.Input
                     fluid icon='user' iconPosition='left'
@@ -146,6 +144,7 @@ const LoginForm = withRedux(({
                 </Button>
               </Segment>
             </Segment.Group>
+            </Container>
           )
         }}
       />
