@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Transition, Container, Card, Header, Form, Button, Modal, Label, Divider, Icon} from 'semantic-ui-react'
+import {Transition, Container, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -89,15 +89,22 @@ const RunCard = withRedux(({
           <Icon name='paper plane' circular />
           <Header.Content>
             {name}
-            <Header.Subheader content={runID} />
+            {/* <Header.Subheader content={runID} /> */}
           </Header.Content>
         </Card.Header>
       </Card.Content>
-      {
-        RA.isNotNil(params) &&
-        <Card.Content>
-          <Card.Description>
-            {
+      <Card.Content>
+        <Popup
+          wide
+          trigger={<Button icon='info' basic />}
+          content={<Label content='Run ID' detail={runID} />}
+        />
+        {
+          RA.isNotNil(params) &&
+          <Popup 
+            wide
+            trigger={<Button icon='sliders horizontal' />} 
+            content={
               R.compose(
                 ({
                   singleCell,
@@ -118,9 +125,9 @@ const RunCard = withRedux(({
                 JSON.parse
               )(params)
             }
-          </Card.Description>
-        </Card.Content>
-      }
+          />
+        }
+      </Card.Content>
     </Card>
     </Transition>
   )
