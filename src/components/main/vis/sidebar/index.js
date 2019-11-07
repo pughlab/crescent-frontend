@@ -23,12 +23,12 @@ const SidebarComponent = withRedux(
       <Segment basic style={{height: '100%', padding: 0}}>
         <Segment attached='top'>
           <Button.Group fluid widths={2}>
-            <Button compact content='Pipeline' 
+            <Button compact content='PIPELINE' 
               color={isSidebarView('pipeline') ? 'blue' : undefined}
               active={isSidebarView('pipeline')}
               onClick={() => toggleSidebar('pipeline')}
             />
-            <Button compact content='Results' 
+            <Button compact content='RESULTS' 
               color={isSidebarView('results') ? 'violet' : undefined}
               active={isSidebarView('results')}
               onClick={() => toggleSidebar('results')}
@@ -47,10 +47,10 @@ const SidebarComponent = withRedux(
         {
           R.cond([
             [R.equals('pipeline'), R.always(
-              <Button fluid content='Submit Run' color='blue' />
+              <Button fluid content='SUBMIT RUN' color='blue' />
             )],
             [R.equals('results'), R.always(
-              <Button fluid content='Download Results' color='violet' />
+              <Button fluid content='DOWNLOAD RESULTS' color='violet' />
             )]
           ])(sidebarView)
         }
