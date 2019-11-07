@@ -18,27 +18,46 @@ const ResultsSidebar = withRedux(
       toggle: {setActiveResult}
     }
   }) => {
-    
     const isActiveResult = R.equals(activeResult)
     return (
-      <Step.Group vertical fluid size='small'>
-      {
-        R.map(
-          ({result, label, description}) => (
-            <Step key={result}
-              onClick={() => setActiveResult(result)}
-            >
-              {
-                isActiveResult(result)
-                && <Icon name='eye' color='violet'/>
-              }
-              <Step.Content title={label} description={description} />
-            </Step>
-          ),
-          RESULTS
-        )
-      }
-      </Step.Group>
+      R.isNil(activeResult) ?
+        <Step.Group vertical fluid size='small'>
+        {
+          R.map(
+            ({result, label, description}) => (
+              <Step key={result}
+                onClick={() => setActiveResult(result)}
+              >
+                {
+                  isActiveResult(result)
+                  && <Icon name='eye' color='violet'/>
+                }
+                <Step.Content title={label} description={description} />
+              </Step>
+            ),
+            RESULTS
+          )
+        }
+        </Step.Group>
+      :
+        <Segment>
+          <Button color='violet' fluid onClick={() => setActiveResult(null)} animated='fade'>
+            <Button.Content visible>
+            {
+              R.compose(
+                R.prop('label'),
+                R.find(R.propEq('result', activeResult))
+              )(RESULTS)
+            }
+            </Button.Content>
+            <Button.Content hidden>
+              <Icon name='angle left' />
+              Click to go back
+            </Button.Content>
+          </Button>
+          <Divider />
+          Put visualization menu here
+        </Segment>
     )
   }
 )
