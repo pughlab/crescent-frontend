@@ -6,10 +6,8 @@ import * as RA from 'ramda-adjunct'
 import {Grid, Menu, Segment, Button, Label, Divider, Dropdown, Header, Icon} from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
-import {
-  STEPS,
-  PARAMETERS,
-} from '../../main'
+
+import PARAMETERS from './PARAMETERS'
 import {
   SingleCellInputType,
   NumberGenes,

@@ -2,7 +2,6 @@ import React, {useState, useEffect, useRef} from 'react';
 
 import { Segment, Button, Grid, Image, Step, Header, Label } from 'semantic-ui-react'
 
-// import VisHeader from './Header'
 import memphisMini from '../../memphis-mini.png'
 
 import Expression from '../expression'
@@ -16,17 +15,13 @@ import ProjectsCardList from './projects'
 import RunsCardList from './runs'
 import LandingPageComponent from '../landing'
 
-import SidebarComponent from './main/sidebar'
-import {
-  ParametersComponent,
-  ResultsComponent
-} from './main'
+import VisComponent from './vis
 
 
 const MainComponent = withRedux(
   ({
     app: {
-      view: {main: mainView, sidebar: sidebarView}
+      view: {main: mainView}
     },
     session,
   }) => {
@@ -70,32 +65,7 @@ const MainComponent = withRedux(
             </Grid.Column>
           )],
           [R.equals('vis'), R.always(
-            <>
-              <Grid.Column width={10} style={{height: '100%'}}>
-                <Segment raised style={{height: '100%'}}
-                  color={
-                    R.cond([
-                      [R.equals('pipeline'), R.always('blue')],
-                      [R.equals('results'), R.always('violet')],
-                    ])(sidebarView)                    
-                  }
-                >
-                {
-                  R.cond([
-                    [R.equals('pipeline'), R.always(
-                      <ParametersComponent />
-                    )],
-                    [R.equals('results'), R.always(
-                      <ResultsComponent />
-                    )],
-                  ])(sidebarView)
-                }
-                </Segment>
-              </Grid.Column>
-              <Grid.Column width={6} style={{height: '100%'}}>
-                <SidebarComponent />
-              </Grid.Column>
-            </>
+            <VisComponent />
           )],
         ])(mainView)
       }

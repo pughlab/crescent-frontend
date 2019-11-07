@@ -5,7 +5,7 @@ import RangeSlider from './RangeSlider'
 
 import * as R from 'ramda'
 
-import {STEPS, PARAMETERS} from '../../main'
+import PARAMETERS from './PARAMETERS'
 
 const withMessageAbove = R.curry(
     ({parameter, label, prompt, description}, InputComponent) => (

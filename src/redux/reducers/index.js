@@ -2,9 +2,7 @@ import { combineReducers } from 'redux'
 import * as R from 'ramda'
 
 // CONSTANTS
-import {
-  STEPS, PARAMETERS, RESULTS
-} from '../../components/home/main'
+import PARAMETERS from '../../components/main/vis/parameters/PARAMETERS'
 
 // Reducer
 const initialState = {

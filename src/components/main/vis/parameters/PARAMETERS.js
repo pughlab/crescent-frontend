@@ -1,6 +1,3 @@
-import ParametersComponent from './parameters'
-import ResultsComponent from './results'
-
 // step: the key for the step this parameter belongs to
 // parameter: keyword for CWL
 // label: menu label when selecting parameter values
@@ -9,6 +6,7 @@ import ResultsComponent from './results'
 const parameter = (step, parameter, label, prompt, description) => ({
   step, parameter, label, prompt, description
 })
+
 const PARAMETERS = [
   parameter(
     'quality',
@@ -47,25 +45,4 @@ const PARAMETERS = [
   )
 ]
 
-const STEPS = [
-  {label: 'Quality Control', step: 'quality'},
-  {label: 'Normalization', step: 'normalization'},
-  {label: 'Dimension Reduction', step: 'reduction'},
-  {label: 'Cell Clustering', step: 'clustering'},
-  {label: 'Differential Expression', step: 'expression'},
-]
-
-
-const RESULTS = [
-    {label: 't-SNE', result: 'tsne', description: 't-Distributed Stochastic Neighbour Embedding'},
-    {label: 'UMAP', result: 'umap', description: 'Uniform Manifold Approximation and Projection for Dimension Reduction'},
-    {label: 'Violin', result: 'violin', description: 'Violin Plots'},
-]
-
-export {
-  ParametersComponent,
-  STEPS,
-  PARAMETERS,
-  ResultsComponent,
-  RESULTS
-}
+export default PARAMETERS

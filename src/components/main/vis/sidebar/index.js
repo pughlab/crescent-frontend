@@ -7,7 +7,9 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 
-import {STEPS, RESULTS} from '../../main'
+
+import RESULTS from '../results/RESULTS'
+import STEPS from '../parameters/STEPS'
 
 const ResultsMenu = withRedux(
   ({

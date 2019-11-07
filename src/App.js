@@ -7,26 +7,17 @@ import * as RA from 'ramda-adjunct'
 import {Segment, Modal, Button, Image, Header} from 'semantic-ui-react'
 
 import MenuComponent from './components/menu'
-import MainComponent from './components/home'
-import LandingComponent from './components/landing'
+import MainComponent from './components/main'
 
 import Logo from './components/landing/logo.jpg'
-
-
 
 import withRedux from './redux/hoc'
 
 const App = withRedux(
   ({
-    app: {
-      user,
-      view
-    },
-    actions,
     session,
   }) => {
     const [introduction, setIntroduction] = useState(true)
-    
     return (
       introduction ?
         <Modal open={introduction} dimmer='inverted'>
