@@ -34,7 +34,11 @@ const ProjectCard = withRedux(({
           </Card.Header>
       </Card.Content>
       <Card.Content>
-      {description}
+        <Popup
+          wide
+          trigger={<Button icon='info' basic />}
+          content={description}
+        />
       </Card.Content>
     </Card>
     </Transition>
