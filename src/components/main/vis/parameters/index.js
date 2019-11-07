@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Grid, Menu, Segment, Button, Label, Divider, Dropdown, Header, Icon} from 'semantic-ui-react'
+import {Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Icon} from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
@@ -79,6 +79,7 @@ const ParametersComponent = withRedux(
       )
     }
     return (
+      <Transition visible animation='fade' duration={1000} unmountOnHide={true} transitionOnMount={true}>
       <Segment basic style={{height: '100%', overflowY: 'scroll'}}>
       {
         isActivePipelineStep('quality') ?
@@ -96,6 +97,7 @@ const ParametersComponent = withRedux(
         : null
       }
       </Segment>
+      </Transition>
     )
   }
 )

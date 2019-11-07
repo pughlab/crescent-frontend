@@ -22,7 +22,7 @@ const ProjectCard = withRedux(({
     createdOn
   } = project
   return (
-    <Transition visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}>
+    <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
     <Card link onClick={() => setProject(project)}>
       <Card.Content>
           <Card.Header as={Header}>

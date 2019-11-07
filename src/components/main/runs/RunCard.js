@@ -17,7 +17,7 @@ const RunCard = withRedux(({
     runID, name, params
   } = run
   return (
-    <Transition visible animation='zoom' duration={500} unmountOnHide={true} transitionOnMount={true}>
+    <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
     <Card link onClick={() => setRun(run)} >
       <Card.Content>
         <Card.Header as={Header}>

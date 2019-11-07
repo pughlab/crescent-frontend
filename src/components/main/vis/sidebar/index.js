@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Icon, Divider, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
+import { Segment, Button, Transition, Divider, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -19,6 +19,7 @@ const SidebarComponent = withRedux(
   }) => {
     const isSidebarView = R.equals(sidebarView)
     return (
+      <Transition visible animation='vertical flip' duration={1000} unmountOnHide={true} transitionOnMount={true}>
       <Segment basic style={{height: '100%', padding: 0}}>
         <Segment attached='top'>
           <Button.Group fluid widths={2}>
@@ -55,6 +56,7 @@ const SidebarComponent = withRedux(
         }
         </Segment>
       </Segment>
+      </Transition>
     )
   }
 )
