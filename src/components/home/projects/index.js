@@ -266,7 +266,8 @@ const ProjectsCardList = withRedux(({
   )(user)
   return (
     <Container>
-      <Button.Group size='mini' fluid widths={3}>
+      <Divider content='Viewing Projects' horizontal/>
+      <Button.Group size='mini' fluid widths={2}>
         <Button
           onClick={() => setActiveProjectKind('published')}
           active={isActiveProjectKind('published')} 
@@ -281,7 +282,7 @@ const ProjectsCardList = withRedux(({
           <Header content='Uploaded Data' subheader={R.isNil(user) ? 'Register and sign in to upload your own data' : 'Upload your own scRNA-seq data'} />
         </Button>
       </Button.Group>
-      <Divider />
+      <Divider hidden/>
       <Card.Group itemsPerRow={3} style={{maxHeight: '70vh', overflowY: 'scroll'}}>
       {
         isActiveProjectKind('uploaded') && <NewProjectCard />

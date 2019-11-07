@@ -78,11 +78,6 @@ const MenuComponent = withRedux(({
     toggleLogin
   }
 }) => {
-  const nameIfNotNil = R.ifElse(
-    R.isNil,
-    R.always(''),
-    R.prop('name')
-  )
   const isMainView = R.equals(main)
   return (
     <Segment attached='top' style={{height: '10%'}} as={Grid}>
@@ -107,7 +102,7 @@ const MenuComponent = withRedux(({
           </Button>
           <Button icon basic color='black'
             onClick={() => toggleRuns()}
-            disabled={R.isNil(project)}
+            disabled={R.isNil(project) || R.and(RA.isNotNil(project), isMainView('projects'))}
           >
             <Icon name='paper plane' size='large'/>
           </Button>
@@ -120,13 +115,21 @@ const MenuComponent = withRedux(({
         {
           isMainView('projects')  ? 
             <Header textAlign='center'>
-              <Icon name='archive' />
-              Projects
+            {
+              RA.isNotNil(project) &&
+                <Label size='large' basic icon='archive' color='black' content={R.prop('name', project)} />
+            }
             </Header>
           : isMainView('runs')  ?
             <Header textAlign='center'>
-              <Icon name='archive' />
-              {R.prop('name', project)}
+              <Label.Group size='large'>
+                <Label icon='archive' color='black' content={R.prop('name', project)} />
+                {
+                  RA.isNotNil(run) &&
+                  <Label icon='paper plane' basic color='black' content={R.prop('name', run)} />  
+                }
+              </Label.Group>
+              
             </Header>
           : isMainView('login') ?
             <Header textAlign='center'>
@@ -135,8 +138,10 @@ const MenuComponent = withRedux(({
             </Header>
           : isMainView('vis') ?
             <Header textAlign='center'>
-              <Icon name='paper plane' />
-              {R.prop('name', run)}
+              <Label.Group size='large'>
+                <Label icon='archive' color='black' content={R.prop('name', project)} />
+                <Label icon='paper plane' color='black' content={R.prop('name', run)} />
+              </Label.Group>
             </Header>
           : null
         }
