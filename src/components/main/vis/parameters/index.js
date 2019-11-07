@@ -20,13 +20,13 @@ const ParametersComponent = withRedux(
   ({
     app: {
       toggle: {
-        vis: {pipeline: {
-          activeParameter: activePipelineParameter,
-          activeStep: activePipelineStep
-        }}
-      },
-      sidebar: {
-        parameters
+        vis: {
+          pipeline: {
+            activeParameter: activePipelineParameter,
+            activeStep: activePipelineStep,
+            parameters,
+          }
+        }
       }
     },
     actions: {
@@ -34,6 +34,7 @@ const ParametersComponent = withRedux(
       toggle: {setActivePipelineStep, setActivePipelineParameter}
     }
   }) => {
+    console.log(parameters)
     const {
       singleCell,
       numberGenes,

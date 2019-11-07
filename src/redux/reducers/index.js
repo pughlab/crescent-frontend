@@ -24,7 +24,14 @@ const initialState = {
     vis: {
       pipeline: {
         activeStep: null,
-        activeParameter: null
+        activeParameter: null,
+        parameters: {
+          singleCell: 'MTX',
+          numberGenes: {min: 50, max: 8000},
+          percentMito: {min: 0, max: 0.2},
+          resolution: 1,
+          principalDimensions: 10,
+        },
       },
       results: {
         activeResult: null, // 'tsne', 'violin', 'umap'
@@ -39,23 +46,10 @@ const initialState = {
         violin: null,
       }
     }
-  },
-  // Local or mutable data
-  // TODO: revise
-  sidebar: {
-    parameters: {
-      singleCell: 'MTX',
-      numberGenes: {min: 50, max: 8000},
-      percentMito: {min: 0, max: 0.2},
-      resolution: 1,
-      principalDimensions: 10,
-    },
-
-
   }
 }
 
-const setParameters = R.set(R.lensPath(['sidebar', 'parameters']))
+const setParameters = R.set(R.lensPath(['toggle', 'vis', 'pipeline', 'parameters']))
 
 const setMainView = R.set(R.lensPath(['view', 'main']))
 const setSidebarView = R.set(R.lensPath(['view', 'sidebar']))
