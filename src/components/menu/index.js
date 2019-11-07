@@ -133,8 +133,18 @@ const MenuComponent = withRedux(({
             </Header>
           : isMainView('login') ?
             <Header textAlign='center'>
-              <Icon name='sign in' />
-              Sign In
+              {
+                RA.isNotNil(user) ? 
+                  <>
+                    <Icon name='user circle' />
+                    User
+                  </>
+                :
+                  <>
+                    <Icon name='sign in' />
+                    Sign In
+                  </>
+              }
             </Header>
           : isMainView('vis') ?
             <Header textAlign='center'>

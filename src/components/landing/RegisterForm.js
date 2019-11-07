@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react'
-import { Button, Form, Grid, Header, Image, Message, Segment, Card } from 'semantic-ui-react'
+import { Button, Form, Grid, Container, Image, Message, Segment, Card } from 'semantic-ui-react'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
@@ -85,59 +85,68 @@ const RegisterForm = ({
               )(errors)
             )
             return (
+              <Container text>
               <Segment.Group>
                 <Segment>
                   <Form size='large' onSubmit={handleSubmit}>
-                    <Form.Input
-                      fluid iconPosition='left'
-                      placeholder='First name'
-                      error={isError('firstName')}
-                      name='firstName'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <Form.Input 
-                      fluid iconPosition='left'
-                      placeholder='Last name'
-                      error={isError('lastName')}
-                      name='lastName'
-                      onChange={handleChange}
-                      onBlur={handleBlur}                    
-                    />
-                    <Form.Input 
-                      fluid iconPosition='left'
-                      placeholder='E-mail address'
-                      error={isError('email')}
-                      name='email'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <Form.Input 
-                      fluid iconPosition='left'
-                      placeholder='Confirm e-mail address'
-                      error={isError('emailConfirm')}
-                      name='emailConfirm'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <Form.Input
-                      fluid icon='lock' iconPosition='left'
-                      placeholder='Password'
-                      type='password'
-                      error={isError('password')}
-                      name='password'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    <Form.Input
-                      fluid icon='lock' iconPosition='left'
-                      placeholder='Confirm password'
-                      type='password'
-                      error={isError('passwordConfirm')}
-                      name='passwordConfirm'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
+                    <Form.Group widths={2}>
+                      <Form.Input
+                        fluid iconPosition='left' icon='user'
+                        placeholder='First name'
+                        error={isError('firstName')}
+                        name='firstName'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <Form.Input 
+                        fluid iconPosition='left' icon='user'
+                        placeholder='Last name'
+                        error={isError('lastName')}
+                        name='lastName'
+                        onChange={handleChange}
+                        onBlur={handleBlur}                    
+                      />
+                    </Form.Group>
+
+                    <Form.Group widths={2}>
+                      <Form.Input
+                        fluid icon='lock' iconPosition='left'
+                        placeholder='Password'
+                        type='password'
+                        error={isError('password')}
+                        name='password'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <Form.Input
+                        fluid icon='lock' iconPosition='left'
+                        placeholder='Confirm password'
+                        type='password'
+                        error={isError('passwordConfirm')}
+                        name='passwordConfirm'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                    </Form.Group>
+
+                    <Form.Group widths={2}>
+                      <Form.Input 
+                        fluid iconPosition='left' icon='mail'
+                        placeholder='E-mail address'
+                        error={isError('email')}
+                        name='email'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <Form.Input 
+                        fluid iconPosition='left' icon='mail'
+                        placeholder='Confirm e-mail address'
+                        error={isError('emailConfirm')}
+                        name='emailConfirm'
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                    </Form.Group>
 
                     <Form.Button
                       fluid color='grey' size='large'
@@ -171,6 +180,7 @@ const RegisterForm = ({
                   </Button>
                 </Segment>
               </Segment.Group>
+              </Container>
             )
           }}
         />

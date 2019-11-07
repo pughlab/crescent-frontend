@@ -37,6 +37,8 @@ const LoginForm = withRedux(({
     mutation AuthenticateUser($email: Email!, $password: String!) {
       authenticateUser(email: $email, password: $password) {
         userID
+        name
+        email
         sessionToken
         projects {
           projectID
@@ -97,7 +99,7 @@ const LoginForm = withRedux(({
             )(errors)
           )
           return (
-            <Container>
+            <Container text>
             <Segment.Group>
               <Segment>
                 
