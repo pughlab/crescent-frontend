@@ -7,80 +7,8 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 
-
-import RESULTS from '../results/RESULTS'
-import STEPS from '../parameters/STEPS'
-
-const ResultsMenu = withRedux(
-  ({
-    app: {
-      toggle: {vis: {results: {activeResult, availableResults}}}
-    },
-    actions: {
-      toggle: {setActiveResult}
-    }
-  }) => {
-    
-    const isActiveResult = R.equals(activeResult)
-    return (
-      <Step.Group vertical fluid size='small'>
-      {
-        R.map(
-          ({result, label, description}) => (
-            <Step key={result}
-              onClick={() => setActiveResult(result)}
-            >
-              {
-                isActiveResult(result)
-                && <Icon name='eye' color='violet'/>
-              }
-              <Step.Content title={label} description={description} />
-            </Step>
-          ),
-          RESULTS
-        )
-      }
-      </Step.Group>
-    )
-  }
-)
-
-const PipelineMenu = withRedux(
-  ({
-    app: {
-      toggle: {vis: {pipeline: {activeStep: activePipelineStep}}},
-    },
-    actions: {
-      toggle: {setActivePipelineStep,}
-    }
-  }) => {
-    const isActivePipelineStep = R.equals(activePipelineStep)
-    const StepAccordion = ({step, label}) => (
-      <>
-        <Accordion.Title active={isActivePipelineStep(step)} onClick={() => setActivePipelineStep(step)}>
-          {label}
-          {
-            isActivePipelineStep(step) &&
-              <Icon name='eye' color='blue' style={{paddingLeft: 10}} />
-          }
-        </Accordion.Title>
-        <Accordion.Content active={isActivePipelineStep(step)}>
-          <Dropdown options={[]} fluid selection placeholder='Select Tool' />
-        </Accordion.Content>
-      </>
-    )
-    return (
-      <Accordion styled>
-      {
-        R.map(
-          ({step, label}) => <StepAccordion {...{step, label}} />,
-          STEPS
-        )
-      }
-      </Accordion>
-    )
-  }
-)
+import ResultsSidebar from './ResultsSidebar'
+import PipelineSidebar from './PipelineSidebar'
 
 const SidebarComponent = withRedux(
   ({
@@ -109,8 +37,8 @@ const SidebarComponent = withRedux(
         <Segment attached style={{height: '80%', overflowY: 'scroll'}}>
         {
           R.cond([
-            [R.equals('pipeline'), R.always(<PipelineMenu />)],
-            [R.equals('results'), R.always(<ResultsMenu />)],
+            [R.equals('pipeline'), R.always(<PipelineSidebar />)],
+            [R.equals('results'), R.always(<ResultsSidebar />)],
           ])(sidebarView)
         }
         </Segment>
