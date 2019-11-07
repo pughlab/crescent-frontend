@@ -22,33 +22,6 @@ import {
   ResultsComponent
 } from './main'
 
-console.log(ResultsComponent)
-
-const VisHeader = withRedux(
-  ({
-    app: {
-      project: {
-        name: projectName
-      },
-      run: {
-        name: runName
-      },
-      view: {main: mainView, sidebar: sidebarView}
-    }
-  }) => {
-    const color = R.cond([
-      [R.isNil, R.always(undefined)],
-      [R.equals('dataset'), R.always('teal')],
-      [R.equals('pipeline'), R.always('blue')],
-      [R.equals('results'), R.always('violet')]
-    ])(sidebarView)
-    return (
-      <Segment attached='top' color={color}>
-          <Label color={color} content={projectName} detail={runName} />
-      </Segment>
-    )
-  }
-)
 
 const VisualizationComponent = withRedux(
   ({
