@@ -7,7 +7,7 @@ import * as RA from 'ramda-adjunct'
 import {Segment, Modal, Button, Image, Header} from 'semantic-ui-react'
 
 import MenuComponent from './components/menu'
-import VisualizationComponent from './components/home'
+import MainComponent from './components/home'
 import LandingComponent from './components/landing'
 
 import Logo from './components/landing/logo.jpg'
@@ -43,7 +43,7 @@ const App = withRedux(
         :
         <Segment style={{height: '100%', padding: 0}}>
           <MenuComponent />
-          <VisualizationComponent {...{session}} />
+          <MainComponent {...{session}} />
 
         </Segment>
     )

@@ -5,9 +5,9 @@ import { Segment, Button, Icon, Divider, Step, Menu, Header, Accordion, Dropdown
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import withRedux from '../../../redux/hoc'
+import withRedux from '../../../../redux/hoc'
 
-import {STEPS, RESULTS} from '../main'
+import {STEPS, RESULTS} from '../../main'
 
 const ResultsMenu = withRedux(
   ({

@@ -16,19 +16,16 @@ import ProjectsCardList from './projects'
 import RunsCardList from './runs'
 import LandingPageComponent from '../landing'
 
-import SidebarComponent from './sidebar'
+import SidebarComponent from './main/sidebar'
 import {
   ParametersComponent,
   ResultsComponent
 } from './main'
 
 
-const VisualizationComponent = withRedux(
+const MainComponent = withRedux(
   ({
     app: {
-      user,
-      project,
-      run,
       view: {main: mainView, sidebar: sidebarView}
     },
     session,
@@ -107,4 +104,4 @@ const VisualizationComponent = withRedux(
   }
 )
 
-export default VisualizationComponent
+export default MainComponent

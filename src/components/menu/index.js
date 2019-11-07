@@ -68,7 +68,7 @@ const MenuComponent = withRedux(({
     user,
     project,
     run,
-    view: {main, sidebar}
+    view: {main}
   },
   actions: {
     // logout,

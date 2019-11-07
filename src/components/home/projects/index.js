@@ -1,18 +1,8 @@
-
-
-
 import React, {useState, useEffect} from 'react';
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import moment from 'moment'
 
-import {queryIsNotNil} from '../../../utils'
-
-
-import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
+import {Header, Button, Container, Divider} from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -49,7 +39,7 @@ const ProjectsCardList = withRedux(({
           <Header content='Uploaded Data' subheader={R.isNil(user) ? 'Register and sign in to upload your own data' : 'Upload your own scRNA-seq data'} />
         </Button>
       </Button.Group>
-      <Divider hidden/>
+      <Divider hidden />
       {
         isActiveProjectKind('uploaded') ? <UploadedProjectsList />
         : isActiveProjectKind('published') ? <PublicProjectsList />

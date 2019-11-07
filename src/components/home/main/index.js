@@ -1,5 +1,4 @@
 import ParametersComponent from './parameters'
-import DatasetComponent from './dataset'
 import ResultsComponent from './results'
 
 // step: the key for the step this parameter belongs to
@@ -67,9 +66,6 @@ export {
   ParametersComponent,
   STEPS,
   PARAMETERS,
-
-  DatasetComponent,
-
   ResultsComponent,
   RESULTS
 }

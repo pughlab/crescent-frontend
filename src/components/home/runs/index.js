@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Transition, Container, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup} from 'semantic-ui-react'
+import {Container, Card, Divider} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
