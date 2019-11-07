@@ -24,7 +24,6 @@ const initialState = {
     vis: {
       pipeline: {
         activeStep: null,
-        activeParameter: null,
         parameters: {
           singleCell: 'MTX',
           numberGenes: {min: 50, max: 8000},
@@ -95,7 +94,7 @@ const app = (state = initialState, action) => {
         setRunFromGQL(run), 
       )(state)
     // App can either be selecting projects and selecting/inspecting runs
-    // Inspecting runs require sidebar
+    // Inspecting a run requires sidebar to be showing
     case 'TOGGLE_LOGIN':
       return R.compose(
         setMainView('login')
@@ -128,31 +127,9 @@ const app = (state = initialState, action) => {
         R.lensPath(['toggle','vis','pipeline','activeStep']),
         step,
       )
-      // Find if pipeline step has parameters and set to first
-      // Otherwise null
-      const stepParameter = R.compose(
-        R.ifElse(
-          R.isNil,
-          R.identity,
-          R.prop('parameter')
-        ),
-        R.find(R.propEq('step', step))
-      )(PARAMETERS)
-      const resetActivePipelineParameter = R.set(
-        R.lensPath(['toggle','vis','pipeline','activeParameter']),
-        stepParameter
-      )
       return R.compose(
-        resetActivePipelineParameter,
         setActivePipelineStep
       )(state)
-    case 'TOGGLE_PIPELINE_ACTIVE_PARAMETER':
-      const {parameter} = payload 
-      const setActivePipelineParameter = R.set(
-        R.lensPath(['toggle','vis','pipeline','activeParameter']),
-        parameter,
-      )
-      return setActivePipelineParameter(state)
     case 'TOGGLE_RESULT_ACTIVE_RESULT':
       const {result} = payload
       const setActiveResultToggle = R.set(

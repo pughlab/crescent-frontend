@@ -22,7 +22,6 @@ const ParametersComponent = withRedux(
       toggle: {
         vis: {
           pipeline: {
-            activeParameter: activePipelineParameter,
             activeStep: activePipelineStep,
             parameters,
           }
@@ -30,8 +29,7 @@ const ParametersComponent = withRedux(
       }
     },
     actions: {
-      setParameters,
-      toggle: {setActivePipelineStep, setActivePipelineParameter}
+      setParameters
     }
   }) => {
     console.log(parameters)

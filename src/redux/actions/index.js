@@ -61,12 +61,6 @@ const setActivePipelineStep = ({step}) => ({
     step
   }
 })
-const setActivePipelineParameter = ({parameter}) => ({
-  type: 'TOGGLE_PIPELINE_ACTIVE_PARAMETER',
-  payload: {
-    parameter
-  }
-})
 const setActiveResult = ({result}) => ({
   type: 'TOGGLE_RESULT_ACTIVE_RESULT',
   payload: {
@@ -87,8 +81,7 @@ const toggle = {
   vis: {
     dataset: {},
     pipeline: {
-      setActivePipelineStep,
-      setActivePipelineParameter
+      setActivePipelineStep
     },
     results: {
       setActiveResult
