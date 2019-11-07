@@ -40,40 +40,13 @@ const LoginForm = withRedux(({
         name
         email
         sessionToken
-        projects {
-          projectID
-          name
-          description
-          createdOn
-          createdBy {
-            name
-          }
-          runs {
-            runID
-            name
-            params
-          }
-        }
       }
     }
-  `)
-  // Use result of effect to navigate to portal
-  useEffect(() => {
-    console.log(data)
-    if (
-      R.both(
-        RA.isNotNilOrEmpty,
-        R.propSatisfies(RA.isNotNil, 'authenticateUser')
-      )(data)
-    ) {
-      const {authenticateUser} = data
-      setUser(authenticateUser)
-    }
-  }, [data])
+  `, {
+    onCompleted: ({authenticateUser}) => setUser(authenticateUser)
+  })
   return (
-    <Grid textAlign='center' centered verticalAlign='middle'
-      columns={1}
-    >
+    <Grid textAlign='center' centered verticalAlign='middle' columns={1}>
       <Grid.Column>
       <Formik
         initialValues={{ email: '', password: '' }}

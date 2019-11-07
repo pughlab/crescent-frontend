@@ -116,8 +116,13 @@ const MenuComponent = withRedux(({
           isMainView('projects')  ? 
             <Header textAlign='center'>
             {
-              RA.isNotNil(project) &&
+              RA.isNotNil(project) ?
                 <Label size='large' basic icon='archive' color='black' content={R.prop('name', project)} />
+              :
+                <Header textAlign='center'>
+                  <Icon name='archive' />
+                  Select a Project
+                </Header>
             }
             </Header>
           : isMainView('runs')  ?

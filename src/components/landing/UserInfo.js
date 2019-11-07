@@ -16,6 +16,9 @@ const UserInfo = withRedux(({
       name, email
     }
   },
+  actions: {
+    logout
+  },
 }) => {
   // Use result of effect to navigate to portal
   return (
@@ -31,6 +34,9 @@ const UserInfo = withRedux(({
             </Segment>
             <Segment>
               {email}
+            </Segment>
+            <Segment>
+              <Button content='Log out' fluid onClick={() => logout()} />
             </Segment>
           </Segment.Group>
           </Container>

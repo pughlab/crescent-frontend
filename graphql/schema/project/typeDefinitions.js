@@ -17,6 +17,8 @@ const typeDefs = gql`
     project(projectID: ID): Project
 
     curatedProjects: [Project]
+
+    projects(userID: ID): [Project]
   }
   type Mutation {
     createProject(

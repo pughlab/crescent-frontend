@@ -10,6 +10,10 @@ const resolvers = {
       return await Projects.find({
         kind: 'curated'
       })
+    },
+    projects: async (parent, {userID}, {Projects}) => {
+      console.log(userID, 'projects')
+      return await Projects.find({createdBy: userID})
     }
   },
   Mutation: {
