@@ -15,7 +15,7 @@ import ProjectsCardList from './projects'
 import RunsCardList from './runs'
 import LandingPageComponent from '../landing'
 
-import VisComponent from './vis
+import VisComponent from './vis'
 
 
 const MainComponent = withRedux(
