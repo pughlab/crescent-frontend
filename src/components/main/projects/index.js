@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import * as R_ from 'ramda-extension'
 
 import {Header, Button, Container, Divider} from 'semantic-ui-react'
 
@@ -46,7 +47,7 @@ const ProjectsCardList = withRedux(({
           />
         </Button>
       </Button.Group>
-      <Divider content='Viewing Projects' horizontal/>
+      <Divider content={`Viewing ${R_.toUpperFirst(activeProjectKind)} Projects`} horizontal/>
       {
         isActiveProjectKind('uploaded') ? <UploadedProjectsList />
         : isActiveProjectKind('published') ? <PublicProjectsList />
