@@ -76,7 +76,7 @@ const MenuComponent = withRedux(({
               }
             </Header>
           : isMainView('vis') ?
-            <Header textAlign='center' size='large'
+            <Header textAlign='center' size='small'
               content={R.prop('name', project)}
               subheader={R.prop('name', run)}
             />
