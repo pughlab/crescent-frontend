@@ -25,7 +25,7 @@ const ProjectCard = withRedux(({
   } = project
   return (
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
-    <Card link onClick={() => setProject(project)}>
+    <Card link onClick={() => setProject(project)} color='black'>
       <Card.Content>
         <Label attached='top' color='black'>
           <Icon name='folder open' size='large' style={{margin: 0}} />
