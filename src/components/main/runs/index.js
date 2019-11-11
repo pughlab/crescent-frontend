@@ -5,6 +5,8 @@ import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
+import moment from 'moment'
+
 import withRedux from '../../../redux/hoc'
 
 import { useQuery } from '@apollo/react-hooks'
@@ -21,7 +23,10 @@ const RunsCardList = withRedux(({
   app: {
     project: {
       projectID,
-      name: projectName
+      name: projectName,
+      description,
+      createdOn,
+      createdBy: {name: creatorName}
     },
   },
   actions: {setProject},
@@ -46,12 +51,20 @@ const RunsCardList = withRedux(({
   console.log(data)
   return (
     <Container>
-      <Button.Group size='large' fluid widths={2}>
+      <Segment attached='top'>
+        <Header
+          content={projectName}
+          subheader={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`}
+        />
+        <Divider horizontal />
+        {description}
+      </Segment>
+      <Button.Group attached='bottom' widths={2}>
         <ShareProjectModal />
         <ArchiveProjectModal />
       </Button.Group>
-      <Divider content="Viewing Project's Runs" horizontal/>
-      <Card.Group itemsPerRow={3} style={{maxHeight: '75vh', overflowY: 'scroll'}}>
+      <Divider hidden horizontal />
+      <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
         <NewRunCard {...{refetch}} />
       {
         R.addIndex(R.map)(
