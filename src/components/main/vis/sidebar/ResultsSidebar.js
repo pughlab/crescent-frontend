@@ -7,17 +7,24 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 
-import RESULTS from '../results/RESULTS'
-
 const ResultsSidebar = withRedux(
   ({
     app: {
+      run: {runID},
       toggle: {vis: {results: {activeResult, availableResults}}}
     },
     actions: {
-      toggle: {setActiveResult}
+      toggle: {
+        setAvailableResults,
+        setActiveResult
+      }
     }
   }) => {
+    useEffect(() => {
+      fetch(`/metadata/plots/${runID}`)
+      .then(resp => resp.json())
+      .then(({plots}) => {setAvailableResults(plots)})
+    }, [runID])
     const isActiveResult = R.equals(activeResult)
     return (
       R.isNil(activeResult) ?
@@ -35,7 +42,7 @@ const ResultsSidebar = withRedux(
                 <Step.Content title={label} description={description} />
               </Step>
             ),
-            RESULTS
+            availableResults
           )
         }
         </Step.Group>
@@ -47,7 +54,7 @@ const ResultsSidebar = withRedux(
               R.compose(
                 R.prop('label'),
                 R.find(R.propEq('result', activeResult))
-              )(RESULTS)
+              )(availableResults)
             }
             </Button.Content>
             <Button.Content hidden>
