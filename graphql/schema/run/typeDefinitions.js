@@ -26,6 +26,12 @@ const typeDefs = gql`
       projectID: ID,
       userID: ID
     ): Run,
+    submitRun(
+      runID: ID,
+      params: String
+    ): Run,
+
+
     createRun(
       name: String,
       params: String,

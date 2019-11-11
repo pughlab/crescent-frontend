@@ -10,6 +10,8 @@ import withRedux from '../../../../redux/hoc'
 import ResultsSidebar from './ResultsSidebar'
 import PipelineSidebar from './PipelineSidebar'
 
+import SubmitRunButton from '../parameters/SubmitRunButton'
+
 const SidebarComponent = withRedux(
   ({
     app: {
@@ -47,7 +49,8 @@ const SidebarComponent = withRedux(
         {
           R.cond([
             [R.equals('pipeline'), R.always(
-              <Button fluid content='SUBMIT RUN' color='blue' />
+              // <Button fluid content='SUBMIT RUN' color='blue' />
+              <SubmitRunButton />
             )],
             [R.equals('results'), R.always(
               <Button fluid content='DOWNLOAD RESULTS' color='violet' />

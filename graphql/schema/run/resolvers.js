@@ -25,6 +25,17 @@ const resolvers = {
       const run = await Runs.create({name, projectID, createdBy: userID})
       return run
     },
+    submitRun: async (parent, {runID, params}, {Runs}) => {
+      const run = await Runs.findOne({runID})
+      const {name} = run
+      console.log('Submitting run', runID, params)
+      const submit = await axios.post(
+        `/runs/submit/${runID}`,
+        {},
+        {params: {name, params}}
+      )
+      return run
+    },
 
     createRun: async (parent, {name, params, projectID}, {Runs}) => {
       const run = await Runs.create({name, params, projectID})
