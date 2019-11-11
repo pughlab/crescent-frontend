@@ -40,7 +40,7 @@ const NewRunCard = withRedux(({
         <Card link color='black'>
           <Card.Content>
           <Card.Header as={Header} icon>
-            <Icon name='add' circular />
+            <Icon name='file' circular />
             <Header.Content>
               Create New Run
             </Header.Content>

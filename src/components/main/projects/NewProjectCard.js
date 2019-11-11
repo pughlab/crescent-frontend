@@ -128,7 +128,7 @@ const NewProjectCard = withRedux(({
         <Card link color='black'>
           <Card.Content>
             <Card.Header as={Header} icon>
-              <Icon name='add' circular />
+              <Icon name='folder open' circular />
               <Header.Content>
                 Create New Project
               </Header.Content>
