@@ -100,7 +100,7 @@ const ShareProjectModal = withRedux(({
   return (
     <Modal basic size='small'
       trigger={
-        <Button color='green' inverted >
+        <Button color='green' >
           <Icon name='add user' />
           Share Project
         </Button>
@@ -110,45 +110,47 @@ const ShareProjectModal = withRedux(({
         <Segment attached='top'>
           <Header icon='add user' content={projectName} subheader='Share this project with other users?' />
         </Segment>
-        <Segment attached loading={R.or(loadingProjectUsers, loadingShareProject)}>
-          <Divider content='Created by' horizontal />
+        <Segment attached='bottom' loading={R.or(loadingProjectUsers, loadingShareProject)}>
+          {/* <Divider content='Created by' horizontal />
           {
             RA.isNotNil(creator) &&
             <Label size='large' color='green' content={R.prop('name', creator)} />
           }
-          <Divider content='Shared with' horizontal />
-          {
-            RA.isNotEmpty(sharedWith) &&
-            <Label.Group size='large'>
-            {
-              R.addIndex(R.map)(
-                ({userID, name}, index) => (
-                  <Label key={index}
-                    basic
-                    color='green'
-                    content={name}
-                    onRemove={
-                      () => shareProject({
-                        variables: {
-                          sharedWith: R.compose(
-                            R.reject(R.equals(userID)),
-                            R.pluck('userID')
-                          )(sharedWith)
-                        }
-                      })
-                    }
-                  />
-                ),
-                sharedWith
-              )
-            }
-            </Label.Group>
-          }
-        </Segment>
-        <Segment attached='bottom'>
+           */}
           <Grid>
+            <Grid.Column width={16}>
+            <Divider content='Shared with' horizontal />
+            {
+              RA.isNotEmpty(sharedWith) &&
+              <Label.Group size='large'>
+              {
+                R.addIndex(R.map)(
+                  ({userID, name}, index) => (
+                    <Label key={index}
+                      basic
+                      color='green'
+                      content={name}
+                      onRemove={
+                        () => shareProject({
+                          variables: {
+                            sharedWith: R.compose(
+                              R.reject(R.equals(userID)),
+                              R.pluck('userID')
+                            )(sharedWith)
+                          }
+                        })
+                      }
+                    />
+                  ),
+                  sharedWith
+                )
+              }
+              </Label.Group>
+            }
+            </Grid.Column>
             <Grid.Column width={12}>
               <Dropdown multiple selection fluid search options={possibleUsersToAdd} loading={loadingUsers}
+                placeholder='Search users to share project with'
                 onChange={(event, {value}) => setNewSharedWith(value)}
               />
             </Grid.Column>

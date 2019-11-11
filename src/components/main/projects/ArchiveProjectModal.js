@@ -40,7 +40,7 @@ const ArchiveProjectModal = withRedux(({
   return (
     <Modal basic size='small'
       trigger={
-        <Button color='red' inverted>
+        <Button color='red' >
           <Icon name='trash' />
           Delete Project
         </Button>
