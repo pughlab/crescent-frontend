@@ -8,6 +8,8 @@ import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider
 
 import withRedux from '../../../redux/hoc'
 
+import Marquee from 'react-marquee'
+
 const ProjectCard = withRedux(({
   // Redux
   actions: {setProject},
@@ -28,7 +30,7 @@ const ProjectCard = withRedux(({
           <Card.Header as={Header}>
             <Icon name='folder open' circular />
             <Header.Content>
-              {name}
+              <Marquee text={name} />
             </Header.Content>
           </Card.Header>
       </Card.Content>
