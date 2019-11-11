@@ -22,37 +22,51 @@ const RunCard = withRedux(({
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
     <Card link onClick={() => setRun(run)} >
       <Card.Content>
-        <Card.Header as={Header}>
+        <Label attached='top'
+          // Color based on whether run is complete or not
+          // color='yellow'
+        >
+          <Icon name='file' size='large' style={{margin: 0}} />
+        </Label>
+        <Card.Header>
+          <Marquee text={name} />
+        </Card.Header>
+        {/* <Card.Header as={Header}>
           <Icon name='file' circular />
           <Header.Content>
-            <Marquee text={name} />
+            
           </Header.Content>
-        </Card.Header>
+        </Card.Header> */}
       </Card.Content>
       {/* <Card.Content extra content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} /> */}
       <Card.Content>
-        {
-          RA.isNotNil(params) &&
-          R.compose(
-            ({
-              singleCell,
-              numberGenes: {min: minNumberGenes, max: maxNumberGenes},
-              percentMito: {min: minPercentMito, max: maxPercentMito},
-              resolution,
-              principalDimensions,
-            }) => (
-              <Label.Group>
-                <Label content='Single Cell Input Type' detail={singleCell} />
-                <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
-                <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
-                <Label content='Clustering Resolution' detail={resolution} />
-                <Label content='PCA Dimensions' detail={principalDimensions} />
-
-              </Label.Group>
-            ),
-            JSON.parse
-          )(params)
-        }
+        <Popup
+          trigger={
+            <Button basic icon><Icon name='sliders horizontal' /> </Button>
+          }
+          content={
+            RA.isNotNil(params) &&
+            R.compose(
+              ({
+                singleCell,
+                numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+                percentMito: {min: minPercentMito, max: maxPercentMito},
+                resolution,
+                principalDimensions,
+              }) => (
+                <Label.Group>
+                  <Label content='Single Cell Input Type' detail={singleCell} />
+                  <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
+                  <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
+                  <Label content='Clustering Resolution' detail={resolution} />
+                  <Label content='PCA Dimensions' detail={principalDimensions} />
+  
+                </Label.Group>
+              ),
+              JSON.parse
+            )(params)
+          }
+        />
       </Card.Content>
     </Card>
     </Transition>

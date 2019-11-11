@@ -27,12 +27,18 @@ const ProjectCard = withRedux(({
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
     <Card link onClick={() => setProject(project)}>
       <Card.Content>
-          <Card.Header as={Header}>
+        <Label attached='top' color='black'>
+          <Icon name='folder open' size='large' style={{margin: 0}} />
+        </Label>
+        <Card.Header>
+          <Marquee text={name} />
+        </Card.Header>
+          {/* <Card.Header as={Header}>
             <Icon name='folder open' circular />
             <Header.Content>
-              <Marquee text={name} />
+              
             </Header.Content>
-          </Card.Header>
+          </Card.Header> */}
       </Card.Content>
       <Card.Content extra content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} />
     </Card>

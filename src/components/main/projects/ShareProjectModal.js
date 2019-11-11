@@ -100,7 +100,7 @@ const ShareProjectModal = withRedux(({
   return (
     <Modal basic size='small'
       trigger={
-        <Button color='green' >
+        <Button color='twitter' >
           <Icon name='add user' />
           Share Project
         </Button>
