@@ -3,6 +3,8 @@ const { gql } = require('apollo-server')
 const typeDefs = gql`
   type Run {
     runID: ID
+    createdOn: Date
+    createdBy: User
     name: String
     params: String
     projectID: ID
@@ -21,7 +23,8 @@ const typeDefs = gql`
   type Mutation {
     createUnsubmittedRun(
       name: String,
-      projectID: ID
+      projectID: ID,
+      userID: ID
     ): Run,
     createRun(
       name: String,

@@ -5,6 +5,14 @@ const RunSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true
   },
+  createdOn: {
+    type: Date,
+    default: Date.now
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
   name: {
     type: String,
     required: true

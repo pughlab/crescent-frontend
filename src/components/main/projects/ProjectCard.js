@@ -33,12 +33,6 @@ const ProjectCard = withRedux(({
         <Card.Header>
           <Marquee text={name} />
         </Card.Header>
-          {/* <Card.Header as={Header}>
-            <Icon name='folder open' circular />
-            <Header.Content>
-              
-            </Header.Content>
-          </Card.Header> */}
       </Card.Content>
       <Card.Content extra content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} />
     </Card>

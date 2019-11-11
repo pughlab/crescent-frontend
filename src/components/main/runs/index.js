@@ -25,7 +25,7 @@ const RunsCardList = withRedux(({
       projectID,
       name: projectName,
       description,
-      createdOn,
+      createdOn: projectCreatedOn,
       createdBy: {name: creatorName}
     },
   },
@@ -35,6 +35,10 @@ const RunsCardList = withRedux(({
     query ProjectRuns($projectID: ID) {
       runs(projectID: $projectID) {
         runID
+        createdOn
+        createdBy {
+          name
+        }
         name
         params
       }
@@ -54,7 +58,7 @@ const RunsCardList = withRedux(({
       <Segment attached='top'>
         <Header
           content={projectName}
-          subheader={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`}
+          subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
         />
         <Divider horizontal />
         {description}

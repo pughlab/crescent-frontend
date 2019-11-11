@@ -21,8 +21,8 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUnsubmittedRun: async (parent, {name, projectID}, {Runs}) => {
-      const run = await Runs.create({name, projectID})
+    createUnsubmittedRun: async (parent, {name, projectID, userID}, {Runs}) => {
+      const run = await Runs.create({name, projectID, createdBy: userID})
       return run
     },
 
@@ -40,6 +40,10 @@ const resolvers = {
     }
   },
   Run: {
+    createdBy: async({createdBy}, variables, {Users}) => {
+      const user = await Users.findOne({userID: createdBy})
+      return user
+    },
     // Subfield resolvers
     project: async ({projectID}, variables, {Projects}) => {
       // Find project that run belongs to
