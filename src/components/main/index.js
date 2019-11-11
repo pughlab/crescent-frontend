@@ -48,7 +48,7 @@ const MainComponent = withRedux(
     //   && setLoading(false)
     // }, [currentRunId, visType])
     return (
-      <Segment basic attached='bottom' style={{height: '92%', marginTop: 0,  backgroundImage: `url(${memphisMini})`}} as={Grid}>
+      <Segment basic attached='bottom' style={{height: '91%', marginTop: 0,  backgroundImage: `url(${memphisMini})`}} as={Grid}>
       {
         R.cond([
           [R.equals('login'), R.always(
