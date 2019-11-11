@@ -7,47 +7,55 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../redux/hoc'
 
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../utils'
 
 const ArchiveProjectModal = withRedux(({
   app: {
+    user,
     project: {
       projectID,
       name: projectName
     },
   },
+  actions: {
+    setUser
+  }
 }) => {
-  // const {loading, data, error, refetch} = useQuery(gql`
-  //   query ProjectRuns($projectID: ID) {
-  //     runs(projectID: $projectID) {
-  //       runID
-  //       name
-  //       params
-  //     }
-  //   }
-  // `, {
-  //   fetchPolicy: 'cache-and-network',
-  //   variables: {projectID}
-  // })
+  const [archiveProject, {loading, data, error}] = useMutation(gql`
+    mutation ArchiveProject($projectID: ID) {
+      archiveProject(projectID: $projectID) {
+        projectID
+        archived
+      }
+    }
+  `, {
+    variables: {projectID},
+    onCompleted: data => {
+      console.log('archived project', data)
+      setUser(user)
+    }
+  })
   return (
     <Modal basic size='small'
       trigger={
         <Button color='red' inverted>
           <Icon name='trash' />
-          Delete          
+          Delete Project
         </Button>
-      }>
+      }
+    >
       <Modal.Content>
         <Segment attached='top'>
           <Header icon='trash' content={projectName} subheader='Are you sure you want to delete this project?' />
         </Segment>
         <Segment attached='bottom'>
         <Button fluid color='red' inverted 
-          // onClick={() => setProject(null)}
+          onClick={() => archiveProject()}
         >
-          <Icon name='checkmark' /> Yes
+          <Icon name='checkmark' />
+          Yes, delete this project
         </Button>
         </Segment>
       </Modal.Content>

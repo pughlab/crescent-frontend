@@ -13,7 +13,16 @@ const resolvers = {
     },
     projects: async (parent, {userID}, {Projects}) => {
       console.log(userID, 'projects')
-      return await Projects.find({createdBy: userID})
+      const projects = await Projects.find({
+        $or: [
+          // User is either the creator or project has been shared with them
+          {createdBy: userID},
+          {sharedWith: {$in: [userID]}},
+        ],
+        // Project must not be archived
+        archived: {$eq: null}
+      })
+      return projects
     }
   },
   Mutation: {
@@ -41,7 +50,14 @@ const resolvers = {
     // Set the 'sharedWith' property  of a project to remove or add members
     shareProject: async (parent, {projectID, sharedWith}, {Projects}) => {
       const project = await Projects.findOne({projectID})
-      project.sharedWith = sharedWith
+      project.sharedWith = R.uniq(sharedWith) //Just in case...
+      await project.save()
+      return project
+    },
+
+    archiveProject: async (parent, {projectID}, {Projects}) => {
+      const project = await Projects.findOne({projectID})
+      project.archived = new Date()
       await project.save()
       return project
     }

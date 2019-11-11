@@ -22,7 +22,6 @@ import NewProjectCard from './NewProjectCard'
 
 const UploadedProjectsList = withRedux(({
   app: {
-    // user: {projects: userProjects},
     user: {userID}
   },
 }) => {
@@ -40,7 +39,7 @@ const UploadedProjectsList = withRedux(({
       }
     }
   `, {
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: 'network-only',
     variables: {userID}
   })
   const userProjects = R.ifElse(

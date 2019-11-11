@@ -50,7 +50,7 @@ const RunsCardList = withRedux(({
         <ShareProjectModal />
         <ArchiveProjectModal />
       </Button.Group>
-      <Divider content='Viewing Runs' horizontal/>
+      <Divider content="Viewing Project's Runs" horizontal/>
       <Card.Group itemsPerRow={3} style={{maxHeight: '75vh', overflowY: 'scroll'}}>
         <NewRunCard {...{refetch}} />
       {

@@ -102,11 +102,10 @@ const ShareProjectModal = withRedux(({
       trigger={
         <Button color='green' inverted >
           <Icon name='add user' />
-          Share
+          Share Project
         </Button>
       }
     >
-      
       <Modal.Content>
         <Segment attached='top'>
           <Header icon='add user' content={projectName} subheader='Share this project with other users?' />
@@ -137,7 +136,7 @@ const ShareProjectModal = withRedux(({
                           )(sharedWith)
                         }
                       })
-                    }  
+                    }
                   />
                 ),
                 sharedWith

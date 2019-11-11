@@ -11,6 +11,8 @@ const typeDefs = gql`
     createdBy: User
     createdOn: Date
 
+    archived: Date
+
     runs: [Run]
   }
   type Query {
@@ -34,6 +36,11 @@ const typeDefs = gql`
     shareProject(
       projectID: ID
       sharedWith: [ID]
+    ): Project
+
+    # Archive project by setting archive property to a current date
+    archiveProject(
+      projectID: ID
     ): Project
   }
 `

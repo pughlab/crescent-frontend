@@ -31,6 +31,11 @@ const ProjectSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     default: []
   },
+  archived: {
+    type: Date,
+    default: null
+  },
+
   runs: {
     type: [mongoose.Schema.Types.ObjectId],
     default: []
