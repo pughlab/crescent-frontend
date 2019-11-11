@@ -11,6 +11,8 @@ import InfoModal from './InfoModal'
 
 import Logo from '../landing/logo.jpg'
 
+import Marquee from 'react-marquee'
+
 const CrescentIcon = () => (
   <Icon.Group style={{marginTop: -3}} >
     <Icon name='cloud' size='big'  />
@@ -52,10 +54,7 @@ const MenuComponent = withRedux(({
           </Button>
         </Button.Group>
       </Grid.Column>
-      <Grid.Column width={3}>
-
-      </Grid.Column>
-      <Grid.Column width={6} verticalAlign='middle' style={{padding: 0}}>
+      <Grid.Column width={12} verticalAlign='middle' style={{padding: 0}}>
         {
           isMainView('projects')  ? 
             <Image src={Logo} size='tiny' centered/>
@@ -77,15 +76,12 @@ const MenuComponent = withRedux(({
               }
             </Header>
           : isMainView('vis') ?
-            <Header textAlign='center'
+            <Header textAlign='center' size='large'
               content={R.prop('name', project)}
               subheader={R.prop('name', run)}
             />
           : <Image src={Logo} size='tiny' centered/>
         }
-      </Grid.Column>
-      <Grid.Column width={3}>
-
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
