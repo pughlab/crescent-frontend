@@ -37,24 +37,20 @@ const resolvers = {
       const project = await Projects.create({name, description, createdBy: userID})
       return project
     },
-    // Add a user to be a member of a project
-    addUserToProject: async (parent, {userID, projectID}, {Projects, Users}) => {
+
+    // Set the 'sharedWith' property  of a project to remove or add members
+    shareProject: async (parent, {projectID, sharedWith}, {Projects}) => {
       const project = await Projects.findOne({projectID})
-      // Append user to add and make sure only one copy exists
-      project.members = R.compose(
-        R.uniq,
-        R.append(userID),
-        R.prop('members')
-      )(project)
+      project.sharedWith = sharedWith
       await project.save()
       return project
     }
   },
   // Subfield resolvers
   Project: {
-    // Query `User` types on a `Project` type in the `members` field
-    members: async ({members}, variables, {Users}) => {
-      return await Users.find({userID: {$in: members}})
+    // Query `User` types on a `Project` type in the `sharedWith` field
+    sharedWith: async ({sharedWith}, variables, {Users}) => {
+      return await Users.find({userID: {$in: sharedWith}})
     },
     createdBy: async ({createdBy}, variables, {Users}) => {
       return await Users.findOne({userID: createdBy})

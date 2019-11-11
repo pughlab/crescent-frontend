@@ -7,7 +7,7 @@ const typeDefs = gql`
     kind: String #'uploaded', 'curated'
     name: String
     description: String
-    members: [User]
+    sharedWith: [User]
     createdBy: User
     createdOn: Date
 
@@ -29,10 +29,11 @@ const typeDefs = gql`
       genesObjectName: ID!,
       matrixObjectName: ID!,
     ): Project
-
-    addUserToProject(
-      userID: ID
+    
+    # Sets 'sharedWith' property to whatever array of IDs is passed
+    shareProject(
       projectID: ID
+      sharedWith: [ID]
     ): Project
   }
 `

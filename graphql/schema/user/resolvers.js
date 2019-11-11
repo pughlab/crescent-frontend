@@ -48,7 +48,7 @@ const resolvers = {
     },
     projects: async ({userID}, variables, {Projects}) => {
       return await Projects.find({
-        $or: [{createdBy: userID}, {members: {$elemMatch: {$eq: userID}}}],
+        $or: [{createdBy: userID}, {sharedWith: {$elemMatch: {$eq: userID}}}],
         kind: 'uploaded'
       })
     }

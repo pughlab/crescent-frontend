@@ -153,7 +153,7 @@ const RegisterForm = ({
                       type='submit'
                       disabled={
                         R.any(RA.isTrue, [
-                          true, // Remove when deployed, only one user for now
+                          // true, // Remove when deployed, only one user for now
                           R.any(isError, [
                             'firstName',
                             'lastName',

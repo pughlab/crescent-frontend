@@ -27,7 +27,7 @@ const ProjectSchema = new mongoose.Schema({
     required: true
   },
   // Users that have access (N:1 user to project mapping)
-  members: {
+  sharedWith: {
     type: [mongoose.Schema.Types.ObjectId],
     default: []
   },

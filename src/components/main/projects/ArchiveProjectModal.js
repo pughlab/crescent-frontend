@@ -34,9 +34,9 @@ const ArchiveProjectModal = withRedux(({
   return (
     <Modal basic size='small'
       trigger={
-        <Button icon color='red' inverted labelPosition='right'>
+        <Button color='red' inverted>
           <Icon name='trash' />
-          Delete
+          Delete          
         </Button>
       }>
       <Modal.Content>
