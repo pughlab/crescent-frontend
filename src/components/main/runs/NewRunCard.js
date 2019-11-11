@@ -33,7 +33,7 @@ const NewRunCard = withRedux(({
   `, {
     variables: {name: runName, projectID},
     // Refetch runs on new created
-    onCompleted: data => {refetch()}
+    onCompleted: ({run}) => {setRun(run)}
   })
   return (
     <Modal
