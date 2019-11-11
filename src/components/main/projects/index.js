@@ -23,23 +23,30 @@ const ProjectsCardList = withRedux(({
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
     <Container>
-      <Divider content='Viewing Projects' horizontal/>
       <Button.Group size='mini' fluid widths={2}>
-        <Button
+        <Button color='black'
           onClick={() => setActiveProjectKind('published')}
           active={isActiveProjectKind('published')} 
+          basic={R.not(isActiveProjectKind('published'))}
         >
-          <Header content='Public Data' subheader='Published/example datasets accepted by CReSCENT' />
+          <Header
+            inverted={isActiveProjectKind('published')}
+            content='Public Data' subheader='Published/example datasets accepted by CReSCENT'
+          />
         </Button>
-        <Button
+        <Button color='black'
           disabled={R.isNil(user)}
           onClick={() => setActiveProjectKind('uploaded')}
           active={isActiveProjectKind('uploaded')} 
+          basic={R.not(isActiveProjectKind('uploaded'))}
         >
-          <Header content='Uploaded Data' subheader={R.isNil(user) ? 'Register and sign in to upload your own data' : 'Upload your own scRNA-seq data'} />
+          <Header
+            inverted={isActiveProjectKind('uploaded')}
+            content='Uploaded Data' subheader={R.isNil(user) ? 'Register and sign in to upload your own data' : 'Upload your own scRNA-seq data'}
+          />
         </Button>
       </Button.Group>
-      <Divider hidden />
+      <Divider content='Viewing Projects' horizontal/>
       {
         isActiveProjectKind('uploaded') ? <UploadedProjectsList />
         : isActiveProjectKind('published') ? <PublicProjectsList />

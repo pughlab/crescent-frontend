@@ -68,26 +68,13 @@ const MenuComponent = withRedux(({
         {
           isMainView('projects')  ? 
             <Header textAlign='center'>
-            {
-              RA.isNotNil(project) ?
-                <Label size='large' basic icon='archive' color='black' content={R.prop('name', project)} />
-              :
-                <Header textAlign='center'>
-                  <Icon name='archive' />
-                  Select a Project
-                </Header>
-            }
+              <Icon name='archive' />
+              Select a Project
             </Header>
           : isMainView('runs')  ?
             <Header textAlign='center'>
-              <Label.Group size='large'>
-                <Label icon='archive' color='black' content={R.prop('name', project)} />
-                {
-                  RA.isNotNil(run) &&
-                  <Label icon='paper plane' basic color='black' content={R.prop('name', run)} />  
-                }
-              </Label.Group>
-              
+              <Icon name='archive' />
+              {R.prop('name', project)}
             </Header>
           : isMainView('login') ?
             <Header textAlign='center'>
@@ -105,12 +92,20 @@ const MenuComponent = withRedux(({
               }
             </Header>
           : isMainView('vis') ?
-            <Header textAlign='center'>
-              <Label.Group size='large'>
-                <Label icon='archive' color='black' content={R.prop('name', project)} />
-                <Label icon='paper plane' color='black' content={R.prop('name', run)} />
-              </Label.Group>
-            </Header>
+            <Header textAlign='center'
+              content={R.prop('name', project)}
+              subheader={R.prop('name', run)}
+            />
+            // <Button.Group size='small' fluid>
+            //   <Button >
+            //     <Icon name='archive' />
+            //     {R.prop('name', project)}
+            //   </Button>
+            //   <Button >
+            //     <Icon name='paper plane' />
+            //     {R.prop('name', run)}
+            //   </Button>
+            // </Button.Group>
           : null
         }
       </Grid.Column>

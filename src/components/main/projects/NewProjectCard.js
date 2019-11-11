@@ -131,9 +131,11 @@ const NewProjectCard = withRedux(({
               <Icon name='add' circular />
               <Header.Content>
                 Create New Project
-                <Header.Subheader content={'Upload your own files to create a new project'} />
               </Header.Content>
             </Card.Header>
+          </Card.Content>
+          <Card.Content extra>
+          Upload your own files to create a new project
           </Card.Content>
         </Card>
       }

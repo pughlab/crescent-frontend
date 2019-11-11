@@ -44,10 +44,10 @@ const NewRunCard = withRedux(({
             <Icon name='add' circular />
             <Header.Content>
               Create New Run
-              <Header.Subheader content={'Configure a pipeline and run on the cloud'} />
             </Header.Content>
           </Card.Header>
           </Card.Content>
+          <Card.Content extra content='Configure a pipeline and run on the cloud' />
         </Card>
       }
     >

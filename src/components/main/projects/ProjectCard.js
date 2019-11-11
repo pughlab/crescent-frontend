@@ -29,17 +29,10 @@ const ProjectCard = withRedux(({
             <Icon name='archive' circular />
             <Header.Content>
               {name}
-              <Header.Subheader content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} />
             </Header.Content>
           </Card.Header>
       </Card.Content>
-      <Card.Content>
-        <Popup
-          wide
-          trigger={<Button icon='info' basic />}
-          content={description}
-        />
-      </Card.Content>
+      <Card.Content extra content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} />
     </Card>
     </Transition>
   )
