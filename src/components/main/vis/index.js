@@ -18,8 +18,9 @@ const VisComponent = withRedux(
   }) => {
     return (
       <>
-        <Grid.Column width={10} style={{height: '100%'}}>
-          <Segment raised style={{height: '100%'}}
+        <Grid.Column width={11} style={{height: '100%'}}>
+          <Transition visible animation='horizontal flip' duration={1000} unmountOnHide={true} transitionOnMount={true}>
+          <Segment style={{height: '100%'}}
             color={
               R.cond([
                 [R.equals('pipeline'), R.always('blue')],
@@ -38,8 +39,9 @@ const VisComponent = withRedux(
             ])(sidebarView)
           }
           </Segment>
+          </Transition>
         </Grid.Column>
-        <Grid.Column width={6} style={{height: '100%'}}>
+        <Grid.Column width={5} style={{height: '100%'}}>
           <SidebarComponent />
         </Grid.Column>
       </>
