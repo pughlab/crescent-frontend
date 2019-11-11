@@ -26,7 +26,7 @@ const ProjectCard = withRedux(({
     <Card link onClick={() => setProject(project)}>
       <Card.Content>
           <Card.Header as={Header}>
-            <Icon name='archive' circular />
+            <Icon name='folder open' circular />
             <Header.Content>
               {name}
             </Header.Content>

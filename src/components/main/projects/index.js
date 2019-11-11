@@ -3,7 +3,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import * as R_ from 'ramda-extension'
 
-import {Header, Button, Container, Divider} from 'semantic-ui-react'
+import {Header, Button, Container, Divider, Message} from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -23,6 +23,15 @@ const ProjectsCardList = withRedux(({
 }) => {
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
+    <>
+    <Message>
+      <Message.Header as={Header}>
+        CanceR Single Cell ExpressioN Toolkit
+      </Message.Header>
+      <Message.Content>
+        Select a public project or sign in to start
+      </Message.Content>
+    </Message>
     <Container>
       <Button.Group size='mini' fluid widths={2}>
         <Button color='black'
@@ -47,13 +56,14 @@ const ProjectsCardList = withRedux(({
           />
         </Button>
       </Button.Group>
-      <Divider content={`Viewing ${R_.toUpperFirst(activeProjectKind)} Projects`} horizontal/>
+      <Divider hidden horizontal />
       {
         isActiveProjectKind('uploaded') ? <UploadedProjectsList />
         : isActiveProjectKind('published') ? <PublicProjectsList />
         : null
       }
     </Container>
+    </>
   )
 })
 

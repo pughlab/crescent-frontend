@@ -43,7 +43,7 @@ const PublicProjectsList = withRedux(({
       R.always([])
     )(data)
   return (
-    <Card.Group itemsPerRow={3} style={{maxHeight: '70vh', overflowY: 'scroll'}}>
+    <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
     {
       R.addIndex(R.map)(
         (project, index) => (

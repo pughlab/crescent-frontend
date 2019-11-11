@@ -49,7 +49,7 @@ const UploadedProjectsList = withRedux(({
   )(data)
   console.log(data)
   return (
-    <Card.Group itemsPerRow={3} style={{maxHeight: '70vh', overflowY: 'scroll'}}>
+    <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
       <NewProjectCard {...{refetch}} />
     {
       R.addIndex(R.map)(
