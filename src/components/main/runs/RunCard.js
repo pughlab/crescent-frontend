@@ -18,15 +18,15 @@ const RunCard = withRedux(({
   run
 }) => {
   const {
-    runID, createdOn, name, params, createdBy: {name: creatorName}
+    runID, createdOn, name, params, createdBy: {name: creatorName}, completed
   } = run
   return (
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
-    <Card link onClick={() => setRun(run)} >
+    <Card link onClick={() => setRun(run)} color={completed ? 'green' : 'yellow'}>
       <Card.Content>
         <Label attached='top'
           // Color based on whether run is complete or not
-          // color='yellow'
+          color={completed ? 'green' : 'yellow'}
         >
           <Icon name='file' size='large' style={{margin: 0}} />
         </Label>

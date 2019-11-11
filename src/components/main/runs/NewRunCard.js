@@ -39,14 +39,14 @@ const NewRunCard = withRedux(({
       trigger={
         <Card link color='black'>
           <Card.Content>
-          <Card.Header as={Header}>
+          <Card.Header as={Header} icon>
             <Icon name='add' circular />
             <Header.Content>
               Create New Run
             </Header.Content>
           </Card.Header>
           </Card.Content>
-          <Card.Content extra content='Configure a pipeline and run on the cloud' />
+          <Card.Content extra textAlign='center' content='Configure a pipeline and run on the cloud' />
         </Card>
       }
     >
