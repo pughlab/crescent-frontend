@@ -9,6 +9,8 @@ import withRedux from '../../redux/hoc'
 
 import InfoModal from './InfoModal'
 
+import Logo from '../landing/logo.jpg'
+
 const CrescentIcon = () => (
   <Icon.Group style={{marginTop: -3}} >
     <Icon name='cloud' size='big'  />
@@ -33,49 +35,32 @@ const MenuComponent = withRedux(({
 }) => {
   const isMainView = R.equals(main)
   return (
-    <Segment attached='top' style={{height: '10%'}} as={Grid}>
-      <Grid.Column width={3}>
-        <Button.Group fluid widths={3} size='small'>
-          <Button icon basic color='black'
-            disabled={isMainView('projects')}
-            onClick={() => 
-              isMainView('login') ? toggleProjects()
-              : isMainView('vis') ? toggleRuns()
-              : isMainView('runs') ? toggleProjects()
-              : isMainView('projects') ? toggleProjects() : null
-            }
-          >
-            <Icon name='double angle left' size='large'/>
-          </Button>
-          <Button icon basic color='black'
+    <Segment attached='top' style={{height: '8%'}} as={Grid}>
+      <Grid.Column width={2} verticalAlign='middle'>
+        <Button.Group fluid size='mini'>
+          <Button icon basic inverted color='grey'
             onClick={() => toggleProjects()}
             disabled={isMainView('projects')}
           >
-            <Icon name='archive' size='large'/>
+            <Icon color='black' name='folder open' size='large'/>
           </Button>
-          <Button icon basic color='black'
+          <Button icon basic inverted color='grey'
             onClick={() => toggleRuns()}
-            disabled={R.isNil(project) || R.and(RA.isNotNil(project), isMainView('projects'))}
+            disabled={isMainView('runs') || R.isNil(project) || R.and(RA.isNotNil(project), isMainView('projects'))}
           >
-            <Icon name='paper plane' size='large'/>
+            <Icon color='black' name='file' size='large'/>
           </Button>
         </Button.Group>
       </Grid.Column>
-      <Grid.Column width={2}>
+      <Grid.Column width={3}>
 
       </Grid.Column>
-      <Grid.Column width={6} verticalAlign='middle'>
+      <Grid.Column width={6} verticalAlign='middle' style={{padding: 0}}>
         {
           isMainView('projects')  ? 
-            <Header textAlign='center'>
-              <Icon name='archive' />
-              Select a Project
-            </Header>
+            <Image src={Logo} size='tiny' centered/>
           : isMainView('runs')  ?
-            <Header textAlign='center'>
-              <Icon name='archive' />
-              {R.prop('name', project)}
-            </Header>
+            <Image src={Logo} size='tiny' centered/>
           : isMainView('login') ?
             <Header textAlign='center'>
               {
@@ -96,30 +81,21 @@ const MenuComponent = withRedux(({
               content={R.prop('name', project)}
               subheader={R.prop('name', run)}
             />
-            // <Button.Group size='small' fluid>
-            //   <Button >
-            //     <Icon name='archive' />
-            //     {R.prop('name', project)}
-            //   </Button>
-            //   <Button >
-            //     <Icon name='paper plane' />
-            //     {R.prop('name', run)}
-            //   </Button>
-            // </Button.Group>
-          : null
+          : <Image src={Logo} size='tiny' centered/>
         }
       </Grid.Column>
-      <Grid.Column width={2}>
+      <Grid.Column width={3}>
 
       </Grid.Column>
-      <Grid.Column width={3} verticalAlign='middle'>
-        <Button.Group fluid widths={2} size='small'>
+      <Grid.Column width={2} verticalAlign='middle'>
+        <Button.Group fluid widths={2} size='mini'>
           <InfoModal />
-          <Button color='black' icon
+          <Button basic inverted icon
             basic
+            color='grey'
             onClick={() => toggleLogin()}
           >
-            <Icon size='large' name={'user circle'} />
+            <Icon color='black' size='large' name={'user circle'} />
           </Button>
         </Button.Group>
       </Grid.Column>
