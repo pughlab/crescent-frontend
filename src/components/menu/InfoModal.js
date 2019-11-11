@@ -13,7 +13,7 @@ import * as RA from 'ramda-adjunct'
 
 const InfoModal = () => (
   <Modal
-    trigger={<Button color='black' floated='right' basic icon><Icon size='large' name='info circle' /></Button>}
+    trigger={<Button color='grey' inverted floated='right' basic icon><Icon color='black' size='large' name='info circle' /></Button>}
   >
     <Modal.Content>
     <Header content='Help'/>
