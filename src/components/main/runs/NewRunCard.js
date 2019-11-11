@@ -18,8 +18,6 @@ const NewRunCard = withRedux(({
   actions: {
     setRun
   },
-  // Prop
-  refetch
 }) => {
   const [runName, setRunName] = useState('')
   const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
@@ -53,29 +51,16 @@ const NewRunCard = withRedux(({
     >
       <Modal.Header as={Header} textAlign='center' content='New Run' />
       <Modal.Content>
-      {
-        R.ifElse(
-          queryIsNotNil('createUnsubmittedRun'),
-          R.always(
-            <Header icon textAlign='center'>
-              <Icon name='check' />
-              Run created! Click away to close
-            </Header>
-          ),
-          R.always(
-            <Form>
-              <Form.Input fluid
-                placeholder='Enter a Run Name'
-                onChange={(e, {value}) => {setRunName(value)}}
-              />
-              <Form.Button fluid
-                content='Create new run'
-                onClick={() => createUnsubmittedRun()}
-              />
-            </Form>
-          )
-        )(data)
-      }
+        <Form>
+          <Form.Input fluid
+            placeholder='Enter a Run Name'
+            onChange={(e, {value}) => {setRunName(value)}}
+          />
+          <Form.Button fluid
+            content='Create new run'
+            onClick={() => createUnsubmittedRun()}
+          />
+        </Form>
       </Modal.Content>
     </Modal>
   )
