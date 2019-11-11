@@ -28,7 +28,11 @@ const RunCard = withRedux(({
           // Color based on whether run is complete or not
           color={completed ? 'green' : 'yellow'}
         >
-          <Icon name='file' size='large' style={{margin: 0}} />
+          <Icon
+            name={completed ? 'file' : 'spinner'}
+            loading={R.not(completed)}
+            size='large' style={{margin: 0}}
+          />
         </Label>
         <Card.Header>
           <Marquee text={name} />
