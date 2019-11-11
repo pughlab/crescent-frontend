@@ -7,6 +7,8 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../redux/hoc'
 
+import Marquee from 'react-marquee'
+
 const RunCard = withRedux(({
   // Redux actions
   actions: {setRun},
@@ -21,13 +23,13 @@ const RunCard = withRedux(({
     <Card link onClick={() => setRun(run)} >
       <Card.Content>
         <Card.Header as={Header}>
-          <Icon name='paper plane' circular />
+          <Icon name='file' circular />
           <Header.Content>
-            {name}
+            <Marquee text={name} />
           </Header.Content>
         </Card.Header>
       </Card.Content>
-      {/* <Card.Content extra content={<Label content='Run ID' detail={runID} />} /> */}
+      {/* <Card.Content extra content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} /> */}
       <Card.Content>
         {
           RA.isNotNil(params) &&
