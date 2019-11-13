@@ -46,8 +46,10 @@ const PipelineSidebar = withRedux(
     return (
       <Accordion styled>
       {
-        R.map(
-          ({step, label}) => <StepAccordion {...{step, label}} />,
+        R.addIndex(R.map)(
+          ({step, label}, index) => (
+            <StepAccordion key={index} {...{step, label}} />
+          ),
           STEPS
         )
       }

@@ -127,14 +127,14 @@ const NewProjectCard = withRedux(({
       trigger={
         <Card link color='black'>
           <Card.Content>
-            <Card.Header as={Header}>
+            <Card.Header as={Header} icon>
               <Icon name='add' circular />
               <Header.Content>
                 Create New Project
               </Header.Content>
             </Card.Header>
           </Card.Content>
-          <Card.Content extra>
+          <Card.Content extra textAlign='center'>
           Upload your own files to create a new project
           </Card.Content>
         </Card>

@@ -13,6 +13,7 @@ import {queryIsNotNil} from '../../../utils'
 
 const NewRunCard = withRedux(({
   app: {
+    user: {userID},
     project: {projectID}
   },
   actions: {
@@ -21,15 +22,15 @@ const NewRunCard = withRedux(({
 }) => {
   const [runName, setRunName] = useState('')
   const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
-    mutation CreateUnsubmittedRun($name: String!, $projectID: ID!) {
-      createUnsubmittedRun(name: $name, projectID: $projectID) {
+    mutation CreateUnsubmittedRun($name: String!, $projectID: ID!, $userID: ID!) {
+      createUnsubmittedRun(name: $name, projectID: $projectID, userID: $userID) {
         runID
         params
         name
       }
     }
   `, {
-    variables: {name: runName, projectID},
+    variables: {name: runName, projectID, userID},
     // Refetch runs on new created
     onCompleted: ({run}) => {setRun(run)}
   })
@@ -38,14 +39,14 @@ const NewRunCard = withRedux(({
       trigger={
         <Card link color='black'>
           <Card.Content>
-          <Card.Header as={Header}>
+          <Card.Header as={Header} icon>
             <Icon name='add' circular />
             <Header.Content>
               Create New Run
             </Header.Content>
           </Card.Header>
           </Card.Content>
-          <Card.Content extra content='Configure a pipeline and run on the cloud' />
+          <Card.Content extra textAlign='center' content='Configure a pipeline and run on the cloud' />
         </Card>
       }
     >
