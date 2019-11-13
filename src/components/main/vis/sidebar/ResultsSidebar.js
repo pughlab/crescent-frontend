@@ -20,30 +20,46 @@ const ResultsSidebar = withRedux(
       }
     }
   }) => {
+    const checkResponse = (resp) => {
+      if(!resp.ok){
+        console.log(resp)
+        return {plots: []}
+      }
+      return resp.json()
+    }
     useEffect(() => {
-      fetch(`/metadata/plots/${runID}`)
-      .then(resp => resp.json())
-      .then(({plots}) => {setAvailableResults(plots)})
+      R.ifElse(
+        R.isNil,
+        R.always(setAvailableResults([])),
+        R.always(
+          fetch(`/metadata/plots/${runID}`)
+          .then(resp => checkResponse(resp))
+          .then(({plots}) => {setAvailableResults(plots)}) 
+        )
+      )(runID)
     }, [runID])
     const isActiveResult = R.equals(activeResult)
     return (
       R.isNil(activeResult) ?
         <Step.Group vertical fluid size='small'>
         {
-          R.map(
-            ({result, label, description}) => (
-              <Step key={result}
-                onClick={() => setActiveResult(result)}
-              >
-                {
-                  isActiveResult(result)
-                  && <Icon name='eye' color='violet'/>
-                }
-                <Step.Content title={label} description={description} />
-              </Step>
-            ),
-            availableResults
-          )
+          R.ifElse(
+            R.isEmpty,
+            R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Please run the pipeline to view results"}/></Step>),
+            R.map(
+              ({result, label, description}) => (
+                <Step key={result}
+                  onClick={() => setActiveResult(result)}
+                >
+                  {
+                    isActiveResult(result)
+                    && <Icon name='eye' color='violet'/>
+                  }
+                  <Step.Content title={label} description={description} />
+                </Step>
+              )
+            )
+          )(availableResults)
         }
         </Step.Group>
       :

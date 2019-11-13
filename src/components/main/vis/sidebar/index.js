@@ -13,7 +13,6 @@ import PipelineSidebar from './PipelineSidebar'
 const SidebarComponent = withRedux(
   ({
     app: {
-      run: {runID},
       view: {sidebar: sidebarView}
     },
     actions: {toggleSidebar}

@@ -11,7 +11,7 @@ import ScatterComponent from './Scatter'
 const ResultsComponent = withRedux(
   ({
     app: {
-      run: {runID},
+      run,
       toggle: {
         vis: {results: {activeResult, availableResults, availabeGroups}}
       }
@@ -20,11 +20,13 @@ const ResultsComponent = withRedux(
       toggle: {setAvailableGroups}
     }
   }) => {
-    useEffect(() => {
-      fetch(`/metadata/groups/${runID}`)
-      .then(resp => resp.json())
-      .then(({groups}) => setAvailableGroups(groups))
-    }, [runID])
+    if(! R.isNil(run)){
+      useEffect(() => {
+        fetch(`/metadata/groups/${run['runID']}`)
+        .then(resp => resp.json())
+        .then(({groups}) => setAvailableGroups(groups))
+      }, [run])
+    }
     return (
       <>
       {
