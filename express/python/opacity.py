@@ -5,8 +5,11 @@ import os
 import json
 import csv
 import itertools
+import loompy
 
 import helper
+
+fileName = "pbmc.loom"
 
 def add_barcode(plotly_obj, barcode, label, opacities):
 	""" add a new barcode to the plotly object and add its label group if it doesn't exist yet """
@@ -59,24 +62,22 @@ def calculate_opacities(feature_row):
 
 def get_opacities(feature, runID):
 	""" parses the normalized count matrix to get an expression value for each barcode """
-	path = "/usr/src/app/results/{runID}/normalized/normalized_count_matrix.tsv".format(runID=runID) 
+	path = "/usr/src/app/results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/normalized/normalized_count_matrix.tsv".format(runID=runID) 
+		path = "../../results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName) 
 		if not os.path.isfile(path):
-			helper.return_error("normalized count matrix not found ("+path+")")	
+			helper.return_error("normalized count matrix not found ("+path+")")
 
-	with open(path) as norm_counts:
-		reader = csv.reader(norm_counts, delimiter="\t")
-		barcodes = next(reader)
-		for row in reader:
-			if str(row[0]) == str(feature):
-				feature_exp = [float(x) for x in row[1:]]
-				opacities = calculate_opacities(row[1:])
-				# dict where barcodes are keys, opacities are values
-				return dict(itertools.izip(barcodes, opacities)) 
-
-	helper.return_error("Feature Not Found")
+	with loompy.connect(path) as ds:
+		barcodes = ds.ca.CellID
+		features = ds.ra.Gene
+		feature_idx = next((i for i in range(len(features)) if features[i] == feature), -1)
+		if feature_idx < 0:
+			opacities = calculate_opacities(ds[feature_idx, :])
+			return dict(itertools.izip(barcodes, opacities))
+		else:
+			helper.return_error("Feature Not Found")
 	
 def get_opacity_data(group, feature, runID):
 	""" given a group and feature, returns the expression opacities of the feature of interest for each barcode """
