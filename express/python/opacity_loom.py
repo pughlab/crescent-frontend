@@ -73,7 +73,7 @@ def get_opacities(feature, runID):
 		barcodes = ds.ca.CellID
 		features = ds.ra.Gene
 		feature_idx = next((i for i in range(len(features)) if features[i] == feature), -1)
-		if feature_idx < 0:
+		if feature_idx >= 0:
 			opacities = calculate_opacities(ds[feature_idx, :])
 			return dict(zip(barcodes, opacities))
 		else:
