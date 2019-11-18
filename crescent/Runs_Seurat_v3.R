@@ -78,6 +78,7 @@ suppressPackageStartupMessages(library(data.table))   # to read tables quicker t
 suppressPackageStartupMessages(library(ggplot2))      # (CRAN) to generate QC violin plots
 suppressPackageStartupMessages(library(cowplot))      # (CRAN) to arrange QC violin plots and top legend
 suppressPackageStartupMessages(library(future))       # To run parallel processes
+suppressPackageStartupMessages(library(loomR))       # To output loom files
 ### library(staplr)     only if using option '-s y', note it needs pdftk
 ####################################
 
@@ -590,15 +591,15 @@ StopWatchEnd$NormalizeData  <- Sys.time()
 
 if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
 
-# output the normalized count matrix for violin plots
-writeLines("\n*** Outputting normalized count matrix as tsv ***\n")
+  # output the normalized count matrix for violin plots
+  writeLines("\n*** Outputting normalized count matrix as loom ***\n")
 
-normalized_count_matrix <- as.matrix(seurat.object.f@assays[["RNA"]]@data)
-write.table(normalized_count_matrix, file=paste(Tempdir,"/",PrefixOutfiles,".SEURAT_normalized_count_matrix.tsv", sep=""), sep="\t", row.names=TRUE, col.names=TRUE)
+  normalized_count_matrix <- as.matrix(seurat.object.f@assays[["RNA"]]@data)
+  loom_file <- paste(Tempdir,"/",PrefixOutfiles,".SEURAT_normalized_count_matrix.loom", sep="")
+  create(loom_file, normalized_count_matrix)
 } else {
   writeLines("\n*** Skipping normalized count matrix tsv output ***\n")
 }
-
 
 
 ####################################
