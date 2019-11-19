@@ -39,6 +39,8 @@ const MenuComponent = withRedux(({
   return (
     <Segment attached='top' style={{height: '9%'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
+      {
+        RA.isNotNil(project) &&
         <Button.Group fluid size='mini'>
           <Button icon basic inverted color='grey'
             onClick={() => toggleProjects()}
@@ -53,6 +55,7 @@ const MenuComponent = withRedux(({
             <Icon color='black' name='file' size='large'/>
           </Button>
         </Button.Group>
+      }
       </Grid.Column>
       <Grid.Column width={12} verticalAlign='middle' style={{padding: 0}}>
         {
