@@ -19,14 +19,9 @@ const ScatterComponent = withRedux(
     }
   },
   actions: {
-     toggle: {setAvailableGroups}
+     toggle: {}
   }
 }) => {
-  useEffect(() => {
-    fetch(`/metadata/groups/${runID}`)
-    .then(resp => resp.json())
-    .then(({groups}) => {setAvailableGroups(groups)})
-  }, [runID])
   
   return (
     <>

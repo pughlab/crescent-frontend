@@ -34,7 +34,7 @@ const initialState = {
         },
       },
       results: {
-        availableResults: [], // available plots: 'tsne', 'violin', etc.
+        availablePlots: [], // available plots: 'tsne', 'violin', etc.
         activeResult: null, 
         availableGroups: [], // ways to label the data (i.e. cluster)
         activeGroup: null,
@@ -196,32 +196,19 @@ const VisualizationReducer = {
   'SET_AVAILABLE_RESULTS': (state, payload) => {
     const {plots} = payload
     const setAvailableResults = R.set(
-      R.lensPath(['toggle','vis', 'results', 'availableResults']),
+      R.lensPath(['toggle','vis', 'results', 'availablePlots']),
       plots
     )
     return setAvailableResults(state)
   },
-  'SET_AVAILABLE_GROUPS': (state, payload) => {
-    const {groups} = payload
-    const setAvailableGroups = R.set(
-      R.lensPath(['toggle','vis', 'results', 'availableGroups']),
-      groups 
-    )
-    return setAvailableGroups(state)
-  },
-  'SET_ACTIVE_GROUP': (state, payload) => {
-    const {group} = payload
-    const setActiveGroup = R.set(
-      R.lensPath(['toggle','vis', 'results', 'activeGroup']),
-      group
-    )
-    return setActiveGroup(state)
-  },
-
   'REQUEST_AVAILABLE_PLOTS': (state, payload) => state,
   'RECEIVE_AVAILABLE_PLOTS': (state, payload) => {
-    console.log(payload)
-    return state
+    const {plots} = payload
+    console.log(plots)
+    return R.set(
+      R.lensPath(['toggle','vis','results','availablePlots']),
+      plots,
+     )(state)
   }
 }
 

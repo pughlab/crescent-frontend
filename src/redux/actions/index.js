@@ -83,13 +83,6 @@ const setActiveGroup = ({group}) => ({
   }
 })
 
-const setAvailableGroups = ({groups}) => ({
-  type: 'SET_AVAILABLE_GROUPS',
-  payload: {
-    groups
-  }
-})
-
 const toggle = {
   project: {setActiveProjectKind},
   runs: {},
@@ -101,7 +94,6 @@ const toggle = {
     results: {
       setAvailableResults,
       setActiveResult,
-      setAvailableGroups,
       setActiveGroup
     }
   }
@@ -117,7 +109,6 @@ export default {
   toggleRuns,
   toggleSidebar,
   setParameters,
-  setAvailableGroups,
 
   toggle,
   thunks: reduxThunks

@@ -11,7 +11,7 @@ const ResultsSidebar = withRedux(
   ({
     app: {
       run: {runID},
-      toggle: {vis: {results: {activeResult, availableResults}}}
+      toggle: {vis: {results: {activeResult, availablePlots}}}
     },
     actions: {
       toggle: {
@@ -32,7 +32,7 @@ const ResultsSidebar = withRedux(
     }
     useEffect(() => {
       requestAvailablePlots(runID)
-    }, [runID])
+    }, [])
     // useEffect(() => {
     //   R.ifElse(
     //     R.isNil,
@@ -52,9 +52,9 @@ const ResultsSidebar = withRedux(
           R.ifElse(
             R.isEmpty,
             R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Please run the pipeline to view results"}/></Step>),
-            R.map(
-              ({result, label, description}) => (
-                <Step key={result}
+            R.addIndex(R.map)(
+              ({result, label, description}, index) => (
+                <Step key={index}
                   onClick={() => setActiveResult(result)}
                 >
                   {
@@ -65,7 +65,7 @@ const ResultsSidebar = withRedux(
                 </Step>
               )
             )
-          )(availableResults)
+          )(availablePlots)
         }
         </Step.Group>
       :
@@ -76,7 +76,7 @@ const ResultsSidebar = withRedux(
               R.compose(
                 R.prop('label'),
                 R.find(R.propEq('result', activeResult))
-              )(availableResults)
+              )(availablePlots)
             }
             </Button.Content>
             <Button.Content hidden>

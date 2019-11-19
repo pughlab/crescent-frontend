@@ -19,11 +19,13 @@ const requestAvailabelPlots = (runID) => (dispatch, getState) => {
   // )
 
   return fetch(`/metadata/plots/${runID}`)
+    .then((resp) => resp.json())
     .then(
-      data => dispatch({
+      data => {console.log(data)
+        dispatch({
         type: 'RECEIVE_AVAILABLE_PLOTS',
-        payload: data.json()
-      })
+        payload: data
+      })}
     )
 
 }

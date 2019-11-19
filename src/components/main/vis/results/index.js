@@ -13,20 +13,14 @@ const ResultsComponent = withRedux(
     app: {
       run,
       toggle: {
-        vis: {results: {activeResult, availableResults, availabeGroups}}
+        vis: {results: {activeResult, availabeGroups}}
       }
     },
     actions: {
-      toggle: {setAvailableGroups}
+      toggle: {}
     }
   }) => {
-    if(! R.isNil(run)){
-      useEffect(() => {
-        fetch(`/metadata/groups/${run['runID']}`)
-        .then(resp => resp.json())
-        .then(({groups}) => setAvailableGroups(groups))
-      }, [run])
-    }
+
     return (
       <>
       {

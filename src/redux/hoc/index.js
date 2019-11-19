@@ -23,9 +23,6 @@ export default connect(
         setActiveProjectKind: projectKind => dispatch(Actions.toggle.project.setActiveProjectKind({projectKind})),
         setActivePipelineStep: step => dispatch(Actions.toggle.vis.pipeline.setActivePipelineStep({step})),
         setActiveResult: result => dispatch(Actions.toggle.vis.results.setActiveResult({result})),
-        setAvailableResults: plots => dispatch(Actions.toggle.vis.results.setAvailableResults({plots})),
-        setAvailableGroups: groups => dispatch(Actions.toggle.vis.results.setAvailableGroups({groups})),
-        setActiveGroup: group => dispatch(Actions.toggle.vis.results.setActiveGroup({group}))
       },
 
       thunks: {
