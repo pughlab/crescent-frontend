@@ -17,8 +17,11 @@ const ResultsSidebar = withRedux(
       toggle: {
         setAvailableResults,
         setActiveResult
+      },
+      thunks: {
+        requestAvailablePlots
       }
-    }
+    },
   }) => {
     const checkResponse = (resp) => {
       if(!resp.ok){
@@ -28,16 +31,19 @@ const ResultsSidebar = withRedux(
       return resp.json()
     }
     useEffect(() => {
-      R.ifElse(
-        R.isNil,
-        R.always(setAvailableResults([])),
-        R.always(
-          fetch(`/metadata/plots/${runID}`)
-          .then(resp => checkResponse(resp))
-          .then(({plots}) => {setAvailableResults(plots)}) 
-        )
-      )(runID)
+      requestAvailablePlots(runID)
     }, [runID])
+    // useEffect(() => {
+    //   R.ifElse(
+    //     R.isNil,
+    //     R.always(setAvailableResults([])),
+    //     R.always(
+    //       fetch(`/metadata/plots/${runID}`)
+    //       .then(resp => checkResponse(resp))
+    //       .then(({plots}) => {setAvailableResults(plots)}) 
+    //     )
+    //   )(runID)
+    // }, [runID])
     const isActiveResult = R.equals(activeResult)
     return (
       R.isNil(activeResult) ?

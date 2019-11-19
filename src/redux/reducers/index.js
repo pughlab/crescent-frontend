@@ -217,14 +217,20 @@ const VisualizationReducer = {
     )
     return setActiveGroup(state)
   },
+
+  'REQUEST_AVAILABLE_PLOTS': (state, payload) => state,
+  'RECEIVE_AVAILABLE_PLOTS': (state, payload) => {
+    console.log(payload)
+    return state
+  }
 }
 
 const app = createReducer(initialState, {
-  ...{LoginReducer},
-  ...{GQLReducer},
-  ...{MainViewReducer},
-  ...{CWLReducer},
-  ...{VisualizationReducer},
+  ...LoginReducer,
+  ...GQLReducer,
+  ...MainViewReducer,
+  ...CWLReducer,
+  ...VisualizationReducer,
 })
 
 // const app = (state = initialState, action) => {

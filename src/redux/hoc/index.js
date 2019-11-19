@@ -26,6 +26,10 @@ export default connect(
         setAvailableResults: plots => dispatch(Actions.toggle.vis.results.setAvailableResults({plots})),
         setAvailableGroups: groups => dispatch(Actions.toggle.vis.results.setAvailableGroups({groups})),
         setActiveGroup: group => dispatch(Actions.toggle.vis.results.setActiveGroup({group}))
+      },
+
+      thunks: {
+        requestAvailablePlots: runID => dispatch(Actions.thunks.requestAvailabelPlots(runID))
       }
     }
   })

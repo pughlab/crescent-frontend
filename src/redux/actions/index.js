@@ -1,3 +1,5 @@
+import reduxThunks from './thunks'
+
 const logout = () => ({
   type: 'LOGOUT'
 })
@@ -117,5 +119,6 @@ export default {
   setParameters,
   setAvailableGroups,
 
-  toggle
+  toggle,
+  thunks: reduxThunks
 }
