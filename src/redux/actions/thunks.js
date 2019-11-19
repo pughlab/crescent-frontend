@@ -1,5 +1,5 @@
 
-const requestAvailabelPlots = (runID) => (dispatch, getState) => {
+const requestAvailablePlots = (runID) => (dispatch, getState) => {
   dispatch({
     type: 'REQUEST_AVAILABLE_PLOTS'
   })
@@ -32,5 +32,5 @@ const requestAvailabelPlots = (runID) => (dispatch, getState) => {
 
 
 export default {
-  requestAvailabelPlots
+  requestAvailablePlots
 }

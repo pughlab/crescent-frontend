@@ -204,10 +204,12 @@ const VisualizationReducer = {
   'REQUEST_AVAILABLE_PLOTS': (state, payload) => state,
   'RECEIVE_AVAILABLE_PLOTS': (state, payload) => {
     const {plots} = payload
-    console.log(plots)
     return R.set(
       R.lensPath(['toggle','vis','results','availablePlots']),
-      plots,
+      R.map(
+        R.mergeRight({data: null, selectedGroup: null, selectedFeature: null}),
+        plots
+      ),
      )(state)
   }
 }
