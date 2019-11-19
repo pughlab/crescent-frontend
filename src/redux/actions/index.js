@@ -68,6 +68,19 @@ const setActiveResult = ({result}) => ({
   }
 })
 
+const setAvailableResults = ({plots}) => ({
+  type: 'SET_AVAILABLE_RESULTS',
+  payload: {
+    plots
+  }
+})
+const setActiveGroup = ({group}) => ({
+  type: 'SET_ACTIVE_GROUP',
+  payload: {
+    group
+  }
+})
+
 const setAvailableGroups = ({groups}) => ({
   type: 'SET_AVAILABLE_GROUPS',
   payload: {
@@ -84,7 +97,10 @@ const toggle = {
       setActivePipelineStep
     },
     results: {
-      setActiveResult
+      setAvailableResults,
+      setActiveResult,
+      setAvailableGroups,
+      setActiveGroup
     }
   }
 }

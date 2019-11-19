@@ -33,11 +33,11 @@ const initialState = {
         },
       },
       results: {
-        activeResult: null, // 'tsne', 'violin', 'umap'
-        availableResults: [],
-        // Available ways to label data (i.e. cluster)
-        groups: [],
-        selectedGroup: null,
+        availableResults: [], // available plots: 'tsne', 'violin', etc.
+        activeResult: null, 
+        availableGroups: [], // ways to label the data (i.e. cluster)
+        activeGroup: null,
+        selectedFeature: null, // gene of interest
         // Gene of interest
         selectedFeature: null,
         // Data structures for Plotly
@@ -146,13 +146,27 @@ const app = (state = initialState, action) => {
       )(state)
     
     // visualization stuff
+    case 'SET_AVAILABLE_RESULTS':
+      const {plots} = payload
+      const setAvailableResults = R.set(
+        R.lensPath(['toggle','vis', 'results', 'availableResults']),
+        plots
+      )
+      return setAvailableResults(state)
     case 'SET_AVAILABLE_GROUPS':
       const {groups} = payload
       const setAvailableGroups = R.set(
-        R.lensProp('groups'),
+        R.lensPath(['toggle','vis', 'results', 'availableGroups']),
         groups 
       )
-      return setAvailableGroups(state) 
+      return setAvailableGroups(state)
+    case 'SET_ACTIVE_GROUP':
+      const {group} = payload
+      const setActiveGroup = R.set(
+        R.lensPath(['toggle','vis', 'results', 'activeGroup']),
+        group
+      )
+      return setActiveGroup(state)
     
     default:
       return state

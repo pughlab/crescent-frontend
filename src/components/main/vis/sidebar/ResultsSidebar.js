@@ -7,36 +7,59 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 
-import RESULTS from '../results/RESULTS'
-
 const ResultsSidebar = withRedux(
   ({
     app: {
+      run: {runID},
       toggle: {vis: {results: {activeResult, availableResults}}}
     },
     actions: {
-      toggle: {setActiveResult}
+      toggle: {
+        setAvailableResults,
+        setActiveResult
+      }
     }
   }) => {
+    const checkResponse = (resp) => {
+      if(!resp.ok){
+        console.log(resp)
+        return {plots: []}
+      }
+      return resp.json()
+    }
+    useEffect(() => {
+      R.ifElse(
+        R.isNil,
+        R.always(setAvailableResults([])),
+        R.always(
+          fetch(`/metadata/plots/${runID}`)
+          .then(resp => checkResponse(resp))
+          .then(({plots}) => {setAvailableResults(plots)}) 
+        )
+      )(runID)
+    }, [runID])
     const isActiveResult = R.equals(activeResult)
     return (
       R.isNil(activeResult) ?
         <Step.Group vertical fluid size='small'>
         {
-          R.map(
-            ({result, label, description}) => (
-              <Step key={result}
-                onClick={() => setActiveResult(result)}
-              >
-                {
-                  isActiveResult(result)
-                  && <Icon name='eye' color='violet'/>
-                }
-                <Step.Content title={label} description={description} />
-              </Step>
-            ),
-            RESULTS
-          )
+          R.ifElse(
+            R.isEmpty,
+            R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Please run the pipeline to view results"}/></Step>),
+            R.map(
+              ({result, label, description}) => (
+                <Step key={result}
+                  onClick={() => setActiveResult(result)}
+                >
+                  {
+                    isActiveResult(result)
+                    && <Icon name='eye' color='violet'/>
+                  }
+                  <Step.Content title={label} description={description} />
+                </Step>
+              )
+            )
+          )(availableResults)
         }
         </Step.Group>
       :
@@ -47,7 +70,7 @@ const ResultsSidebar = withRedux(
               R.compose(
                 R.prop('label'),
                 R.find(R.propEq('result', activeResult))
-              )(RESULTS)
+              )(availableResults)
             }
             </Button.Content>
             <Button.Content hidden>

@@ -19,6 +19,7 @@ const NewRunCard = withRedux(({
   actions: {
     setRun
   },
+  refetch
 }) => {
   const [runName, setRunName] = useState('')
   const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
@@ -32,7 +33,9 @@ const NewRunCard = withRedux(({
   `, {
     variables: {name: runName, projectID, userID},
     // Refetch runs on new created
-    onCompleted: ({run}) => {setRun(run)}
+    onCompleted: data => refetch()
+    // doing below causes run to be set to null
+    //onCompleted: ({run}) => {setRun(run)}
   })
   return (
     <Modal

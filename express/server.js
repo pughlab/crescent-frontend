@@ -294,8 +294,15 @@ connection.onopen = (session) => {
           python_process = call_python('cellcount.py', {runID});
           python_process.then((result) => {res.send(result)})
           break;
+        case 'plots':
+          python_process = call_python('get_plots.py', {runID});
+          python_process.then((result) => {
+            if(! R.isNil(R.prop('error', JSON.parse(result)))){res.status(404)}
+            res.send(result)
+          })
+          break;
         default:
-          res.status(500).send("ERROR: invalid metadata endpoint")
+          res.status(404).send("ERROR: invalid metadata endpoint")
       }
     }
   );
