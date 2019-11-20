@@ -34,16 +34,10 @@ const initialState = {
         },
       },
       results: {
-        availablePlots: [], // available plots: 'tsne', 'violin', etc.
-        activeResult: null, 
-        availableGroups: [], // ways to label the data (i.e. cluster)
-        activeGroup: null,
-        selectedFeature: null, // gene of interest
-        // Gene of interest
-        selectedFeature: null,
-        // Data structures for Plotly
-        scatterPlots: [], // to define
-        violin: null,
+        activeResult: null, // selected plot: 'tsne', 'umap', 'violin', etc.
+        availableGroups: [], // ways to label the data (i.e. PatientID)
+        availablePlots: [], // will store objects for each of the available plots
+        isLoading: false
       }
     }
   }
@@ -193,7 +187,7 @@ const CWLReducer = {
 
 const VisualizationReducer = {
     // visualization stuff
-  'SET_AVAILABLE_RESULTS': (state, payload) => {
+  'SET_AVAILABLE_PLOTS': (state, payload) => {
     const {plots} = payload
     const setAvailableResults = R.set(
       R.lensPath(['toggle','vis', 'results', 'availablePlots']),
@@ -201,13 +195,19 @@ const VisualizationReducer = {
     )
     return setAvailableResults(state)
   },
-  'REQUEST_AVAILABLE_PLOTS': (state, payload) => state,
+  'REQUEST_AVAILABLE_PLOTS': (state, payload) => {
+    const {loading} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','isLoading']),
+      loading
+    )(state)
+  },
   'RECEIVE_AVAILABLE_PLOTS': (state, payload) => {
     const {plots} = payload
     return R.set(
       R.lensPath(['toggle','vis','results','availablePlots']),
       R.map(
-        R.mergeRight({data: null, selectedGroup: null, selectedFeature: null}),
+        R.mergeRight({data: null, selectedGroup: null, selectedFeature: null, isLoading: false}),
         plots
       ),
      )(state)

@@ -13,7 +13,7 @@ const ResultsComponent = withRedux(
     app: {
       run,
       toggle: {
-        vis: {results: {activeResult, availabeGroups}}
+        vis: {results: {activeResult}}
       }
     },
     actions: {

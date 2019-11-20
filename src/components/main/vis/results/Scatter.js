@@ -15,7 +15,7 @@ const ScatterComponent = withRedux(
   app: {
     run: { runID },
     toggle: {
-      vis: {results: {activeResult, activeGroup}}
+      vis: {results: {activeResult, availablePlots}}
     }
   },
   actions: {

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Icon, Divider, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
+import { Segment, Button, Icon, Divider, Step } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -15,7 +15,6 @@ const ResultsSidebar = withRedux(
     },
     actions: {
       toggle: {
-        setAvailableResults,
         setActiveResult
       },
       thunks: {
@@ -23,27 +22,10 @@ const ResultsSidebar = withRedux(
       }
     },
   }) => {
-    const checkResponse = (resp) => {
-      if(!resp.ok){
-        console.log(resp)
-        return {plots: []}
-      }
-      return resp.json()
-    }
     useEffect(() => {
       requestAvailablePlots(runID)
     }, [])
-    // useEffect(() => {
-    //   R.ifElse(
-    //     R.isNil,
-    //     R.always(setAvailableResults([])),
-    //     R.always(
-    //       fetch(`/metadata/plots/${runID}`)
-    //       .then(resp => checkResponse(resp))
-    //       .then(({plots}) => {setAvailableResults(plots)}) 
-    //     )
-    //   )(runID)
-    // }, [runID])
+
     const isActiveResult = R.equals(activeResult)
     return (
       R.isNil(activeResult) ?
