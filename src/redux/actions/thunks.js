@@ -1,12 +1,8 @@
 
 
-// storing this here as it may be useful for error handling
 const checkResponse = (resp) => {
-  if(!resp.ok){
-    console.log(resp)
-    return {plots: []}
-  }
-  return resp.json()
+  if(!resp.ok){throw Error(resp.statusText);}
+  return resp
 }
 
 const requestAvailablePlots = (runID) => (dispatch, getState) => {
@@ -16,6 +12,7 @@ const requestAvailablePlots = (runID) => (dispatch, getState) => {
   })
 
   return fetch(`/metadata/plots/${runID}`)
+    .then((resp) => checkResponse(resp))
     .then((resp) => resp.json())
     .then(
       data => {
@@ -24,7 +21,16 @@ const requestAvailablePlots = (runID) => (dispatch, getState) => {
         payload: data
       })}
     )
-    .then(
+    .catch(err => {
+      console.log(err);
+      // clear stale attributes on error
+      dispatch({
+        type: 'RECEIVE_AVAILABLE_PLOTS',
+        payload: {plots: []}
+      })
+    })
+    .finally(
+      // regardless of failure/success, stop loading
       dispatch({
         type: 'REQUEST_AVAILABLE_PLOTS',
         payload: {"loading": false}

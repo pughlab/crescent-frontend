@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 
 import * as R from 'ramda'
 
-import {Grid, Menu, Segment, Button, Header, Icon, Divider} from 'semantic-ui-react'
+import {Segment, Header, Icon} from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
