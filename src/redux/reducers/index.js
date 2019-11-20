@@ -186,15 +186,7 @@ const CWLReducer = {
 }
 
 const VisualizationReducer = {
-    // visualization stuff
-  'SET_AVAILABLE_PLOTS': (state, payload) => {
-    const {plots} = payload
-    const setAvailableResults = R.set(
-      R.lensPath(['toggle','vis', 'results', 'availablePlots']),
-      plots
-    )
-    return setAvailableResults(state)
-  },
+  // visualization stuff
   'REQUEST_AVAILABLE_PLOTS': (state, payload) => {
     const {loading} = payload
     return R.set(
@@ -211,6 +203,20 @@ const VisualizationReducer = {
         plots
       ),
      )(state)
+  },
+  'REQUEST_AVAILABLE_GROUPS': (state, payload) => {
+    const {loading} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','isLoading']),
+      loading
+    )(state)
+  },
+  'RECEIVE_AVAILABLE_GROUPS': (state, payload) => {
+    const {groups} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','availableGroups']),
+      groups
+    )(state)
   }
 }
 

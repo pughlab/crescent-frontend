@@ -26,7 +26,8 @@ export default connect(
       },
 
       thunks: {
-        requestAvailablePlots: runID => dispatch(Actions.thunks.requestAvailablePlots(runID))
+        requestAvailablePlots: runID => dispatch(Actions.thunks.requestAvailablePlots(runID)),
+        requestAvailableGroups: runID => dispatch(Actions.thunks.requestAvailableGroups(runID))
       }
     }
   })

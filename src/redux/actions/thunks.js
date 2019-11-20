@@ -5,6 +5,37 @@ const checkResponse = (resp) => {
   return resp
 }
 
+const requestAvailableGroups = (runID) => (dispatch) => {
+  dispatch({
+    type: 'REQUEST_AVAILABLE_GROUPS',
+    payload: {"loading": true}
+  })
+
+  return fetch(`/metadata/groups/${runID}`)
+    .then((resp) => checkResponse(resp))
+    .then((resp) => resp.json())
+    .then(
+      data => {
+        dispatch({
+          type: 'RECEIVE_AVAILABLE_GROUPS',
+          payload: data
+      })}
+    )
+    .catch(err => {
+      console.log(err);
+      dispatch({
+        type: 'RECEIVE_AVAILABLE_GROUPS',
+        payload: {groups: []}
+      })
+    })
+    .finally(
+      dispatch({
+        type: 'REQUEST_AVAILABLE_GROUPS',
+        payload: {"loading": false}
+      })
+    )
+}
+
 const requestAvailablePlots = (runID) => (dispatch, getState) => {
   dispatch({
     type: 'REQUEST_AVAILABLE_PLOTS',
@@ -53,5 +84,6 @@ const requestAvailablePlots = (runID) => (dispatch, getState) => {
 }
 
 export default {
-  requestAvailablePlots
+  requestAvailablePlots,
+  requestAvailableGroups
 }

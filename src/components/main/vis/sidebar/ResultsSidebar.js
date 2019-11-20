@@ -18,12 +18,14 @@ const ResultsSidebar = withRedux(
         setActiveResult
       },
       thunks: {
-        requestAvailablePlots
+        requestAvailablePlots,
+        requestAvailableGroups
       }
     },
   }) => {
     useEffect(() => {
       requestAvailablePlots(runID)
+      requestAvailableGroups(runID)
     }, [])
 
     const isActiveResult = R.equals(activeResult)
