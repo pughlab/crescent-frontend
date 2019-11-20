@@ -4,14 +4,14 @@ FROM ubuntu:19.04
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install -y \
-            python \
-            python-pip \ 
+#            python3 \
+#            python3-pip \ 
             npm
 
 # Install toil version-specific dependency
-RUN pip install ruamel.yaml==0.15.77
-RUN pip install toil[cwl]
-RUN cp -r /usr/local/lib/python2.7/dist-packages/backports/ssl_match_hostname/ /usr/lib/python2.7/dist-packages/backports
+#RUN pip install ruamel.yaml==0.15.77
+#RUN pip install toil[cwl]
+#RUN cp -r /usr/local/lib/python2.7/dist-packages/backports/ssl_match_hostname/ /usr/lib/python2.7/dist-packages/backports
 
 RUN apt-get install -y wget
 
@@ -33,6 +33,17 @@ RUN curl -sL https://deb.nodesource.com/setup_12.x | sudo sh -
 RUN apt-get update && \
     apt-get install -y \
             nodejs
+
+RUN apt-get update && \
+    apt-get install -y \
+            python3 \
+            python3-pip  
+
+# Install toil version-specific dependency
+#RUN pip install ruamel.yaml==0.15.77
+RUN pip3 install toil[cwl]
+RUN pip3 install loompy
+#RUN cp -r /usr/local/lib/python2.7/dist-packages/backports/ssl_match_hostname/ /usr/lib/python2.7/dist-packages/backports
 
 # Create a directory to be mounted
 RUN mkdir -p /usr/src/app
