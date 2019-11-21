@@ -30,7 +30,7 @@ def main():
 		sys.exit()
 
 	cellcount = read_cellcount(runID)
-	print({"cellcount": cellcount})
+	print(json.dumps({"cellcount": cellcount}))
 	sys.stdout.flush()
 
 if __name__ == "__main__":

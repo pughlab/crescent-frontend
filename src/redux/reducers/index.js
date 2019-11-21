@@ -217,6 +217,25 @@ const VisualizationReducer = {
       R.lensPath(['toggle','vis','results','availableGroups']),
       groups
     )(state)
+  },
+  'INITIALIZE_RESULTS': (state, payload) => {
+    const {plots, groups} = payload
+    const firstGroup = R.head(groups)
+    return R.compose(
+      // Set available plots with girst group for each
+      R.set(
+        R.lensPath(['toggle','vis','results','availablePlots']),
+        R.map(
+          R.mergeRight({data: null, selectedGroup: firstGroup, selectedFeature: null, isLoading: false}),
+          plots
+        ),
+      ),
+      // Set available groups
+      R.set(
+        R.lensPath(['toggle','vis','results','availableGroups']),
+        groups
+      )
+    )(state)
   }
 }
 

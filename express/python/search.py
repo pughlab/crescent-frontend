@@ -109,7 +109,7 @@ def new_violin_group(label, y_coord):
 		"type": "violin",
 		"spanmode": "hard",
 		"fillcolor": "",
-		"line": {"color": colours[colour_counter]},
+		"line": {"color": colours[colour_counter%len(colours)]},
 		"points": "jitter",
 		"jitter": 0.85,
 		"width": 0.75,
@@ -187,7 +187,7 @@ def main():
 		helper.return_error("unable to read arguments: "+str(e))
 
 	result = get_violin_data(group, feature, runID)
-	print(result)
+	print(json.dumps(result))
 	sys.stdout.flush()
 
 if __name__ == "__main__":

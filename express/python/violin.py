@@ -81,7 +81,7 @@ def get_expression(feature, runID):
 			if str(row[0]) == str(feature):
 				feature_exp = [float(x) for x in row[1:]]
 				# dict where barcodes are keys, opacities are values
-				return dict(itertools.izip(barcodes, feature_exp)) 
+				return dict(zip(barcodes, feature_exp)) 
 
 	helper.return_error("Feature Not Found")
 
@@ -109,7 +109,7 @@ def new_violin_group(label, y_coord):
 		"type": "violin",
 		"spanmode": "hard",
 		"fillcolor": "",
-		"line": {"color": colours[colour_counter]},
+		"line": {"color": colours[colour_counter%len(colours)] },
 		"points": "jitter",
 		"jitter": 0.85,
 		"width": 0.75,
@@ -187,7 +187,7 @@ def main():
 		helper.return_error("unable to read arguments: "+str(e))
 
 	result = get_violin_data(group, feature, runID)
-	print(result)
+	print(json.dumps(result))
 	sys.stdout.flush()
 
 if __name__ == "__main__":

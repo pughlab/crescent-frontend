@@ -43,6 +43,7 @@ RUN apt-get update && \
 #RUN pip install ruamel.yaml==0.15.77
 RUN pip3 install toil[cwl]
 RUN pip3 install loompy
+RUN pip3 install numpy==1.17.4
 #RUN cp -r /usr/local/lib/python2.7/dist-packages/backports/ssl_match_hostname/ /usr/lib/python2.7/dist-packages/backports
 
 # Create a directory to be mounted

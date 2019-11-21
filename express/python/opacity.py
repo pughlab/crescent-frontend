@@ -1,4 +1,4 @@
-#!/bin/python3.6
+#!/bin/python3
 
 import sys
 import os
@@ -93,7 +93,7 @@ def main():
 		helper.return_error("unable to read arguments: "+str(e))
 
 	result = get_opacity_data(group, feature, runID)
-	print(result)
+	print(json.dumps(result))
 	sys.stdout.flush()
 
 if __name__ == "__main__":

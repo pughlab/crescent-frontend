@@ -88,7 +88,7 @@ def main():
 		return_error("unable to read arguments: "+str(e))
 
 	result = get_plot_data(vis, group, runID)
-	print(result)
+	print(json.dumps(result))
 	sys.stdout.flush()
 
 if __name__ == "__main__":

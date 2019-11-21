@@ -263,7 +263,7 @@ connection.onopen = (session) => {
 
   // returns promise that resolves on python program exit 
   function call_python(program, params){
-    const process = spawn('python', [`/usr/src/app/express/python/${program}`, JSON.stringify(params)]);
+    const process = spawn('python3', [`/usr/src/app/express/python/${program}`, JSON.stringify(params)]);
     let collected_chunks = '';
     return new Promise((resolve) => {
       // collect chunks until program completes

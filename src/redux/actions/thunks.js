@@ -1,4 +1,4 @@
-
+const R = require('ramda')
 
 const checkResponse = (resp) => {
   if(!resp.ok){throw Error(resp.statusText);}
@@ -12,7 +12,7 @@ const requestAvailableGroups = (runID) => (dispatch) => {
   })
 
   return fetch(`/metadata/groups/${runID}`)
-    .then((resp) => checkResponse(resp))
+    .then(checkResponse)
     .then((resp) => resp.json())
     .then(
       data => {
@@ -29,7 +29,7 @@ const requestAvailableGroups = (runID) => (dispatch) => {
       })
     })
     .finally(
-      dispatch({
+      () => dispatch({
         type: 'REQUEST_AVAILABLE_GROUPS',
         payload: {"loading": false}
       })
@@ -62,7 +62,7 @@ const requestAvailablePlots = (runID) => (dispatch, getState) => {
     })
     .finally(
       // regardless of failure/success, stop loading
-      dispatch({
+      () => dispatch({
         type: 'REQUEST_AVAILABLE_PLOTS',
         payload: {"loading": false}
       })
@@ -83,7 +83,52 @@ const requestAvailablePlots = (runID) => (dispatch, getState) => {
   // ) 
 }
 
+const initializeResults = runID => (dispatch, getState) => {
+  dispatch({
+    type: 'REQUEST_AVAILABLE_PLOTS',
+    payload: {"loading": true}
+  })
+  dispatch({
+    type: 'REQUEST_AVAILABLE_GROUPS',
+    payload: {"loading": true}
+  })
+  return Promise.all([
+    fetch(`/metadata/plots/${runID}`),
+    fetch(`/metadata/groups/${runID}`) 
+  ]).then(
+    R.map(checkResponse)
+   ).then(
+    ([plotsResp, groupsResp]) => {
+      return Promise.all([
+        plotsResp.json(), groupsResp.json()
+      ])
+    }
+  ).then(
+    ([{plots}, {groups}]) => {
+      console.log(plots, groups)
+      dispatch({
+        type: 'INITIALIZE_RESULTS',
+        payload: {plots, groups}
+      })
+      return 
+    }
+  ).then(
+    //fetch data for plots here and dispatch appropriately
+  ).catch(
+    error => {
+    // dispatch({
+    //   type: ''
+    // })
+    }
+  ).finally(
+    () => {}
+  )
+    
+
+}
+
 export default {
+  initializeResults,
   requestAvailablePlots,
   requestAvailableGroups
 }
