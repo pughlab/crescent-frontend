@@ -18,9 +18,7 @@ const ResultsSidebar = withRedux(
         setActiveResult
       },
       thunks: {
-        initializeResults,
-        requestAvailablePlots,
-        requestAvailableGroups
+        initializeResults
       }
     },
   }) => {

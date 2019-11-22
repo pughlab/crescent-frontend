@@ -27,8 +27,7 @@ export default connect(
 
       thunks: {
         initializeResults: runID => dispatch(Actions.thunks.initializeResults(runID)),
-        requestAvailablePlots: runID => dispatch(Actions.thunks.requestAvailablePlots(runID)),
-        requestAvailableGroups: runID => dispatch(Actions.thunks.requestAvailableGroups(runID))
+        toggleLoadingResults: loading => dispatch(Actions.thunks.initializeResults(loading))
       }
     }
   })
