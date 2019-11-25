@@ -17,6 +17,7 @@ import rootReducer from './redux/reducers'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { PersistGate } from 'redux-persist/integration/react'
+require('dotenv').config()
 
 const persistConfig = {
   key: 'root',
@@ -33,13 +34,14 @@ const store = createStore(
 )
 const persistor = persistStore(store)
 
-const client = new ApolloClient({
-  uri: 'http://127.0.0.1:5000',
-})
-// ENV CHANGE HERE (comment one out)
-// const connection = new autobahn.Connection({url: 'ws://205.189.56.181:4000/', realm: 'realm1'})
-const connection = new autobahn.Connection({url: 'ws://127.0.0.1:4000/', realm: 'realm1'})
 
+const portal_ip = process.env.REACT_APP_PORTAL_IP
+
+const client = new ApolloClient({
+  uri: `http://${portal_ip}:5000`,
+})
+
+const connection = new autobahn.Connection({url: `ws://${portal_ip}:4000/`, realm: 'realm1'})
 
 
 connection.onopen = function (session) {

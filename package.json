@@ -11,6 +11,7 @@
     "axios": "^0.19.0",
     "concurrently": "^4.1.1",
     "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
     "express": "^4.16.4",
     "faker": "^4.1.0",
     "firstline": "^2.0.2",
