@@ -18,18 +18,20 @@ const ResultsSidebar = withRedux(
         setActiveResult
       },
       thunks: {
-        initializeResults
+        initializeResults,
+        initializeScatter
       }
     },
   }) => {
     useEffect(() => {
       initializeResults(runID)
-      // requestAvailablePlots(runID)
-      // requestAvailableGroups(runID)
     }, [])
 
     useEffect(() => {
-      // or do inside initialize_results thunk      
+      if(! R.isNil(activeResult)){
+        //can't get available groups here since it's out of date
+        initializeScatter(runID);
+      }
     }, [activeResult])
 
     const isActiveResult = R.equals(activeResult)
@@ -53,7 +55,7 @@ const ResultsSidebar = withRedux(
                 </Step>
               )
             )
-          )(availablePlots)
+          )(R.values(availablePlots))
         }
         </Step.Group>
       :
@@ -64,7 +66,7 @@ const ResultsSidebar = withRedux(
               R.compose(
                 R.prop('label'),
                 R.find(R.propEq('result', activeResult))
-              )(availablePlots)
+              )(R.values(availablePlots))
             }
             </Button.Content>
             <Button.Content hidden>

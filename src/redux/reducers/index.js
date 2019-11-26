@@ -212,7 +212,22 @@ const VisualizationReducer = {
         groups
       )
     )(state)
+  },
+  'TOGGLE_LOADING_PLOT': (state, payload) => {
+    const {loading, plot} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','availablePlots',plot,'isLoading']),
+      loading
+    )(state)
+  },
+  'INITIALIZE_PLOT_DATA': (state, payload) => {
+    const {data, plot} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','availablePlots',plot,'data']),
+      data
+    )(state)
   }
+
 }
 
 const app = createReducer(initialState, {

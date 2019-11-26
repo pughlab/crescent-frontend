@@ -27,6 +27,7 @@ export default connect(
 
       thunks: {
         initializeResults: runID => dispatch(Actions.thunks.initializeResults(runID)),
+        initializeScatter: runID => dispatch(Actions.thunks.initializeScatter(runID)),
         toggleLoadingResults: loading => dispatch(Actions.thunks.initializeResults(loading))
       }
     }

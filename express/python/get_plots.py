@@ -22,13 +22,14 @@ def find_plot_files(runID):
 		folder_path = "../../results/{runID}/coordinates".format(runID=runID)
 		if not os.path.isdir(folder_path):
 			helper.return_error("coordinates folder not found ("+folder_path+")")	
-	available_plots = []
+	available_plots = {}
 	for filename in os.listdir(folder_path):
 		if filename.endswith("Coordinates.tsv"):
 			plot_name = filename.split("Coordinates")[0].upper()
 			if plot_name in DESC:
-				available_plots.append(DESC[plot_name])
-	available_plots.append(DESC['VIOLIN']) # violin always available
+				available_plots[plot_name.lower()] = DESC[plot_name]
+
+	available_plots['violin']	= DESC['VIOLIN'] # violin always available
 	
 	return available_plots
 
