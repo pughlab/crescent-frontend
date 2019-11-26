@@ -5,12 +5,9 @@ import os
 import json
 import csv
 import itertools
-import loompy
 import numpy as np
 
 import helper
-
-fileName = "normalized_counts.loom"
 
 colours = [
   '#1f77b4',  # muted blue
@@ -47,12 +44,12 @@ def sort_barcodes(opacities, group, runID):
 	""" given the opacities for the barcodes, sorts them into the specified groups and returns a plotly object """
 	plotly_obj = []
 	
-	path = "/usr/src/app/results/{runID}/groups.tsv".format(runID=runID)
+	path = "/usr/src/app/results/{runID}/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
 		path = "../../results/{runID}/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
-			helper.return_error("group label file not found ("+path+")")
+			helper.return_error("group label file not found ("+path+")")	
 	
 	with open(path) as group_definitions:
 		reader = csv.reader(group_definitions, delimiter="\t")
@@ -60,7 +57,7 @@ def sort_barcodes(opacities, group, runID):
 		try:
 			label_idx = available_groups.index(str(group)) + 1
 		except ValueError as e:
-			helper.return_error(group + " is not an available group")
+			helper.return_error(group + " is not an available group")		
 		for row in reader:
 			barcode = str(row[0])
 			label = str(row[label_idx])
@@ -70,22 +67,12 @@ def sort_barcodes(opacities, group, runID):
 
 def get_expression(feature, runID):
 	""" parses the normalized count matrix to get an expression value for each barcode """
-	path = "/usr/src/app/results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName)
+	path = "/usr/src/app/results/{runID}/normalized/normalized_count_matrix.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName)
+		path = "../../results/{runID}/normalized/normalized_count_matrix.tsv".format(runID=runID) 
 		if not os.path.isfile(path):
-			helper.return_error("normalized count matrix not found ("+path+")")
-
-	with loompy.connect(path) as ds:
-		barcodes = ds.ca.CellID
-		features = ds.ra.Gene
-		feature_idx = next((i for i in range(len(features)) if features[i] == feature), -1)
-		if feature_idx >= 0:
-			feature_exp = [float(i) for i in ds[feature_idx, :]]
-			return dict(zip(barcodes, feature_exp))
-		else:
-			helper.return_error("Feature Not Found")
+			helper.return_error("normalized count matrix not found ("+path+")")	
 
 	with open(path) as norm_counts:
 		reader = csv.reader(norm_counts, delimiter="\t")
@@ -147,12 +134,12 @@ def add_barcode(plotly_obj, label, barcode, expression_values):
 
 def categorize_barcodes(group, expression_values, runID):
 	""" for every group, make a new plotly object and put the barcodes into it """
-	path = "/usr/src/app/results/{runID}/groups.tsv".format(runID=runID)
+	path = "/usr/src/app/results/{runID}/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
 		path = "../../results/{runID}/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
-			helper.return_error("group label file not found ("+path+")")
+			helper.return_error("group label file not found ("+path+")")	
 	plotly_obj = []
 	with open(path) as group_definitions:
 		reader = csv.reader(group_definitions, delimiter="\t")
@@ -160,7 +147,7 @@ def categorize_barcodes(group, expression_values, runID):
 		try:
 			label_idx = available_groups.index(str(group)) + 1
 		except ValueError as e:
-			helper.return_error(group + " is not an available group")
+			helper.return_error(group + " is not an available group")		
 		for row in reader:
 			barcode = str(row[0])
 			label = str(row[label_idx])
