@@ -19,52 +19,26 @@ const initializeScatter = runID => (dispatch, getState) => {
     `/scatter/${activeResult}/${availableGroups[0]}/${runID}`
     ).then(checkResponse)
     .then((resp) => resp.json())
-    .then(
-      (data) => {
-        return dispatch({
-          type: 'INITIALIZE_PLOT_DATA',
-          payload: {data, "plot": activeResult}
-        })
-      }
-    ).catch(
+    .then((data) => {return data})
+    .catch(
       error => {
         console.log(error)
-        dispatch({
-          type: 'INITIALIZE_PLOT_DATA',
-          payload: {"data": [], "plot": activeResult}
-        })
-      }
-    ).finally(
+        return []
+      })
+    .finally(
       dispatch({
         type: 'TOGGLE_LOADING_ACTIVE_PLOT',
         payload: {"loading": false, "plot": activeResult}
       })
     )    
 }
-    
-  /* 
-    .then(checkResponse)
-    .then((resp) => resp.json())
-    .then(
-      (data) => {
-        console.log(data)
-        return
-      }
-    ).catch(
-      error => {
-        console.log(error)
-        dispatch({
-          type: 'INITIALIZE_PLOT_DATA',
-          payload: {"data": [], "plot": activeResult}
-        })
-      }
-    ).finally(
-      dispatch({
-        type: 'TOGGLE_LOADING_ACTIVE_PLOT',
-        payload: {"loading": false, "plot": activeResult}
-      })
-    )
-    */
+
+const clearResults = () => (dispatch, getState) => {
+  dispatch({
+    type: 'CLEAR_RESULTS',
+    payload: {}
+  });
+}
 
 
 const initializeResults = runID => (dispatch, getState) => {
@@ -108,5 +82,6 @@ const initializeResults = runID => (dispatch, getState) => {
 
 export default {
   initializeResults,
+  clearResults,
   initializeScatter
 }

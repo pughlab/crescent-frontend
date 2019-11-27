@@ -18,22 +18,21 @@ const ScatterComponent = withRedux(
     }
   }
 }) => {
-
+  // also use local state for data
+  const [scatterData, setScatterData] = useState( [] );
+  
   useEffect(() => {
-    //initializeScatter(runID, activeResult)
-  }, [activeResult])
- 
-  const viewData = () => {
-    if(! R.isNil(activeResult)){
-      return R.path([activeResult,'data'], availablePlots);
-    }
-    return []
-  }
+    // on initial load
+    initializeScatter(runID).then((data) => {
+      setScatterData(data)
+    })
+  }, [])
 
   return (
     <>
     <Plot
-      data={viewData()}
+      data={scatterData}
+      useResizeHandler
       style={{width: '100%', height:'100%'}}
       layout={{
         title: R.path([activeResult,'label'], availablePlots),

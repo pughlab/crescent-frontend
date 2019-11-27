@@ -19,20 +19,15 @@ const ResultsSidebar = withRedux(
       },
       thunks: {
         initializeResults,
-        initializeScatter
+        clearResults
       }
     },
   }) => {
     useEffect(() => {
       initializeResults(runID)
+      return clearResults()
+      //TODO: return a call to a thunk that will wipe the results from the redux store
     }, [])
-
-    useEffect(() => {
-      if(! R.isNil(activeResult)){
-        //can't get available groups here since it's out of date
-        initializeScatter(runID);
-      }
-    }, [activeResult])
 
     const isActiveResult = R.equals(activeResult)
     return (

@@ -226,6 +226,22 @@ const VisualizationReducer = {
       R.lensPath(['toggle','vis','results','availablePlots',plot,'data']),
       data
     )(state)
+  },
+  'CLEAR_RESULTS': (state, payload) => {
+    return R.compose(
+      R.set(
+        R.lensPath(['toggle','vis','results','availablePlots']),
+        []
+      ),
+      R.set(
+        R.lensPath(['toggle','vis','results','availableGroups']),
+        []
+      ),
+      R.set(
+        R.lensPath(['toggle','vis','results','activeResult']),
+        null
+      )
+    )(state)
   }
 
 }
