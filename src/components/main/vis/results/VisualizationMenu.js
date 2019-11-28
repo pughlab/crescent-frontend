@@ -16,6 +16,7 @@ const VisualizationMenu = withRedux(
   actions: {
     thunks: {
       changeActiveGroup,
+      changeFeatureSearch,
       changeSelectedFeature
     }
   }
@@ -23,6 +24,7 @@ const VisualizationMenu = withRedux(
 
   const [currentSearch, changeSearch] = useState('')
   const [currentFeature, changeFeature] = useState([])
+  const [currentOptions, changeCurrentOptions] = useState([])
 
   const handleChangeGroup = (event, {value}) => {
     changeActiveGroup(value)
@@ -30,14 +32,12 @@ const VisualizationMenu = withRedux(
 
   const handleSearchChange = (event, {searchQuery}) => {
     changeSearch(searchQuery)
-    // fetch results of query and update options
-    //changeSearchInput(searchQuery) //TOOD: define thunk for this that returns a list of features
+    changeFeatureSearch(searchQuery).then(changeCurrentOptions)
   }
 
   const handleSelectFeature = (event, {value}) => {
     changeSearch('') // reset search
     changeFeature([R.last(value)])
-    //changeFeature(() => {return [value[0]]})
   }
   // format a list for a dropdown
   const formatList = (list) => {
@@ -48,7 +48,6 @@ const VisualizationMenu = withRedux(
       list
     )
   }
-  console.log(currentFeature)
   return (
     <Form>
       <Form.Dropdown
@@ -69,7 +68,7 @@ const VisualizationMenu = withRedux(
         renderLabel = {({text}) => (<Label color='violet' content={text}/>)}
         searchQuery={currentSearch}
         selection
-        options={[{"text":"PA2G4","value":"PA2G4"},{"text":"PA2G4P4","value":"PA2G4P4"},{"text":"PAAF1","value":"PAAF1"},{"text":"PABPC1","value":"PABPC1"}]}
+        options={currentOptions}
         value={currentFeature}
         onSearchChange={handleSearchChange}
         onChange={handleSelectFeature}

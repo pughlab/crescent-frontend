@@ -31,8 +31,9 @@ export default connect(
         initializeScatter: runID => dispatch(Actions.thunks.initializeScatter(runID)),
         toggleLoadingResults: loading => dispatch(Actions.thunks.initializeResults(loading)),
         changeActiveGroup: newGroup => dispatch(Actions.thunks.changeActiveGroup(newGroup)),
-        updateScatter: (runID, selectedGroup) => dispatch(Actions.thunks.updateScatter({runID, selectedGroup}))
-
+        updateScatter: (runID, selectedGroup) => dispatch(Actions.thunks.updateScatter({runID, selectedGroup})),
+        changeFeatureSearch: searchQuery => dispatch(Actions.thunks.changeFeatureSearch(searchQuery)),
+        changeSelectedFeature: feature => dispatch(Actions.thunks.changeSelectedFeature(feature))
       }
     }
   })

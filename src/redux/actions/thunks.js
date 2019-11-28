@@ -119,10 +119,37 @@ const initializeResults = runID => (dispatch, getState) => {
   )    
 }
 
+const changeFeatureSearch = searchQuery => (dispatch, getState) => {
+  const {
+    app: {
+      run: {runID}
+    }
+  } = getState()
+  return fetch(
+    `/search/${searchQuery}/${runID}`
+    ).then(checkResponse)
+    .then((resp) => resp.json())
+    .then((data) => {return data})
+    .catch(
+      error => {
+        console.log(error)
+        return []
+    })
+}
+
+const changeSelectedFeature = feature => (dispatch, getState) => {
+  return dispatch({
+    type: 'CHANGE_SELECTED_FEATURE',
+    payload: {"feature": feature}
+  });
+}
+
 export default {
   initializeResults,
   clearResults,
   initializeScatter,
   changeActiveGroup,
-  updateScatter
+  updateScatter,
+  changeFeatureSearch,
+  changeSelectedFeature
 }
