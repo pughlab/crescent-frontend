@@ -5,6 +5,46 @@ const checkResponse = (resp) => {
   return resp
 }
 
+const changeActiveGroup = newGroup => (dispatch, getState) => {
+  return dispatch({
+    type: 'CHANGE_ACTIVE_GROUP',
+    payload: {"group": newGroup}
+  });
+}
+
+//TODO: a thought, all this information is available in the store
+// could instead just have a thunk that uses the info in the store
+// to return the 'current' view of the data at any point (would replace intialize too)
+const updateScatter = ({runID, selectedGroup}) => (dispatch, getState) => {
+  const {
+    app: {
+      toggle: {vis: {results: {activeResult}}}
+    }
+  } = getState()
+  dispatch({
+    type: 'TOGGLE_LOADING_ACTIVE_PLOT',
+    payload: {"loading": true, "plot": activeResult}
+  });
+  return fetch(
+    `/scatter/${activeResult}/${selectedGroup}/${runID}`
+  ).then(checkResponse)
+  .then((resp) => resp.json())
+  .then((data) => {return data})
+  .catch(
+    error => {
+      console.log(error)
+      return []
+  })
+  .finally(
+    dispatch({
+      type: 'TOGGLE_LOADING_ACTIVE_PLOT',
+      payload: {"loading": false, "plot": activeResult}
+    })
+  )    
+
+
+}
+
 const initializeScatter = runID => (dispatch, getState) => {
   const {
     app: {
@@ -24,7 +64,7 @@ const initializeScatter = runID => (dispatch, getState) => {
       error => {
         console.log(error)
         return []
-      })
+    })
     .finally(
       dispatch({
         type: 'TOGGLE_LOADING_ACTIVE_PLOT',
@@ -39,7 +79,6 @@ const clearResults = () => (dispatch, getState) => {
     payload: {}
   });
 }
-
 
 const initializeResults = runID => (dispatch, getState) => {
   dispatch({
@@ -83,5 +122,7 @@ const initializeResults = runID => (dispatch, getState) => {
 export default {
   initializeResults,
   clearResults,
-  initializeScatter
+  initializeScatter,
+  changeActiveGroup,
+  updateScatter
 }

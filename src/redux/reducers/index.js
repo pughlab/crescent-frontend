@@ -35,6 +35,7 @@ const initialState = {
       },
       results: {
         activeResult: null, // selected plot: 'tsne', 'umap', 'violin', etc.
+        activeGroup: null,
         availableGroups: [], // ways to label the data (i.e. PatientID)
         availablePlots: [], // will store objects for each of the available plots
         isLoading: false
@@ -240,7 +241,18 @@ const VisualizationReducer = {
       R.set(
         R.lensPath(['toggle','vis','results','activeResult']),
         null
+      ),
+      R.set(
+        R.lensPath(['toggle','vis','results','selectedGroup']),
+        null
       )
+    )(state)
+  },
+  'CHANGE_ACTIVE_GROUP': (state, payload) => {
+    const {group} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','selectedGroup']),
+      group
     )(state)
   }
 

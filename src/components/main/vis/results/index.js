@@ -6,21 +6,26 @@ import {Segment, Header, Icon} from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
-import ScatterComponent from './Scatter'
+import ScatterPlot from './ScatterPlot'
 
 const ResultsComponent = withRedux(
   ({
     app: {
       run,
       toggle: {
-        vis: {results: {activeResult}}
+        vis: {results: {activeResult, availablePlots}}
       }
     },
     actions: {
       toggle: {}
     }
   }) => {
-
+    const ResultsHeader = R.ifElse(
+      R.isNil,
+      R.always(),
+      R.path([activeResult, 'label'])
+    )(availablePlots)
+      
     return (
       <>
       {
@@ -30,11 +35,16 @@ const ResultsComponent = withRedux(
             <Segment basic placeholder style={{height: '100%'}}>
               <Header textAlign='center' icon>
                 <Icon name='right arrow' />
-                Select a visualization on the right
+                {'Select a visualization on the right'}
               </Header>
             </Segment>
           ),
-          R.always(<ScatterComponent/>)
+          R.always(
+            <Segment basic style={{height: '100%'}}>
+              <Header textAlign='center'>{ResultsHeader}</Header>
+              <ScatterPlot/>
+            </Segment>
+          )
         )(activeResult)
       }
       </>

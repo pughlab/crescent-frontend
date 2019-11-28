@@ -1,17 +1,19 @@
 import React, {useState, useEffect, useRef} from 'react';
 
 import { Segment, Button, Icon, Divider, Step } from 'semantic-ui-react'
+import Plot from 'react-plotly.js'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
+import VisualizationMenu from '../results/VisualizationMenu';
 
 const ResultsSidebar = withRedux(
   ({
     app: {
       run: {runID},
-      toggle: {vis: {results: {activeResult, availablePlots}}}
+      toggle: {vis: {results: {activeResult, availablePlots, availableGroups}}}
     },
     actions: {
       toggle: {
@@ -26,7 +28,6 @@ const ResultsSidebar = withRedux(
     useEffect(() => {
       initializeResults(runID)
       return clearResults()
-      //TODO: return a call to a thunk that will wipe the results from the redux store
     }, [])
 
     const isActiveResult = R.equals(activeResult)
@@ -70,7 +71,7 @@ const ResultsSidebar = withRedux(
             </Button.Content>
           </Button>
           <Divider />
-          Put visualization menu here
+          <VisualizationMenu/>
         </Segment>
     )
   }

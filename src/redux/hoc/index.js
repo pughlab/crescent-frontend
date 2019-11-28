@@ -29,8 +29,10 @@ export default connect(
         initializeResults: runID => dispatch(Actions.thunks.initializeResults(runID)),
         clearResults: () => dispatch(Actions.thunks.clearResults()),
         initializeScatter: runID => dispatch(Actions.thunks.initializeScatter(runID)),
-        toggleLoadingResults: loading => dispatch(Actions.thunks.initializeResults(loading))
-  
+        toggleLoadingResults: loading => dispatch(Actions.thunks.initializeResults(loading)),
+        changeActiveGroup: newGroup => dispatch(Actions.thunks.changeActiveGroup(newGroup)),
+        updateScatter: (runID, selectedGroup) => dispatch(Actions.thunks.updateScatter({runID, selectedGroup}))
+
       }
     }
   })
