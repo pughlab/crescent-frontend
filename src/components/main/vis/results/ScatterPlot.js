@@ -38,8 +38,6 @@ const ScatterPlot = withRedux(
   }
   }, [selectedGroup])
 
-  console.log(scatterData)
-
   return (
     <>
     {
@@ -65,26 +63,3 @@ const ScatterPlot = withRedux(
 })
 
 export default ScatterPlot 
-{
-/*
-  R.ifElse(
-    R.is(),
-    R.always(<Loader active inline='centered' />),
-    R.always(
-      <Plot
-      data={scatterData}
-      useResizeHandler
-      style={{width: '100%', height:'100%'}}
-      layout={{
-        title: R.path([activeResult,'label'], availablePlots),
-        autosize: true,
-        hovermode: 'closest',
-        xaxis: {showgrid: false, ticks: '', showticklabels: false},
-        yaxis: {showgrid: false, ticks: '', showticklabels: false},
-        legend: {"orientation": "h"}
-        }}
-      />
-    )
-  )(loading)
-  */
-}
