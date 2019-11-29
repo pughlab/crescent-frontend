@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Dropdown } from 'semantic-ui-react'
+import { Label, Form } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 
@@ -10,21 +10,36 @@ const VisualizationMenu = withRedux(
   app: {
     run: { runID },
     toggle: {
-      vis: {results: {activeResult, availablePlots, availableGroups}}
+      vis: {results: {availableGroups}}
     }
   },
   actions: {
     thunks: {
-      initializeScatter,
-      changeActiveGroup
+      changeActiveGroup,
+      changeFeatureSearch,
+      changeSelectedFeature
     }
   }
 }) => {
 
-  const changeGroup = (event, {value}) => {
+  const [currentSearch, changeSearch] = useState('')
+  const [currentFeature, changeFeature] = useState([])
+  const [currentOptions, changeCurrentOptions] = useState([])
+
+  const handleChangeGroup = (event, {value}) => {
     changeActiveGroup(value)
   }
 
+  const handleSearchChange = (event, {searchQuery}) => {
+    changeSearch(searchQuery)
+    changeFeatureSearch(searchQuery).then(changeCurrentOptions)
+  }
+
+  const handleSelectFeature = (event, {value}) => {
+    changeSearch('') // reset search
+    changeFeature([R.last(value)])
+    changeSelectedFeature([R.last(value)]) 
+  }
   // format a list for a dropdown
   const formatList = (list) => {
     return R.addIndex(R.map)(
@@ -34,16 +49,32 @@ const VisualizationMenu = withRedux(
       list
     )
   }
-
   return (
-    <Dropdown
-      fluid
-      selection
-      labeled
-      defaultValue={availableGroups[0]}
-      options={formatList(availableGroups)}
-      onChange={changeGroup}
-    />
+    <Form>
+      <Form.Dropdown
+        label={'Colour By'}
+        fluid
+        selection
+        labeled
+        defaultValue={availableGroups[0]}
+        options={formatList(availableGroups)}
+        onChange={handleChangeGroup}
+      />
+      <Form.Dropdown
+        label={'Feature Selection'}
+        placeholder='Search Features'
+        fluid
+        search
+        multiple
+        renderLabel = {({text}) => (<Label color='violet' content={text}/>)}
+        searchQuery={currentSearch}
+        selection
+        options={currentOptions}
+        value={currentFeature}
+        onSearchChange={handleSearchChange}
+        onChange={handleSelectFeature}
+      />
+    </Form>
   )
 })
 

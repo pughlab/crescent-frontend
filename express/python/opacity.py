@@ -31,12 +31,12 @@ def sort_barcodes(opacities, group, runID):
 	""" given the opacities for the barcodes, sorts them into the specified groups and returns a plotly object """
 	plotly_obj = []
 	
-	path = "/usr/src/app/results/{runID}/groups.tsv".format(runID=runID)
+	path = "/usr/src/app/results/{runID}/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
 		path = "../../results/{runID}/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
-			helper.return_error("group label file not found ("+path+")")
+			helper.return_error("group label file not found ("+path+")")	
 	
 	with open(path) as group_definitions:
 		reader = csv.reader(group_definitions, delimiter="\t")
@@ -44,7 +44,7 @@ def sort_barcodes(opacities, group, runID):
 		try:
 			label_idx = available_groups.index(str(group)) + 1
 		except ValueError as e:
-			helper.return_error(group + " is not an available group")
+			helper.return_error(group + " is not an available group")		
 		for row in reader:
 			barcode = str(row[0])
 			label = str(row[label_idx])
@@ -57,34 +57,22 @@ def calculate_opacities(feature_row):
 	min_opac = 0.05 # no expression 
 	exp_values = [float(x) for x in feature_row]
 	max_exp = max(exp_values)
-	opacities = [min_opac if val==0.0 else round((val*0.95/max_exp + min_opac), 2) for val in exp_values]
-	return opacities
-
-def binary_search(feature, features, L, R):
-	M = (L+R)/2
-	if (feature == features[M]):
-		return M
-	elif (R < L):
-		return -1
-	elif (feature < features[M]):
-		return binary_search(feature, features, L, M)
-	elif (feature > features[M]):
-		return binary_search(feature, features, M, R)
+	opacities = [min_opac if val==0.0 else round((val*0.95/max_exp + min_opac), 2) for val in exp_values]	
+	return opacities	
 
 def get_opacities(feature, runID):
 	""" parses the normalized count matrix to get an expression value for each barcode """
-	path = "/usr/src/app/results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName)
+	path = "/usr/src/app/results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName)
+		path = "../../results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName) 
 		if not os.path.isfile(path):
 			helper.return_error("normalized count matrix not found ("+path+")")
 
 	with loompy.connect(path) as ds:
 		barcodes = ds.ca.CellID
 		features = ds.ra.Gene
-		feature_idx = binary_search(feature, features, 0, len(features))
-		#next((i for i in range(len(features)) if features[i] == feature), -1)
+		feature_idx = next((i for i in range(len(features)) if features[i] == feature), -1)
 		if feature_idx >= 0:
 			opacities = calculate_opacities(ds[feature_idx, :])
 			return dict(zip(barcodes, opacities))
