@@ -12,22 +12,8 @@ const changeActiveGroup = newGroup => (dispatch, getState) => {
   });
 }
 
-//TODO: a thought, all this information is available in the store
-// could instead just have a thunk that uses the info in the store
-// to return the 'current' view of the data at any point (would replace intialize too)
-const updateScatter = ({runID, selectedGroup}) => (dispatch, getState) => {
-  const {
-    app: {
-      toggle: {vis: {results: {activeResult}}}
-    }
-  } = getState()
-  dispatch({
-    type: 'TOGGLE_LOADING_ACTIVE_PLOT',
-    payload: {"loading": true, "plot": activeResult}
-  });
-  return fetch(
-    `/scatter/${activeResult}/${selectedGroup}/${runID}`
-  ).then(checkResponse)
+const fetchEndpoint = (endpoint) => {
+  return fetch(endpoint).then(checkResponse)
   .then((resp) => resp.json())
   .then((data) => {return data})
   .catch(
@@ -35,43 +21,24 @@ const updateScatter = ({runID, selectedGroup}) => (dispatch, getState) => {
       console.log(error)
       return []
   })
-  .finally(
-    dispatch({
-      type: 'TOGGLE_LOADING_ACTIVE_PLOT',
-      payload: {"loading": false, "plot": activeResult}
-    })
-  )    
-
-
 }
 
-const initializeScatter = runID => (dispatch, getState) => {
+// uses the parameters in the store to fetch the scatter data
+const fetchScatter = () => (dispatch, getState) => {
   const {
     app: {
-      toggle: {vis: {results: {activeResult, availableGroups}}}
+      run: {runID},
+      toggle: {vis: {results: {activeResult, selectedGroup, selectedFeature}}}
     }
   } = getState()
-  dispatch({
-    type: 'TOGGLE_LOADING_ACTIVE_PLOT',
-    payload: {"loading": true, "plot": activeResult}
-  });
-  return fetch(
-    `/scatter/${activeResult}/${availableGroups[0]}/${runID}`
-    ).then(checkResponse)
-    .then((resp) => resp.json())
-    .then((data) => {return data})
-    .catch(
-      error => {
-        console.log(error)
-        return []
-    })
-    .finally(
-      dispatch({
-        type: 'TOGGLE_LOADING_ACTIVE_PLOT',
-        payload: {"loading": false, "plot": activeResult}
-      })
-    )    
+  if (R.isNil(selectedFeature) || R.isEmpty(selectedFeature)){
+    return fetchEndpoint(`/scatter/${activeResult}/${selectedGroup}/${runID}`)
+  }
+  else{
+    return fetchEndpoint(`/opacity/${selectedGroup}/${selectedFeature}/${runID}`)
+  }
 }
+
 
 const clearResults = () => (dispatch, getState) => {
   dispatch({
@@ -147,9 +114,68 @@ const changeSelectedFeature = feature => (dispatch, getState) => {
 export default {
   initializeResults,
   clearResults,
-  initializeScatter,
   changeActiveGroup,
-  updateScatter,
   changeFeatureSearch,
-  changeSelectedFeature
+  changeSelectedFeature,
+  fetchScatter
 }
+
+/* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING
+//TODO: a thought, all this information is available in the store
+// could instead just have a thunk that uses the info in the store
+// to return the 'current' view of the data at any point (would replace intialize too)
+const updateScatter = ({runID, selectedGroup}) => (dispatch, getState) => {
+  const {
+    app: {
+      toggle: {vis: {results: {activeResult}}}
+    }
+  } = getState()
+  dispatch({
+    type: 'TOGGLE_LOADING_ACTIVE_PLOT',
+    payload: {"loading": true, "plot": activeResult}
+  });
+  return fetch(
+    `/scatter/${activeResult}/${selectedGroup}/${runID}`
+  ).then(checkResponse)
+  .then((resp) => resp.json())
+  .then((data) => {return data})
+  .catch(
+    error => {
+      console.log(error)
+      return []
+  })
+  .finally(
+    dispatch({
+      type: 'TOGGLE_LOADING_ACTIVE_PLOT',
+      payload: {"loading": false, "plot": activeResult}
+    })
+  )    
+}
+const initializeScatter = runID => (dispatch, getState) => {
+  const {
+    app: {
+      toggle: {vis: {results: {activeResult, availableGroups}}}
+    }
+  } = getState()
+  dispatch({
+    type: 'TOGGLE_LOADING_ACTIVE_PLOT',
+    payload: {"loading": true, "plot": activeResult}
+  });
+  return fetch(
+    `/scatter/${activeResult}/${availableGroups[0]}/${runID}`
+    ).then(checkResponse)
+    .then((resp) => resp.json())
+    .then((data) => {return data})
+    .catch(
+      error => {
+        console.log(error)
+        return []
+    })
+    .finally(
+      dispatch({
+        type: 'TOGGLE_LOADING_ACTIVE_PLOT',
+        payload: {"loading": false, "plot": activeResult}
+      })
+    )    
+}
+*/

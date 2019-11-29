@@ -212,6 +212,10 @@ const VisualizationReducer = {
       R.set(
         R.lensPath(['toggle','vis','results','availableGroups']),
         groups
+      ),
+      R.set(
+        R.lensPath(['toggle','vis','results','selectedGroup']),
+        groups[0]
       )
     )(state)
   },
@@ -245,6 +249,10 @@ const VisualizationReducer = {
       ),
       R.set(
         R.lensPath(['toggle','vis','results','selectedGroup']),
+        null
+      ),
+      R.set(
+        R.lensPath(['toggle','vis','results','selectedFeature']),
         null
       )
     )(state)

@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Dropdown, Grid, Label, Header, Form } from 'semantic-ui-react'
+import { Label, Form } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 
@@ -10,7 +10,7 @@ const VisualizationMenu = withRedux(
   app: {
     run: { runID },
     toggle: {
-      vis: {results: {activeResult, availablePlots, availableGroups}}
+      vis: {results: {availableGroups}}
     }
   },
   actions: {
@@ -38,6 +38,7 @@ const VisualizationMenu = withRedux(
   const handleSelectFeature = (event, {value}) => {
     changeSearch('') // reset search
     changeFeature([R.last(value)])
+    changeSelectedFeature([R.last(value)]) 
   }
   // format a list for a dropdown
   const formatList = (list) => {

@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
 import { Segment, Button, Icon, Divider, Step } from 'semantic-ui-react'
-import Plot from 'react-plotly.js'
-
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
@@ -13,7 +11,7 @@ const ResultsSidebar = withRedux(
   ({
     app: {
       run: {runID},
-      toggle: {vis: {results: {activeResult, availablePlots, availableGroups}}}
+      toggle: {vis: {results: {activeResult, availablePlots}}}
     },
     actions: {
       toggle: {

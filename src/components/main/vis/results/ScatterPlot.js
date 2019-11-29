@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Segment, Loader } from 'semantic-ui-react'
+import { Loader } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 
@@ -10,34 +10,52 @@ const ScatterPlot = withRedux(
   app: {
     run: { runID },
     toggle: {
-      vis: {results: {activeResult, selectedGroup, availablePlots}}
+      vis: {results: {activeResult, selectedFeature, selectedGroup, availablePlots}}
     }
   },
   actions: {
     thunks: {
-      initializeScatter,
-      updateScatter
+      fetchScatter
     }
   }
 }) => {
-  // also use local state for data
+  // use local state for data since too big for redux store
   const [scatterData, setScatterData] = useState( [] );
   
   useEffect(() => {
-    initializeScatter(runID).then((data) => {
-        setScatterData(data);
-     });
+    fetchScatter().then((data) => {
+      setScatterData(data);
+    })
   }, [activeResult])
 
   useEffect(() => {
     if(selectedGroup){
     setScatterData( [] ) // set to loading
-    updateScatter(runID, selectedGroup).then((data) => {
+    fetchScatter().then((data) => {
       setScatterData(data);
     });
-  }
+    }
   }, [selectedGroup])
 
+  useEffect(() => {
+    if (! R.isNil(selectedFeature)){
+      const prev = scatterData;
+      setScatterData( [] ) // loading 
+      fetchScatter().then((data) => {
+        const mapIndexed = R.addIndex(R.map)
+        const merged = R.ifElse(
+          R.has('error'),
+          () => {console.error(data['error']); return prev}, // show error message here
+          mapIndexed((val, index) => {
+            return R.mergeLeft(val, scatterData[index])
+          })
+        )(data)
+        setScatterData(merged)
+      })
+    }
+  }, [selectedFeature])
+
+  console.log(scatterData)
   return (
     <>
     {
