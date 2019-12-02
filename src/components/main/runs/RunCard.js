@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Transition, Container, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup} from 'semantic-ui-react'
+import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -51,16 +51,27 @@ const RunCard = withRedux(({
           />
         </Label>
         <Card.Header>
-          <Marquee text={name} />
+          <Header size='small'>
+            <Marquee text={name} />
+            <Header.Subheader>
+              {`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`}
+            </Header.Subheader>
+          </Header>
         </Card.Header>
       </Card.Content>
-      <Card.Content extra content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} />
       <Card.Content>
-        <Popup
+        <Button.Group widths={2}>
+        <Modal
           trigger={
-            <Button basic icon><Icon name='sliders horizontal' /> </Button>
+            <Button basic fluid animated='vertical'>
+              <Button.Content visible><Icon name='sliders horizontal'/></Button.Content>
+              <Button.Content hidden content='Parameters' />
+            </Button>
           }
-          content={
+        >
+          <Modal.Header as={Header} textAlign='center' content='Run Parameters' />
+          <Modal.Content>
+          {
             RA.isNotNil(params) &&
             R.compose(
               ({
@@ -81,29 +92,39 @@ const RunCard = withRedux(({
               JSON.parse
             )(params)
           }
-        />
-
-        <Popup
-          trigger={
-            <Button basic icon
-              onClick={() => setRun(run)}
-            ><Icon name='eye'/></Button>
-          }
-          content={'View'}
-        />
-        
-        <Modal
-          trigger={
-            <Button basic icon><Icon name='trash' /></Button>
-          }
-        >
-          <Modal.Header as={Header} textAlign='center' content='Delete Run?' subheader={name} />
-          <Modal.Content>
-            <Button fluid color='red' content='Yes'
-              onClick={() => deleteRun()}
-            />
           </Modal.Content>
         </Modal>
+        
+        <Modal
+          basic size='small'
+          trigger={
+            <Button basic fluid animated='vertical'>
+              <Button.Content visible><Icon name='trash' /></Button.Content>
+              <Button.Content hidden content='Delete' />
+            </Button>
+          }
+        >
+          <Modal.Content>
+            <Segment attached='top'>
+              <Header icon='trash' content={name} subheader='Are you sure you want to delete this run?' />
+            </Segment>
+            <Segment attached='bottom'>
+            <Button fluid color='red' inverted 
+              onClick={() => deleteRun()}
+            >
+              <Icon name='checkmark' />
+              Yes, delete this run
+            </Button>
+            </Segment>
+          </Modal.Content>
+        </Modal>
+        </Button.Group>
+      </Card.Content>
+      <Card.Content>
+        <Button basic fluid animated='vertical' onClick={() => setRun(run)}>
+          <Button.Content visible><Icon name='eye'/></Button.Content>
+          <Button.Content hidden content='View' />
+        </Button>
       </Card.Content>
     </Card>
     </Transition>

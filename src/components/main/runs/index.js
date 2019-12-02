@@ -14,7 +14,7 @@ import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../utils'
 
 import RunCard from './RunCard'
-import NewRunCard from './NewRunCard'
+import NewRunModal from './NewRunModal'
 
 import ArchiveProjectModal from '../projects/ArchiveProjectModal'
 import ShareProjectModal from '../projects/ShareProjectModal'
@@ -56,6 +56,7 @@ const RunsCardList = withRedux(({
   console.log(data)
   return (
     <Container>
+      <Divider horizontal content='Project Details' />
       <Segment attached='top'>
         <Header
           content={projectName}
@@ -64,20 +65,40 @@ const RunsCardList = withRedux(({
         <Divider horizontal />
         {description}
       </Segment>
+      {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT */}
       <Button.Group attached='bottom' widths={2}>
         <ShareProjectModal />
         <ArchiveProjectModal />
       </Button.Group>
-      <Divider hidden horizontal />
-      <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
-        <NewRunCard {...{refetch}} />
-      {
-        R.addIndex(R.map)(
-          (run, index) => <RunCard key={index} {...{run, refetch}} />,
-          projectRuns
-        )
-      }
-      </Card.Group>
+      <Divider horizontal content='Viewing Runs Below' />
+      {/* CREATE NEW RUN FOR PROJECT */}
+      <NewRunModal {...{refetch}} />
+      {/* LIST OF EXISTING RUNS FOR PROJECT */}
+      <Segment attached='bottom'>
+        {
+          R.ifElse(
+            R.isEmpty,
+            R.always(
+              <Segment placeholder>
+                <Header icon>
+                  <Icon name='exclamation' />
+                  No Runs
+                </Header>
+              </Segment>
+            ),
+            projectRuns => (
+              <Card.Group itemsPerRow={3}>
+              {
+                R.addIndex(R.map)(
+                  (run, index) => <RunCard key={index} {...{run, refetch}} />,
+                  projectRuns
+                )
+              }
+              </Card.Group>
+            )
+          )(projectRuns)
+        }
+      </Segment>
     </Container>
   )
 })

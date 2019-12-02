@@ -11,7 +11,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../utils'
 
-const NewRunCard = withRedux(({
+const NewRunModal = withRedux(({
   app: {
     user: {userID},
     project: {projectID}
@@ -39,17 +39,14 @@ const NewRunCard = withRedux(({
   return (
     <Modal
       trigger={
-        <Card link color='black'>
-          <Card.Content>
-          <Card.Header as={Header} icon>
-            <Icon name='file' circular />
-            <Header.Content>
-              Create New Run
-            </Header.Content>
-          </Card.Header>
-          </Card.Content>
-          <Card.Content extra textAlign='center' content='Configure a pipeline and run on the cloud' />
-        </Card>
+        <Button fluid
+          attached='top'
+          color='black'
+          animated='vertical'
+        >
+          <Button.Content visible><Icon name='add'/></Button.Content>
+          <Button.Content hidden content="Configure a pipeline and submit a run to the cloud using this project's uploaded data"/>
+        </Button>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Run' />
@@ -69,4 +66,4 @@ const NewRunCard = withRedux(({
   )
 })
 
-export default NewRunCard
+export default NewRunModal
