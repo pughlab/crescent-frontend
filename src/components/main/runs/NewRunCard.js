@@ -16,9 +16,7 @@ const NewRunCard = withRedux(({
     user: {userID},
     project: {projectID}
   },
-  actions: {
-    setRun
-  },
+  actions: {setRun},
   refetch
 }) => {
   const [runName, setRunName] = useState('')
@@ -33,9 +31,10 @@ const NewRunCard = withRedux(({
   `, {
     variables: {name: runName, projectID, userID},
     // Refetch runs on new created
-    onCompleted: data => refetch()
-    // doing below causes run to be set to null
-    //onCompleted: ({run}) => {setRun(run)}
+    onCompleted: ({createUnsubmittedRun: newRun}) => {
+      refetch()
+      setRun(newRun)
+    }
   })
   return (
     <Modal

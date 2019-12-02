@@ -25,13 +25,19 @@ const typeDefs = gql`
       name: String,
       projectID: ID,
       userID: ID
-    ): Run,
+    ): Run
+
     submitRun(
       runID: ID,
       params: String
-    ): Run,
+    ): Run
+
+    deleteRun(
+      runID: ID
+    ): Run
 
 
+    # Not used
     createRun(
       name: String,
       params: String,

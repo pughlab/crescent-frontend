@@ -10,27 +10,43 @@ import withRedux from '../../../redux/hoc'
 import Marquee from 'react-marquee'
 import moment from 'moment'
 
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+import {queryIsNotNil} from '../../../utils'
+
 
 const RunCard = withRedux(({
   // Redux actions
   actions: {setRun},
   // Prop
-  run
+  run,
+  refetch //refetchs all project runs
 }) => {
   const {
     runID, createdOn, name, params, createdBy: {name: creatorName}, completed
   } = run
+  const [deleteRun, {data, loading, error}] = useMutation(gql`
+    mutation DeleteRun($runID: ID!) {
+      deleteRun(runID: $runID) {
+        runID
+      }
+    }
+  `, {
+    variables: {runID},
+    onCompleted: data => refetch()
+  })
   return (
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
-    <Card link onClick={() => setRun(run)} color={completed ? 'green' : 'yellow'}>
+    <Card color={completed ? 'green' : 'yellow'}>
       <Card.Content>
         <Label attached='top'
           // Color based on whether run is complete or not
           color={completed ? 'green' : 'yellow'}
         >
           <Icon
-            name={completed ? 'file' : 'spinner'}
-            loading={R.not(completed)}
+            name='file'
+            // name={completed ? 'file' : 'spinner'}
+            // loading={R.not(completed)}
             size='large' style={{margin: 0}}
           />
         </Label>
@@ -60,13 +76,34 @@ const RunCard = withRedux(({
                   <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
                   <Label content='Clustering Resolution' detail={resolution} />
                   <Label content='PCA Dimensions' detail={principalDimensions} />
-  
                 </Label.Group>
               ),
               JSON.parse
             )(params)
           }
         />
+
+        <Popup
+          trigger={
+            <Button basic icon
+              onClick={() => setRun(run)}
+            ><Icon name='eye'/></Button>
+          }
+          content={'View'}
+        />
+        
+        <Modal
+          trigger={
+            <Button basic icon><Icon name='trash' /></Button>
+          }
+        >
+          <Modal.Header as={Header} textAlign='center' content='Delete Run?' subheader={name} />
+          <Modal.Content>
+            <Button fluid color='red' content='Yes'
+              onClick={() => deleteRun()}
+            />
+          </Modal.Content>
+        </Modal>
       </Card.Content>
     </Card>
     </Transition>

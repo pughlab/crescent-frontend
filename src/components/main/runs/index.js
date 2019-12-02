@@ -73,7 +73,7 @@ const RunsCardList = withRedux(({
         <NewRunCard {...{refetch}} />
       {
         R.addIndex(R.map)(
-          (run, index) => <RunCard key={index} {...{run}} />,
+          (run, index) => <RunCard key={index} {...{run, refetch}} />,
           projectRuns
         )
       }
