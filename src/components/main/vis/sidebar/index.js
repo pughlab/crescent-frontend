@@ -21,7 +21,7 @@ const SidebarComponent = withRedux(
   }) => {
     const isSidebarView = R.equals(sidebarView)
     return (
-      <Transition visible animation='vertical flip' duration={1000} unmountOnHide={true} transitionOnMount={true}>
+      <Transition visible animation='fade left' duration={1000} unmountOnHide={true} transitionOnMount={true}>
       <Segment basic style={{height: '100%', padding: 0}}>
         <Segment attached='top'>
           <Button.Group fluid widths={2}>
