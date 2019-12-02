@@ -60,7 +60,7 @@ const UploadButton = ({
   )
 }
 
-const NewProjectCard = withRedux(({
+const NewProjectModal = withRedux(({
   app: {user: {userID}},
   actions: {
     setProject
@@ -125,19 +125,14 @@ const NewProjectCard = withRedux(({
   return (
     <Modal
       trigger={
-        <Card link color='black'>
-          <Card.Content>
-            <Card.Header as={Header} icon>
-              <Icon name='folder open' circular />
-              <Header.Content>
-                Create New Project
-              </Header.Content>
-            </Card.Header>
-          </Card.Content>
-          <Card.Content extra textAlign='center'>
-          Upload your own files to create a new project
-          </Card.Content>
-        </Card>
+        <Button fluid
+          attached='top'
+          color='black'
+          animated='vertical'
+        >
+          <Button.Content visible><Icon name='add'/></Button.Content>
+          <Button.Content hidden content="Upload your own files to create a new project"/>
+        </Button>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Uploaded Project' />
@@ -196,4 +191,4 @@ const NewProjectCard = withRedux(({
   )
 })
 
-export default NewProjectCard
+export default NewProjectModal
