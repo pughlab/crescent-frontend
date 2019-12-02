@@ -69,7 +69,7 @@ const RunsCardList = withRedux(({
         <ArchiveProjectModal />
       </Button.Group>
       <Divider hidden horizontal />
-      <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
+      <Card.Group itemsPerRow={3}>
         <NewRunCard {...{refetch}} />
       {
         R.addIndex(R.map)(
