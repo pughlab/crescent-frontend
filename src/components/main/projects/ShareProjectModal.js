@@ -100,9 +100,12 @@ const ShareProjectModal = withRedux(({
   return (
     <Modal basic size='small'
       trigger={
-        <Button color='twitter' >
-          <Icon name='add user' />
-          Share Project
+        <Button
+          color='twitter'
+          animated='vertical'
+        >
+          <Button.Content visible><Icon name='add user'/></Button.Content>
+          <Button.Content hidden content='Share Project'/>
         </Button>
       }
     >
@@ -118,36 +121,36 @@ const ShareProjectModal = withRedux(({
           }
            */}
           <Grid>
-            <Grid.Column width={16}>
-            <Divider content='Shared with' horizontal />
             {
               RA.isNotEmpty(sharedWith) &&
-              <Label.Group size='large'>
-              {
-                R.addIndex(R.map)(
-                  ({userID, name}, index) => (
-                    <Label key={index}
-                      basic
-                      color='green'
-                      content={name}
-                      onRemove={
-                        () => shareProject({
-                          variables: {
-                            sharedWith: R.compose(
-                              R.reject(R.equals(userID)),
-                              R.pluck('userID')
-                            )(sharedWith)
-                          }
-                        })
-                      }
-                    />
-                  ),
-                  sharedWith
-                )
-              }
-              </Label.Group>
+              <Grid.Column width={16}>
+                <Divider content='Shared with' horizontal />
+                <Label.Group size='large'>
+                {
+                  R.addIndex(R.map)(
+                    ({userID, name}, index) => (
+                      <Label key={index}
+                        basic
+                        color='green'
+                        content={name}
+                        onRemove={
+                          () => shareProject({
+                            variables: {
+                              sharedWith: R.compose(
+                                R.reject(R.equals(userID)),
+                                R.pluck('userID')
+                              )(sharedWith)
+                            }
+                          })
+                        }
+                      />
+                    ),
+                    sharedWith
+                  )
+                }
+                </Label.Group>
+              </Grid.Column>
             }
-            </Grid.Column>
             <Grid.Column width={12}>
               <Dropdown multiple selection fluid search options={possibleUsersToAdd} loading={loadingUsers}
                 placeholder='Search users to share project with'
