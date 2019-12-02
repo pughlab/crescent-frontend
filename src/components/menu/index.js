@@ -41,7 +41,7 @@ const MenuComponent = withRedux(({
     <Segment attached='top' style={{height: '9%'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
       {
-        RA.isNotNil(project) &&
+        // RA.isNotNil(project) &&
         <Button.Group fluid size='mini'>
 
           <Button icon basic inverted color='grey'
@@ -88,7 +88,7 @@ const MenuComponent = withRedux(({
                 :
                   <>
                     <Icon name='sign in' />
-                    Sign In
+                    Log In
                   </>
               }
             </Header>
@@ -102,14 +102,14 @@ const MenuComponent = withRedux(({
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
-          <InfoModal />
+          <InfoModal {...{setHoverInfo}} />
           <Button basic inverted icon
             basic
             color='grey'
             onClick={() => toggleLogin()}
           >
             <div
-              onMouseEnter={() => setHoverInfo(RA.isNotNil(user) ? 'Go To User Details?' : 'Sign In?')}
+              onMouseEnter={() => setHoverInfo('Log in/out?')}
               onMouseLeave={() => setHoverInfo(null)}
             >
               <Icon color='black' size='large' name={'user circle'} />
