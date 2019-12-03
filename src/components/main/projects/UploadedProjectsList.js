@@ -12,12 +12,12 @@ import moment from 'moment'
 import {queryIsNotNil} from '../../../utils'
 
 
-import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
+import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup, Segment} from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
 import ProjectCard from './ProjectCard'
-import NewProjectCard from './NewProjectCard'
+import NewProjectModal from './NewProjectModal'
 
 
 const UploadedProjectsList = withRedux(({
@@ -49,17 +49,37 @@ const UploadedProjectsList = withRedux(({
   )(data)
   console.log(data)
   return (
-    <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
-      <NewProjectCard {...{refetch}} />
+    <>
+    <NewProjectModal {...{refetch}} />
+    <Segment attached='bottom'>
     {
-      R.addIndex(R.map)(
-        (project, index) => (
-          <ProjectCard key={index} {...{project}} />
+      R.ifElse(
+        R.isEmpty,
+        R.always(
+          <Segment placeholder>
+            <Header icon>
+              <Icon name='exclamation' />
+              No Projects
+            </Header>
+          </Segment>
         ),
-        userProjects
-      )
+        userProjects => (
+          <Card.Group itemsPerRow={3}>
+          {
+            R.addIndex(R.map)(
+              (project, index) => (
+                <ProjectCard key={index} {...{project}} />
+              ),
+              userProjects
+            )
+          }
+          </Card.Group>
+        )
+      )(userProjects)
     }
-    </Card.Group>
+
+    </Segment>
+    </>
   )
 })
 

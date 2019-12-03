@@ -40,9 +40,12 @@ const ArchiveProjectModal = withRedux(({
   return (
     <Modal basic size='small'
       trigger={
-        <Button color='red' >
-          <Icon name='trash' />
-          Delete Project
+        <Button
+          color='red'
+          animated='vertical'
+        >
+          <Button.Content visible><Icon name='trash'/></Button.Content>
+          <Button.Content hidden content='Delete Project'/>
         </Button>
       }
     >

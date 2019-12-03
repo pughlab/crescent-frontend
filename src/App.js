@@ -32,7 +32,7 @@ const App = withRedux(
         //   </Modal.Content>
         // </Modal>
         // :
-        <Segment style={{height: '100%', padding: 0}}>
+        <Segment style={{padding: 0}}>
           <MenuComponent />
           <MainComponent {...{session}} />
 

@@ -25,6 +25,7 @@ const resolvers = {
       const run = await Runs.create({name, projectID, createdBy: userID})
       return run
     },
+
     submitRun: async (parent, {runID, params}, {Runs}) => {
       const run = await Runs.findOne({runID})
       const {name} = run
@@ -37,6 +38,17 @@ const resolvers = {
       return run
     },
 
+    deleteRun: async(parent, {runID}, {Runs}) => {
+      try {
+        const run = await Runs.findOne({runID})
+        await Runs.deleteOne({runID})
+        return run
+      } catch(error) {
+        console.error(error)
+      }
+    },
+
+    // Not used
     createRun: async (parent, {name, params, projectID}, {Runs}) => {
       const run = await Runs.create({name, params, projectID})
       const {runID} = run
@@ -49,6 +61,7 @@ const resolvers = {
       )
       return run
     }
+
   },
   Run: {
     createdBy: async({createdBy}, variables, {Users}) => {

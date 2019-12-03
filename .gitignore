@@ -20,3 +20,5 @@ minio/upload/*
 SEURAT/
 frontend_seurat_inputs.json
 # results/
+
+.env

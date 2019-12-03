@@ -11,14 +11,12 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../utils'
 
-const NewRunCard = withRedux(({
+const NewRunModal = withRedux(({
   app: {
     user: {userID},
     project: {projectID}
   },
-  actions: {
-    setRun
-  },
+  actions: {setRun},
   refetch
 }) => {
   const [runName, setRunName] = useState('')
@@ -33,24 +31,22 @@ const NewRunCard = withRedux(({
   `, {
     variables: {name: runName, projectID, userID},
     // Refetch runs on new created
-    onCompleted: data => refetch()
-    // doing below causes run to be set to null
-    //onCompleted: ({run}) => {setRun(run)}
+    onCompleted: ({createUnsubmittedRun: newRun}) => {
+      refetch()
+      setRun(newRun)
+    }
   })
   return (
     <Modal
       trigger={
-        <Card link color='black'>
-          <Card.Content>
-          <Card.Header as={Header} icon>
-            <Icon name='file' circular />
-            <Header.Content>
-              Create New Run
-            </Header.Content>
-          </Card.Header>
-          </Card.Content>
-          <Card.Content extra textAlign='center' content='Configure a pipeline and run on the cloud' />
-        </Card>
+        <Button fluid
+          attached='top'
+          color='black'
+          animated='vertical'
+        >
+          <Button.Content visible><Icon name='add'/></Button.Content>
+          <Button.Content hidden content="Configure a pipeline and submit a run to the cloud using this project's uploaded data"/>
+        </Button>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Run' />
@@ -70,4 +66,4 @@ const NewRunCard = withRedux(({
   )
 })
 
-export default NewRunCard
+export default NewRunModal

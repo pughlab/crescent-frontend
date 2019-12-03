@@ -19,7 +19,7 @@ const VisComponent = withRedux(
     return (
       <>
         <Grid.Column width={11} style={{height: '100%'}}>
-          <Transition visible animation='horizontal flip' duration={1000} unmountOnHide={true} transitionOnMount={true}>
+          <Transition visible animation='fade right' duration={1000} unmountOnHide={true} transitionOnMount={true}>
           <Segment style={{height: '100%'}}
             color={
               R.cond([

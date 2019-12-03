@@ -36,30 +36,44 @@ const MenuComponent = withRedux(({
   }
 }) => {
   const isMainView = R.equals(main)
+  const [hoverInfo, setHoverInfo] = useState(null)
   return (
-    <Segment attached='top' style={{height: '9%'}} as={Grid}>
+    <Segment attached='top' style={{height: '5rem'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
       {
-        RA.isNotNil(project) &&
+        // RA.isNotNil(project) &&
         <Button.Group fluid size='mini'>
+
           <Button icon basic inverted color='grey'
             onClick={() => toggleProjects()}
             disabled={isMainView('projects')}
           >
-            <Icon color='black' name='folder open' size='large'/>
+            <div
+              onMouseEnter={() => setHoverInfo('Go To Projects?')}
+              onMouseLeave={() => setHoverInfo(null)}
+            >
+              <Icon color='black' name='folder open' size='large'/>
+            </div>
           </Button>
           <Button icon basic inverted color='grey'
             onClick={() => toggleRuns()}
             disabled={isMainView('runs') || R.isNil(project) || R.and(RA.isNotNil(project), isMainView('projects'))}
           >
-            <Icon color='black' name='file' size='large'/>
+            <div
+              onMouseEnter={() => setHoverInfo('Go To Runs?')}
+              onMouseLeave={() => setHoverInfo(null)}
+            >
+              <Icon color='black' name='file' size='large'/>
+            </div>
           </Button>
         </Button.Group>
       }
       </Grid.Column>
-      <Grid.Column width={12} verticalAlign='middle' style={{padding: 0}}>
+      <Grid.Column width={12} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
         {
-          isMainView('projects')  ? 
+          RA.isNotNil(hoverInfo) ?
+            <Header content={hoverInfo} />
+          : isMainView('projects')  ? 
             <Image src={Logo} size='tiny' centered/>
           : isMainView('runs')  ?
             <Image src={Logo} size='tiny' centered/>
@@ -74,7 +88,7 @@ const MenuComponent = withRedux(({
                 :
                   <>
                     <Icon name='sign in' />
-                    Sign In
+                    Log In
                   </>
               }
             </Header>
@@ -88,13 +102,18 @@ const MenuComponent = withRedux(({
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
-          <InfoModal />
+          <InfoModal {...{setHoverInfo}} />
           <Button basic inverted icon
             basic
             color='grey'
             onClick={() => toggleLogin()}
           >
-            <Icon color='black' size='large' name={'user circle'} />
+            <div
+              onMouseEnter={() => setHoverInfo('Log in/out?')}
+              onMouseLeave={() => setHoverInfo(null)}
+            >
+              <Icon color='black' size='large' name={'user circle'} />
+            </div>
           </Button>
         </Button.Group>
       </Grid.Column>
