@@ -2,8 +2,8 @@ import { combineReducers } from "redux";
 import * as R from "ramda";
 
 // CONSTANTS
-import PARAMETERS from "../../components/main/vis/parameters/PARAMETERS";
-import hardSet from "redux-persist/es/stateReconciler/hardSet";
+// import PARAMETERS from "../../components/main/vis/parameters/PARAMETERS";
+// import hardSet from "redux-persist/es/stateReconciler/hardSet";
 
 // Reducer
 const initialState = {

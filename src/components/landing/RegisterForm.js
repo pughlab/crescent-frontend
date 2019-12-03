@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Form, Grid, Container, Image, Message, Segment, Card } from "semantic-ui-react";
+import { Button, Form, Grid, Container, Segment } from "semantic-ui-react";
 
 import { useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";

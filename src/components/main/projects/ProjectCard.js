@@ -1,23 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-import * as R from "ramda";
-import * as RA from "ramda-adjunct";
 import moment from "moment";
 
-import {
-    Form,
-    Card,
-    Header,
-    Transition,
-    Button,
-    Container,
-    Modal,
-    Label,
-    Divider,
-    Icon,
-    Image,
-    Popup
-} from "semantic-ui-react";
+import { Card, Header, Transition, Label, Icon } from "semantic-ui-react";
 
 import withRedux from "../../../redux/hoc";
 

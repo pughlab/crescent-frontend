@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import { Button, Form, Grid, Header, Image, Message, Segment, Card, Divider, Container } from "semantic-ui-react";
+import React from "react";
+import { Button, Form, Grid, Segment, Container } from "semantic-ui-react";
 
-import Logo from "./logo.jpg";
+// import Logo from "./logo.jpg";
 
 import { useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";

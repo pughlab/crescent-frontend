@@ -1,19 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-import {
-    Menu,
-    Card,
-    Header,
-    Segment,
-    Button,
-    Grid,
-    Modal,
-    Label,
-    Divider,
-    Icon,
-    Image,
-    Popup
-} from "semantic-ui-react";
+import { Header, Segment, Button, Grid, Icon, Image } from "semantic-ui-react";
 
 import * as R from "ramda";
 import * as RA from "ramda-adjunct";
@@ -24,14 +11,12 @@ import InfoModal from "./InfoModal";
 
 import Logo from "../landing/logo.jpg";
 
-import Marquee from "react-marquee";
-
-const CrescentIcon = () => (
-    <Icon.Group style={{ marginTop: -3 }}>
-        <Icon name="cloud" size="big" />
-        <Icon name="moon" size="small" inverted style={{ marginTop: 2, marginLeft: -2 }} />
-    </Icon.Group>
-);
+// const CrescentIcon = () => (
+//     <Icon.Group style={{ marginTop: -3 }}>
+//         <Icon name="cloud" size="big" />
+//         <Icon name="moon" size="small" inverted style={{ marginTop: 2, marginLeft: -2 }} />
+//     </Icon.Group>
+// );
 
 const MenuComponent = withRedux(
     ({
@@ -128,7 +113,7 @@ const MenuComponent = withRedux(
                 <Grid.Column width={2} verticalAlign="middle">
                     <Button.Group fluid widths={2} size="mini">
                         <InfoModal {...{ setHoverInfo }} />
-                        <Button basic inverted icon basic color="grey" onClick={() => toggleLogin()}>
+                        <Button basic inverted icon color="grey" onClick={() => toggleLogin()}>
                             <div
                                 onMouseEnter={() => setHoverInfo("Log in/out?")}
                                 onMouseLeave={() => setHoverInfo(null)}

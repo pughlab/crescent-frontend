@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
 import * as R from "ramda";
 import * as RA from "ramda-adjunct";
 
-import { Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Icon } from "semantic-ui-react";
+import { Transition, Segment, Divider, Header, Icon } from "semantic-ui-react";
 
 import withRedux from "../../../../redux/hoc";
 

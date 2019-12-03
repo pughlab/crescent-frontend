@@ -1,18 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-import {
-    Container,
-    Card,
-    Divider,
-    Button,
-    Header,
-    Icon,
-    Modal,
-    Dropdown,
-    Label,
-    Segment,
-    Grid
-} from "semantic-ui-react";
+import { Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid } from "semantic-ui-react";
 
 import * as R from "ramda";
 import * as RA from "ramda-adjunct";

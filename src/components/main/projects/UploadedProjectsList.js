@@ -1,28 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
 import * as R from "ramda";
-import * as RA from "ramda-adjunct";
-import moment from "moment";
 
 import { queryIsNotNil } from "../../../utils";
 
-import {
-    Form,
-    Card,
-    Header,
-    Transition,
-    Button,
-    Container,
-    Modal,
-    Label,
-    Divider,
-    Icon,
-    Image,
-    Popup,
-    Segment
-} from "semantic-ui-react";
+import { Card, Header, Icon, Segment } from "semantic-ui-react";
 
 import withRedux from "../../../redux/hoc";
 

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Segment, Form, Message, Divider, Label } from "semantic-ui-react";
+import React from "react";
+import { Button, Segment, Form, Message } from "semantic-ui-react";
 
 import RangeSlider from "./RangeSlider";
 

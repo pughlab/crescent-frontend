@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import * as R from "ramda";
-import * as RA from "ramda-adjunct";
 
-import { Segment, Transition, Grid, Image, Step, Header, Label } from "semantic-ui-react";
+import { Segment, Transition, Grid } from "semantic-ui-react";
 
 import withRedux from "../../../redux/hoc";
 

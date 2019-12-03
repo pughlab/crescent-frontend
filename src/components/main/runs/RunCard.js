@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-import { Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup } from "semantic-ui-react";
+import { Transition, Segment, Card, Header, Button, Modal, Label, Icon } from "semantic-ui-react";
 
 import * as R from "ramda";
 import * as RA from "ramda-adjunct";
@@ -10,9 +10,9 @@ import withRedux from "../../../redux/hoc";
 import Marquee from "react-marquee";
 import moment from "moment";
 
-import { useMutation, useQuery } from "@apollo/react-hooks";
+import { useMutation } from "@apollo/react-hooks";
 import { gql } from "apollo-boost";
-import { queryIsNotNil } from "../../../utils";
+// import { queryIsNotNil } from "../../../utils";
 
 const RunCard = withRedux(
     ({

@@ -1,27 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
-import {
-    Menu,
-    Card,
-    Header,
-    Segment,
-    Button,
-    Grid,
-    Modal,
-    Label,
-    Divider,
-    Icon,
-    Image,
-    Popup
-} from "semantic-ui-react";
+import { Header, Button, Grid, Modal, Divider, Icon, Image } from "semantic-ui-react";
 
 import UHN from "./UHN.png";
 import SK from "./SK.png";
 import GC from "./GC.jpeg";
 import MBD from "./MBD.jpg";
-
-import * as R from "ramda";
-import * as RA from "ramda-adjunct";
 
 const InfoModal = ({ setHoverInfo }) => (
     <Modal
@@ -35,7 +19,7 @@ const InfoModal = ({ setHoverInfo }) => (
     >
         <Modal.Content>
             <Header content="Help" />A quick walkthrough of accessing and exploring public datasets can be found on{" "}
-            <a href="https://youtu.be/KK4Xc6SBSSY" target="_blank">
+            <a href="https://youtu.be/KK4Xc6SBSSY" target="_blank" rel="noopener noreferrer">
                 Youtube.
             </a>
             <Divider />
@@ -45,6 +29,7 @@ const InfoModal = ({ setHoverInfo }) => (
             <a
                 href="https://github.com/pughlab/crescent/blob/master/.github/ISSUE_TEMPLATE/bug_report.md"
                 target="_blank"
+                rel="noopener noreferrer"
             >
                 report bugs
             </a>{" "}
@@ -52,11 +37,12 @@ const InfoModal = ({ setHoverInfo }) => (
             <a
                 href="https://github.com/pughlab/crescent/blob/master/.github/ISSUE_TEMPLATE/feature_request.md"
                 target="_blank"
+                rel="noopener noreferrer"
             >
                 request features.
             </a>{" "}
             This can also be done on our{" "}
-            <a href="https://github.com/pughlab/crescent" target="_blank">
+            <a href="https://github.com/pughlab/crescent" target="_blank" rel="noopener noreferrer">
                 Github.
             </a>
             <Divider />
@@ -69,7 +55,7 @@ const InfoModal = ({ setHoverInfo }) => (
             researcher productivity by accelerating execution and comparison of computational methods, as well as
             providing contextual data for understanding how cells behave within tumour tissues. CReSCENT is available
             under an open source license via{" "}
-            <a href="https://github.com/pughlab/crescent/blob/master/LICENSE" target="_blank">
+            <a href="https://github.com/pughlab/crescent/blob/master/LICENSE" target="_blank" rel="noopener noreferrer">
                 Github.
             </a>
             <Divider />
