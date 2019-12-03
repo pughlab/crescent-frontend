@@ -1,25 +1,22 @@
-import './App.css'
-import 'semantic-ui-css/semantic.min.css'
-import React, {useState} from 'react'
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
+import "./App.css";
+import "semantic-ui-css/semantic.min.css";
+import React, { useState } from "react";
+import * as R from "ramda";
+import * as RA from "ramda-adjunct";
 
-import {Segment, Modal, Button, Image, Header} from 'semantic-ui-react'
+import { Segment, Modal, Button, Image, Header } from "semantic-ui-react";
 
-import MenuComponent from './components/menu'
-import MainComponent from './components/main'
+import MenuComponent from "./components/menu";
+import MainComponent from "./components/main";
 
-import Logo from './components/landing/logo.jpg'
+import Logo from "./components/landing/logo.jpg";
 
-import withRedux from './redux/hoc'
+import withRedux from "./redux/hoc";
 
-const App = withRedux(
-  ({
-    session,
-  }) => {
-    const [introduction, setIntroduction] = useState(true)
+const App = withRedux(({ session }) => {
+    const [introduction, setIntroduction] = useState(true);
     return (
-      // introduction ?
+        // introduction ?
         // <Modal open={introduction} dimmer='inverted'>
         //   <Modal.Content>
         //     <Image src={Logo} size='medium' centered/>
@@ -32,12 +29,10 @@ const App = withRedux(
         //   </Modal.Content>
         // </Modal>
         // :
-        <Segment style={{padding: 0}}>
-          <MenuComponent />
-          <MainComponent {...{session}} />
-
+        <Segment style={{ padding: 0 }}>
+            <MenuComponent />
+            <MainComponent {...{ session }} />
         </Segment>
-    )
-  }
-)
-export default App
+    );
+});
+export default App;

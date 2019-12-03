@@ -6,7 +6,7 @@
 // import * as RA from 'ramda-adjunct'
 
 // const UploadButton = ({
-//     label,   
+//     label,
 //     url, // Minio url
 //     uploadedFile, setUploadedFile
 // }) => {
@@ -29,7 +29,7 @@
 //           // Send file to minio
 //           const xhr = new XMLHttpRequest ()
 //           xhr.open('PUT', url, true)
-//           // xhr.setRequestHeader('Access-Control-Allow-Origin', '*') 
+//           // xhr.setRequestHeader('Access-Control-Allow-Origin', '*')
 //           xhr.withCredentials = true
 //           const formData = new FormData()
 //           formData.append('uploadedFile', file)
@@ -54,7 +54,7 @@
 //   uploadedBarcodesFile, setUploadedBarcodesFile,
 //   uploadedGenesFile, setUploadedGenesFile,
 //   uploadedMatrixFile, setUploadedMatrixFile,
-// }) => {  
+// }) => {
 //   const [openModal, setOpenModal] = useState(false)
 //   const uploadsIncomplete = R.all(RA.isNotNil, [uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile])
 //   return (
@@ -76,13 +76,13 @@
 //             setUploadedFile={setUploadedBarcodesFile}
 //           />
 //           <UploadButton label='Genes/Features'
-//             // url='/upload/genes' 
+//             // url='/upload/genes'
 //             url={`/projects/${currentProjectID}/upload/genes`}
 //             uploadedFile={uploadedGenesFile}
 //             setUploadedFile={setUploadedGenesFile}
 //           />
 //           <UploadButton label='Matrix'
-//             // url='/upload/matrix' 
+//             // url='/upload/matrix'
 //             url={`/projects/${currentProjectID}/upload/matrix`}
 //             uploadedFile={uploadedMatrixFile}
 //             setUploadedFile={setUploadedMatrixFile}
@@ -92,7 +92,7 @@
 //       <Modal.Actions>
 //         <Button
 //           color={uploadsIncomplete ? 'blue' : undefined}
-//           content={uploadsIncomplete ? 'Confirm' : 'Close'} 
+//           content={uploadsIncomplete ? 'Confirm' : 'Close'}
 //           onClick={() => setOpenModal(false)}
 //         />
 //       </Modal.Actions>
