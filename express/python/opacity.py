@@ -74,10 +74,9 @@ def get_opacities(feature, runID):
 	with loompy.connect(path) as ds:
 		barcodes = ds.ca.CellID
 		features = ds.ra.Gene
-		i = bisect_left(features, feature)
-		feature_idx = i if features[i] == feature else -1
-		if 0 <= feature_idx < len(features):
-			opacities = calculate_opacities(ds[feature_idx, :])
+		index = bisect_left(features, feature)
+		if index in range(len(features)) and features[index] == feature:
+			opacities = calculate_opacities(ds[index, :])
 			return dict(zip(barcodes, opacities))
 		else:
 			helper.return_error("Feature Not Found")
