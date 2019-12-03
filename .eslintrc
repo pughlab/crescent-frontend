@@ -1,0 +1,13 @@
+{
+    "extends": [
+        "react-app",
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "prettier",
+        "plugin:prettier/recommended"
+    ],
+    "plugins": [
+        "prettier",
+        "react"
+    ]
+}
