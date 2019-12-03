@@ -16,10 +16,9 @@ const SubmitRunButton = withRedux(
                     pipeline: { parameters }
                 }
             }
-        },
-        actions: {}
+        }
     }) => {
-        const [submitRun, { loading, data, error }] = useMutation(
+        const [submitRun] = useMutation(
             gql`
                 mutation SubmitRun($runID: ID, $params: String) {
                     submitRun(runID: $runID, params: $params) {

@@ -22,12 +22,7 @@ const ShareProjectModal = withRedux(
         const [newSharedWith, setNewSharedWith] = useState([]);
 
         // Project users
-        const {
-            loading: loadingProjectUsers,
-            data: dataProjectUsers,
-            error: errorProjectUsers,
-            refetch: refetchProjectUsers
-        } = useQuery(
+        const { loading: loadingProjectUsers, data: dataProjectUsers, refetch: refetchProjectUsers } = useQuery(
             gql`
                 query ProjectUsers($projectID: ID) {
                     project(projectID: $projectID) {
@@ -64,7 +59,7 @@ const ShareProjectModal = withRedux(
         const notProjectCreator = loadingProjectUsers
             ? R.always(false)
             : R.compose(R.not, R.propEq("userID", R.prop("userID", creator)));
-        const { loading: loadingUsers, data: dataUsers, error: errorUsers, refetchUsers } = useQuery(
+        const { loading: loadingUsers, data: dataUsers } = useQuery(
             gql`
                 query AllUsers {
                     users {

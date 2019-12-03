@@ -11,20 +11,17 @@ import { gql } from "apollo-boost";
 // Modal for entering the run id name
 const SubmitButton = ({
     params,
-
     setLoading,
     loading,
     setSubmitted,
     submitted,
-
     notUploaded,
-
     currentProjectID
 }) => {
     const [runName, setRunName] = useState("");
     const [openRunModal, setOpenRunModal] = useState(false);
     // GraphQL mutation hook to call mutation and use result
-    const [createRun, { loading: createRunLoading, data, error }] = useMutation(
+    const [createRun, { loading: createRunLoading, data }] = useMutation(
         gql`
             mutation SubmitRun($name: String!, $params: String!, $projectID: ID!) {
                 createRun(name: $name, params: $params, projectID: $projectID) {

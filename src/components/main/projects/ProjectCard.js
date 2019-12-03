@@ -16,7 +16,6 @@ const ProjectCard = withRedux(
         project
     }) => {
         const {
-            projectID,
             name,
             description,
             createdBy: { name: creatorName },

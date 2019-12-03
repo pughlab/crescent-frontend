@@ -39,7 +39,7 @@ const StepAccordion = withRedux(
     }
 );
 
-const PipelineSidebar = withRedux(({}) => {
+const PipelineSidebar = withRedux(() => {
     return (
         <Accordion styled>
             {R.addIndex(R.map)(

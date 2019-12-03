@@ -28,10 +28,9 @@ const RunsCardList = withRedux(
                 createdOn: projectCreatedOn,
                 createdBy: { name: creatorName }
             }
-        },
-        actions: { setProject }
+        }
     }) => {
-        const { loading, data, error, refetch } = useQuery(
+        const { data, refetch } = useQuery(
             gql`
                 query ProjectRuns($projectID: ID) {
                     runs(projectID: $projectID) {

@@ -20,7 +20,7 @@ const UploadedProjectsList = withRedux(
         }
     }) => {
         // GQL query to find all projects of which user is a member of
-        const { loading, data, error, refetch } = useQuery(
+        const { data, refetch } = useQuery(
             gql`
                 query UserProjects($userID: ID) {
                     projects(userID: $userID) {

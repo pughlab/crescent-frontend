@@ -74,7 +74,7 @@ const NewProjectModal = withRedux(
         const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null);
         console.log(uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile);
         // GQL mutation to create a project
-        const [createProject, { loading, data, error }] = useMutation(
+        const [createProject, { data }] = useMutation(
             gql`
                 mutation CreateProject(
                     $userID: ID!

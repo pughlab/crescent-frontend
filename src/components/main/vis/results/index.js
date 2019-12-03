@@ -11,15 +11,11 @@ import ScatterPlot from "./ScatterPlot";
 const ResultsComponent = withRedux(
     ({
         app: {
-            run,
             toggle: {
                 vis: {
                     results: { activeResult, availablePlots }
                 }
             }
-        },
-        actions: {
-            toggle: {}
         }
     }) => {
         const ResultsHeader = R.ifElse(R.isNil, R.always(), R.path([activeResult, "label"]))(availablePlots);

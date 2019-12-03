@@ -29,7 +29,7 @@ const LoginForm = withRedux(
         setShowLogin //For toggling to registration
     }) => {
         // GraphQL mutation hook to call mutation and use result
-        const [authenticateUser, { loading, data, error }] = useMutation(
+        const [authenticateUser] = useMutation(
             gql`
                 mutation AuthenticateUser($email: Email!, $password: String!) {
                     authenticateUser(email: $email, password: $password) {

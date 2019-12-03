@@ -18,7 +18,7 @@ const NewRunModal = withRedux(
         refetch
     }) => {
         const [runName, setRunName] = useState("");
-        const [createUnsubmittedRun, { loading, data, error }] = useMutation(
+        const [createUnsubmittedRun] = useMutation(
             gql`
                 mutation CreateUnsubmittedRun($name: String!, $projectID: ID!, $userID: ID!) {
                     createUnsubmittedRun(name: $name, projectID: $projectID, userID: $userID) {

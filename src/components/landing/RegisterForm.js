@@ -28,7 +28,7 @@ const RegisterValidationSchema = Yup.object().shape({
 });
 
 const RegisterForm = ({ setShowLogin }) => {
-    const [createUser, { loading, data, error }] = useMutation(gql`
+    const [createUser, { data }] = useMutation(gql`
         mutation CreateUser($firstName: String!, $lastName: String!, $email: Email!, $password: String!) {
             createUser(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
                 userID

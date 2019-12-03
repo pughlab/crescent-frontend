@@ -16,7 +16,7 @@ const ArchiveProjectModal = withRedux(
         },
         actions: { setUser }
     }) => {
-        const [archiveProject, { loading, data, error }] = useMutation(
+        const [archiveProject] = useMutation(
             gql`
                 mutation ArchiveProject($projectID: ID) {
                     archiveProject(projectID: $projectID) {
