@@ -38,7 +38,7 @@ const MenuComponent = withRedux(({
   const isMainView = R.equals(main)
   const [hoverInfo, setHoverInfo] = useState(null)
   return (
-    <Segment attached='top' style={{height: '9%'}} as={Grid}>
+    <Segment attached='top' style={{height: '5rem'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
       {
         // RA.isNotNil(project) &&
