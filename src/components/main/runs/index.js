@@ -41,7 +41,7 @@ const RunsCardList = withRedux(({
         }
         name
         params
-        completed
+        status
       }
     }
   `, {
