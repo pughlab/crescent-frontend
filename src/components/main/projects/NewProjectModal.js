@@ -111,8 +111,11 @@ const NewProjectModal = withRedux(({
       matrixObjectName: uploadedMatrixFile,
     },
     onCompleted: ({createProject: newProject}) => {
-      setProject(newProject)
-      refetch()
+      if (R.isNil(newProject)) {
+        // Should call refetch before setting to new project
+        refetch()
+        setProject(newProject)
+      }
     }
   })
   const disableSubmit = R.any(RA.isNilOrEmpty)([
