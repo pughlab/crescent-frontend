@@ -30,10 +30,10 @@ def label_barcodes(barcode_coords, group, runID):
 	""" given the coordinates for the barcodes, sorts them into the specified groups and returns a plotly object """
 	plotly_obj = []
 	
-	path = "/usr/src/app/results/{runID}/groups.tsv".format(runID=runID) 
+	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/groups.tsv".format(runID=runID)
+		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
 			helper.return_error("group label file not found ("+path+")")	
 	
@@ -55,10 +55,10 @@ def get_coordinates(vis, runID):
 	""" given a visualization type and runID, gets the coordinates for each barcode and returns in dict """
 	barcode_coords = {}
 	
-	path = "/usr/src/app/results/{runID}/coordinates/{vis}Coordinates.tsv".format(runID=runID, vis=vis.upper())
+	path = "/usr/src/app/results/{runID}/SEURAT/coordinates/{vis}Coordinates.tsv".format(runID=runID, vis=vis.upper())
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/coordinates/{vis}Coordinates.tsv".format(runID=runID, vis=vis.upper())
+		path = "../../results/{runID}/SEURAT/coordinates/{vis}Coordinates.tsv".format(runID=runID, vis=vis.upper())
 		if not os.path.isfile(path):
 			helper.return_error("specified visualization coordinate file not found")	
 	

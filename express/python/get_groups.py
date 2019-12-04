@@ -9,10 +9,10 @@ import helper
 
 def read_groups_file(runID):
 	""" given a runID, fetches the available groups to label cell barcodes by """
-	path = "/usr/src/app/results/{runID}/groups.tsv".format(runID=runID) 
+	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/groups.tsv".format(runID=runID)
+		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
 			helper.return_error("group label file not found ("+path+")")	
 	

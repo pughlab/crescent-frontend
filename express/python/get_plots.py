@@ -16,10 +16,10 @@ DESC = {
 def find_plot_files(runID):
 	""" given a runID get the available plots """
 	
-	folder_path = "/usr/src/app/results/{runID}/coordinates".format(runID=runID)
+	folder_path = "/usr/src/app/results/{runID}/SEURAT/coordinates".format(runID=runID)
 	if not os.path.isdir(folder_path):
 		# try command-line path
-		folder_path = "../../results/{runID}/coordinates".format(runID=runID)
+		folder_path = "../../results/{runID}/SEURAT/coordinates".format(runID=runID)
 		if not os.path.isdir(folder_path):
 			helper.return_error("coordinates folder not found ("+folder_path+")")	
 	available_plots = {}
