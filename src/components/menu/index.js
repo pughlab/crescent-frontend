@@ -7,8 +7,6 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../redux/hoc'
 
-import InfoModal from './InfoModal'
-
 import Logo from '../landing/logo.jpg'
 
 import Marquee from 'react-marquee'
@@ -30,6 +28,7 @@ const MenuComponent = withRedux(({
   },
   actions: {
     // logout,
+    toggleInfo,
     toggleProjects,
     toggleRuns,
     toggleLogin
@@ -102,12 +101,21 @@ const MenuComponent = withRedux(({
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
-          <InfoModal />
           <Popup inverted size='large'
             trigger={
-              <Button basic inverted icon
-                basic
-                color='grey'
+              <Button color='grey' inverted basic icon
+                onClick={() => toggleInfo()}
+              >
+                <Icon color='black' size='large' name='info circle' />
+              </Button>
+            }
+            content={
+              'Click For Info/Help'
+            }
+          />
+          <Popup inverted size='large'
+            trigger={
+              <Button basic inverted icon color='grey'
                 onClick={() => toggleLogin()}
               >
                 <Icon color='black' size='large' name={'user circle'} />
