@@ -29,11 +29,13 @@ const ProjectsCardList = withRedux(({
         CanceR Single Cell ExpressioN Toolkit
       </Message.Header>
       <Message.Content>
-        Select a public project or sign in to start
+        Select a public project (below) or sign in (top right) to start
       </Message.Content>
     </Message>
     <Container>
-      <Button.Group size='mini' fluid widths={2}>
+      <Button.Group size='mini' fluid
+        widths={R.isNil(user) ? 1 : 2}
+      >
         <Button color='black'
           onClick={() => setActiveProjectKind('published')}
           active={isActiveProjectKind('published')} 
@@ -44,17 +46,20 @@ const ProjectsCardList = withRedux(({
             content='Public Data' subheader='Published/example datasets accepted by CReSCENT'
           />
         </Button>
-        <Button color='black'
-          disabled={R.isNil(user)}
-          onClick={() => setActiveProjectKind('uploaded')}
-          active={isActiveProjectKind('uploaded')} 
-          basic={R.not(isActiveProjectKind('uploaded'))}
-        >
-          <Header
-            inverted={isActiveProjectKind('uploaded')}
-            content='Uploaded Data' subheader={R.isNil(user) ? 'Register and sign in to upload your own data' : 'Upload your own scRNA-seq data'}
-          />
-        </Button>
+        {
+          RA.isNotNil(user) &&
+            <Button color='black'
+              disabled={R.isNil(user)}
+              onClick={() => setActiveProjectKind('uploaded')}
+              active={isActiveProjectKind('uploaded')} 
+              basic={R.not(isActiveProjectKind('uploaded'))}
+            >
+              <Header
+                inverted={isActiveProjectKind('uploaded')}
+                content='Uploaded Data' subheader={R.isNil(user) ? 'Register and sign in to upload your own data' : 'Upload your own scRNA-seq data'}
+              />
+            </Button>
+        }
       </Button.Group>
       <Divider hidden horizontal />
       {

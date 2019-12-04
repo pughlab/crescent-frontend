@@ -124,12 +124,12 @@ const NewProjectModal = withRedux(({
   return (
     <Modal
       trigger={
-        <Button fluid
+        <Button fluid size='large'
           attached='top'
           color='black'
           animated='vertical'
         >
-          <Button.Content visible><Icon name='add'/></Button.Content>
+          <Button.Content visible><Icon name='add' size='large'/></Button.Content>
           <Button.Content hidden content="Upload your own files to create a new project"/>
         </Button>
       }
