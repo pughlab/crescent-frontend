@@ -15,7 +15,8 @@ const SubmitRunButton = withRedux(
   ({
     app: {
       run: {
-        runID
+        runID,
+        status: runStatus
       },
       toggle: {
         vis: {
@@ -37,7 +38,8 @@ const SubmitRunButton = withRedux(
       variables: {runID, params: JSON.stringify(parameters)}
     })
     return (
-      <Button fluid content='SUBMIT RUN' color='blue'
+      <Button fluid content={R.equals('pending', runStatus) ? 'SUBMIT RUN' : 'ALREADY SUBMITTED'} color='blue'
+        disabled={R.not(R.equals('pending', runStatus))}
         onClick={() => submitRun()}
       />
     )

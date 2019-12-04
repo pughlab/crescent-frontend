@@ -36,6 +36,12 @@ const UploadedProjectsList = withRedux(({
         createdBy {
           name
         }
+        
+        runs {
+          runID
+          name
+          status
+        }
       }
     }
   `, {
@@ -47,7 +53,7 @@ const UploadedProjectsList = withRedux(({
     R.prop('projects'),
     R.always([])
   )(data)
-  console.log(data)
+  console.log('projects list', data)
   return (
     <>
     <NewProjectModal {...{refetch}} />
@@ -64,7 +70,7 @@ const UploadedProjectsList = withRedux(({
           </Segment>
         ),
         userProjects => (
-          <Card.Group itemsPerRow={3}>
+          <Card.Group itemsPerRow={1}>
           {
             R.addIndex(R.map)(
               (project, index) => (

@@ -39,11 +39,11 @@ const RunCard = withRedux(({
   console.log(status)
   return (
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
-    <Card color={R.prop(status, {pending: 'grey', completed: 'green', submitted: 'yellow'})}>
+    <Card color={R.prop(status, {pending: 'orange', completed: 'green', submitted: 'yellow'})}>
       <Card.Content>
         <Label attached='top'
           // Color based on whether run is complete or not
-          color={R.prop(status, {pending: 'grey', completed: 'green', submitted: 'yellow'})}
+          color={R.prop(status, {pending: 'orange', completed: 'green', submitted: 'yellow'})}
         >
           <Icon
             name={R.prop(status, {pending: 'circle outline', completed: 'circle outline check', submitted: 'circle notch'})}

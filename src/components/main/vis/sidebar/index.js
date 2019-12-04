@@ -11,6 +11,7 @@ import ResultsSidebar from './ResultsSidebar'
 import PipelineSidebar from './PipelineSidebar'
 
 import SubmitRunButton from '../parameters/SubmitRunButton'
+import DownloadResultsButton from '../results/DownloadResultsButton'
 
 const SidebarComponent = withRedux(
   ({
@@ -22,7 +23,7 @@ const SidebarComponent = withRedux(
     const isSidebarView = R.equals(sidebarView)
     return (
       <Transition visible animation='fade left' duration={1000} unmountOnHide={true} transitionOnMount={true}>
-      <Segment basic style={{height: '100%', padding: 0}}>
+      <Segment basic>
         <Segment attached='top'>
           <Button.Group fluid widths={2}>
             <Button compact content='PIPELINE' 
@@ -37,7 +38,7 @@ const SidebarComponent = withRedux(
             />
           </Button.Group>
         </Segment>
-        <Segment attached style={{height: '80%', overflowY: 'scroll'}}>
+        <Segment attached>
         {
           R.cond([
             [R.equals('pipeline'), R.always(<PipelineSidebar />)],
@@ -48,13 +49,8 @@ const SidebarComponent = withRedux(
         <Segment attached='bottom'>
         {
           R.cond([
-            [R.equals('pipeline'), R.always(
-              // <Button fluid content='SUBMIT RUN' color='blue' />
-              <SubmitRunButton />
-            )],
-            [R.equals('results'), R.always(
-              <Button fluid content='DOWNLOAD RESULTS' color='violet' />
-            )]
+            [R.equals('pipeline'), R.always(<SubmitRunButton />)],
+            [R.equals('results'), R.always(<DownloadResultsButton />)]
           ])(sidebarView)
         }
         </Segment>

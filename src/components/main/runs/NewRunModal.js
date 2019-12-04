@@ -24,8 +24,13 @@ const NewRunModal = withRedux(({
     mutation CreateUnsubmittedRun($name: String!, $projectID: ID!, $userID: ID!) {
       createUnsubmittedRun(name: $name, projectID: $projectID, userID: $userID) {
         runID
-        params
+        createdOn
+        createdBy {
+          name
+        }
         name
+        params
+        status
       }
     }
   `, {
