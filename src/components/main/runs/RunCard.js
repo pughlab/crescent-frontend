@@ -44,10 +44,12 @@ const RunCard = withRedux(({
           color={completed ? 'green' : 'yellow'}
         >
           <Icon
-            name='file'
-            // name={completed ? 'file' : 'spinner'}
-            // loading={R.not(completed)}
-            size='large' style={{margin: 0}}
+            name={
+              completed ? 'circle outline check'
+              : 'circle notch'
+            }
+            loading={R.not(completed)}
+            size='large' style={{marginLeft: 0}}
           />
         </Label>
         <Card.Header>
@@ -60,7 +62,12 @@ const RunCard = withRedux(({
         </Card.Header>
       </Card.Content>
       <Card.Content>
-        <Button.Group widths={2}>
+        <Button.Group widths={3}>
+        <Button basic fluid animated='vertical' onClick={() => setRun(run)}>
+          <Button.Content visible><Icon name='eye'/></Button.Content>
+          <Button.Content hidden content='View' />
+        </Button>
+
         <Modal
           trigger={
             <Button basic fluid animated='vertical'>
@@ -119,12 +126,6 @@ const RunCard = withRedux(({
           </Modal.Content>
         </Modal>
         </Button.Group>
-      </Card.Content>
-      <Card.Content>
-        <Button basic fluid animated='vertical' onClick={() => setRun(run)}>
-          <Button.Content visible><Icon name='eye'/></Button.Content>
-          <Button.Content hidden content='View' />
-        </Button>
       </Card.Content>
     </Card>
     </Transition>

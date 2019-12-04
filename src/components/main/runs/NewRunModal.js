@@ -39,12 +39,12 @@ const NewRunModal = withRedux(({
   return (
     <Modal
       trigger={
-        <Button fluid
+        <Button fluid size='large'
           attached='top'
           color='black'
           animated='vertical'
         >
-          <Button.Content visible><Icon name='add'/></Button.Content>
+          <Button.Content visible><Icon size='large' name='add'/></Button.Content>
           <Button.Content hidden content="Configure a pipeline and submit a run to the cloud using this project's uploaded data"/>
         </Button>
       }

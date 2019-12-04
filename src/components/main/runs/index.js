@@ -66,38 +66,40 @@ const RunsCardList = withRedux(({
         {description}
       </Segment>
       {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT */}
-      <Button.Group attached='bottom' widths={2}>
+      <Button.Group attached widths={2}>
         <ShareProjectModal />
         <ArchiveProjectModal />
       </Button.Group>
-      <Divider horizontal content='Viewing Runs Below' />
-      {/* CREATE NEW RUN FOR PROJECT */}
-      <NewRunModal {...{refetch}} />
-      {/* LIST OF EXISTING RUNS FOR PROJECT */}
       <Segment attached='bottom'>
-        {
-          R.ifElse(
-            R.isEmpty,
-            R.always(
-              <Segment placeholder>
-                <Header icon>
-                  <Icon name='exclamation' />
-                  No Runs
-                </Header>
-              </Segment>
-            ),
-            projectRuns => (
-              <Card.Group itemsPerRow={3}>
-              {
-                R.addIndex(R.map)(
-                  (run, index) => <RunCard key={index} {...{run, refetch}} />,
-                  projectRuns
-                )
-              }
-              </Card.Group>
-            )
-          )(projectRuns)
-        }
+        <Divider horizontal content='Viewing Project Runs Below' />
+        {/* CREATE NEW RUN FOR PROJECT */}
+        <NewRunModal {...{refetch}} />
+        {/* LIST OF EXISTING RUNS FOR PROJECT */}
+        <Segment attached='bottom'>
+          {
+            R.ifElse(
+              R.isEmpty,
+              R.always(
+                <Segment placeholder>
+                  <Header icon>
+                    <Icon name='exclamation' />
+                    No Runs
+                  </Header>
+                </Segment>
+              ),
+              projectRuns => (
+                <Card.Group itemsPerRow={3}>
+                {
+                  R.addIndex(R.map)(
+                    (run, index) => <RunCard key={index} {...{run, refetch}} />,
+                    projectRuns
+                  )
+                }
+                </Card.Group>
+              )
+            )(projectRuns)
+          }
+        </Segment>
       </Segment>
     </Container>
   )
