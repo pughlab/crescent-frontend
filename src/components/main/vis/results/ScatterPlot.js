@@ -58,7 +58,6 @@ const ScatterPlot = withRedux(
       })
   }, [selectedFeature])
 
-  console.log(scatterData)
   return (
     <>
     {

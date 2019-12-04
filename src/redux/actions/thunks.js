@@ -31,14 +31,10 @@ const fetchScatter = () => (dispatch, getState) => {
       toggle: {vis: {results: {activeResult, selectedGroup, selectedFeature}}}
     }
   } = getState()
-  console.log(selectedFeature)
-  console.log(R.isEmpty(selectedFeature))
   if (R.isNil(selectedFeature) || R.isEmpty(selectedFeature)){
-    console.log(`/scatter/${activeResult}/${selectedGroup}/${runID}`)
     return fetchEndpoint(`/scatter/${activeResult}/${selectedGroup}/${runID}`)
   }
   else{
-    console.log(`/opacity/${selectedGroup}/${selectedFeature}/${runID}`)
     return fetchEndpoint(`/opacity/${selectedGroup}/${selectedFeature}/${runID}`)
   }
 }
