@@ -22,10 +22,11 @@ import ShareProjectModal from '../projects/ShareProjectModal'
 const RunsStatusLegend = ({
   projectRuns
 }) => {
-  const {pending: pendingCount, submitted: submittedCount, completed: completedCount} = R.compose(
-    R.map(R.length),
-    R.groupBy(R.prop('status'))
-  )(projectRuns)
+  const {pending: pendingCount, submitted: submittedCount, completed: completedCount} = R.reduce(
+    (runCountsByStatus, {status}) => R.over(R.lensProp(status), R.inc, runCountsByStatus),
+    {pending: 0, submitted: 0, completed: 0},
+    projectRuns
+  )
   return (
     <Step.Group fluid widths={3}>
       <Step>
@@ -105,7 +106,7 @@ const RunsCardList = withRedux(({
         <ArchiveProjectModal />
       </Button.Group>
       <Segment attached='bottom'>
-        <Divider horizontal content='Viewing Project Runs Below' />
+        <Divider horizontal content={`Viewing ${R.length(projectRuns)} Project Run${R.compose(R.equals(1), R.length)(projectRuns) ? '' : 's'} Below`} />
         <RunsStatusLegend {...{projectRuns}} />
         {/* CREATE NEW RUN FOR PROJECT */}
         <NewRunModal {...{refetch}} />
