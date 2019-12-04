@@ -4,6 +4,7 @@ import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, 
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import * as R_ from 'ramda-extension'
 
 import withRedux from '../../../redux/hoc'
 
@@ -23,7 +24,7 @@ const RunCard = withRedux(({
   refetch //refetchs all project runs
 }) => {
   const {
-    runID, createdOn, name, params, createdBy: {name: creatorName}, completed
+    runID, createdOn, name, params, createdBy: {name: creatorName}, status
   } = run
   const [deleteRun, {data, loading, error}] = useMutation(gql`
     mutation DeleteRun($runID: ID!) {
@@ -35,22 +36,27 @@ const RunCard = withRedux(({
     variables: {runID},
     onCompleted: data => refetch()
   })
+  console.log(status)
   return (
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
-    <Card color={completed ? 'green' : 'yellow'}>
+    <Card color={R.prop(status, {pending: 'grey', completed: 'green', submitted: 'yellow'})}>
       <Card.Content>
         <Label attached='top'
           // Color based on whether run is complete or not
-          color={completed ? 'green' : 'yellow'}
+          color={R.prop(status, {pending: 'grey', completed: 'green', submitted: 'yellow'})}
         >
           <Icon
-            name={
-              completed ? 'circle outline check'
-              : 'circle notch'
-            }
-            loading={R.not(completed)}
+            name={R.prop(status, {pending: 'circle outline', completed: 'circle outline check', submitted: 'circle notch'})}
+            loading={R.equals('submitted', status)}
             size='large' style={{marginLeft: 0}}
           />
+          {
+            R.prop(status, {
+              pending: 'PENDING USER SUBMISSION',
+              submitted: 'SUBMITTED AND RUNNING',
+              completed: 'RUN COMPLETED'
+            })
+          }
         </Label>
         <Card.Header>
           <Header size='small'>
@@ -79,25 +85,27 @@ const RunCard = withRedux(({
           <Modal.Header as={Header} textAlign='center' content='Run Parameters' />
           <Modal.Content>
           {
-            RA.isNotNil(params) &&
-            R.compose(
-              ({
-                singleCell,
-                numberGenes: {min: minNumberGenes, max: maxNumberGenes},
-                percentMito: {min: minPercentMito, max: maxPercentMito},
-                resolution,
-                principalDimensions,
-              }) => (
-                <Label.Group>
-                  <Label content='Single Cell Input Type' detail={singleCell} />
-                  <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
-                  <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
-                  <Label content='Clustering Resolution' detail={resolution} />
-                  <Label content='PCA Dimensions' detail={principalDimensions} />
-                </Label.Group>
-              ),
-              JSON.parse
-            )(params)
+            RA.isNotNil(params) ?
+              R.compose(
+                ({
+                  singleCell,
+                  numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+                  percentMito: {min: minPercentMito, max: maxPercentMito},
+                  resolution,
+                  principalDimensions,
+                }) => (
+                  <Label.Group>
+                    <Label content='Single Cell Input Type' detail={singleCell} />
+                    <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
+                    <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
+                    <Label content='Clustering Resolution' detail={resolution} />
+                    <Label content='PCA Dimensions' detail={principalDimensions} />
+                  </Label.Group>
+                ),
+                JSON.parse
+              )(params)
+            :
+              <Divider horizontal content='No parameters saved yet' />
           }
           </Modal.Content>
         </Modal>

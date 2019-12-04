@@ -131,7 +131,7 @@ const submitCWL = async (
   })
   cwl.on( 'close', code => {
       console.log( `child process exited with code ${code}`)
-      run.completed = true
+      run.status = 'completed'
       run.save()
   })
 }
