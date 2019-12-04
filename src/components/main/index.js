@@ -4,8 +4,6 @@ import { Segment, Button, Grid, Image, Step, Header, Label } from 'semantic-ui-r
 
 import memphisMini from '../../memphis-mini.png'
 
-import Expression from '../expression'
-
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
