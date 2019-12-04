@@ -31,6 +31,9 @@ const NewRunModal = withRedux(({
         name
         params
         status
+
+        submittedOn
+        completedOn
       }
     }
   `, {

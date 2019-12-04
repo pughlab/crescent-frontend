@@ -122,6 +122,8 @@ const submitCWL = async (
         shell: true
       }
   )
+  run.submittedOn = new Date()
+  await run.save()
   cwl.stdout.on( 'data', data => {
       console.log( `stdout: ${data}` )
       // console.log(data)
@@ -132,6 +134,7 @@ const submitCWL = async (
   cwl.on( 'close', code => {
       console.log( `child process exited with code ${code}`)
       run.status = 'completed'
+      run.completedOn = new Date()
       run.save()
   })
 }

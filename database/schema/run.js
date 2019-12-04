@@ -30,6 +30,16 @@ const RunSchema = new mongoose.Schema({
     type: String,
     enum: ['pending', 'submitted', 'completed'],
     default: 'pending'
+  },
+
+  submittedOn: {
+    type: Date,
+    default: null
+  },
+
+  completedOn: {
+    type: Date,
+    default: null
   }
 })
 

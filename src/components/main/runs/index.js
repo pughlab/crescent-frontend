@@ -77,6 +77,9 @@ const RunsCardList = withRedux(({
         name
         params
         status
+
+        submittedOn
+        completedOn
       }
     }
   `, {

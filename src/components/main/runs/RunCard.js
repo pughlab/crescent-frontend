@@ -24,7 +24,8 @@ const RunCard = withRedux(({
   refetch //refetchs all project runs
 }) => {
   const {
-    runID, createdOn, name, params, createdBy: {name: creatorName}, status
+    runID, name, params, createdBy: {name: creatorName}, status,
+    createdOn, submittedOn, completedOn
   } = run
   const [deleteRun, {data, loading, error}] = useMutation(gql`
     mutation DeleteRun($runID: ID!) {
@@ -62,7 +63,7 @@ const RunCard = withRedux(({
           <Header size='small'>
             <Marquee text={name} />
             <Header.Subheader>
-              {`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`}
+              {`Created by ${creatorName}`}
             </Header.Subheader>
           </Header>
         </Card.Header>
@@ -134,6 +135,23 @@ const RunCard = withRedux(({
           </Modal.Content>
         </Modal>
         </Button.Group>
+      </Card.Content>
+      <Card.Content>
+        <Label.Group>
+          <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} />
+          {
+            RA.isNotNil(submittedOn) &&
+              <Label content='Submitted' detail={`${moment(submittedOn).format('D MMMM YYYY, h:mm a')}`} />
+          }
+          {
+            RA.isNotNil(completedOn) &&
+              <Label content='Completed' detail={`${moment(completedOn).format('D MMMM YYYY, h:mm a')}`}/>
+          }
+          {
+            RA.isNotNil(submittedOn) && RA.isNotNil(completedOn) &&
+              <Label content='Time Elapsed' detail={`${moment(completedOn).diff(moment(submittedOn), 'minutes')} minutes`}/>
+          }
+        </Label.Group>
       </Card.Content>
     </Card>
     </Transition>

@@ -10,6 +10,9 @@ const typeDefs = gql`
     projectID: ID
     project: Project
     status: String
+
+    submittedOn: Date
+    completedOn: Date
   }
   type Query {
     allRuns: [Run]
