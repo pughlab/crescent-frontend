@@ -46,11 +46,11 @@ const ProjectSchema = new mongoose.Schema({
   //   default: []
   // },
   // or...
-  // // Can be a 1:1 project that encapsulates a dataset
-  // datasetID: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   default: null
-  // },
+  // Can be a 1:1 project that encapsulates a dataset
+  datasetID: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
+  },
 })
 
 module.exports = ProjectSchema

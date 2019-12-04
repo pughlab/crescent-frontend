@@ -47,7 +47,8 @@ const UploadButton = ({
           // xhr.onprogress = () => {}
           xhr.onload = () => {
             if (xhr.status == 200) {
-              const uploadID = xhr.response
+              const uploadID = JSON.parse(xhr.response)
+              // console.log(uploadID)
               setUploadedFile(uploadID)
               setLocalUploadedFile(file)
             }
@@ -100,11 +101,6 @@ const NewProjectModal = withRedux(({
         createdBy {
           name
         }
-        runs {
-          runID
-          name
-          params
-        }
       }
     }
   `, {
@@ -114,7 +110,10 @@ const NewProjectModal = withRedux(({
       genesObjectName: uploadedGenesFile,
       matrixObjectName: uploadedMatrixFile,
     },
-    onCompleted: data => refetch()
+    onCompleted: ({createProject: newProject}) => {
+      setProject(newProject)
+      refetch()
+    }
   })
   const disableSubmit = R.any(RA.isNilOrEmpty)([
     name, description,

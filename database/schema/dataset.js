@@ -9,15 +9,15 @@ const DatasetSchema = new mongoose.Schema({
   // MinIO object names
   barcodesID: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    required: true
   },
   featuresID: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    required: true
   },
   matrixID: {
     type: mongoose.Schema.Types.ObjectId,
-    auto: true
+    required: true
   }
 })
 

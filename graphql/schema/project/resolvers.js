@@ -39,12 +39,38 @@ const resolvers = {
         matrixObjectName,
       },
       {
-        Projects
+        Datasets,
+        Projects,
+        minioClient
       }
     ) => {
-      // console.log(barcodesObjectName, genesObjectName, matrixObjectName)
-      const project = await Projects.create({name, description, createdBy: userID})
-      return project
+      try {
+        const dataset = await Datasets.create({
+          barcodesID: barcodesObjectName,
+          featuresID: genesObjectName,
+          matrixID: matrixObjectName
+        })
+        const {datasetID} = dataset
+        const project = await Projects.create({name, description, createdBy: userID, datasetID})
+        const {projectID} = project
+        await minioClient.makeBucket(`project-${projectID}`)
+        const copyObjectToProjectBucket = async (uploadID) => {
+          // Get object from temporary bucket and put into project bucket
+          const tempObjectStream = await minioClient.getObject('temporary', `${uploadID}`)
+          await minioClient.putObject(`project-${projectID}`, `${uploadID}`, tempObjectStream)
+          // Remove from temporary bucket
+          await minioClient.removeObject('temporary', `${uploadID}`)
+
+        }
+        await copyObjectToProjectBucket(barcodesObjectName)
+        await copyObjectToProjectBucket(genesObjectName)
+        await copyObjectToProjectBucket(matrixObjectName)
+        // Create directory of uploads for project so pipeline can read
+
+        return project
+      } catch(error) {
+        console.error(error)
+      }
     },
 
     // Set the 'sharedWith' property  of a project to remove or add members
