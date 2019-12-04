@@ -38,21 +38,24 @@ const ScatterPlot = withRedux(
   }, [selectedGroup])
 
   useEffect(() => {
-    if (! R.isNil(selectedFeature)){
       const prev = scatterData;
       setScatterData( [] ) // loading 
       fetchScatter().then((data) => {
-        const mapIndexed = R.addIndex(R.map)
-        const merged = R.ifElse(
-          R.has('error'),
-          () => {console.error(data['error']); return prev}, // show error message here
-          mapIndexed((val, index) => {
-            return R.mergeLeft(val, scatterData[index])
-          })
-        )(data)
-        setScatterData(merged)
+        if(R.isNil(selectedFeature)){
+            setScatterData(data)
+        }
+        else{
+            const mapIndexed = R.addIndex(R.map)
+            const merged = R.ifElse(
+            R.has('error'),
+            () => {console.error(data['error']); return prev}, // show error message here
+            mapIndexed((val, index) => {
+                return R.mergeLeft(val, scatterData[index])
+            })
+            )(data)
+            setScatterData(merged)
+        }
       })
-    }
   }, [selectedFeature])
 
   console.log(scatterData)

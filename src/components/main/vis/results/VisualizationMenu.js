@@ -36,10 +36,18 @@ const VisualizationMenu = withRedux(
   }
 
   const handleSelectFeature = (event, {value}) => {
+    // handle Component props
     changeSearch('') // reset search
     changeFeature([R.last(value)])
-    changeSelectedFeature([R.last(value)]) 
+    // handle store change
+    const handleStoreChange = R.ifElse(
+      R.isEmpty,
+      R.always(null),
+      R.last
+    )
+    changeSelectedFeature(handleStoreChange(value))
   }
+  
   // format a list for a dropdown
   const formatList = (list) => {
     return R.addIndex(R.map)(
