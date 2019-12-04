@@ -43,9 +43,9 @@ const ResultsComponent = withRedux(
           </Segment>
         : R.equals('submitted', runStatus) ?
           <Segment basic placeholder style={{height: '100%'}}>
-            <Header textAlign='center'>
+            {/* <Header textAlign='center'>
               Run is currently being run
-            </Header>
+            </Header> */}
             <Header textAlign='center' icon>
               <ClimbingBoxLoader style={{margin: 0}} />
             </Header>
