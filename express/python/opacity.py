@@ -60,23 +60,6 @@ def calculate_opacities(feature_row):
 	opacities = [min_opac if val==0.0 else round((val*0.95/max_exp + min_opac), 2) for val in exp_values]	
 	return opacities	
 
-def binary_search(feature, features):
-	L = 0
-	R = len(features) - 1
-	if (feature == features[L]):
-		return L
-	elif (feature == features[R]):
-		return R
-	while R - L != 1:
-		M = round(float((L+R)/2))
-		if (feature == features[M]):
-			return M
-		elif (feature < features[M]):
-			R = M
-		elif (feature > features[M]):
-			L = M
-	return -1
-
 def get_opacities(feature, runID):
 	""" parses the normalized count matrix to get an expression value for each barcode """
 	path = "/usr/src/app/results/{runID}/normalized/{fileName}".format(runID=runID, fileName=fileName) 
@@ -89,7 +72,7 @@ def get_opacities(feature, runID):
 	with loompy.connect(path) as ds:
 		barcodes = ds.ca.CellID
 		features = ds.ra.Gene
-		feature_idx = binary_search(feature, features)
+		feature_idx = next((i for i in range(len(features)) if features[i] == feature), -1)
 		if feature_idx >= 0:
 			opacities = calculate_opacities(ds[feature_idx, :])
 			return dict(zip(barcodes, opacities))
