@@ -80,7 +80,11 @@ const ProjectCard = withRedux(({
                       />
                       <Button.Content hidden
                         content={
-                          <Icon name='eye' />
+                          <Icon name={R.prop(status, {
+                            pending: 'circle outline',
+                            submitted: 'circle notch',
+                            completed: 'circle outline check'
+                          })} />
                         }
                       />
                     </Button>
