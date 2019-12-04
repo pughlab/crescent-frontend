@@ -2,22 +2,6 @@ version: '2'
 
 services: 
 
-##### CROSSBAR #####
-
-  crossbar: 
-    image: crescent-crossbar
-    expose:
-      - ${CROSSBAR_PORT}
- #   environment:
- #     HOST: ${HOST}
- #     SERVER_PORT: ${SERVER_PORT}
-    ports:
-      - ${CROSSBAR_PORT}:${CROSSBAR_PORT}
-#    volumes:
-#      - ./src
-#    command: crossbar start --cbdir /crossbarnode/.crossbar
-
-
 ##### MONGO ####
 
   mongo: 
@@ -31,8 +15,6 @@ services:
       - ${MONGO_PORT}:${MONGO_PORT}
     volumes:
       - ./mongodb:/data/db
-    depends_on:
-      - crossbar
 #      - type: bind
 #      source: ./mongodb
 #      target: /data/db
@@ -52,8 +34,6 @@ services:
     environment:
       MINIO_ACCESS_KEY: crescent-access
       MINIO_SECRET_KEY: crescent-secret
-    depends_on:
-      - crossbar
     command: server ./express/tmp/minio
 #    volumes:
 #      - ./src
@@ -79,7 +59,6 @@ services:
       - .:/usr/src/app
     #  - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
-      - crossbar
       - minio 
       - mongo
     #mem_limit: 20g
@@ -98,7 +77,6 @@ services:
     volumes:
       - .:/usr/src/app
     depends_on:
-      - crossbar
       - server
     command: npm run start
 

@@ -23,30 +23,7 @@ const MainComponent = withRedux(
     app: {
       view: {main: mainView}
     },
-    session,
   }) => {
-    // useEffect(() => {
-    //   session.subscribe(
-    //     'crescent.result',
-    //     (args, {runID}) => {
-    //       console.log('crescent.result')
-    //       setActiveToggle('results')
-    //       setCurrentRunId(runID)
-    //       setLoading(false)
-    //       setSubmitted(false)
-    //     }
-    //   )
-    // }, [])
-
-    // const [visType, setVisType] = useState('tsne')
-    // const isCurrentVisType = R.equals(visType)
-    // useEffect(() => {
-    //   RA.isNotNil(currentRunId) && RA.isNotNil(visType) 
-    //   && fetch(`/result?runID=${currentRunId}&visType=${visType}`)
-    //     .then(response => response.blob())
-    //     .then(R.compose(setResult, URL.createObjectURL))
-    //   && setLoading(false)
-    // }, [currentRunId, visType])
     return (
       <Segment basic attached='bottom' style={{minHeight: 'calc(100vh - 5rem - 2px)', marginTop: 0,  backgroundImage: `url(${memphisMini})`}} as={Grid}>
       {

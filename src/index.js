@@ -4,8 +4,6 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import autobahn from 'autobahn'
-
 import ApolloClient from 'apollo-boost'
 import { ApolloProvider } from '@apollo/react-hooks'
 
@@ -34,40 +32,23 @@ const store = createStore(
 )
 const persistor = persistStore(store)
 
-
 const portal_ip = process.env.REACT_APP_PORTAL_IP
 
 const client = new ApolloClient({
   uri: `http://${portal_ip}:5000`,
 })
 
-const connection = new autobahn.Connection({url: `ws://${portal_ip}:4000/`, realm: 'realm1'})
 
-
-connection.onopen = function (session) {
-
-  // // 1) subscribe to a topic
-  // function onevent(args) {
-  //    console.log("Event:", args[0]);
-  // }
-  // session.subscribe('com.myapp.hello', onevent);
-  // // 2) publish an event
-  // session.publish('com.myapp.hello', ['Hello, world!']);
-
-  ReactDOM.render(
-    <ReduxProvider store={store}>
-      <PersistGate loading={null} {...{persistor}}>
-      <ApolloProvider client={client}>
-        <App session={session} />
-      </ApolloProvider>
-      </PersistGate>
-    </ReduxProvider>,
-    document.getElementById('root')
-  )
-}
-
-
-connection.open()
+ReactDOM.render(
+  <ReduxProvider store={store}>
+    <PersistGate loading={null} {...{persistor}}>
+    <ApolloProvider client={client}>
+      <App />
+    </ApolloProvider>
+    </PersistGate>
+  </ReduxProvider>,
+  document.getElementById('root')
+)
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
