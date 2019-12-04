@@ -56,7 +56,7 @@ const ScatterPlot = withRedux(
                     setScatterData(merged);
                 });
             }
-        }, [fetchScatter, scatterData, selectedFeature]);
+        }, [selectedFeature]);
 
         console.log(scatterData);
         return (
