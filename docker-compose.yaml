@@ -64,7 +64,7 @@ services:
     # build:
     #   context: ./
     #   dockerfile: Dockerfile.server
-    image: express-gql2
+    image: crescentdev/crescent-server-py3
     privileged: true
     expose:
       - ${SERVER_PORT}
