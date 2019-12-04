@@ -103,6 +103,7 @@ const submitCWL = async (
   kwargs,
   runID
 ) => {
+  const run = await Run.findOne({runID})
   const jobJSON = await makeCWLJobJSON(kwargs, runID)
   console.log(jobJSON)
   const cwl = spawn(
@@ -129,7 +130,9 @@ const submitCWL = async (
       console.log( `stderr: ${data}` )
   })
   cwl.on( 'close', code => {
-      console.log( `child process exited with code ${code}` )
+      console.log( `child process exited with code ${code}`)
+      run.completed = true
+      run.save()
   })
 }
 
