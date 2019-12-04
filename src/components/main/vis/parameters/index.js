@@ -91,7 +91,7 @@ const ParametersComponent = withRedux(
     }
     return (
       <Segment basic
-        loading={R.equals('submitted', runStatus)}
+        // loading={R.equals('submitted', runStatus)}
         disabled={R.compose(R.not, R.equals('pending'))(runStatus)}
       >
       {
