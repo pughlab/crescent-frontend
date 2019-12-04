@@ -13,6 +13,9 @@ import STEPS from '../parameters/STEPS'
 const StepAccordion = withRedux(
   ({
     app: {
+      run: {
+        status: runStatus
+      },
       toggle: {vis: {pipeline: {activeStep: activePipelineStep}}},
     },
     actions: {
@@ -32,7 +35,12 @@ const StepAccordion = withRedux(
           }
         </Accordion.Title>
         <Accordion.Content active={isActivePipelineStep(step)}>
-          <Dropdown options={[{value: 'seurat', text: 'SEURAT'}]} fluid selection placeholder='Select Tool' value={'seurat'}/>
+          <Dropdown fluid selection 
+            placeholder='Select Tool'
+            disabled={R.compose(R.not, R.equals('pending'))(runStatus)}
+            options={[{value: 'seurat', text: 'SEURAT'}]}
+            value={'seurat'}
+          />
         </Accordion.Content>
       </>
     )
