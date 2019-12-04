@@ -100,7 +100,7 @@ const ParametersComponent = withRedux(
               content={`Run is ${runStatus} and so parameters are not configurable`}
             />
             <Message.Header as={Header} size='large'
-              content={R.prop(runStatus, {submitted: 'You will be notified when your run is complete', completed: "Click 'Results' on the right to view visualizations"})}
+              content={R.prop(runStatus, {submitted: 'You will be notified when your run is completed', completed: "Click 'Results' on the right to view visualizations"})}
             />
           </Message>
       }
