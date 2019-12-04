@@ -15,28 +15,14 @@ import withRedux from './redux/hoc'
 
 const App = withRedux(
   ({
-    session,
+    
   }) => {
-    const [introduction, setIntroduction] = useState(true)
     return (
-      // introduction ?
-        // <Modal open={introduction} dimmer='inverted'>
-        //   <Modal.Content>
-        //     <Image src={Logo} size='medium' centered/>
-        //   </Modal.Content>
-        //   <Modal.Content>
-        //     <Button animated='fade' fluid size='huge' color='grey' onClick={() => setIntroduction(false)}>
-        //       <Button.Content visible content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'} />
-        //       <Button.Content hidden content='Enter' />
-        //     </Button>
-        //   </Modal.Content>
-        // </Modal>
-        // :
-        <Segment style={{padding: 0}}>
-          <MenuComponent />
-          <MainComponent {...{session}} />
+      <Segment style={{padding: 0}}>
+        <MenuComponent />
+        <MainComponent />
 
-        </Segment>
+      </Segment>
     )
   }
 )

@@ -117,6 +117,12 @@ const GQLReducer = {
 const MainViewReducer = {
     // App can either be selecting projects and selecting/inspecting runs
     // Inspecting a run requires sidebar to be showing
+  'TOGGLE_INFO': 
+    (state, payload) => {
+      return R.compose(
+        setMainView('info')
+      )(state)
+    },
   'TOGGLE_LOGIN':
     (state, payload) => {
       return R.compose(

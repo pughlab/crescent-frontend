@@ -25,9 +25,11 @@ const RunSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true
   },
-  completed: {
-    type: Boolean,
-    default: false
+
+  status: {
+    type: String,
+    enum: ['pending', 'submitted', 'completed'],
+    default: 'pending'
   }
 })
 

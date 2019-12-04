@@ -13,6 +13,7 @@ export default connect(
       setProject: project => dispatch(Actions.setProject({project})),
       setUser: user =>  dispatch(Actions.setUser({user})),
       setRun: run => dispatch(Actions.setRun({run})),
+      toggleInfo: () => dispatch(Actions.toggleInfo()),
       toggleLogin: () => dispatch(Actions.toggleLogin()),
       toggleProjects: () => dispatch(Actions.toggleProjects()),
       toggleRuns: () => dispatch(Actions.toggleRuns()),

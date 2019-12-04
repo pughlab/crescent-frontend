@@ -32,7 +32,7 @@ const StepAccordion = withRedux(
           }
         </Accordion.Title>
         <Accordion.Content active={isActivePipelineStep(step)}>
-          <Dropdown options={[]} fluid selection placeholder='Select Tool' />
+          <Dropdown options={[{value: 'seurat', text: 'SEURAT'}]} fluid selection placeholder='Select Tool' value={'seurat'}/>
         </Accordion.Content>
       </>
     )

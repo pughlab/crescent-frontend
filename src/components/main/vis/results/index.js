@@ -11,7 +11,10 @@ import ScatterPlot from './ScatterPlot'
 const ResultsComponent = withRedux(
   ({
     app: {
-      run,
+      run: {
+        runID,
+        status: runStatus
+      },
       toggle: {
         vis: {results: {activeResult, availablePlots}}
       }
@@ -29,25 +32,40 @@ const ResultsComponent = withRedux(
     return (
       <>
       {
-        R.ifElse(
-          R.isNil,
-          R.always(
-            <Segment basic placeholder style={{height: '100%'}}>
-              <Header textAlign='center' icon>
-                <Icon name='right arrow' />
-                {'Select a visualization on the right'}
-              </Header>
-            </Segment>
-          ),
-          R.always(
-            <Segment basic style={{height: '100%'}}>
-              <Header textAlign='center'>{ResultsHeader}</Header>
-              <ScatterPlot/>
-            </Segment>
-          )
-        )(activeResult)
-      }
-      </>
+        R.equals('pending', runStatus) ? 
+          <Segment basic placeholder style={{height: '100%'}}>
+            <Header textAlign='center' icon>
+              <Icon name='exclamation' />
+              You must submit a job to have results
+            </Header>
+          </Segment>
+        : R.equals('submitted', runStatus) ?
+          <Segment basic placeholder style={{height: '100%'}}>
+            <Header textAlign='center' icon>
+              <Icon name='circle notch'  loading/>
+              Run is currently being run
+            </Header>
+          </Segment>
+        :
+          R.ifElse(
+            R.isNil,
+            R.always(
+              <Segment basic placeholder style={{height: '100%'}}>
+                <Header textAlign='center' icon>
+                  <Icon name='right arrow' />
+                  Select a visualization on the right
+                </Header>
+              </Segment>
+            ),
+            R.always(
+              <Segment basic style={{height: '100%'}}>
+                <Header textAlign='center'>{ResultsHeader}</Header>
+                <ScatterPlot/>
+              </Segment>
+            )
+          )(activeResult)
+        }
+        </>
     )
   }
 )

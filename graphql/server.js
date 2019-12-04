@@ -5,12 +5,24 @@ const { mergeTypes, mergeResolvers } = require('merge-graphql-schemas')
 
 const R = require('ramda')
 
+const Minio = require('minio')
+
 // GRAPHQL SCHEMAS
 const UserSchema = require('./schema/user')
 const ProjectSchema = require('./schema/project')
 const RunSchema = require('./schema/run')
 
 const schemas = [UserSchema, ProjectSchema, RunSchema]
+
+// MINIO
+const minioClient = new Minio.Client({
+  endPoint: 'minio',
+  port: 9000,
+  useSSL: false,
+  // CHANGE THESE WHEN RUNNING MINIO FROM DOCKER
+  accessKey: 'crescent-access',
+  secretKey: 'crescent-secret'
+});
 
 // GQL server requires type definitions and resolvers for those types
 const server = new ApolloServer({
@@ -28,7 +40,11 @@ const server = new ApolloServer({
       // Data models can be provided in context...
       Users: mongooseConnection.model('user'),
       Projects: mongooseConnection.model('project'),
-      Runs: mongooseConnection.model('run')
+      Runs: mongooseConnection.model('run'),
+      Datasets: mongooseConnection.model('dataset'),
+
+      // MINIO
+      minioClient
 
     }
   }

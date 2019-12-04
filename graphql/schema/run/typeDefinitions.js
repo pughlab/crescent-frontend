@@ -9,7 +9,7 @@ const typeDefs = gql`
     params: String
     projectID: ID
     project: Project
-    completed: Boolean
+    status: String
   }
   type Query {
     allRuns: [Run]
@@ -34,14 +34,6 @@ const typeDefs = gql`
 
     deleteRun(
       runID: ID
-    ): Run
-
-
-    # Not used
-    createRun(
-      name: String,
-      params: String,
-      projectID: ID
     ): Run
   }
 `

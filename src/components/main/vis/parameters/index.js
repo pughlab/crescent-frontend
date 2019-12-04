@@ -3,7 +3,7 @@ import React, {useState} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Icon} from 'semantic-ui-react'
+import {Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Icon, Message} from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
@@ -19,6 +19,10 @@ import {
 const ParametersComponent = withRedux(
   ({
     app: {
+      run: {
+        runID,
+        status: runStatus
+      },
       toggle: {
         vis: {
           pipeline: {
@@ -40,10 +44,12 @@ const ParametersComponent = withRedux(
       resolution,
       principalDimensions,
     } = parameters
+    // Disable changing parameters if run is not pending
     const mergeAndSetParameters = R.compose(
-      setParameters,
-      R.mergeRight(parameters),
-    )      
+        setParameters,
+        R.equals('pending', runStatus) ? R.mergeRight(parameters) : R.mergeLeft(parameters)
+      )      
+
     const setSingleCell = singleCell => mergeAndSetParameters({singleCell})
     const setNumberGenes = numberGenes => mergeAndSetParameters({numberGenes})
     const setPercentMito = percentMito => mergeAndSetParameters({percentMito})
@@ -60,17 +66,22 @@ const ParametersComponent = withRedux(
 
     if (R.isNil(activePipelineStep)) {
       return (
-        <Segment basic placeholder style={{height: '100%'}}>
+        <Segment basic placeholder>
           <Header textAlign='center' icon>
             <Icon name='right arrow' />
-            Select a pipeline step on the right to configure parameters
+            {
+              R.equals('pending', runStatus) ?
+                'Select a pipeline step on the right to configure parameters'
+              :
+                'Parameters have already been configured and job submitted'
+            }
           </Header>
         </Segment>
       )
     }
     if (stepHasNoParameter) {
       return (
-        <Segment basic placeholder style={{height: '100%'}}>
+        <Segment basic placeholder>
           <Header textAlign='center' icon>
             <Icon name='dont' />
             Step has no parameters
@@ -79,8 +90,21 @@ const ParametersComponent = withRedux(
       )
     }
     return (
-      <Transition visible animation='fade' duration={1000} unmountOnHide={true} transitionOnMount={true}>
-      <Segment basic style={{height: '100%', overflowY: 'scroll'}}>
+      <>
+      {
+        R.not(R.equals('pending', runStatus)) &&
+          <Message
+            color={R.prop(runStatus, {submitted: 'yellow', completed: 'green'})}
+          >
+            <Message.Header as={Header} size='large'
+              content={`Run is ${runStatus} and so parameters are not configurable`}
+            />
+            <Message.Header as={Header} size='large'
+              content={R.prop(runStatus, {submitted: 'You will be notified when your run is completed', completed: "Click 'Results' on the right to view visualizations"})}
+            />
+          </Message>
+      }
+      <Segment basic>
       {
         isActivePipelineStep('quality') ?
           <>
@@ -97,7 +121,7 @@ const ParametersComponent = withRedux(
         : null
       }
       </Segment>
-      </Transition>
+      </>
     )
   }
 )

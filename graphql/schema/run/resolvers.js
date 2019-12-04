@@ -31,10 +31,13 @@ const resolvers = {
       const {name} = run
       console.log('Submitting run', runID, params)
       const submit = await axios.post(
-        `/runs/submit/${runID}`,
+        `/runs/submit`,
         {},
-        {params: {name, params}}
+        {params: {name, params, runID}}
       )
+      run.params = params
+      run.status = 'submitted'
+      await run.save()
       return run
     },
 
@@ -47,21 +50,6 @@ const resolvers = {
         console.error(error)
       }
     },
-
-    // Not used
-    createRun: async (parent, {name, params, projectID}, {Runs}) => {
-      const run = await Runs.create({name, params, projectID})
-      const {runID} = run
-      // Note: 'params' word is abused here
-      const submit = await axios.post(
-        `/runs/submit/${runID}`,
-        {},
-        // This is 'query' in Express
-        {params: {name, params}}
-      )
-      return run
-    }
-
   },
   Run: {
     createdBy: async({createdBy}, variables, {Users}) => {
