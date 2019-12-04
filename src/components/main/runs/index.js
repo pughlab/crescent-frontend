@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid} from 'semantic-ui-react'
+import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -18,6 +18,40 @@ import NewRunModal from './NewRunModal'
 
 import ArchiveProjectModal from '../projects/ArchiveProjectModal'
 import ShareProjectModal from '../projects/ShareProjectModal'
+
+const RunsStatusLegend = ({
+  projectRuns
+}) => {
+  const {pending: pendingCount, submitted: submittedCount, completed: completedCount} = R.compose(
+    R.map(R.length),
+    R.groupBy(R.prop('status'))
+  )(projectRuns)
+  return (
+    <Step.Group fluid widths={3}>
+      <Step>
+        <Icon name='circle outline' color='orange'/>
+        <Step.Content>
+          <Step.Title>{pendingCount} Pending User Submission</Step.Title>
+          <Step.Description>Runs you still need to configure and submit</Step.Description>
+        </Step.Content>
+      </Step>
+      <Step>
+        <Icon name='circle notch' color='yellow'/>
+        <Step.Content>
+          <Step.Title>{submittedCount} Submitted And Running</Step.Title>
+          <Step.Description>Runs being computed on the cloud</Step.Description>
+        </Step.Content>
+      </Step>
+      <Step>
+        <Icon name='circle outline check' color='green'/>
+        <Step.Content>
+          <Step.Title>{completedCount} Completed</Step.Title>
+          <Step.Description>Runs completed</Step.Description>
+        </Step.Content>
+      </Step>
+    </Step.Group>
+  )
+}
 
 const RunsCardList = withRedux(({
   app: {
@@ -72,6 +106,7 @@ const RunsCardList = withRedux(({
       </Button.Group>
       <Segment attached='bottom'>
         <Divider horizontal content='Viewing Project Runs Below' />
+        <RunsStatusLegend {...{projectRuns}} />
         {/* CREATE NEW RUN FOR PROJECT */}
         <NewRunModal {...{refetch}} />
         {/* LIST OF EXISTING RUNS FOR PROJECT */}
@@ -90,8 +125,8 @@ const RunsCardList = withRedux(({
               projectRuns => (
                 <Card.Group itemsPerRow={3}>
                 {
-                  R.addIndex(R.map)(
-                    (run, index) => <RunCard key={index} {...{run, refetch}} />,
+                  R.map(
+                    run => <RunCard key={R.prop('runID', run)} {...{run, refetch}} />,
                     projectRuns
                   )
                 }

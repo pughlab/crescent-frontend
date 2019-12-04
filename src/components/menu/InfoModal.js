@@ -12,18 +12,19 @@ import * as RA from 'ramda-adjunct'
 
 
 const InfoModal = ({
-  setHoverInfo
 }) => (
   <Modal
     trigger={
-      <Button color='grey' inverted floated='right' basic icon>
-        <div
-          onMouseEnter={() => setHoverInfo('Portal Info/Help')}
-          onMouseLeave={() => setHoverInfo(null)}
-        >
-          <Icon color='black' size='large' name='info circle' />
-        </div>
-      </Button>
+      // <Popup inverted size='large'
+      //   trigger={
+          <Button color='grey' inverted floated='right' basic icon>
+            <Icon color='black' size='large' name='info circle' />
+          </Button>
+      //   }
+      //   content={
+      //     'Click For Info/Help'
+      //   }
+      // />
   }
   >
     <Modal.Content>

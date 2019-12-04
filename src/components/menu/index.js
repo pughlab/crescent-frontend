@@ -36,44 +36,44 @@ const MenuComponent = withRedux(({
   }
 }) => {
   const isMainView = R.equals(main)
-  const [hoverInfo, setHoverInfo] = useState(null)
   return (
     <Segment attached='top' style={{height: '5rem'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
       {
         // RA.isNotNil(project) &&
         <Button.Group fluid size='mini'>
-
-          <Button icon basic inverted color='grey'
-            onClick={() => toggleProjects()}
-            disabled={isMainView('projects')}
-          >
-            <div
-              onMouseEnter={() => setHoverInfo('Go To Projects?')}
-              onMouseLeave={() => setHoverInfo(null)}
-            >
-              <Icon color='black' name='folder open' size='large'/>
-            </div>
-          </Button>
-          <Button icon basic inverted color='grey'
-            onClick={() => toggleRuns()}
-            disabled={isMainView('runs') || R.isNil(project) || R.and(RA.isNotNil(project), isMainView('projects'))}
-          >
-            <div
-              onMouseEnter={() => setHoverInfo('Go To Runs?')}
-              onMouseLeave={() => setHoverInfo(null)}
-            >
-              <Icon color='black' name='file' size='large'/>
-            </div>
-          </Button>
+          <Popup inverted size='large'
+            trigger={
+              <Button icon basic inverted color='grey'
+                onClick={() => toggleProjects()}
+                disabled={isMainView('projects')}
+              >
+                <Icon color='black' name='folder open' size='large'/>
+              </Button>
+            }
+            content={
+              'Click To Go To Projects'
+            }
+          />
+          <Popup inverted size='large'
+            trigger={
+              <Button icon basic inverted color='grey'
+                onClick={() => toggleRuns()}
+                disabled={isMainView('runs') || R.isNil(project) || R.and(RA.isNotNil(project), isMainView('projects'))}
+              >
+                <Icon color='black' name='file' size='large'/>
+              </Button>
+            }
+            content={
+              'Click To Go To Runs'
+            }
+          />
         </Button.Group>
       }
       </Grid.Column>
       <Grid.Column width={12} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
         {
-          RA.isNotNil(hoverInfo) ?
-            <Header content={hoverInfo} />
-          : isMainView('projects')  ? 
+          isMainView('projects')  ? 
             <Image src={Logo} size='tiny' centered/>
           : isMainView('runs')  ?
             <Image src={Logo} size='tiny' centered/>
@@ -102,19 +102,21 @@ const MenuComponent = withRedux(({
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
-          <InfoModal {...{setHoverInfo}} />
-          <Button basic inverted icon
-            basic
-            color='grey'
-            onClick={() => toggleLogin()}
-          >
-            <div
-              onMouseEnter={() => setHoverInfo('Log in/out?')}
-              onMouseLeave={() => setHoverInfo(null)}
-            >
-              <Icon color='black' size='large' name={'user circle'} />
-            </div>
-          </Button>
+          <InfoModal />
+          <Popup inverted size='large'
+            trigger={
+              <Button basic inverted icon
+                basic
+                color='grey'
+                onClick={() => toggleLogin()}
+              >
+                <Icon color='black' size='large' name={'user circle'} />
+              </Button>
+            }
+            content={
+              'Log in/out'
+            }
+          />
         </Button.Group>
       </Grid.Column>
     </Segment>
