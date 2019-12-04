@@ -8,6 +8,8 @@ import withRedux from '../../../../redux/hoc'
 
 import ScatterPlot from './ScatterPlot'
 
+import {ClimbingBoxLoader} from 'react-spinners'
+
 const ResultsComponent = withRedux(
   ({
     app: {
@@ -41,9 +43,11 @@ const ResultsComponent = withRedux(
           </Segment>
         : R.equals('submitted', runStatus) ?
           <Segment basic placeholder style={{height: '100%'}}>
-            <Header textAlign='center' icon>
-              <Icon name='circle notch'  loading/>
+            <Header textAlign='center'>
               Run is currently being run
+            </Header>
+            <Header textAlign='center' icon>
+              <ClimbingBoxLoader style={{margin: 0}} />
             </Header>
           </Segment>
         :

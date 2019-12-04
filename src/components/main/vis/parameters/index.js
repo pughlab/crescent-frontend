@@ -20,7 +20,6 @@ const ParametersComponent = withRedux(
   ({
     app: {
       run: {
-        runID,
         status: runStatus
       },
       toggle: {
@@ -45,6 +44,7 @@ const ParametersComponent = withRedux(
       principalDimensions,
     } = parameters
     // Disable changing parameters if run is not pending
+    // Also disable segment below
     const mergeAndSetParameters = R.compose(
         setParameters,
         R.equals('pending', runStatus) ? R.mergeRight(parameters) : R.mergeLeft(parameters)
@@ -90,21 +90,10 @@ const ParametersComponent = withRedux(
       )
     }
     return (
-      <>
-      {
-        R.not(R.equals('pending', runStatus)) &&
-          <Message
-            color={R.prop(runStatus, {submitted: 'yellow', completed: 'green'})}
-          >
-            <Message.Header as={Header} size='large'
-              content={`Run is ${runStatus} and so parameters are not configurable`}
-            />
-            <Message.Header as={Header} size='large'
-              content={R.prop(runStatus, {submitted: 'You will be notified when your run is completed', completed: "Click 'Results' on the right to view visualizations"})}
-            />
-          </Message>
-      }
-      <Segment basic>
+      <Segment basic
+        loading={R.equals('submitted', runStatus)}
+        disabled={R.compose(R.not, R.equals('pending'))(runStatus)}
+      >
       {
         isActivePipelineStep('quality') ?
           <>
@@ -121,7 +110,6 @@ const ParametersComponent = withRedux(
         : null
       }
       </Segment>
-      </>
     )
   }
 )
