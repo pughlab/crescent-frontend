@@ -9,5 +9,8 @@
     "plugins": [
         "prettier",
         "react"
-    ]
+    ],
+    "rules": {
+        "react/prop-types": "warn"
+    }
 }
