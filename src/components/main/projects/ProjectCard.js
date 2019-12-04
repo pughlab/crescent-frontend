@@ -62,7 +62,7 @@ const ProjectCard = withRedux(({
                 completed: 'green'
               })
               return (
-                <Popup key={status}
+                <Popup key={status} inverted size='large'
                   wide='very'
                   trigger={
                     <Button
