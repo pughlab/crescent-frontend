@@ -18,7 +18,7 @@ const VisComponent = withRedux(
   }) => {
     return (
       <>
-        <Grid.Column width={11} style={{height: '100%'}}>
+        <Grid.Column width={11} style={{minHeight: '100%'}}>
           <Transition visible animation='fade right' duration={1000} unmountOnHide={true} transitionOnMount={true}>
           <Segment style={{height: '100%'}}
             color={
@@ -41,7 +41,7 @@ const VisComponent = withRedux(
           </Segment>
           </Transition>
         </Grid.Column>
-        <Grid.Column width={5} style={{height: '100%'}}>
+        <Grid.Column width={5} style={{minHeight: '100%'}}>
           <SidebarComponent />
         </Grid.Column>
       </>
