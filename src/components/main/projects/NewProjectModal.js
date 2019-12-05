@@ -111,7 +111,7 @@ const NewProjectModal = withRedux(({
       matrixObjectName: uploadedMatrixFile,
     },
     onCompleted: ({createProject: newProject}) => {
-      if (R.isNil(newProject)) {
+      if (RA.isNotNil(newProject)) {
         // Should call refetch before setting to new project
         refetch()
         setProject(newProject)
