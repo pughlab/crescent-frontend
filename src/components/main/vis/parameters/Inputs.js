@@ -1,17 +1,25 @@
 import React, {useState} from 'react'
 import { Button, Segment, Form, Message, Divider, Label } from 'semantic-ui-react';
 
-import RangeSlider from './RangeSlider'
-
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 import PARAMETERS from './PARAMETERS'
 
 const withMessageAbove = R.curry(
     ({parameter, label, prompt, description}, InputComponent) => (
         <Segment basic>
-            <Message header={prompt} content={description} color='blue' />
-            {InputComponent}
+            {/* <Message header={prompt} content={description} color='blue' />
+            {InputComponent} */}
+
+            <Message color='blue'>
+              <Message.Header content={prompt} />
+              <Message.Content content={description} />
+              <Divider horizontal>
+                {/* <Button content='Default' /> */}
+              </Divider>
+              {InputComponent}
+            </Message>
         </Segment>
     ) 
 )
@@ -71,11 +79,18 @@ const Resolution = ({
     resolution, setResolution
 }) => {
     return withMessageAbove(PARAMETERS[3],
-        <RangeSlider
-            step={0.1} min={0.1} max={2.5}
-            value={resolution}
-            onChange={values => setResolution(R.head(values))}
+      <Form>
+        <Form.Input label='Resolution' value={resolution}
+          onChange={(e, {value}) => {
+            const int = parseInt(value)
+            if (RA.isInteger(int)) {
+              setResolution(int)
+            } else if (R.isEmpty(value)) {
+              setResolution(value)
+            }
+          }}
         />
+      </Form>
     )
 }
 
@@ -83,11 +98,18 @@ const PCADimensions = ({
     principalDimensions, setPrincipalDimensions
 }) => {
     return withMessageAbove(PARAMETERS[4],
-        <RangeSlider
-            step={1} min={1} max={50}
-            value={principalDimensions}
-            onChange={values => setPrincipalDimensions(R.head(values))}
+      <Form>
+        <Form.Input label='Dimensions' value={principalDimensions}
+          onChange={(e, {value}) => {
+            const int = parseInt(value)
+            if (RA.isInteger(int)) {
+              setPrincipalDimensions(int)
+            } else if (R.isEmpty(value)) {
+              setPrincipalDimensions(value)
+            }
+          }}
         />
+      </Form>
     )
 }
 
