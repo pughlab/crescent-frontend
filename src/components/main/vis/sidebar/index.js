@@ -22,8 +22,7 @@ const SidebarComponent = withRedux(
   }) => {
     const isSidebarView = R.equals(sidebarView)
     return (
-      <Transition visible animation='fade left' duration={1000} unmountOnHide={true} transitionOnMount={true}>
-      <Segment.Group>
+      <Segment basic style={{height: '100%', padding: 0, display: 'flex', flexDirection: 'column'}}>
         <Segment attached='top'>
           <Button.Group fluid widths={2}>
             <Button compact content='PIPELINE' 
@@ -38,7 +37,7 @@ const SidebarComponent = withRedux(
             />
           </Button.Group>
         </Segment>
-        <Segment attached>
+        <Segment attached style={{flexGrow: 1}}>
         {
           R.cond([
             [R.equals('pipeline'), R.always(<PipelineSidebar />)],
@@ -54,8 +53,7 @@ const SidebarComponent = withRedux(
           ])(sidebarView)
         }
         </Segment>
-      </Segment.Group>
-      </Transition>
+      </Segment>
     )
   }
 )
