@@ -52,7 +52,11 @@ const VisComponent = withRedux(
     },
   }) => {
     return (
-      <Grid style={{minHeight: 'inherit'}}>
+      <>
+      <Grid.Column width={16} style={{height: '7rem'}}>
+        <RunMessage />
+      </Grid.Column>
+      <Grid style={{minHeight: 'calc(100vh - 12rem - 2px)'}}>
         <Grid.Column width={11} style={{minHeight: '100%'}}>
           <Transition visible animation='fade right' duration={1000} unmountOnHide={true} transitionOnMount={true}>
           <Segment style={{height: '100%'}}
@@ -80,6 +84,7 @@ const VisComponent = withRedux(
           <SidebarComponent />
         </Grid.Column>
       </Grid>
+      </>
     )
   }
 )
