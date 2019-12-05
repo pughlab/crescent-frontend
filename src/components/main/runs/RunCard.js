@@ -148,8 +148,8 @@ const RunCard = withRedux(({
               <Label content='Completed' detail={`${moment(completedOn).format('D MMMM YYYY, h:mm a')}`}/>
           }
           {
-            RA.isNotNil(submittedOn) && RA.isNotNil(completedOn) &&
-              <Label content='Time Elapsed' detail={`${moment(completedOn).diff(moment(submittedOn), 'minutes')} minutes`}/>
+            RA.isNotNil(submittedOn) &&
+              <Label content='Time Elapsed' detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
           }
         </Label.Group>
       </Card.Content>
