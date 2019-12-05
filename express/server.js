@@ -131,12 +131,14 @@ app.get(
 
 app.get(
   '/download/:runID',
-  (req, res) => {
+  async (req, res) => {
     const runID = req.params.runID
+    const {name: runName, projectID} = await Run.findOne({runID})
+    const {name: projectName} = await Project.findOne({projectID})
     const zip = new AdmZip()
-    zip.addLocalFolder(`/usr/src/app/results/${runID}/SEURAT`)
-    zip.writeZip('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip')
-    res.download('/Users/smohanra/Desktop/crescentMockup/express/tmp/express/test.zip', `${runID}.zip`)
+    zip.addLocalFolder(`/usr/src/app/results/${runID}`)
+    zip.writeZip(`/usr/src/app/results/${runID}.zip`)
+    res.download(`/usr/src/app/results/${runID}.zip`,`${projectName}_${runName}.zip`)
   }
 );
 
