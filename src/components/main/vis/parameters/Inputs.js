@@ -86,7 +86,8 @@ const Resolution = ({
             if (RA.isInteger(int)) {
               setResolution(int)
             } else if (R.isEmpty(value)) {
-              setResolution(value)
+              // Should put default here
+              setResolution(resolution)
             }
           }}
         />
@@ -105,7 +106,7 @@ const PCADimensions = ({
             if (RA.isInteger(int)) {
               setPrincipalDimensions(int)
             } else if (R.isEmpty(value)) {
-              setPrincipalDimensions(value)
+              setPrincipalDimensions(principalDimensions)
             }
           }}
         />

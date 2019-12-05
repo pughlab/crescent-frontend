@@ -32,6 +32,7 @@ const initialState = {
           resolution: 1,
           principalDimensions: 10,
         },
+        isSubmitted: false
       },
       results: {
         activeResult: null, // selected plot: 'tsne', 'umap', 'violin', etc.
@@ -106,7 +107,27 @@ const GQLReducer = {
   'SET_RUN':
     (state, payload) => {
       const {run} = payload
+      const {params} = run
+      const setParamsFromRun = R.set(
+        R.lensPath(['toggle','vis','pipeline','parameters']),
+        R.isNil(params) ?
+          {
+            singleCell: 'MTX',
+            numberGenes: {min: 50, max: 8000},
+            percentMito: {min: 0, max: 0.2},
+            resolution: 1,
+            principalDimensions: 10,
+          }
+        : JSON.parse(params)
+      )
+      // Only used for disabling parameters and submit after initial submit
+      const resetIsSubmitted = R.set(
+        R.lensPath(['toggle','vis','pipeline','isSubmitted']),
+        false
+      )
       return R.compose(
+        resetIsSubmitted,
+        setParamsFromRun,
         setSidebarView('pipeline'),
         setMainView('vis'),
         setRunFromGQL(run), 
@@ -189,6 +210,16 @@ const CWLReducer = {
       const {parameters} = payload
       return R.compose(
         setParameters(parameters)
+      )(state)
+    },
+  'SET_IS_SUBMITTED':
+    (state, payload) => {
+      const {isSubmitted} = payload
+      return R.compose(
+        R.set(
+          R.lensPath(['toggle','vis','pipeline','isSubmitted']),
+          isSubmitted
+        )
       )(state)
     }
 }

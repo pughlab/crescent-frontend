@@ -16,7 +16,14 @@ const StepAccordion = withRedux(
       run: {
         status: runStatus
       },
-      toggle: {vis: {pipeline: {activeStep: activePipelineStep}}},
+      toggle: {
+        vis: {
+          pipeline: {
+            activeStep: activePipelineStep,
+            isSubmitted
+          }
+        }
+      },
     },
     actions: {
       toggle: {setActivePipelineStep,}
@@ -37,7 +44,7 @@ const StepAccordion = withRedux(
         <Accordion.Content active={isActivePipelineStep(step)}>
           <Dropdown fluid selection 
             placeholder='Select Tool'
-            disabled={R.compose(R.not, R.equals('pending'))(runStatus)}
+            disabled={R.compose(R.or(isSubmitted), R.not, R.equals('pending'))(runStatus)}
             options={[{value: 'seurat', text: 'SEURAT'}]}
             value={'seurat'}
           />
