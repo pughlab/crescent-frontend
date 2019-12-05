@@ -13,6 +13,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.16.4",
     "faker": "^4.1.0",
+    "filesize": "^6.0.1",
     "firstline": "^2.0.2",
     "formik": "^1.5.8",
     "graphql": "^14.4.2",

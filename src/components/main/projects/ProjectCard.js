@@ -5,6 +5,8 @@ import * as RA from 'ramda-adjunct'
 import * as R_ from 'ramda-extension'
 import moment from 'moment'
 
+import filesize from 'filesize'
+
 import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
@@ -24,13 +26,14 @@ const ProjectCard = withRedux(({
     createdBy: {name: creatorName},
     createdOn,
 
-    runs
+    runs,
     // Has props
     // {
     //   runID,
     //   name,
     //   status
     // }
+    datasetSize
   } = project
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
@@ -38,6 +41,7 @@ const ProjectCard = withRedux(({
       <Card.Content>
         <Label attached='top' color='grey'>
           <Icon name='folder open' size='large' style={{marginLeft: 0}} />
+          {filesize(datasetSize)}
         </Label>
         <Card.Header>
           <Header size='small'>

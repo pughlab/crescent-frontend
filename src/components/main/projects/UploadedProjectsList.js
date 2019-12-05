@@ -42,6 +42,8 @@ const UploadedProjectsList = withRedux(({
           name
           status
         }
+
+        datasetSize
       }
     }
   `, {

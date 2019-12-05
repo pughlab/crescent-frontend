@@ -100,6 +100,16 @@ const resolvers = {
     runs: async ({projectID}, variables, {Runs}) => {
       console.log('find runs', projectID)
       return await Runs.find({projectID})
+    },
+
+    datasetSize: async ({projectID}, variables, {Datasets, minioClient}) => {
+      return await new Promise((resolve, reject) => {
+        let size = 0
+        const stream = minioClient.listObjects(`project-${projectID}`)
+        stream.on('data', obj => {size = size + R.prop('size', obj)})
+        stream.on('error', err => { reject(err) } )
+        stream.on('end', () => {resolve(size)})
+      })
     }
   }
 }

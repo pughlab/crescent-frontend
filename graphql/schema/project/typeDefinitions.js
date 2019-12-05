@@ -14,6 +14,8 @@ const typeDefs = gql`
     archived: Date
 
     runs: [Run]
+
+    datasetSize: Int
   }
   type Query {
     project(projectID: ID): Project
