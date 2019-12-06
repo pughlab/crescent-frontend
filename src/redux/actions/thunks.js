@@ -39,6 +39,16 @@ const fetchScatter = () => (dispatch, getState) => {
   }
 }
 
+// uses paramters in store to fetch violin plot data
+const fetchViolin = () => (dispatch, getState) => {
+  const {
+    app: {
+      run: {runID},
+      toggle: {vis: {results: {selectedGroup, selectedFeature}}}
+    }
+  } = getState()
+  return fetchEndpoint(`/violin/${selectedGroup}/${selectedFeature}/${runID}`)
+}
 
 const clearResults = () => (dispatch, getState) => {
   dispatch({
@@ -117,7 +127,8 @@ export default {
   changeActiveGroup,
   changeFeatureSearch,
   changeSelectedFeature,
-  fetchScatter
+  fetchScatter,
+  fetchViolin
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING
