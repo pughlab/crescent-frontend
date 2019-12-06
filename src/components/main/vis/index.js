@@ -10,41 +10,7 @@ import SidebarComponent from './sidebar'
 import ParametersComponent from './parameters'
 import ResultsComponent from './results'
 
-const RunMessage = withRedux(
-  ({
-    app: {
-      run: {
-        status
-      }
-    }
-  }) => {
-    return (
-      <Message
-        color={R.prop(status, {pending: 'orange', submitted: 'yellow', completed: 'green'})}
-      >
-        <Message.Header as={Header} size='large'
-          textAlign='center'
-          content={
-            R.concat(
-              R.ifElse(
-                R.equals('pending'),
-                R.always('Configure your parameters below. '),
-                R.always(`Run is ${status} and so parameters are not configurable. `)
-              )(status),
-              R.prop(status, {
-                pending: `Click 'SUBMIT RUN' on the right to send job to HPC.`,
-                submitted: 'You will be notified when your run is completed.',
-                completed: "Click 'Results' on the right to view visualizations.",
-              })
-            )
 
-          }
-        />
-
-      </Message>
-    )
-  }
-)
 
 const VisComponent = withRedux(
   ({
@@ -54,9 +20,12 @@ const VisComponent = withRedux(
   }) => {
     return (
       <>
-      <Grid.Column width={16} style={{height: '6rem'}}>
-        <RunMessage />
-      </Grid.Column>
+      {/* {
+        R.equals('pipeline', sidebarView) &&
+          <Grid.Column width={16} style={{height: '6rem'}}>
+            <RunMessage />
+          </Grid.Column>
+      } */}
       <Grid style={{minHeight: 'calc(100vh - 12rem - 2px)'}}>
         <Grid.Column width={11} style={{minHeight: '100%'}}>
           <Transition visible animation='fade right' duration={1000} unmountOnHide={true} transitionOnMount={true}>
@@ -65,7 +34,7 @@ const VisComponent = withRedux(
               R.cond([
                 [R.equals('pipeline'), R.always('blue')],
                 [R.equals('results'), R.always('violet')],
-              ])(sidebarView)                    
+              ])(sidebarView)
             }
           >
           {

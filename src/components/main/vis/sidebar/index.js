@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Transition, Divider, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
+import { Segment, Button, Transition, Message, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -12,6 +12,42 @@ import PipelineSidebar from './PipelineSidebar'
 
 import SubmitRunButton from '../parameters/SubmitRunButton'
 import DownloadResultsButton from '../results/DownloadResultsButton'
+
+
+const PipelineRunStatusMessage = withRedux(
+  ({
+    app: {
+      run: {
+        status
+      },
+    }
+  }) => {
+    return (
+      <Message
+        color={R.prop(status, {pending: 'orange', submitted: 'yellow', completed: 'green'})}
+      >
+        <Message.Header as={Header} textAlign='center'>
+        {
+          R.concat(
+            R.ifElse(
+              R.equals('pending'),
+              R.always('Configure your parameters below. '),
+              R.always(`Run is ${status} and so parameters are not configurable. `)
+            )(status),
+            R.prop(status, {
+              pending: `Click 'SUBMIT RUN' on the right to send job to HPC.`,
+              submitted: 'You will be notified when your run is completed.',
+              completed: "Click 'Results' on the right to view visualizations.",
+            })
+          )
+        }
+        </Message.Header>
+
+      </Message>
+    )
+  }
+)
+
 
 const SidebarComponent = withRedux(
   ({
@@ -36,8 +72,12 @@ const SidebarComponent = withRedux(
               onClick={() => toggleSidebar('results')}
             />
           </Button.Group>
+
+          {
+            R.equals('pipeline', sidebarView) && <PipelineRunStatusMessage />
+          }
         </Segment>
-        <Segment attached style={{flexGrow: 1}}>
+        <Segment attached>
         {
           R.cond([
             [R.equals('pipeline'), R.always(<PipelineSidebar />)],
