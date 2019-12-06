@@ -82,7 +82,7 @@ const ParametersComponent = withRedux(
     }
     if (stepHasNoParameter) {
       return (
-        <Segment basic placeholder>
+        <Segment basic placeholder style={{height: '100%'}}>
           <Header textAlign='center' icon>
             <Icon name='dont' />
             Step has no parameters
