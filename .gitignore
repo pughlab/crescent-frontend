@@ -11,8 +11,6 @@ mongodb/
 *.simg
 
 
-package-lock.json
-
 /results
 minio/download/*
 minio/upload/*
