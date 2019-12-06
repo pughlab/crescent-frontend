@@ -237,9 +237,11 @@ app.get('/search/:query/:runID',
     const {
       params: {runID, query}
     } = req;
+    console.log(query)
     // define functions/vars
     let result = [];
-    const formatResult = x => result.push({'text': x['symbol'], 'value': x['identifier']}); 
+    // const formatResult = x => result.push({'text': x['symbol'], 'value': x['identifier']}); 
+    const formatResult = x => result.push({'text': x['identifier'], 'value': x['identifier']}); 
     let emptyResult = [{'text': ''}];
     let jsonObj = '';
     // check if json of file exists, create it from features file if not
@@ -248,14 +250,19 @@ app.get('/search/:query/:runID',
         if (err) {res.send(err);}
         else{
           features = R.map(R.split("\t"), R.split("\n", contents)); // read as 2d array
+          console.log(features)
           jsonObj = R.map(R.zipObj(['identifier', 'symbol', 'expression']), features)
           jsonObj = {"data": jsonObj}
+          console.log('does not exist', jsonObj)
           // write json for future use
-          fs.writeFile(`./results/${runID}/raw/features.json`, JSON.stringify(jsonObj), 'utf8', (err) => {
+          fs.writeFile(`/usr/src/app/results/${runID}/SEURAT/raw/features.json`, JSON.stringify(jsonObj), 'utf8', (err) => {
             if (err) {return console.log(err);}
             else{
-              let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
-              if (query_result.length == 0) {res.send(emptyResult);}
+              // let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
+              let query_result = jsonQuery(`data[*identifier~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
+              if (query_result.length == 0) {
+                res.send(emptyResult);
+              }
               else {
                 query_result = (query_result.length > 4) ? query_result.slice(0,4) : query_result; // only return max of 4 results
                 R.forEach(formatResult, query_result);
@@ -268,11 +275,17 @@ app.get('/search/:query/:runID',
     }
     else {
         jsonObj = JSON.parse(fs.readFileSync(`/usr/src/app/results/${runID}/SEURAT/raw/features.json`, 'utf-8'));
-        let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
-        if (query_result.length == 0){res.send(emptyResult);}
+        console.log('exists', jsonObj)
+        // let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
+        let query_result = jsonQuery(`data[*identifier~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
+        console.log(query_result)
+        if (query_result.length == 0){
+          res.send(emptyResult);
+        }
         else {
           query_result = (query_result.length > 4) ? query_result.slice(0,4) : query_result; // only return max of 4 results
           R.forEach(formatResult, query_result);
+          console.log('result', result)
           res.send(JSON.stringify(result)); 
         }
     }
