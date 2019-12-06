@@ -62,9 +62,6 @@ const RunCard = withRedux(({
         <Card.Header>
           <Header size='small'>
             <Marquee text={name} />
-            <Header.Subheader>
-              {`Created by ${creatorName}`}
-            </Header.Subheader>
           </Header>
         </Card.Header>
       </Card.Content>
@@ -138,6 +135,7 @@ const RunCard = withRedux(({
       </Card.Content>
       <Card.Content>
         <Label.Group>
+          <Label content='Owner' detail={creatorName} />
           <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} />
           {
             RA.isNotNil(submittedOn) &&
@@ -146,10 +144,6 @@ const RunCard = withRedux(({
           {
             RA.isNotNil(completedOn) &&
               <Label content='Completed' detail={`${moment(completedOn).format('D MMMM YYYY, h:mm a')}`}/>
-          }
-          {
-            RA.isNotNil(submittedOn) &&
-              <Label content='Time Elapsed' detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
           }
         </Label.Group>
       </Card.Content>

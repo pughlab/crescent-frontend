@@ -19,6 +19,7 @@ export default connect(
       toggleRuns: () => dispatch(Actions.toggleRuns()),
       toggleSidebar: sidebar => dispatch(Actions.toggleSidebar({sidebar})),
       setParameters: parameters => dispatch(Actions.setParameters({parameters})),
+      setIsSubmitted: isSubmitted => dispatch(Actions.toggle.vis.pipeline.setIsSubmitted({isSubmitted})),
 
       toggle: {
         setActiveProjectKind: projectKind => dispatch(Actions.toggle.project.setActiveProjectKind({projectKind})),

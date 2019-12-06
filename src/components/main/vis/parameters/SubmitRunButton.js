@@ -24,12 +24,15 @@ const SubmitRunButton = withRedux(
       toggle: {
         vis: {
           pipeline: {
-            parameters
+            parameters,
+            isSubmitted
           }
         }
       },
     },
-    actions: {}
+    actions: {
+      setIsSubmitted
+    }
   }) => {
     const [submitRun, {loading: loadingSubmitRun, data: dataSubmitRun, error}] = useMutation(gql`
       mutation SubmitRun($runID: ID, $params: String) {
@@ -40,33 +43,20 @@ const SubmitRunButton = withRedux(
     `, {
       variables: {runID, params: JSON.stringify(parameters)}
     })
-    const {loading: loadingRun, data: dataRun, error: errorRun} = useQuery(gql`
-      query Run($runID: ID) {
-        run(runID: $runID) {
-          runID
-          status
-        }
-      }
-    `, {
-      variables: {runID}, 
-      fetchPolicy: 'network-only'
-    })
-    console.log(dataRun)
-    const runPreviouslySubmitted = R.ifElse(
-      queryIsNotNil('run'),
-      R.compose(R.not, R.propEq('status', 'pending'), R.prop('run')),
-      R.F
-    )(dataRun)
+
     const runIsNotPending = R.not(R.equals('pending', runStatus))
     const runSubmitted = R.or(
       loadingSubmitRun,
       queryIsNotNil('submitRun', dataSubmitRun)
     )
-    console.log([loadingRun, runPreviouslySubmitted, runIsNotPending, runSubmitted])
     return (
       <Button fluid content={R.equals('pending', runStatus) ? 'SUBMIT RUN' : 'ALREADY SUBMITTED'} color='blue'
-        disabled={R.any(RA.isTrue, [runPreviouslySubmitted, runIsNotPending, runSubmitted])}
-        onClick={() => submitRun()}
+        // Check redux state of submit button, the status in run in redux, or if graphql mutation has been called
+        disabled={R.any(RA.isTrue, [isSubmitted, runIsNotPending, runSubmitted])}
+        onClick={() => {
+          setIsSubmitted(true)
+          submitRun()
+        }}
       />
     )
   }

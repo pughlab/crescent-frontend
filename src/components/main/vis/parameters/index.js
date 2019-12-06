@@ -27,6 +27,7 @@ const ParametersComponent = withRedux(
           pipeline: {
             activeStep: activePipelineStep,
             parameters,
+            isSubmitted,
           }
         }
       }
@@ -91,7 +92,7 @@ const ParametersComponent = withRedux(
     }
     return (
       <Segment basic
-        disabled={R.compose(R.not, R.equals('pending'))(runStatus)}
+        disabled={R.compose(R.or(isSubmitted), R.not, R.equals('pending'))(runStatus)}
       >
       {
         isActivePipelineStep('quality') ?

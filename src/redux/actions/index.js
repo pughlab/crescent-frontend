@@ -52,6 +52,13 @@ const setParameters = ({parameters}) => ({
   }
 })
 
+const setIsSubmitted = ({isSubmitted}) => ({
+  type: 'SET_IS_SUBMITTED',
+  payload: {
+    isSubmitted
+  }
+})
+
 // TOGGLES
 // rendering as well
 const setActiveProjectKind = ({projectKind}) => ({
@@ -87,7 +94,8 @@ const toggle = {
   vis: {
     dataset: {},
     pipeline: {
-      setActivePipelineStep
+      setActivePipelineStep,
+      setIsSubmitted
     },
     results: {
       setActiveResult,

@@ -18,6 +18,11 @@ const DownloadResultsButton = withRedux(
       <Button fluid color='violet'
         content={R.prop(runStatus, {pending: 'RESULTS UNAVAILABLE', submitted: 'COMPUTING RESULTS IN THE CLOUD', completed: 'DOWNLOAD RESULTS'})}
         disabled={R.not(R.equals('completed', runStatus))}
+        download
+        target='_blank'
+        // Should only work with nginx reverse proxy
+        // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
+        href={`/download/${runID}`}
       />
     )
   }

@@ -38,19 +38,33 @@ const ProjectCard = withRedux(({
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
     <Card link onClick={() => setProject(project)} color='grey'>
+      <Button attached='top' color='grey' animated='vertical'>
+        <Button.Content visible>
+          <Icon name='folder open' size='large' />
+        </Button.Content>
+        <Button.Content hidden>
+          <Icon name='eye' size='large' />
+        </Button.Content>
+      </Button>
       <Card.Content>
-        <Label attached='top' color='grey'>
-          <Icon name='folder open' size='large' style={{marginLeft: 0}} />
-          {filesize(datasetSize)}
-        </Label>
         <Card.Header>
           <Header size='small'>
-            <Marquee text={name} />
+            <Header.Content>
+              <Marquee text={name} />
+              <Header.Subheader>
+              {description}
+              </Header.Subheader>
+            </Header.Content>
           </Header>
         </Card.Header>
       </Card.Content>
-      <Card.Content extra content={description} />
-      <Card.Content extra content={`Created by ${creatorName} on ${moment(createdOn).format('D MMMM YYYY')}`} />
+      <Card.Content>
+        <Label.Group>
+          <Label content='Owner' detail={creatorName} />
+          <Label content='Created' detail={moment(createdOn).format('D MMMM YYYY')} />
+          <Label content='Dataset Size' detail={filesize(datasetSize)} />
+        </Label.Group>
+      </Card.Content>
       <Card.Content>
         <Button.Group widths={3}>
         {
@@ -64,7 +78,7 @@ const ProjectCard = withRedux(({
                 completed: 'green'
               })
               return (
-                <Popup key={status} inverted size='large'
+                <Popup key={status} size='large'
                   wide='very'
                   trigger={
                     <Button
@@ -92,7 +106,7 @@ const ProjectCard = withRedux(({
                     </Button>
                   }
                   content={
-                    <Label.Group>
+                    <Label.Group color={statusColor}>
                     {
                       R.ifElse(
                         R.isEmpty,
