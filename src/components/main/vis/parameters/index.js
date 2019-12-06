@@ -67,7 +67,7 @@ const ParametersComponent = withRedux(
 
     if (R.isNil(activePipelineStep)) {
       return (
-        <Segment basic placeholder>
+        <Segment basic placeholder style={{height: '100%'}}>
           <Header textAlign='center' icon>
             <Icon name='right arrow' />
             {
