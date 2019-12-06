@@ -3,7 +3,6 @@ const submitCWL = require('./submit')
 const fs = require('fs')
 const fsp = fs.promises
 const R = require('ramda')
-const jsonQuery = require('json-query')
 const { spawn } = require("child_process");
 
 // Servers
@@ -15,10 +14,12 @@ const multer = require('multer')
 const upload = multer({ dest: '/usr/src/app/minio/upload' })
 // Zip
 const AdmZip = require('adm-zip')
-const jStat = require('jStat')
+const zlib = require('zlib');
 // autobahn for crossbar
 const autobahn = require('autobahn')
 const connection = new autobahn.Connection({ url: 'ws://crossbar:4000/', realm: 'realm1' })
+// Fuzzy Search
+const fuzz = require('fuzzball');
 // Mongo connection
 const mongooseConnection = require('../database/mongo')
 const db = mongooseConnection.connection
@@ -346,55 +347,68 @@ connection.onopen = (session) => {
   );
 
   /*
-    currently optimized for node,
-    will replace with python if determined to improve speeds
+  currently optimized for node,
+  will replace with python if determined to improve speeds
   */
   app.get('/search/:query/:runID',
     async (req, res) => {
+      // define functions/vars
       const {
         params: {runID, query}
       } = req;
-      // define functions/vars
-      let result = [];
-      const formatResult = x => result.push({'text': x['symbol'], 'value': x['identifier']}); 
-      let emptyResult = [{'text': ''}];
-      let jsonObj = '';
-      // check if json of file exists, create it from features file if not
-      if (! fs.existsSync(`/usr/src/app/results/${runID}/raw/features.json`)) {
-        fs.readFile(`/usr/src/app/results/${runID}/raw/features.tsv`, 'utf-8', (err, contents) => {
-          if (err) {res.send(err);}
-          else{
-            features = R.map(R.split("\t"), R.split("\n", contents)); // read as 2d array
-            jsonObj = R.map(R.zipObj(['identifier', 'symbol', 'expression']), features)
-            jsonObj = {"data": jsonObj}
-            // write json for future use
-            fs.writeFile(`./results/${runID}/raw/features.json`, JSON.stringify(jsonObj), 'utf8', (err) => {
-              if (err) {return console.log(err);}
-              else{
-                let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
-                if (query_result.length == 0) {res.send(emptyResult);}
+      let path = `/usr/src/app/results/${runID}/SEURAT/`;
+
+      function queryFile(err, contents) {
+        if (err) {res.send(err);}
+        else {
+          let features = R.split("\n", contents);
+          let options = {
+            full_process: false,
+            limit: 5,
+            scorer: fuzz.partial_ratio
+          }
+          let result = fuzz.extract(query, features, options);
+          res.send(JSON.stringify(result));
+        }
+      }
+
+      function makeProcessedFile(err, contents) {
+        if (err) {res.send(err);}
+        else {
+          let features = R.split('\n', contents);
+          let features_processed = features.map(feature => fuzzy.full_process(feature)).join('\n');
+          fs.writeFile(path+'features_processed.tsv', features_processed, err => res.send(err));
+        }
+      }
+
+      // Check if processed file exists
+      fs.access(path+'features_processed.tsv', fs.constants.F_OK, (err_processed) => {
+        if (err_processed) {
+          // If not, check if tsv file exists and process it
+          fs.access(path+'features.tsv', fs.constants.F_OK, (err_tsv) => {
+            if (err_tsv) {
+              // If not, check if gz file exists and extract tsv file, then process it
+              fs.access(path+'features.tsv.gz', fs.constants.F_OK, (err_gz) => {
+                if (err_gz) {res.send(err);}
                 else {
-                  query_result = (query_result.length > 4) ? query_result.slice(0,4) : query_result; // only return max of 4 results
-                  R.forEach(formatResult, query_result);
-                  res.send(JSON.stringify(result)); 
+                  let fileContents = fs.createReadStream(path+'features.tsv.gz');
+                  let writeStream = fs.createWriteStream(path+'features.tsv');
+                  let unzip = zlib.createGunzip();
+                  fileContents.pipe(unzip).pipe(writeStream);
                 }
-              }
-            });
-          }
-        }); 
-      }
-      else {
-          jsonObj = JSON.parse(fs.readFileSync(`/usr/src/app/results/${runID}/raw/features.json`, 'utf-8'));
-          let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
-          if (query_result.length == 0){res.send(emptyResult);}
-          else {
-            query_result = (query_result.length > 4) ? query_result.slice(0,4) : query_result; // only return max of 4 results
-            R.forEach(formatResult, query_result);
-            res.send(JSON.stringify(result)); 
-          }
-      }
+              });
+            }
+
+            // Make a processed TSV file
+            fs.readFile(path+'features.tsv', 'utf-8', makeProcessedFile);
+          });
+        }
+      })
+
+      // Query the file
+      fs.readFile(path+'features_processed.tsv', 'utf-8', queryFile);
     }
-);
+  );
 
   app.listen(port, () => console.log(`Express server listening on port ${port}!`));
 }
