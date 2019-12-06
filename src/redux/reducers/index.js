@@ -108,26 +108,29 @@ const GQLReducer = {
     (state, payload) => {
       const {run} = payload
       const {params} = run
-      const setParamsFromRun = R.set(
-        R.lensPath(['toggle','vis','pipeline','parameters']),
-        R.isNil(params) ?
-          {
-            singleCell: 'MTX',
-            numberGenes: {min: 50, max: 8000},
-            percentMito: {min: 0, max: 0.2},
-            resolution: 1,
-            principalDimensions: 10,
-          }
-        : JSON.parse(params)
-      )
       // Only used for disabling parameters and submit after initial submit
       const resetIsSubmitted = R.set(
         R.lensPath(['toggle','vis','pipeline','isSubmitted']),
         false
       )
+      const resetActiveStep = R.set(
+        R.lensPath(['toggle','vis','pipeline','activeStep']),
+        null
+      )
       return R.compose(
         resetIsSubmitted,
-        setParamsFromRun,
+        resetActiveStep,
+        setParameters(
+          R.isNil(params) ?
+            {
+              singleCell: 'MTX',
+              numberGenes: {min: 50, max: 8000},
+              percentMito: {min: 0, max: 0.2},
+              resolution: 1,
+              principalDimensions: 10,
+            }
+          : JSON.parse(params)
+        ),
         setSidebarView('pipeline'),
         setMainView('vis'),
         setRunFromGQL(run), 
