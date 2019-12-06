@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react'
-import { Button, Form, Grid, Header, Image, Message, Segment, Card, Divider, Container } from 'semantic-ui-react'
+import React, {useState} from 'react'
+import { Button, Form, Grid, Header, Image, Modal, Segment, Card, Divider, Container } from 'semantic-ui-react'
 
 import Logo from './logo.jpg'
 
@@ -32,6 +32,7 @@ const LoginForm = withRedux(({
   },
   setShowLogin, //For toggling to registration
 }) => {
+  const [showErrorModal, setShowErrorModal] = useState(false)
   // GraphQL mutation hook to call mutation and use result
   const [authenticateUser, {loading, data, error}] = useMutation(gql`
     mutation AuthenticateUser($email: Email!, $password: String!) {
@@ -43,9 +44,16 @@ const LoginForm = withRedux(({
       }
     }
   `, {
-    onCompleted: ({authenticateUser}) => setUser(authenticateUser)
+    onCompleted: ({authenticateUser}) => {
+      if (RA.isNotNil(authenticateUser)) {
+        setUser(authenticateUser)
+      } else {
+        setShowErrorModal(true)
+      }
+    }
   })
   return (
+    <>
     <Grid textAlign='center' centered verticalAlign='middle' columns={1}>
       <Grid.Column>
       <Formik
@@ -73,6 +81,24 @@ const LoginForm = withRedux(({
           )
           return (
             <Container text>
+            <Modal open={showErrorModal} size='small' basic dimmer='inverted'>
+              <Modal.Content>
+                <Card fluid>
+                  <Card.Content>
+                    <Button fluid size='massive' animated='vertical'
+                      color='grey'
+                      onClick={() => {
+                        setShowErrorModal(false)
+                      }}
+                    >
+                      <Button.Content visible content={'Authentication Failed'} />
+                      <Button.Content hidden content={'Try Again'} />
+                    </Button>
+                  </Card.Content>
+                  <Image src={Logo} size='large' fluid centered/>
+                </Card>
+              </Modal.Content>
+            </Modal>
             <Segment.Group>
               <Segment>
                 
@@ -125,6 +151,7 @@ const LoginForm = withRedux(({
       />
       </Grid.Column>
     </Grid>
+    </>
   )
 })
 
