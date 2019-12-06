@@ -14,7 +14,7 @@ const initialState = {
   // View management
   view: {
     main: 'projects', // 'login', 'projects', 'runs', 'vis'
-    sidebar: null, // 'dataset', 'pipeline', 'results'
+    sidebar: null, // 'pipeline', 'results'
   },
   toggle: {
     projects: {

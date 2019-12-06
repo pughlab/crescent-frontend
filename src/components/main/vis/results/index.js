@@ -38,8 +38,6 @@ const ResultsComponent = withRedux(
       R.always(<ScatterPlot/>)
     )
 
-    
-      
     return (
       <>
       {
@@ -52,9 +50,6 @@ const ResultsComponent = withRedux(
           </Segment>
         : R.equals('submitted', runStatus) ?
           <Segment basic placeholder style={{height: '100%'}}>
-            {/* <Header textAlign='center'>
-              Run is currently being run
-            </Header> */}
             <Header textAlign='center' icon>
               <ClimbingBoxLoader style={{margin: 0}} />
             </Header>

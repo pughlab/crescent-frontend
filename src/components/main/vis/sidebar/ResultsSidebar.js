@@ -7,6 +7,7 @@ import * as RA from 'ramda-adjunct'
 import withRedux from '../../../../redux/hoc'
 import VisualizationMenu from '../results/VisualizationMenu';
 
+
 const ResultsSidebar = withRedux(
   ({
     app: {
@@ -80,15 +81,9 @@ const ResultsSidebar = withRedux(
               <Segment>
                 <Button color='violet' fluid onClick={() => setActiveResult(null)} animated='fade'>
                   <Button.Content visible>
-                  {
-                    R.compose(
-                      R.prop('label'),
-                      R.find(R.propEq('result', activeResult))
-                    )(R.values(availablePlots))
-                  }
+                    <Icon name='arrow left' />
                   </Button.Content>
                   <Button.Content hidden>
-                    <Icon name='angle left' />
                     Click to go back
                   </Button.Content>
                 </Button>
