@@ -62,7 +62,7 @@ const ResultsComponent = withRedux(
               </Segment>
             ),
             R.always(
-              <Segment basic style={{height: '100%'}}>
+              <Segment basic style={{height: '90vh'}}>
                 <Header textAlign='center'>{ResultsHeader}</Header>
                 <ScatterPlot/>
               </Segment>
