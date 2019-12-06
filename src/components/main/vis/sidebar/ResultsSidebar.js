@@ -78,8 +78,10 @@ const ResultsSidebar = withRedux(
               </Step.Group>
             ),
             R.always(
-              <Segment>
-                <Button color='violet' fluid onClick={() => setActiveResult(null)} animated='fade'>
+              <Segment.Group>
+                <Button color='violet' fluid  animated='vertical' attached='top'
+                  onClick={() => setActiveResult(null)}
+                >
                   <Button.Content visible>
                     <Icon name='arrow left' />
                   </Button.Content>
@@ -87,9 +89,10 @@ const ResultsSidebar = withRedux(
                     Click to go back
                   </Button.Content>
                 </Button>
-                <Divider />
-                <VisualizationMenu/>
-              </Segment>
+                <Segment>
+                  <VisualizationMenu/>
+                </Segment>
+              </Segment.Group>
             )
           )(activeResult)
         }
