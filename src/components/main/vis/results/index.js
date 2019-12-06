@@ -66,7 +66,7 @@ const ResultsComponent = withRedux(
               </Segment>
             ),
             R.always(
-              <Segment basic style={{height: '90vh'}}>
+              <Segment basic style={{height: '80vh'}}>
                 <Header textAlign='center'>{ResultsHeader}</Header>
                 {determinePlotType(activeResult)}
               </Segment>
