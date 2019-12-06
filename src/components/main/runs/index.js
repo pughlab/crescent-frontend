@@ -49,7 +49,9 @@ const RunsStatusLegend = ({
                 active={R.equals(key, runFilter)}
                 onClick={() => setRunFilter(key)}
               >
-                <Icon name={icon} color={color} />
+                <Icon name={icon} color={color}
+                  loading={R.equals('pending', key)}
+                />
                 <Step.Content
                   title={title}
                   description={description}

@@ -83,7 +83,6 @@ const ProjectCard = withRedux(({
                   trigger={
                     <Button
                       animated='vertical'
-                      size='small'
                       color={statusColor}
                     >
                       <Button.Content visible
@@ -96,11 +95,14 @@ const ProjectCard = withRedux(({
                       />
                       <Button.Content hidden
                         content={
-                          <Icon name={R.prop(status, {
-                            pending: 'circle outline',
-                            submitted: 'circle notch',
-                            completed: 'circle outline check'
-                          })} />
+                          <Icon
+                            name={R.prop(status, {
+                              pending: 'circle outline',
+                              submitted: 'circle notch',
+                              completed: 'circle outline check'
+                            })}
+                            loading={R.equals('submitted', status)}
+                          />
                         }
                       />
                     </Button>
