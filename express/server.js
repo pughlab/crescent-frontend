@@ -17,6 +17,8 @@ const upload = multer({ dest: '/usr/src/app/minio/upload' })
 const AdmZip = require('adm-zip')
 const jStat = require('jStat')
 
+const recursiveReadDir = require('recursive-readdir');
+
 // Mongo connection
 const mongooseConnection = require('../database/mongo')
 const db = mongooseConnection.connection
@@ -277,6 +279,22 @@ app.get('/search/:query/:runID',
   }
 );
 
+app.get('/size/:runID', async (req, res) => {
+  try {
+    const files = await recursiveReadDir(`/usr/src/app/results/${req.params.runID}`);
+    let size = 0;
+    files.forEach(name => {
+      const stat = fs.statSync(name);
+      if (stat.isFile()) {
+        size += stat.size;
+      }
+    });
+    res.set('Content-Type', 'text/plain');
+    res.send(size);
+  } catch(err) {
+    res.sendStatus(404);
+  }
+});
 
 db.once('open', () => {
   console.log('Database connection open')
