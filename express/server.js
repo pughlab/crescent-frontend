@@ -241,8 +241,8 @@ app.get('/search/:query/:runID',
     let emptyResult = [{'text': ''}];
     let jsonObj = '';
     // check if json of file exists, create it from features file if not
-    if (! fs.existsSync(`/usr/src/app/results/${runID}/raw/features.json`)) {
-      fs.readFile(`/usr/src/app/results/${runID}/raw/features.tsv`, 'utf-8', (err, contents) => {
+    if (! fs.existsSync(`/usr/src/app/results/${runID}/SEURAT/raw/features.json`)) {
+      fs.readFile(`/usr/src/app/results/${runID}/SEURAT/raw/features.tsv`, 'utf-8', (err, contents) => {
         if (err) {res.send(err);}
         else{
           features = R.map(R.split("\t"), R.split("\n", contents)); // read as 2d array
@@ -265,7 +265,7 @@ app.get('/search/:query/:runID',
       }); 
     }
     else {
-        jsonObj = JSON.parse(fs.readFileSync(`/usr/src/app/results/${runID}/raw/features.json`, 'utf-8'));
+        jsonObj = JSON.parse(fs.readFileSync(`/usr/src/app/results/${runID}/SEURAT/raw/features.json`, 'utf-8'));
         let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
         if (query_result.length == 0){res.send(emptyResult);}
         else {
