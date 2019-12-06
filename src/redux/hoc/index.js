@@ -36,7 +36,8 @@ export default connect(
         updateScatter: (runID, selectedGroup) => dispatch(Actions.thunks.updateScatter({runID, selectedGroup})),
         changeFeatureSearch: searchQuery => dispatch(Actions.thunks.changeFeatureSearch(searchQuery)),
         changeSelectedFeature: feature => dispatch(Actions.thunks.changeSelectedFeature(feature)),
-        fetchScatter: () => dispatch(Actions.thunks.fetchScatter())
+        fetchScatter: () => dispatch(Actions.thunks.fetchScatter()),
+        fetchViolin: () => dispatch(Actions.thunks.fetchViolin())
       }
     }
   })

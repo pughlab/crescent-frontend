@@ -7,6 +7,7 @@ import {Segment, Header, Icon} from 'semantic-ui-react'
 import withRedux from '../../../../redux/hoc'
 
 import ScatterPlot from './ScatterPlot'
+import ViolinPlot from './ViolinPlot'
 
 import {ClimbingBoxLoader} from 'react-spinners'
 
@@ -30,6 +31,14 @@ const ResultsComponent = withRedux(
       R.always(),
       R.path([activeResult, 'label'])
     )(availablePlots)
+
+    const determinePlotType = R.ifElse(
+      R.equals('violin'),
+      R.always(<ViolinPlot/>),
+      R.always(<ScatterPlot/>)
+    )
+
+    
       
     return (
       <>
@@ -64,7 +73,7 @@ const ResultsComponent = withRedux(
             R.always(
               <Segment basic style={{height: '90vh'}}>
                 <Header textAlign='center'>{ResultsHeader}</Header>
-                <ScatterPlot/>
+                {determinePlotType(activeResult)}
               </Segment>
             )
           )(activeResult)
