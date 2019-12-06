@@ -35,7 +35,7 @@ const PipelineRunStatusMessage = withRedux(
               R.always(`Run is ${status} and so parameters are not configurable. `)
             )(status),
             R.prop(status, {
-              pending: `Click 'SUBMIT RUN' on the right to send job to HPC.`,
+              pending: `Click 'SUBMIT RUN' to send to HPC.`,
               submitted: 'You will be notified when your run is completed.',
               completed: "Click 'Results' on the right to view visualizations.",
             })

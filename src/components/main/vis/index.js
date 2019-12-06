@@ -20,12 +20,6 @@ const VisComponent = withRedux(
   }) => {
     return (
       <>
-      {/* {
-        R.equals('pipeline', sidebarView) &&
-          <Grid.Column width={16} style={{height: '6rem'}}>
-            <RunMessage />
-          </Grid.Column>
-      } */}
       <Grid style={{minHeight: 'calc(100vh - 12rem - 2px)'}}>
         <Grid.Column width={11} style={{minHeight: '100%'}}>
           <Transition visible animation='fade right' duration={1000} unmountOnHide={true} transitionOnMount={true}>
