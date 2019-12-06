@@ -281,6 +281,7 @@ app.get('/search/:query/:runID',
 
 app.get('/size/:runID', async (req, res) => {
   try {
+    // Needs to check 
     const files = await recursiveReadDir(`/usr/src/app/results/${req.params.runID}`);
     let size = 0;
     files.forEach(name => {
@@ -289,10 +290,15 @@ app.get('/size/:runID', async (req, res) => {
         size += stat.size;
       }
     });
-    res.set('Content-Type', 'text/plain');
-    res.send(size);
+    // res.set('Content-Type', 'text/plain');
+    res.send(JSON.stringify({size}));
   } catch(err) {
-    res.sendStatus(404);
+    if (R.propEq('errno', -2, err)) {
+      // Directory doesnt exist send something
+      res.send(JSON.stringify({size: 0}))
+    } else {
+      res.sendStatus(404);
+    }
   }
 });
 

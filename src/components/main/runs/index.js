@@ -6,6 +6,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import moment from 'moment'
+import filesize from 'filesize'
 
 import withRedux from '../../../redux/hoc'
 
@@ -19,37 +20,74 @@ import NewRunModal from './NewRunModal'
 import ArchiveProjectModal from '../projects/ArchiveProjectModal'
 import ShareProjectModal from '../projects/ShareProjectModal'
 
+
+
 const RunsStatusLegend = ({
-  projectRuns
+  projectRuns,
+  runsBySize,
+  runFilter,
+  setRunFilter
 }) => {
   const {pending: pendingCount, submitted: submittedCount, completed: completedCount} = R.reduce(
     (runCountsByStatus, {status}) => R.over(R.lensProp(status), R.inc, runCountsByStatus),
     {pending: 0, submitted: 0, completed: 0},
     projectRuns
   )
+  const totalCount = R.length(projectRuns)
+  const totalSize = R.compose(
+    R.sum,
+    R.values
+  )(runsBySize)
+
   return (
-    <Step.Group fluid widths={3}>
-      <Step>
-        <Icon name='circle outline' color='orange'/>
-        <Step.Content>
-          <Step.Title>{pendingCount} Pending User Submission</Step.Title>
-          <Step.Description>Runs you still need to configure and submit</Step.Description>
-        </Step.Content>
-      </Step>
-      <Step>
-        <Icon name='circle notch' color='yellow'/>
-        <Step.Content>
-          <Step.Title>{submittedCount} Submitted And Running</Step.Title>
-          <Step.Description>Runs being computed on the cloud</Step.Description>
-        </Step.Content>
-      </Step>
-      <Step>
-        <Icon name='circle outline check' color='green'/>
-        <Step.Content>
-          <Step.Title>{completedCount} Completed</Step.Title>
-          <Step.Description>Runs completed</Step.Description>
-        </Step.Content>
-      </Step>
+    <Step.Group fluid widths={4}>
+      {
+        R.compose(
+          R.map(
+            ({key, icon, color, title, description}) => (
+              <Step key={key}
+                active={R.equals(key, runFilter)}
+                onClick={() => setRunFilter(key)}
+              >
+                <Icon name={icon} color={color} />
+                <Step.Content
+                  title={title}
+                  description={description}
+                />
+              </Step>
+            )
+          )    
+        )([
+          {
+            key: 'all',
+            icon: 'file',
+            color: 'black',
+            title: `${totalCount} Total`,
+            description: `${filesize(totalSize)}`
+          },
+          {
+            key: 'pending',
+            icon: 'circle outline',
+            color: 'orange',
+            title: `${pendingCount} Pending`,
+            description: 'To configure and submit'
+          },
+          {
+            key: 'submitted',
+            icon: 'circle notch',
+            color: 'yellow',
+            title: `${submittedCount} Total`,
+            description: 'Computing on the cloud'
+          },
+          {
+            key: 'completed',
+            icon: 'circle outline check',
+            color: 'green',
+            title: `${completedCount} Total`,
+            description: 'Runs completed'
+          }
+        ])
+      }
     </Step.Group>
   )
 }
@@ -84,7 +122,7 @@ const RunsCardList = withRedux(({
     }
   `, {
     fetchPolicy: 'cache-and-network',
-    variables: {projectID}
+    variables: {projectID},
   })
   const projectRuns = R.ifElse(
     queryIsNotNil('runs'),
@@ -92,10 +130,39 @@ const RunsCardList = withRedux(({
     R.always([])
   )(data)
   console.log(data)
+  const [runsBySize, setRunsBySize] = useState({})
+  useEffect(() => {
+    Promise.all(
+      R.compose(
+        R.map(runID => fetch(`size/${runID}`).then(res => res.json())),
+        R.pluck('runID')
+      )(projectRuns)
+    ).then(
+      R.compose(
+        setRunsBySize,
+        R.zipObj(R.pluck('runID', projectRuns)),
+        R.pluck('size')
+      )
+    )
+  }, [projectRuns])
+
+  const [runFilter, setRunFilter] = useState('all')
+  console.log('runFilter', runFilter)
+  console.log(
+    R.compose(
+      // R.isEmpty,
+      R.filter(
+        R.compose(
+          R.or(R.equals('all', runFilter)),
+          R.propEq('status', runFilter)
+        )
+      )
+    )(projectRuns)
+  )
   return (
     <Container>
-      <Divider horizontal content='Project Details' />
       <Segment attached='top'>
+        <Divider horizontal content='Project Details' />
         <Header
           content={projectName}
           subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
@@ -109,8 +176,8 @@ const RunsCardList = withRedux(({
         <ArchiveProjectModal />
       </Button.Group>
       <Segment attached='bottom'>
-        <Divider horizontal content={`Viewing ${R.length(projectRuns)} Project Run${R.compose(R.equals(1), R.length)(projectRuns) ? '' : 's'} Below`} />
-        <RunsStatusLegend {...{projectRuns}} />
+        <Divider horizontal content={`Project Runs`} />
+        <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
         {/* CREATE NEW RUN FOR PROJECT */}
         <NewRunModal {...{refetch}} />
         {/* LIST OF EXISTING RUNS FOR PROJECT */}
@@ -122,21 +189,30 @@ const RunsCardList = withRedux(({
                 <Segment placeholder>
                   <Header icon>
                     <Icon name='exclamation' />
-                    No Runs
+                    {`No Runs`}
                   </Header>
                 </Segment>
               ),
-              projectRuns => (
-                <Card.Group itemsPerRow={3}>
-                {
-                  R.map(
-                    run => <RunCard key={R.prop('runID', run)} {...{run, refetch}} />,
-                    projectRuns
-                  )
-                }
-                </Card.Group>
+              runs => (
+                <>
+                  <Card.Group itemsPerRow={3}>
+                  {
+                    R.compose(
+                      R.map(run => <RunCard key={R.prop('runID', run)} {...{run, refetch}} />),
+                    )(runs)
+                  }
+                  </Card.Group>
+                </>
               )
-            )(projectRuns)
+            )(
+              R.filter(
+                R.compose(
+                  R.or(R.equals('all', runFilter)),
+                  R.propEq('status', runFilter)
+                ),
+                projectRuns
+              )
+            )
           }
         </Segment>
       </Segment>
