@@ -66,10 +66,12 @@ const VisualizationMenu = withRedux(
           }}
         >
           <Button.Content visible>
-            <Icon name='close' />
+          {
+            RA.isNotNil(currentFeature) ? currentFeature : <Icon name='close' />
+          } 
           </Button.Content>
           <Button.Content hidden>
-            Reset
+            Click to reset
           </Button.Content>
         </Form.Button>
       </Form.Field>
@@ -111,27 +113,23 @@ const VisualizationMenu = withRedux(
       {
         R.not(R.isEmpty(currentOptions)) &&
           <Segment loading={loadingOptions}>
-            <Label attached='top' color='violet'
-              content={RA.isNotNil(currentFeature) ? 'Selected:' : 'Select a feature below'}
-              detail={RA.isNotNil(currentFeature) ? currentFeature : undefined}
-            />
-            {
-              R.addIndex(R.map)(
-                ({text, value}, index) => (
-                  <Button key={index}
-                    color={R.equals(currentFeature, value) ? 'violet' : 'grey'}
-                    onClick={() => {
-                      // Local state
-                      changeFeature(value)
-                      // Redux
-                      changeSelectedFeature(value)
-                    }}
-                  >
-                  {value}
-                  </Button>
-                )
-              )(currentOptions)
-            }
+          {
+            R.addIndex(R.map)(
+              ({text, value}, index) => (
+                <Button key={index}
+                  color={R.equals(currentFeature, value) ? 'violet' : 'grey'}
+                  onClick={() => {
+                    // Local state
+                    changeFeature(value)
+                    // Redux
+                    changeSelectedFeature(value)
+                  }}
+                >
+                {value}
+                </Button>
+              )
+            )(currentOptions)
+          }
           </Segment>
       }
 
