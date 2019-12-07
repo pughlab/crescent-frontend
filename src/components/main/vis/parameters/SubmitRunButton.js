@@ -17,9 +17,15 @@ import {queryIsNotNil} from '../../../../utils'
 const SubmitRunButton = withRedux(
   ({
     app: {
+      user: {
+        userID: currentUserID
+      },
       run: {
         runID,
-        status: runStatus
+        status: runStatus,
+        createdBy: {
+          userID: creatorUserID
+        }
       },
       toggle: {
         vis: {
@@ -49,10 +55,12 @@ const SubmitRunButton = withRedux(
       loadingSubmitRun,
       queryIsNotNil('submitRun', dataSubmitRun)
     )
+
+    const currentUserIsNotCreator = R.not(R.equals(creatorUserID, currentUserID))
     return (
       <Button fluid content={R.equals('pending', runStatus) ? 'SUBMIT RUN' : 'ALREADY SUBMITTED'} color='blue'
         // Check redux state of submit button, the status in run in redux, or if graphql mutation has been called
-        disabled={R.any(RA.isTrue, [isSubmitted, runIsNotPending, runSubmitted])}
+        disabled={R.any(RA.isTrue, [currentUserIsNotCreator, isSubmitted, runIsNotPending, runSubmitted])}
         onClick={() => {
           setIsSubmitted(true)
           submitRun()
