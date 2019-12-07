@@ -11,13 +11,48 @@ import ParametersComponent from './parameters'
 import ResultsComponent from './results'
 
 
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
 
 const VisComponent = withRedux(
   ({
     app: {
-      view: {main: mainView, sidebar: sidebarView}
+      run: {
+        runID
+      },
+      view: {main: mainView, sidebar: sidebarView},
+      toggle: {
+        vis: {
+          pipeline: {
+            isSubmitted
+          }
+        }
+      }
     },
   }) => {
+    const [deleteRun, {data, loading, error}] = useMutation(gql`
+      mutation DeleteRun($runID: ID!) {
+        deleteRun(runID: $runID) {
+          runID
+        }
+      }
+    `, {
+      variables: {runID},
+      onCompleted: data => {
+        // refetch()
+        console.log(data)
+      }
+    })
+
+    // In case we want to delete unsubmitted runs
+    useEffect(() => () => {
+      if (R.not(isSubmitted)) {
+        console.log('not submitted')
+        // deleteRun()
+      } else {
+        console.log('submitted')
+      }
+    }, [])
     return (
       <>
       <Grid style={{minHeight: 'calc(100vh - 12rem - 2px)'}}>
