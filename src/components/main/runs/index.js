@@ -112,6 +112,7 @@ const RunsCardList = withRedux(({
         runID
         createdOn
         createdBy {
+          userID
           name
         }
         name

@@ -26,6 +26,7 @@ const NewRunModal = withRedux(({
         runID
         createdOn
         createdBy {
+          userID
           name
         }
         name
