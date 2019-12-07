@@ -1,9 +1,10 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Button, Form, Divider, Segment, List, Icon } from 'semantic-ui-react'
+import { Button, Form, Divider, Segment, List, Icon, Label } from 'semantic-ui-react'
 
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 const VisualizationMenu = withRedux(
   ({
@@ -21,6 +22,11 @@ const VisualizationMenu = withRedux(
     }
   }
 }) => {
+  useEffect(() => () => {
+    changeFeatureSearch('')
+    changeSelectedFeature(null)
+  }, [])
+
   const [loadingOptions, setLoadingOptions] = useState(false)
   const [currentSearch, changeSearch] = useState('')
   const [currentFeature, changeFeature] = useState(null)
@@ -69,8 +75,8 @@ const VisualizationMenu = withRedux(
       </Form.Field>
 
       {/* Search featues and populate list of options */}
-      <Form.Group widths={2}>
-        <Form.Field>
+      <Form.Group>
+        <Form.Field width={10}>
           <Form.Input
             placeholder='Search Features'
             fluid
@@ -78,7 +84,7 @@ const VisualizationMenu = withRedux(
             onChange={(e, {value}) => changeSearch(value)}
           />
           </Form.Field>
-        <Form.Field>
+        <Form.Field width={6}>
         <Form.Button
           fluid color='violet'
           onClick={() => {
@@ -105,6 +111,10 @@ const VisualizationMenu = withRedux(
       {
         R.not(R.isEmpty(currentOptions)) &&
           <Segment loading={loadingOptions}>
+            <Label attached='top' color='violet'
+              content={RA.isNotNil(currentFeature) ? 'Selected:' : 'Select a feature below'}
+              detail={RA.isNotNil(currentFeature) ? currentFeature : undefined}
+            />
             {
               R.addIndex(R.map)(
                 ({text, value}, index) => (
