@@ -40,14 +40,14 @@ const ResultsSidebar = withRedux(
           <Segment placeholder>
             <Header icon>
               <Icon name='exclamation' />
-              Submit your run to compute results
+              This run is not submitted yet
             </Header>
           </Segment>
         : R.equals('submitted', runStatus) ?
           <Segment placeholder>
             <Header icon>
               <Icon name='exclamation' />
-              You will be notified when your run is completed
+              Currently running in the cloud
             </Header>
           </Segment>
         :

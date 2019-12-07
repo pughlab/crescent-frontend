@@ -17,29 +17,40 @@ import DownloadResultsButton from '../results/DownloadResultsButton'
 const PipelineRunStatusMessage = withRedux(
   ({
     app: {
+      user: {
+        userID: currentUserID,
+      },
       run: {
+        createdBy: {
+          userID: creatorUserID
+        },
         status
       },
     }
   }) => {
+    const currentUserNotCreator = R.not(R.equals(currentUserID, creatorUserID))
+    const statusColor = R.prop(status, {pending: 'orange', submitted: 'yellow', completed: 'green'})
     return (
       <Message
-        color={R.prop(status, {pending: 'orange', submitted: 'yellow', completed: 'green'})}
+        color={currentUserNotCreator ? 'red' : statusColor}
       >
         <Message.Header as={Header} textAlign='center'>
         {
-          R.concat(
-            R.ifElse(
-              R.equals('pending'),
-              R.always('Configure your parameters below. '),
-              R.always(`Run is ${status} and so parameters are not configurable. `)
-            )(status),
-            R.prop(status, {
-              pending: `Click 'SUBMIT RUN' to send to HPC.`,
-              submitted: 'You will be notified when your run is completed.',
-              completed: "Click 'Results' on the right to view visualizations.",
-            })
-          )
+          currentUserNotCreator ?
+            "You are not the creator of this run. You won't be able to submit this run but you can view results once it is completed."
+          :
+            R.concat(
+              R.ifElse(
+                R.equals('pending'),
+                R.always('Configure your parameters below. '),
+                R.always(`Run is ${status} and so parameters are not configurable. `)
+              )(status),
+              R.prop(status, {
+                pending: `Click 'SUBMIT RUN' to send to HPC.`,
+                submitted: 'You will be notified when your run is completed.',
+                completed: "Click 'Results' on the right to view visualizations.",
+              })
+            )
         }
         </Message.Header>
 

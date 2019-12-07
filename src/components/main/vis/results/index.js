@@ -45,7 +45,7 @@ const ResultsComponent = withRedux(
           <Segment basic placeholder style={{height: '100%'}}>
             <Header textAlign='center' icon>
               <Icon name='exclamation' />
-              You must submit a job to have results
+              This run is not submitted yet
             </Header>
           </Segment>
         : R.equals('submitted', runStatus) ?
