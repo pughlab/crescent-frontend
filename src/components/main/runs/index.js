@@ -78,14 +78,14 @@ const RunsStatusLegend = ({
             key: 'submitted',
             icon: 'circle notch',
             color: 'yellow',
-            title: `${submittedCount} Total`,
+            title: `${submittedCount} Submitted`,
             description: 'Computing on the cloud'
           },
           {
             key: 'completed',
             icon: 'circle outline check',
             color: 'green',
-            title: `${completedCount} Total`,
+            title: `${completedCount} Completed`,
             description: 'Runs completed'
           }
         ])
