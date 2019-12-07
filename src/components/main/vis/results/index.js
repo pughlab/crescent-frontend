@@ -26,7 +26,7 @@ const ResultsComponent = withRedux(
       toggle: {}
     }
   }) => {
-    const ResultsHeader = R.ifElse(
+    const currentPlot = R.ifElse(
       R.isNil,
       R.always(),
       R.path([activeResult, 'label'])
@@ -41,6 +41,7 @@ const ResultsComponent = withRedux(
     return (
       <>
       {
+        // Prompts for if run is pending...
         R.equals('pending', runStatus) ? 
           <Segment basic placeholder style={{height: '100%'}}>
             <Header textAlign='center' icon>
@@ -48,6 +49,7 @@ const ResultsComponent = withRedux(
               This run is not submitted yet
             </Header>
           </Segment>
+        // ... or if run is submitted and running on cloud
         : R.equals('submitted', runStatus) ?
           <Segment basic placeholder style={{height: '100%'}}>
             <Header textAlign='center' icon>
@@ -55,6 +57,7 @@ const ResultsComponent = withRedux(
             </Header>
           </Segment>
         :
+        // ... otherwise visualize results
           R.ifElse(
             R.isNil,
             R.always(
@@ -66,8 +69,8 @@ const ResultsComponent = withRedux(
               </Segment>
             ),
             R.always(
-              <Segment basic style={{height: '80vh'}}>
-                <Header textAlign='center'>{ResultsHeader}</Header>
+              <Segment basic style={{height: '80vh', padding: 0}}>
+                <Header textAlign='center' content={currentPlot} />
                 {determinePlotType(activeResult)}
               </Segment>
             )
