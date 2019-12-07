@@ -24,15 +24,17 @@ const ProjectsCardList = withRedux(({
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
     <>
-    <Message>
+    {/* <Message>
       <Message.Header as={Header}>
         CanceR Single Cell ExpressioN Toolkit
       </Message.Header>
       <Message.Content>
         Select a public project (below) or sign in (top right) to start
       </Message.Content>
-    </Message>
+    </Message> */}
     <Container>
+      <Divider horizontal content='CReSCENT: CanceR Single Cell ExpressioN Toolkit' />
+
       <Button.Group size='mini' fluid
         widths={R.isNil(user) ? 1 : 2}
       >
