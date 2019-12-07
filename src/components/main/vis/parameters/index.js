@@ -19,7 +19,13 @@ import {
 const ParametersComponent = withRedux(
   ({
     app: {
+      user: {
+        userID: currentUserID
+      },
       run: {
+        createdBy: {
+          userID: creatorUserID
+        },
         status: runStatus
       },
       toggle: {
@@ -65,6 +71,9 @@ const ParametersComponent = withRedux(
       R.filter(R.propEq('step', activePipelineStep))
     )(PARAMETERS)
 
+    const currentUserNotCreator = R.not(R.equals(currentUserID, creatorUserID))
+    const runNotPending = R.compose(R.not, R.equals('pending'))(runStatus)
+
     if (R.isNil(activePipelineStep)) {
       return (
         <Segment basic placeholder style={{height: '100%'}}>
@@ -92,7 +101,7 @@ const ParametersComponent = withRedux(
     }
     return (
       <Segment basic
-        disabled={R.compose(R.or(isSubmitted), R.not, R.equals('pending'))(runStatus)}
+        disabled={R.any(RA.isTrue, [currentUserNotCreator, isSubmitted, runNotPending])}
       >
       {
         isActivePipelineStep('quality') ?
