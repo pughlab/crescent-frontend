@@ -59,10 +59,22 @@ const PipelineRunStatusMessage = withRedux(
   }
 )
 
+const PiplinePublicRunMessage = () => {
+  return (
+    <Message
+      color='grey'
+    >
+      <Message.Header as={Header} textAlign='center' content='This is a public run' />
+    </Message>
+  )
+}
 
 const SidebarComponent = withRedux(
   ({
     app: {
+      project: {
+        kind: projectKind
+      },
       view: {sidebar: sidebarView}
     },
     actions: {toggleSidebar}
@@ -85,7 +97,9 @@ const SidebarComponent = withRedux(
           </Button.Group>
 
           {
-            R.equals('pipeline', sidebarView) && <PipelineRunStatusMessage />
+            R.equals('curated', projectKind) ? 
+              <PiplinePublicRunMessage />
+            : R.equals('pipeline', sidebarView) && <PipelineRunStatusMessage />
           }
         </Segment>
         <Segment attached>
@@ -99,7 +113,7 @@ const SidebarComponent = withRedux(
         <Segment attached='bottom'>
         {
           R.cond([
-            [R.equals('pipeline'), R.always(<SubmitRunButton />)],
+            // [R.equals('pipeline'), R.always(<SubmitRunButton />)],
             [R.equals('results'), R.always(<DownloadResultsButton />)]
           ])(sidebarView)
         }

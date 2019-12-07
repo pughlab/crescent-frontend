@@ -96,9 +96,11 @@ const RunsStatusLegend = ({
 
 const RunsCardList = withRedux(({
   app: {
+    user,
     project: {
       projectID,
       name: projectName,
+      kind: projectKind,
       description,
       createdOn: projectCreatedOn,
       createdBy: {name: creatorName}
@@ -132,7 +134,6 @@ const RunsCardList = withRedux(({
     R.prop('runs'),
     R.always([])
   )(data)
-  console.log(data)
   const [runsBySize, setRunsBySize] = useState({})
   useEffect(() => {
     Promise.all(
@@ -150,18 +151,6 @@ const RunsCardList = withRedux(({
   }, [projectRuns])
 
   const [runFilter, setRunFilter] = useState('all')
-  console.log('runFilter', runFilter)
-  console.log(
-    R.compose(
-      // R.isEmpty,
-      R.filter(
-        R.compose(
-          R.or(R.equals('all', runFilter)),
-          R.propEq('status', runFilter)
-        )
-      )
-    )(projectRuns)
-  )
   return (
     <Container>
       <Segment attached='top'>
@@ -173,16 +162,22 @@ const RunsCardList = withRedux(({
         <Divider horizontal />
         {description}
       </Segment>
-      {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT */}
-      <Button.Group attached widths={2}>
-        <ShareProjectModal />
-        <ArchiveProjectModal />
-      </Button.Group>
+      {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
+      {
+        R.equals('uploaded', projectKind) &&
+          <Button.Group attached widths={2}>
+            <ShareProjectModal />
+            <ArchiveProjectModal />
+          </Button.Group>
+      }
       <Segment attached='bottom'>
         <Divider horizontal content={`Project Runs`} />
         <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
-        {/* CREATE NEW RUN FOR PROJECT */}
-        <NewRunModal {...{refetch}} />
+        {/* CREATE NEW RUN FOR PROJECT IF NOT PUBLIC*/}
+        {
+          R.equals('uploaded', projectKind) &&
+            <NewRunModal {...{refetch}} />
+        }
         {/* LIST OF EXISTING RUNS FOR PROJECT */}
         <Segment attached='bottom'>
           {

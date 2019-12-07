@@ -31,6 +31,7 @@ const UploadedProjectsList = withRedux(({
       projects(userID: $userID) {
         projectID
         name
+        kind
         description
         createdOn
         createdBy {

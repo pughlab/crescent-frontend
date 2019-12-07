@@ -12,7 +12,7 @@ import moment from 'moment'
 import {queryIsNotNil} from '../../../utils'
 
 
-import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
+import {Form, Card, Segment, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -27,11 +27,20 @@ const PublicProjectsList = withRedux(({
       curatedProjects {
         projectID
         name
+        kind
         description
         createdOn
         createdBy {
           name
         }
+        
+        runs {
+          runID
+          name
+          status
+        }
+
+        datasetSize
       }
     }
   `, {
@@ -43,7 +52,8 @@ const PublicProjectsList = withRedux(({
       R.always([])
     )(data)
   return (
-    <Card.Group itemsPerRow={3} style={{maxHeight: '65vh', overflowY: 'scroll'}}>
+    <Segment>
+    <Card.Group itemsPerRow={1}>
     {
       R.addIndex(R.map)(
         (project, index) => (
@@ -53,6 +63,7 @@ const PublicProjectsList = withRedux(({
       )
     }
     </Card.Group>
+    </Segment>
   )
 })
 

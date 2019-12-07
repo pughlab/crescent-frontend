@@ -42,7 +42,6 @@ const ParametersComponent = withRedux(
       setParameters
     }
   }) => {
-    console.log(parameters)
     const {
       singleCell,
       numberGenes,
