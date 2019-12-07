@@ -242,7 +242,8 @@ app.get('/search/:query/:runID',
     let result = [];
     // const formatResult = x => result.push({'text': x['symbol'], 'value': x['identifier']}); 
     const formatResult = x => result.push({'text': x['identifier'], 'value': x['identifier']}); 
-    let emptyResult = [{'text': ''}];
+    // let emptyResult = [{'text': ''}];
+    const emptyResult = []
     let jsonObj = '';
     // check if json of file exists, create it from features file if not
     if (! fs.existsSync(`/usr/src/app/results/${runID}/SEURAT/raw/features.json`)) {
