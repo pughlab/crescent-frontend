@@ -26,12 +26,6 @@ const ResultsComponent = withRedux(
       toggle: {}
     }
   }) => {
-    const currentPlot = R.ifElse(
-      R.isNil,
-      R.always(),
-      R.path([activeResult, 'label'])
-    )(availablePlots)
-
     const determinePlotType = R.ifElse(
       R.equals('violin'),
       R.always(<ViolinPlot/>),
@@ -61,7 +55,7 @@ const ResultsComponent = withRedux(
           R.ifElse(
             R.isNil,
             R.always(
-              <Segment basic placeholder style={{height: '100%'}}>
+              <Segment basic placeholder style={{height: '80vh'}}>
                 <Header textAlign='center' icon>
                   <Icon name='right arrow' />
                   Select a visualization on the right
@@ -70,7 +64,6 @@ const ResultsComponent = withRedux(
             ),
             R.always(
               <Segment basic style={{height: '80vh', padding: 0}}>
-                <Header textAlign='center' content={currentPlot} />
                 {determinePlotType(activeResult)}
               </Segment>
             )

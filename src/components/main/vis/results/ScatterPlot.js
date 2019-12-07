@@ -1,8 +1,8 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Loader } from 'semantic-ui-react'
-
+import { Loader, Header, Segment } from 'semantic-ui-react'
+import {ClimbingBoxLoader} from 'react-spinners'
 import * as R from 'ramda'
 
 const ScatterPlot = withRedux(
@@ -40,42 +40,58 @@ const ScatterPlot = withRedux(
   useEffect(() => {
       const prev = scatterData;
       setScatterData( [] ) // loading 
-      fetchScatter().then((data) => {
-        if(R.isNil(selectedFeature)){
+      fetchScatter()
+        .then(data => {
+          if (R.isNil(selectedFeature)) {
             setScatterData(data)
-        }
-        else{
-            const mapIndexed = R.addIndex(R.map)
+          } else {
             const merged = R.ifElse(
-            R.has('error'),
-            () => {console.error(data['error']); return prev}, // show error message here
-            mapIndexed((val, index) => {
-                return R.mergeLeft(val, scatterData[index])
-            })
+              R.has('error'),
+              () => {console.error(data['error']); return prev}, // show error message here
+              R.addIndex(R.map)((val, index) => R.mergeLeft(val, scatterData[index]))
             )(data)
             setScatterData(merged)
-        }
-      })
+          }
+        })
   }, [selectedFeature])
+
+  const currentScatterPlotType = R.ifElse(
+    R.isNil,
+    R.always(''),
+    R.path([activeResult, 'label'])
+  )(availablePlots)
 
   return (
     <>
     {
       R.ifElse(
         R.isEmpty,
-        R.always(<Loader size='big' active inline='centered' />),
-        R.always(<Plot
-          data={scatterData}
-          useResizeHandler
-          style={{width: '100%', height:'90%'}}
-          layout={{
-            autosize: true,
-            hovermode: 'closest',
-            xaxis: {showgrid: false, ticks: '', showticklabels: false},
-            yaxis: {showgrid: false, ticks: '', showticklabels: false},
-            margin: {l:20, r:20, b:20, t:20},
-            legend: {"orientation": "h"}
-            }}/>) 
+        R.always(
+          <Segment basic placeholder style={{height: '100%'}}>
+            <Header textAlign='center' icon>
+              <ClimbingBoxLoader color='#6435c9' />
+            </Header>
+          </Segment>
+        ),
+        R.always(
+          <>
+          {/* Plot type: either tsne or umap scatter plots available */}
+          <Header textAlign='center' content={currentScatterPlotType} />
+          <Plot
+            data={scatterData}
+            useResizeHandler
+            style={{width: '100%', height:'90%'}}
+            layout={{
+              autosize: true,
+              hovermode: 'closest',
+              xaxis: {showgrid: false, ticks: '', showticklabels: false},
+              yaxis: {showgrid: false, ticks: '', showticklabels: false},
+              margin: {l:20, r:20, b:20, t:20},
+              legend: {"orientation": "h"}
+            }}
+          />
+          </>
+        ) 
       )(scatterData)
     }
     </>   

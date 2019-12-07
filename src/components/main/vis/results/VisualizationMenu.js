@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Button, Form, Divider, Segment, List, Icon, Label } from 'semantic-ui-react'
+import { Button, Form, Divider, Segment, List, Icon, Header } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -22,6 +22,7 @@ const VisualizationMenu = withRedux(
     }
   }
 }) => {
+  // Reset feature selection on unmount
   useEffect(() => () => {
     changeFeatureSearch('')
     changeSelectedFeature(null)
@@ -34,7 +35,6 @@ const VisualizationMenu = withRedux(
 
   // format a list for a dropdown
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
-  console.log(currentOptions)
   return (
     <Form>
       <Divider horizontal content='Colour By' />
@@ -110,28 +110,26 @@ const VisualizationMenu = withRedux(
       </Form.Group>
       
       {/* List of features to be selected */}
+      <Segment loading={loadingOptions} textAlign='center'>
+        <Header size='small' sub content={R.isEmpty(currentOptions) ? 'No features found' : 'Click a feature'} />
       {
-        R.not(R.isEmpty(currentOptions)) &&
-          <Segment loading={loadingOptions}>
-          {
-            R.addIndex(R.map)(
-              ({text, value}, index) => (
-                <Button key={index}
-                  color={R.equals(currentFeature, value) ? 'violet' : 'grey'}
-                  onClick={() => {
-                    // Local state
-                    changeFeature(value)
-                    // Redux
-                    changeSelectedFeature(value)
-                  }}
-                >
-                {value}
-                </Button>
-              )
-            )(currentOptions)
-          }
-          </Segment>
+        R.addIndex(R.map)(
+          ({text, value}, index) => (
+            <Button key={index}
+              color={R.equals(currentFeature, value) ? 'violet' : 'grey'}
+              onClick={() => {
+                // Local state
+                changeFeature(value)
+                // Redux
+                changeSelectedFeature(value)
+              }}
+            >
+            {value}
+            </Button>
+          )
+        )(currentOptions)
       }
+      </Segment>
 
     </Form>
   )

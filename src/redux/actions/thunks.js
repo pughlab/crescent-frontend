@@ -102,16 +102,20 @@ const changeFeatureSearch = searchQuery => (dispatch, getState) => {
       run: {runID}
     }
   } = getState()
-  return fetch(
-    `/search/${searchQuery}/${runID}`
-    ).then(checkResponse)
-    .then((resp) => resp.json())
-    .then((data) => {return data})
-    .catch(
-      error => {
+  // If searchQuery is empty (i.e. being reset) then don't search anything
+  if (R.isEmpty(searchQuery)) {
+    return []
+  } else {
+    return fetch(`/search/${searchQuery}/${runID}`)
+      // Check response and return data
+      .then(checkResponse)
+      .then(resp => resp.json())
+      .then(R.identity)
+      .catch(error => {
         console.log(error)
         return []
-    })
+      })
+  }
 }
 
 const changeSelectedFeature = feature => (dispatch, getState) => {
