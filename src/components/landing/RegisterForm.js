@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react'
-import { Button, Form, Grid, Container, Image, Message, Segment, Card } from 'semantic-ui-react'
+import React, {useState} from 'react'
+import { Button, Form, Grid, Container, Image, Modal, Segment, Card } from 'semantic-ui-react'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
@@ -10,6 +10,7 @@ import * as Yup from 'yup'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
+import Logo from './logo.jpg'
 
 import withRedux from '../../redux/hoc'
 // See LoginForm.js for congruent comments regarding structure of component
@@ -36,6 +37,7 @@ const RegisterForm = withRedux(
     },
     setShowLogin
   }) => {
+    const [showErrorModal, setShowErrorModal] = useState(false)
     const [createUser, {loading, data, error}] = useMutation(gql`
       mutation CreateUser(
         $firstName: String!,
@@ -59,6 +61,8 @@ const RegisterForm = withRedux(
         if (RA.isNotNil(createUser)) {
           setUser(createUser)
           setShowLogin(true)
+        } else {
+          setShowErrorModal(true)
         }
       }
     })
@@ -96,6 +100,24 @@ const RegisterForm = withRedux(
               )
               return (
                 <Container text>
+                <Modal open={showErrorModal} size='small' basic dimmer='inverted'>
+                  <Modal.Content>
+                    <Card fluid>
+                      <Card.Content>
+                        <Button fluid size='massive' animated='vertical'
+                          color='grey'
+                          onClick={() => {
+                            setShowErrorModal(false)
+                          }}
+                        >
+                          <Button.Content visible content={'Registration Failed'} />
+                          <Button.Content hidden content={'Try Again'} />
+                        </Button>
+                      </Card.Content>
+                      <Image src={Logo} size='large' centered/>
+                    </Card>
+                  </Modal.Content>
+                </Modal>
                 <Segment.Group>
                   <Segment>
                     <Form size='large' onSubmit={handleSubmit}>
