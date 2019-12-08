@@ -54,6 +54,7 @@ const PublicProjectsList = withRedux(({
   return (
     <Segment>
     <Card.Group itemsPerRow={1}>
+    <Transition.Group>
     {
       R.addIndex(R.map)(
         (project, index) => (
@@ -62,6 +63,7 @@ const PublicProjectsList = withRedux(({
         curatedProjects
       )
     }
+    </Transition.Group>
     </Card.Group>
     </Segment>
   )

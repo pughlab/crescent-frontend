@@ -74,6 +74,7 @@ const UploadedProjectsList = withRedux(({
         ),
         userProjects => (
           <Card.Group itemsPerRow={1}>
+          <Transition.Group>
           {
             R.addIndex(R.map)(
               (project, index) => (
@@ -82,6 +83,7 @@ const UploadedProjectsList = withRedux(({
               userProjects
             )
           }
+          </Transition.Group>
           </Card.Group>
         )
       )(userProjects)
