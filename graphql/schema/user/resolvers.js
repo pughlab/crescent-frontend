@@ -11,7 +11,11 @@ const resolvers = {
   // For every type definition there is a resolver...
   Query: {
     users: async (parent, variables, {Users}) => {
-      const users = await Users.find({}).lean()
+      const users = await Users.find({
+        firstName: {
+          $not: {$eq: 'Anonymous Guest'}
+        }
+      }).lean()
       return users
     }
   },
