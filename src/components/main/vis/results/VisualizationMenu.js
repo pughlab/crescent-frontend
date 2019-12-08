@@ -99,7 +99,6 @@ const VisualizationMenu = withRedux(
       </Form.Field>
 
       <Form.Dropdown
-        label={'Feature Selection'}
         placeholder='Search Features'
         fluid
         search
