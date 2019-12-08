@@ -31,7 +31,6 @@ const RunCard = withRedux(({
     createdBy: {userID: creatorUserID, name: creatorName},
     status, createdOn, submittedOn, completedOn
   } = run
-  console.log(currentUserID, creatorUserID)
   const [deleteRun, {data, loading, error}] = useMutation(gql`
     mutation DeleteRun($runID: ID!) {
       deleteRun(runID: $runID) {

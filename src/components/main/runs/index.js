@@ -152,7 +152,6 @@ const RunsCardList = withRedux(({
   }, [projectRuns])
 
   const [runFilter, setRunFilter] = useState('all')
-  console.log('pk', projectKind)
   const isUploadedProject = R.equals('uploaded', projectKind)
   return (
     <Container>
@@ -211,13 +210,20 @@ const RunsCardList = withRedux(({
                 </>
               )
             )(
-              R.filter(
-                R.compose(
-                  R.or(R.equals('all', runFilter)),
-                  R.propEq('status', runFilter)
+              R.compose(
+                R.reject(
+                  R.compose(
+                    R.and(R.equals('curated', projectKind)),
+                    R.propEq('status', 'pending')
+                  )
                 ),
-                projectRuns
-              )
+                R.filter(
+                  R.compose(
+                    R.or(R.equals('all', runFilter)),
+                    R.propEq('status', runFilter)
+                  )
+                )
+              )(projectRuns)
             )
           }
         </Segment>
