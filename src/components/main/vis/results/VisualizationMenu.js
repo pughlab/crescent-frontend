@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Button, Form, Divider, Segment, List, Icon, Header } from 'semantic-ui-react'
+import { Button, Form, Divider, Segment, List, Label, Icon, Header } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -17,22 +17,52 @@ const VisualizationMenu = withRedux(
   actions: {
     thunks: {
       changeActiveGroup,
-      changeFeatureSearch,
       changeSelectedFeature
     }
   }
 }) => {
   // Reset feature selection on unmount
   useEffect(() => () => {
-    changeFeatureSearch('')
-    changeSelectedFeature(null)
+    changeSelectedFeature('')
   }, [])
 
-  const [loadingOptions, setLoadingOptions] = useState(false)
+  
   const [currentSearch, changeSearch] = useState('')
-  const [currentFeature, changeFeature] = useState(null)
+  const [currentFeature, changeFeature] = useState('')
   const [currentOptions, changeCurrentOptions] = useState([])
 
+  const checkResponse = (resp) => {
+    if(!resp.ok){throw Error(resp.statusText);}
+    return resp
+  }
+
+  const handleSearchChange = (event, {searchQuery}) => {
+    changeSearch(searchQuery)
+    if(! R.isEmpty(searchQuery)){
+      fetch(`/search/${searchQuery}/${runID}`)
+      .then(checkResponse)
+      .then(resp => resp.json())
+      .then(R.identity)
+      .then(changeCurrentOptions)
+      .catch((err) => console.log(err))
+    }
+  }
+
+  const handleSelectFeature = (event, {value}) => {
+    if(R.isNil(value)){value = '';}
+    // handle SearchDropdown props 
+    changeSearch('') // reset search
+    const handleChange = R.ifElse(
+      R.isEmpty,
+      R.always(''),
+      R.last
+    )
+    changeFeature(value) //local state
+    changeSelectedFeature(value) // store
+  }
+
+  console.log(currentOptions)
+  console.log(currentFeature)
   // format a list for a dropdown
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
   return (
@@ -55,19 +85,11 @@ const VisualizationMenu = withRedux(
           fluid
           animated='vertical'
           color='violet'
-          onClick={() => {
-            // Local state
-            changeSearch('')
-            changeFeature(null)
-            changeCurrentOptions([])
-            // Redux
-            changeFeatureSearch('')
-            changeSelectedFeature(null)
-          }}
+          onClick={handleSelectFeature}        
         >
           <Button.Content visible>
           {
-            RA.isNotNil(currentFeature) ? currentFeature : <Icon name='close' />
+            RA.isNotEmpty(currentFeature) ? currentFeature : <Icon name='close' />
           } 
           </Button.Content>
           <Button.Content hidden>
@@ -76,62 +98,19 @@ const VisualizationMenu = withRedux(
         </Form.Button>
       </Form.Field>
 
-      {/* Search featues and populate list of options */}
-      <Form.Group>
-        <Form.Field width={10}>
-          <Form.Input
-            placeholder='Search Features'
-            fluid
-            value={currentSearch}
-            onChange={(e, {value}) => changeSearch(value)}
-          />
-          </Form.Field>
-        <Form.Field width={6}>
-        <Form.Button
-          fluid color='violet'
-          onClick={() => {
-            setLoadingOptions(true)
-            changeFeatureSearch(currentSearch)
-              .then(options => {
-                changeCurrentOptions(options)
-                setLoadingOptions(false)
-              })
-          }}
-          animated='vertical'
-        >
-          <Button.Content visible>
-            <Icon name='search' />
-          </Button.Content>
-          <Button.Content hidden>
-            Search
-          </Button.Content>
-        </Form.Button>
-      </Form.Field>
-      </Form.Group>
-      
-      {/* List of features to be selected */}
-      <Segment loading={loadingOptions} textAlign='center'>
-        <Header size='small' sub content={R.isEmpty(currentOptions) ? 'No features found' : 'Click a feature'} />
-      {
-        R.addIndex(R.map)(
-          ({text, value}, index) => (
-            <Button key={index}
-              color={R.equals(currentFeature, value) ? 'violet' : 'grey'}
-              onClick={() => {
-                // Local state
-                changeFeature(value)
-                // Redux
-                changeSelectedFeature(value)
-              }}
-            >
-            {value}
-            </Button>
-          )
-        )(currentOptions)
-      }
-      </Segment>
-
-    </Form>
+      <Form.Dropdown
+        placeholder='Search Features'
+        fluid
+        search
+        renderLabel = {({text}) => (<Label color='violet' content={text}/>)}
+        searchQuery={currentSearch}
+        selection
+        options={currentOptions}
+        value={currentFeature}
+        onSearchChange={handleSearchChange}
+        onChange={handleSelectFeature}
+      />
+      </Form>
   )
 })
 
