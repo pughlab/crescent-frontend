@@ -99,6 +99,7 @@ const RunsCardList = withRedux(({
     project: {
       projectID,
       name: projectName,
+      kind: projectKind,
       description,
       createdOn: projectCreatedOn,
       createdBy: {name: creatorName}
@@ -151,10 +152,16 @@ const RunsCardList = withRedux(({
   }, [projectRuns])
 
   const [runFilter, setRunFilter] = useState('all')
+  console.log('pk', projectKind)
+  const isUploadedProject = R.equals('uploaded', projectKind)
   return (
     <Container>
       <Segment attached='top'>
-        <Divider horizontal content='Project Details' />
+        <Divider horizontal
+          content={
+            `${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`
+          }
+        />
         <Header
           content={projectName}
           subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
@@ -164,7 +171,7 @@ const RunsCardList = withRedux(({
       </Segment>
       {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
       {
-        R.not(isGuest) &&
+        isUploadedProject &&
           <Button.Group attached widths={2}>
             <ShareProjectModal />
             <ArchiveProjectModal />
@@ -172,7 +179,10 @@ const RunsCardList = withRedux(({
       }
       <Segment attached='bottom'>
         <Divider horizontal content={`Project Runs`} />
-        <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
+        {
+          isUploadedProject &&
+            <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
+        }
         <NewRunModal {...{refetch}} />
         {/* LIST OF EXISTING RUNS FOR PROJECT */}
         <Segment attached='bottom'>
