@@ -29,7 +29,7 @@ const PipelineRunStatusMessage = withRedux(
     }
   }) => {
     const currentUserNotCreator = R.not(R.equals(currentUserID, creatorUserID))
-    const statusColor = R.prop(status, {pending: 'orange', submitted: 'yellow', completed: 'green'})
+    const statusColor = R.prop(status, {pending: 'orange', submitted: 'yellow', completed: 'green', failed: 'red'})
     return (
       <Message
         color={currentUserNotCreator ? 'red' : statusColor}
@@ -49,6 +49,7 @@ const PipelineRunStatusMessage = withRedux(
                 pending: `Click 'SUBMIT RUN' to send to HPC.`,
                 submitted: 'You will be notified when your run is completed.',
                 completed: "Click 'Results' on the right to view visualizations.",
+                failed: 'This run failed.'
               })
             )
         }

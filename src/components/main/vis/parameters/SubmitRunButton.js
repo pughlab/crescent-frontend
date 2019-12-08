@@ -55,7 +55,6 @@ const SubmitRunButton = withRedux(
       loadingSubmitRun,
       queryIsNotNil('submitRun', dataSubmitRun)
     )
-
     const currentUserIsNotCreator = R.not(R.equals(creatorUserID, currentUserID))
     return (
       <Button fluid color='blue'
