@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step} from 'semantic-ui-react'
+import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -200,11 +200,13 @@ const RunsCardList = withRedux(({
               runs => (
                 <>
                   <Card.Group itemsPerRow={3}>
+                  <Transition.Group>
                   {
                     R.compose(
                       R.map(run => <RunCard key={R.prop('runID', run)} {...{run, refetch}} />),
                     )(runs)
                   }
+                  </Transition.Group>
                   </Card.Group>
                 </>
               )
