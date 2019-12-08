@@ -95,7 +95,7 @@ const LoginForm = withRedux(({
                       <Button.Content hidden content={'Try Again'} />
                     </Button>
                   </Card.Content>
-                  <Image src={Logo} size='large' fluid centered/>
+                  <Image src={Logo} size='large' centered/>
                 </Card>
               </Modal.Content>
             </Modal>
