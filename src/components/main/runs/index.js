@@ -96,17 +96,17 @@ const RunsStatusLegend = ({
 
 const RunsCardList = withRedux(({
   app: {
-    user,
     project: {
       projectID,
       name: projectName,
-      kind: projectKind,
       description,
       createdOn: projectCreatedOn,
       createdBy: {name: creatorName}
     },
+    view: {
+      isGuest
+    }
   },
-  actions: {setProject},
 }) => {
   const {loading, data, error, refetch} = useQuery(gql`
     query ProjectRuns($projectID: ID) {
@@ -164,7 +164,7 @@ const RunsCardList = withRedux(({
       </Segment>
       {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
       {
-        R.equals('uploaded', projectKind) &&
+        R.not(isGuest) &&
           <Button.Group attached widths={2}>
             <ShareProjectModal />
             <ArchiveProjectModal />
@@ -173,11 +173,7 @@ const RunsCardList = withRedux(({
       <Segment attached='bottom'>
         <Divider horizontal content={`Project Runs`} />
         <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
-        {/* CREATE NEW RUN FOR PROJECT IF NOT PUBLIC*/}
-        {
-          R.equals('uploaded', projectKind) &&
-            <NewRunModal {...{refetch}} />
-        }
+        <NewRunModal {...{refetch}} />
         {/* LIST OF EXISTING RUNS FOR PROJECT */}
         <Segment attached='bottom'>
           {

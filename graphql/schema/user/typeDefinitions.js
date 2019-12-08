@@ -24,6 +24,8 @@ const typeDefs = gql`
   }
   # 'Mutation' is similar (but is invoked and not executed immediately)
   type Mutation {
+    createGuestUser: User
+
     authenticateUser(
       email: Email!,
       password: String!

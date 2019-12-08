@@ -15,6 +15,7 @@ const initialState = {
   view: {
     main: 'projects', // 'login', 'projects', 'runs', 'vis'
     sidebar: null, // 'pipeline', 'results'
+    isGuest: null, // true, false
   },
   toggle: {
     projects: {
@@ -86,6 +87,25 @@ const GQLReducer = {
         R.set(
           R.lensPath(['toggle','projects','activeKind']),
           'uploaded',
+        ),
+        // Flag as not a guest
+        R.set(
+          R.lensPath(['view','isGuest']),
+          false,
+        ),
+        setMainView('projects'),
+        setRunFromGQL(null),
+        setProjectFromGQL(null),
+        setUserFromGQL(user)
+      )(state)
+    },
+  'SET_GUEST_USER':
+    (state, payload) => {
+      const {user} = payload
+      return R.compose(
+        R.set(
+          R.lensPath(['view','isGuest']),
+          true,
         ),
         setMainView('projects'),
         setRunFromGQL(null),

@@ -1,4 +1,5 @@
 const R = require('ramda')
+const passwordGenerator = require('generate-password')
 
 // RESOLVERS specify how data is retrieved (multiple DBs, APIs, etc...)
 // 
@@ -16,6 +17,27 @@ const resolvers = {
   },
   Mutation: {
     // These resolvers should do some kind of create/update/delete
+    createGuestUser: async (
+      parent,
+      variables,
+      {Users}
+    ) => {
+      const [firstName, lastName] = ['Anonymous Guest', 'User']
+      const password = passwordGenerator.generate({
+        length: 10,
+        numbers: true
+      })
+      const email = R.concat(
+        passwordGenerator.generate({
+          length: 10,
+          numbers: true
+        }),
+        '@crescent.cloud'
+      )
+      const guestUser = await Users.create({firstName, lastName, email, password})
+      return guestUser
+
+    },
     createUser: async (
       parent,
       {firstName, lastName, email, password},
