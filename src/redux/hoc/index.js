@@ -11,6 +11,7 @@ export default connect(
     actions: {
       logout: () => dispatch(Actions.logout()),
       setProject: project => dispatch(Actions.setProject({project})),
+      setGuestUser: user => dispatch(Actions.setGuestUser({user})),
       setUser: user =>  dispatch(Actions.setUser({user})),
       setRun: run => dispatch(Actions.setRun({run})),
       toggleInfo: () => dispatch(Actions.toggleInfo()),

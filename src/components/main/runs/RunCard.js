@@ -17,6 +17,9 @@ import {queryIsNotNil} from '../../../utils'
 
 
 const RunCard = withRedux(({
+  app: {
+    user: {userID: currentUserID}
+  },
   // Redux actions
   actions: {setRun},
   // Prop
@@ -24,9 +27,11 @@ const RunCard = withRedux(({
   refetch //refetchs all project runs
 }) => {
   const {
-    runID, name, params, createdBy: {name: creatorName}, status,
-    createdOn, submittedOn, completedOn
+    runID, name, params,
+    createdBy: {userID: creatorUserID, name: creatorName},
+    status, createdOn, submittedOn, completedOn
   } = run
+  console.log(currentUserID, creatorUserID)
   const [deleteRun, {data, loading, error}] = useMutation(gql`
     mutation DeleteRun($runID: ID!) {
       deleteRun(runID: $runID) {
@@ -37,7 +42,8 @@ const RunCard = withRedux(({
     variables: {runID},
     onCompleted: data => refetch()
   })
-  console.log(status)
+  
+  const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
   return (
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
     <Card color={R.prop(status, {pending: 'orange', completed: 'green', submitted: 'yellow'})}>
@@ -66,7 +72,7 @@ const RunCard = withRedux(({
         </Card.Header>
       </Card.Content>
       <Card.Content>
-        <Button.Group widths={3}>
+        <Button.Group widths={currentUserIsCreator ? 3 : 2}>
         <Button basic fluid animated='vertical' onClick={() => setRun(run)}>
           <Button.Content visible><Icon name='eye'/></Button.Content>
           <Button.Content hidden content='View' />
@@ -108,29 +114,32 @@ const RunCard = withRedux(({
           </Modal.Content>
         </Modal>
         
-        <Modal
-          basic size='small'
-          trigger={
-            <Button basic fluid animated='vertical'>
-              <Button.Content visible><Icon name='trash' /></Button.Content>
-              <Button.Content hidden content='Delete' />
-            </Button>
-          }
-        >
-          <Modal.Content>
-            <Segment attached='top'>
-              <Header icon='trash' content={name} subheader='Are you sure you want to delete this run?' />
-            </Segment>
-            <Segment attached='bottom'>
-            <Button fluid color='red' inverted 
-              onClick={() => deleteRun()}
+        {
+          currentUserIsCreator &&
+            <Modal
+              basic size='small'
+              trigger={
+                <Button basic fluid animated='vertical'>
+                  <Button.Content visible><Icon name='trash' /></Button.Content>
+                  <Button.Content hidden content='Delete' />
+                </Button>
+              }
             >
-              <Icon name='checkmark' />
-              Yes, delete this run
-            </Button>
-            </Segment>
-          </Modal.Content>
-        </Modal>
+              <Modal.Content>
+                <Segment attached='top'>
+                  <Header icon='trash' content={name} subheader='Are you sure you want to delete this run?' />
+                </Segment>
+                <Segment attached='bottom'>
+                <Button fluid color='red' inverted 
+                  onClick={() => deleteRun()}
+                >
+                  <Icon name='checkmark' />
+                  Yes, delete this run
+                </Button>
+                </Segment>
+              </Modal.Content>
+            </Modal>
+        }
         </Button.Group>
       </Card.Content>
       <Card.Content>

@@ -14,6 +14,7 @@ const resolvers = {
     projects: async (parent, {userID}, {Projects}) => {
       console.log(userID, 'projects')
       const projects = await Projects.find({
+        kind: 'uploaded',
         $or: [
           // User is either the creator or project has been shared with them
           {createdBy: userID},

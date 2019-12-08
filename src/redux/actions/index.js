@@ -11,6 +11,13 @@ const setUser = ({user}) => ({
   }
 })
 
+const setGuestUser = ({user}) => ({
+  type: 'SET_GUEST_USER',
+  payload: {
+    user
+  }
+})
+
 const setProject = ({project}) => ({
   type: 'SET_PROJECT',
   payload: {
@@ -109,6 +116,7 @@ export default {
   setProject,
   setRun,
   setUser,
+  setGuestUser,
   toggleInfo,
   toggleLogin,
   toggleProjects,

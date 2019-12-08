@@ -9,15 +9,17 @@ import * as RA from 'ramda-adjunct'
 const LandingPageComponent = withRedux(
   ({
     app: {
-      // user: {projects: userProjects},
       user,
+      view: {isGuest},
     },
   }) => {
-    const [showLogin, setShowLogin] = useState(true)
+    const [showLogin, setShowLogin] = useState(false)
     return (
-      RA.isNotNil(user) ? <UserInfo />
-      : showLogin ? <LoginForm {...{setShowLogin}} />
-      : <RegisterForm {...{setShowLogin}} />
+      showLogin ?
+        <LoginForm {...{setShowLogin}} />
+      : isGuest ? 
+        <RegisterForm {...{setShowLogin}} />
+      : <UserInfo />
     )
   }
 )

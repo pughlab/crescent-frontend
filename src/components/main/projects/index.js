@@ -13,8 +13,7 @@ import PublicProjectsList from './PublicProjectsList'
 
 const ProjectsCardList = withRedux(({
   app: {
-    // user: {projects: userProjects},
-    user,
+    view: {isGuest},
     toggle: {projects: {activeKind: activeProjectKind}}
   },
   actions: {
@@ -24,19 +23,19 @@ const ProjectsCardList = withRedux(({
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
     <>
-    {/* <Message>
-      <Message.Header as={Header}>
-        CanceR Single Cell ExpressioN Toolkit
-      </Message.Header>
-      <Message.Content>
-        Select a public project (below) or sign in (top right) to start
-      </Message.Content>
-    </Message> */}
     <Container>
-      <Divider horizontal content='CReSCENT: CanceR Single Cell ExpressioN Toolkit' />
+      <Divider horizontal
+        content={
+          <Header
+            content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
+            subheader={'Select a public project (below) or sign in (top right) to start'}
+          />
+        }
+      />
 
+      {/* Only show public projects if guest */}
       <Button.Group size='mini' fluid
-        widths={R.isNil(user) ? 1 : 2}
+        widths={isGuest ? 1 : 2}
       >
         <Button color='black'
           onClick={() => setActiveProjectKind('published')}
@@ -49,16 +48,15 @@ const ProjectsCardList = withRedux(({
           />
         </Button>
         {
-          RA.isNotNil(user) &&
+          R.not(isGuest) &&
             <Button color='black'
-              disabled={R.isNil(user)}
               onClick={() => setActiveProjectKind('uploaded')}
               active={isActiveProjectKind('uploaded')} 
               basic={R.not(isActiveProjectKind('uploaded'))}
             >
               <Header
                 inverted={isActiveProjectKind('uploaded')}
-                content='Uploaded Data' subheader={R.isNil(user) ? 'Register and sign in to upload your own data' : 'Upload your own scRNA-seq data'}
+                content='Uploaded Data' subheader='Upload your own scRNA-seq data'
               />
             </Button>
         }

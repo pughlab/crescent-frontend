@@ -1,4 +1,5 @@
 const R = require('ramda')
+const passwordGenerator = require('generate-password')
 
 // RESOLVERS specify how data is retrieved (multiple DBs, APIs, etc...)
 // 
@@ -10,19 +11,49 @@ const resolvers = {
   // For every type definition there is a resolver...
   Query: {
     users: async (parent, variables, {Users}) => {
-      const users = await Users.find({}).lean()
+      const users = await Users.find({
+        firstName: {
+          $not: {$eq: 'Anonymous Guest'}
+        }
+      }).lean()
       return users
     }
   },
   Mutation: {
     // These resolvers should do some kind of create/update/delete
+    createGuestUser: async (
+      parent,
+      variables,
+      {Users}
+    ) => {
+      const [firstName, lastName] = ['Anonymous Guest', 'User']
+      const password = passwordGenerator.generate({
+        length: 10,
+        numbers: true
+      })
+      const email = R.concat(
+        passwordGenerator.generate({
+          length: 10,
+          numbers: true
+        }),
+        '@crescent.cloud'
+      )
+      const guestUser = await Users.create({firstName, lastName, email, password})
+      return guestUser
+
+    },
     createUser: async (
       parent,
       {firstName, lastName, email, password},
       {Users}
     ) => {
-      const newUser = await Users.create({firstName, lastName, email, password})
-      return newUser
+      const existingUser = await Users.findOne({email})
+      if (R.isNil(existingUser)) {
+        const newUser = await Users.create({firstName, lastName, email, password})
+        return newUser
+      } else {
+        return null
+      }
     },
     authenticateUser: async (
       parent,

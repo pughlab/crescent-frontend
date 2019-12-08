@@ -16,14 +16,40 @@ import PortalInfo from './info'
 
 import VisComponent from './vis'
 
-
+import { useMutation } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
 
 const MainComponent = withRedux(
   ({
     app: {
-      view: {main: mainView}
+      user,
+      view: {main: mainView, isGuest}
+    },
+    actions: {
+      setGuestUser,
     },
   }) => {
+    const [createGuestUser, {loading, data, error}] = useMutation(gql`
+      mutation CreateGuestUser {
+        createGuestUser {
+          userID
+          email
+          name
+        }
+      }
+    `, {
+      onCompleted: ({createGuestUser}) => {
+        console.log('guest', createGuestUser)
+        setGuestUser(createGuestUser)
+      }
+    })
+
+    useEffect(() => {
+      if (R.isNil(user)) {
+        createGuestUser()
+      }
+      return () => {}
+    }, [isGuest])
     return (
       <Segment basic attached='bottom' style={{minHeight: 'calc(100vh - 5rem - 2px)', marginTop: 0,  backgroundImage: `url(${memphisMini})`}}>
       {

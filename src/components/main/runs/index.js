@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step} from 'semantic-ui-react'
+import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -96,7 +96,6 @@ const RunsStatusLegend = ({
 
 const RunsCardList = withRedux(({
   app: {
-    user,
     project: {
       projectID,
       name: projectName,
@@ -105,8 +104,10 @@ const RunsCardList = withRedux(({
       createdOn: projectCreatedOn,
       createdBy: {name: creatorName}
     },
+    view: {
+      isGuest
+    }
   },
-  actions: {setProject},
 }) => {
   const {loading, data, error, refetch} = useQuery(gql`
     query ProjectRuns($projectID: ID) {
@@ -151,10 +152,16 @@ const RunsCardList = withRedux(({
   }, [projectRuns])
 
   const [runFilter, setRunFilter] = useState('all')
+  console.log('pk', projectKind)
+  const isUploadedProject = R.equals('uploaded', projectKind)
   return (
     <Container>
       <Segment attached='top'>
-        <Divider horizontal content='Project Details' />
+        <Divider horizontal
+          content={
+            `${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`
+          }
+        />
         <Header
           content={projectName}
           subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
@@ -164,7 +171,7 @@ const RunsCardList = withRedux(({
       </Segment>
       {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
       {
-        R.equals('uploaded', projectKind) &&
+        isUploadedProject &&
           <Button.Group attached widths={2}>
             <ShareProjectModal />
             <ArchiveProjectModal />
@@ -172,12 +179,11 @@ const RunsCardList = withRedux(({
       }
       <Segment attached='bottom'>
         <Divider horizontal content={`Project Runs`} />
-        <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
-        {/* CREATE NEW RUN FOR PROJECT IF NOT PUBLIC*/}
         {
-          R.equals('uploaded', projectKind) &&
-            <NewRunModal {...{refetch}} />
+          isUploadedProject &&
+            <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
         }
+        <NewRunModal {...{refetch}} />
         {/* LIST OF EXISTING RUNS FOR PROJECT */}
         <Segment attached='bottom'>
           {
@@ -194,11 +200,13 @@ const RunsCardList = withRedux(({
               runs => (
                 <>
                   <Card.Group itemsPerRow={3}>
+                  <Transition.Group>
                   {
                     R.compose(
                       R.map(run => <RunCard key={R.prop('runID', run)} {...{run, refetch}} />),
                     )(runs)
                   }
+                  </Transition.Group>
                   </Card.Group>
                 </>
               )
