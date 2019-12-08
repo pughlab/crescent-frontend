@@ -47,8 +47,13 @@ const resolvers = {
       {firstName, lastName, email, password},
       {Users}
     ) => {
-      const newUser = await Users.create({firstName, lastName, email, password})
-      return newUser
+      const existingUser = await Users.findOne({email})
+      if (R.isNil(existingUser)) {
+        const newUser = await Users.create({firstName, lastName, email, password})
+        return newUser
+      } else {
+        return null
+      }
     },
     authenticateUser: async (
       parent,
