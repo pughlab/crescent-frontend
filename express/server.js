@@ -1,9 +1,7 @@
 const submitCWL = require('./submit')
 
 const fs = require('fs')
-const fsp = fs.promises
 const R = require('ramda')
-const jsonQuery = require('json-query')
 const { spawn } = require("child_process");
 
 // Servers
@@ -15,10 +13,12 @@ const multer = require('multer')
 const upload = multer({ dest: '/usr/src/app/minio/upload' })
 // Zip
 const AdmZip = require('adm-zip')
-const jStat = require('jStat')
-
 const recursiveReadDir = require('recursive-readdir');
+const jsonQuery = require('json-query')
 
+const zlib = require('zlib');
+// Fuzzy Search
+const fuzz = require('fuzzball');
 // Mongo connection
 const mongooseConnection = require('../database/mongo')
 const db = mongooseConnection.connection
@@ -228,22 +228,15 @@ app.get(
   }
 );
 
-/*
-  currently optimized for node,
-  will replace with python if determined to improve speeds
-*/
 app.get('/search/:query/:runID',
   async (req, res) => {
     const {
       params: {runID, query}
     } = req;
-    console.log(query)
     // define functions/vars
     let result = [];
-    // const formatResult = x => result.push({'text': x['symbol'], 'value': x['identifier']}); 
-    const formatResult = x => result.push({'text': x['identifier'], 'value': x['identifier']}); 
-    // let emptyResult = [{'text': ''}];
-    const emptyResult = []
+    const formatResult = x => result.push({'text': x['symbol'], 'value': x['symbol']}); 
+    let emptyResult = [{'text': ''}];
     let jsonObj = '';
     // check if json of file exists, create it from features file if not
     if (! fs.existsSync(`/usr/src/app/results/${runID}/SEURAT/raw/features.json`)) {
@@ -251,19 +244,14 @@ app.get('/search/:query/:runID',
         if (err) {res.send(err);}
         else{
           features = R.map(R.split("\t"), R.split("\n", contents)); // read as 2d array
-          console.log(features)
-          jsonObj = R.map(R.zipObj(['identifier', 'symbol', 'expression']), features)
+          jsonObj = R.map(R.zipObj(['symbol']), features)
           jsonObj = {"data": jsonObj}
-          console.log('does not exist', jsonObj)
           // write json for future use
-          fs.writeFile(`/usr/src/app/results/${runID}/SEURAT/raw/features.json`, JSON.stringify(jsonObj), 'utf8', (err) => {
+          fs.writeFile(`./results/${runID}/SEURAT/raw/features.json`, JSON.stringify(jsonObj), 'utf8', (err) => {
             if (err) {return console.log(err);}
             else{
-              // let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
-              let query_result = jsonQuery(`data[*identifier~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
-              if (query_result.length == 0) {
-                res.send(emptyResult);
-              }
+              let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
+              if (query_result.length == 0) {res.send(emptyResult);}
               else {
                 query_result = (query_result.length > 4) ? query_result.slice(0,4) : query_result; // only return max of 4 results
                 R.forEach(formatResult, query_result);
@@ -276,22 +264,17 @@ app.get('/search/:query/:runID',
     }
     else {
         jsonObj = JSON.parse(fs.readFileSync(`/usr/src/app/results/${runID}/SEURAT/raw/features.json`, 'utf-8'));
-        console.log('exists', jsonObj)
-        // let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
-        let query_result = jsonQuery(`data[*identifier~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
-        console.log(query_result)
-        if (query_result.length == 0){
-          res.send(emptyResult);
-        }
+        let query_result = jsonQuery(`data[*symbol~/^${query}/i]`, {data: jsonObj, allowRegexp: true}).value;
+        if (query_result.length == 0){res.send(emptyResult);}
         else {
           query_result = (query_result.length > 4) ? query_result.slice(0,4) : query_result; // only return max of 4 results
           R.forEach(formatResult, query_result);
-          console.log('result', result)
           res.send(JSON.stringify(result)); 
         }
     }
   }
 );
+
 
 app.get('/size/:runID', async (req, res) => {
   try {

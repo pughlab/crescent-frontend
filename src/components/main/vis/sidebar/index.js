@@ -113,7 +113,7 @@ const SidebarComponent = withRedux(
         <Segment attached='bottom'>
         {
           R.cond([
-            // [R.equals('pipeline'), R.always(<SubmitRunButton />)],
+            [R.equals('pipeline'), R.always(<SubmitRunButton />)],
             [R.equals('results'), R.always(<DownloadResultsButton />)]
           ])(sidebarView)
         }

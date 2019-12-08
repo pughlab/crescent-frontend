@@ -119,6 +119,9 @@ const changeFeatureSearch = searchQuery => (dispatch, getState) => {
 }
 
 const changeSelectedFeature = feature => (dispatch, getState) => {
+  if (R.isEmpty(feature)){
+    feature = null;
+  }
   return dispatch({
     type: 'CHANGE_SELECTED_FEATURE',
     payload: {"feature": feature}
