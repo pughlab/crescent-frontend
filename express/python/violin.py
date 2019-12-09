@@ -200,6 +200,7 @@ def main():
 		helper.return_error("unable to read arguments: "+str(e))
 
 	result = get_violin_data(group, feature, runID)
+	helper.sort_traces(result)
 	print(json.dumps(result))
 	sys.stdout.flush()
 

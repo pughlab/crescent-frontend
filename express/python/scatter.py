@@ -7,7 +7,7 @@ import csv
 
 import helper
 
-def add_barcode(plotly_obj, barcode, label, barcode_coords):
+def add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells):
 	""" add a new barcode to the plotly object and add its label group if it doesn't exist yet """
 	for group in plotly_obj:
 		if group['name'] == label:
@@ -15,27 +15,28 @@ def add_barcode(plotly_obj, barcode, label, barcode_coords):
 			group['x'].append(barcode_coords[barcode][0])
 			group['y'].append(barcode_coords[barcode][1])
 			return
+
+	# group not seen yet
+	template_obj = {
+		"name": label,
+		"mode": "markers",
+		"text": [barcode],
+		"x": [barcode_coords[barcode][0]],
+		"y": [barcode_coords[barcode][1]]
+	}
+	if num_cells > 20000:
+		# add different rendering to improve speeds
+		template_obj["type"] = "scattergl"
 	
-	# label not seen yet
-	plotly_obj.append({
-			"name": label,
-			"mode": "markers",
-			"text": [barcode],
-			"x": [barcode_coords[barcode][0]],
-			"y": [barcode_coords[barcode][1]]
-		})
+	plotly_obj.append(template_obj)
+	
 	return
 
 def label_barcodes(barcode_coords, group, runID):
 	""" given the coordinates for the barcodes, sorts them into the specified groups and returns a plotly object """
-	plotly_obj = []
-	
-	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID) 
-	if not os.path.isfile(path):
-		# try command-line path
-		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
-		if not os.path.isfile(path):
-			helper.return_error("group label file not found ("+path+")")	
+	plotly_obj = []	
+	num_cells = helper.get_cellcount(runID)
+	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID)
 	
 	with open(path) as group_definitions:
 		reader = csv.reader(group_definitions, delimiter="\t")
@@ -47,7 +48,7 @@ def label_barcodes(barcode_coords, group, runID):
 		for row in reader:
 			barcode = str(row[0])
 			label = str(row[label_idx])
-			add_barcode(plotly_obj, barcode, label, barcode_coords)
+			add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells)
 
 	return plotly_obj
 
@@ -85,9 +86,10 @@ def main():
 		params = json.loads(sys.argv[1]) # parse json inputs
 		vis, group, runID = params['vis'], params['group'], params['runID']
 	except Exception as e:
-		return_error("unable to read arguments: "+str(e))
+		helper.return_error("unable to read arguments: "+str(e))
 
 	result = get_plot_data(vis, group, runID)
+	helper.sort_traces(result)
 	print(json.dumps(result))
 	sys.stdout.flush()
 
