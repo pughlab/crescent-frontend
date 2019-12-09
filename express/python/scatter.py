@@ -19,6 +19,7 @@ def add_barcode(plotly_obj, barcode, label, barcode_coords):
 	# label not seen yet
 	plotly_obj.append({
 			"name": label,
+			"type": "scattergl",
 			"mode": "markers",
 			"text": [barcode],
 			"x": [barcode_coords[barcode][0]],
