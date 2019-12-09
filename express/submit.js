@@ -113,6 +113,10 @@ const submitCWL = async (
      rm -f frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
      toil-cwl-runner \
+        --writeLogs \
+        /usr/src/app/results/${runID} \
+        --maxLogFileSize \
+        0 \
         --singularity \
         /usr/src/app/crescent/seurat-v3.cwl \
         frontend_seurat_inputs.json \ 
