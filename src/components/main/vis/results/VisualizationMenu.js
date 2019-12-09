@@ -11,7 +11,7 @@ const VisualizationMenu = withRedux(
   app: {
     run: { runID },
     toggle: {
-      vis: {results: {availableGroups}}
+      vis: {results: {availableGroups, selectedFeature}}
     }
   },
   actions: {
@@ -21,14 +21,8 @@ const VisualizationMenu = withRedux(
     }
   }
 }) => {
-  // Reset feature selection on unmount
-  useEffect(() => () => {
-    changeSelectedFeature('')
-  }, [])
-
   
   const [currentSearch, changeSearch] = useState('')
-  const [currentFeature, changeFeature] = useState('')
   const [currentOptions, changeCurrentOptions] = useState([])
 
   const checkResponse = (resp) => {
@@ -42,7 +36,6 @@ const VisualizationMenu = withRedux(
       fetch(`/search/${searchQuery}/${runID}`)
       .then(checkResponse)
       .then(resp => resp.json())
-      .then(R.identity)
       .then(changeCurrentOptions)
       .catch((err) => console.log(err))
     }
@@ -50,19 +43,10 @@ const VisualizationMenu = withRedux(
 
   const handleSelectFeature = (event, {value}) => {
     if(R.isNil(value)){value = '';}
-    // handle SearchDropdown props 
     changeSearch('') // reset search
-    const handleChange = R.ifElse(
-      R.isEmpty,
-      R.always(''),
-      R.last
-    )
-    changeFeature(value) //local state
     changeSelectedFeature(value) // store
   }
 
-  console.log(currentOptions)
-  console.log(currentFeature)
   // format a list for a dropdown
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
   return (
@@ -89,7 +73,7 @@ const VisualizationMenu = withRedux(
         >
           <Button.Content visible>
           {
-            RA.isNotEmpty(currentFeature) ? currentFeature : <Icon name='close' />
+            RA.isNotNil(selectedFeature) ? selectedFeature : <Icon name='close' />
           } 
           </Button.Content>
           <Button.Content hidden>
@@ -106,7 +90,7 @@ const VisualizationMenu = withRedux(
         searchQuery={currentSearch}
         selection
         options={currentOptions}
-        value={currentFeature}
+        value={selectedFeature}
         onSearchChange={handleSearchChange}
         onChange={handleSelectFeature}
       />

@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Loader, Header, Segment } from 'semantic-ui-react'
+import { Loader, Container, Header, Segment, Dimmer} from 'semantic-ui-react'
 import {ClimbingBoxLoader} from 'react-spinners'
 import * as R from 'ramda'
 
@@ -15,86 +15,98 @@ const ScatterPlot = withRedux(
   },
   actions: {
     thunks: {
-      fetchScatter
+      fetchScatter,
+      fetchOpacity
     }
   }
 }) => {
   // use local state for data since too big for redux store
   const [scatterData, setScatterData] = useState( [] );
-  
-  useEffect(() => {
-    fetchScatter().then((data) => {
-      setScatterData(data);
+  const [isLoading, setIsLoading] = useState( true );
+
+  // func to knit opacity from server into traces
+  const addOpacity = (traces) => {
+    return new Promise ((res, rej) => {
+      fetchOpacity()
+      .then(data => {
+        const merged = R.ifElse(
+          R.has('error'),
+          () => {console.error(data['error']); res(traces)}, // show error on plot here
+          R.addIndex(R.map)((val, index) => R.mergeLeft(val, traces[index]))
+        )(data)
+        res(merged)
+      })
     })
-  }, [activeResult])
+  }
 
-  useEffect(() => {
-    if(selectedGroup){
-    setScatterData( [] ) // set to loading
-    fetchScatter().then((data) => {
-      setScatterData(data);
-    });
-    }
-  }, [selectedGroup])
-
-  useEffect(() => {
-      const prev = scatterData;
-      setScatterData( [] ) // loading 
-      fetchScatter()
-        .then(data => {
-          if (R.isNil(selectedFeature)) {
-            setScatterData(data)
-          } else {
-            const merged = R.ifElse(
-              R.has('error'),
-              () => {console.error(data['error']); return prev}, // show error message here
-              R.addIndex(R.map)((val, index) => R.mergeLeft(val, scatterData[index]))
-            )(data)
-            setScatterData(merged)
-          }
-        })
-  }, [selectedFeature])
-
+  // determine proper name of active plot
   const currentScatterPlotType = R.ifElse(
     R.isNil,
     R.always(''),
     R.path([activeResult, 'label'])
   )(availablePlots)
 
+  // add traces and opacity
+  useEffect(() => {
+    setIsLoading(true)
+    fetchScatter().then((data) => {
+      if(! R.or(R.isNil,R.isEmpty)(selectedFeature)){
+        addOpacity(data)
+        .then((merged) => {
+          setScatterData(merged);
+          setIsLoading(false);
+        })
+      }
+      else{
+        setScatterData(data);
+        setIsLoading(false);
+      }
+    })
+  }, [activeResult,selectedGroup])
+
+  // add or clear opacity from plot
+  useEffect(() => {
+    console.log("this one?")
+    setIsLoading(true)
+    let prev = scatterData
+    if(! R.or(R.isNil,R.isEmpty)(selectedFeature)){
+      addOpacity(prev)
+      .then((merged) => {
+        setScatterData(merged);
+        setIsLoading(false);
+      })
+    }
+    else{
+      fetchScatter().then((data) => {
+        setScatterData(data);
+        setIsLoading(false); 
+      })
+    }
+  }, [selectedFeature])
+
+
   return (
     <>
-    {
-      R.ifElse(
-        R.isEmpty,
-        R.always(
-          <Segment basic placeholder style={{height: '100%'}}>
-            <Header textAlign='center' icon>
-              <ClimbingBoxLoader color='#6435c9' />
-            </Header>
-          </Segment>
-        ),
-        R.always(
-          <>
-          {/* Plot type: either tsne or umap scatter plots available */}
-          <Header textAlign='center' content={currentScatterPlotType} />
-          <Plot
-            data={scatterData}
-            useResizeHandler
-            style={{width: '100%', height:'90%'}}
-            layout={{
-              autosize: true,
-              hovermode: 'closest',
-              xaxis: {showgrid: false, ticks: '', showticklabels: false},
-              yaxis: {showgrid: false, ticks: '', showticklabels: false},
-              margin: {l:20, r:20, b:20, t:20},
-              legend: {"orientation": "h"}
-            }}
-          />
-          </>
-        ) 
-      )(scatterData)
-    }
-    </>   
+    <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
+    <Dimmer active={isLoading} inverted>
+      <ClimbingBoxLoader color='#6435c9' />
+    </Dimmer>
+    <Header textAlign='center' content={currentScatterPlotType} />
+      <Plot
+        data={scatterData}
+        useResizeHandler
+        style={{width: '100%', height:'90%'}}
+        layout={{
+          autosize: true,
+          hovermode: 'closest',
+          xaxis: {showgrid: false, ticks: '', showticklabels: false},
+          yaxis: {showgrid: false, ticks: '', showticklabels: false},
+          margin: {l:20, r:20, b:20, t:20},
+          legend: {"orientation": "h"}
+        }}
+      />
+    </Dimmer.Dimmable>
+    </>
   )
 })
 

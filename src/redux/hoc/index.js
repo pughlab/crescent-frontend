@@ -35,9 +35,9 @@ export default connect(
         toggleLoadingResults: loading => dispatch(Actions.thunks.initializeResults(loading)),
         changeActiveGroup: newGroup => dispatch(Actions.thunks.changeActiveGroup(newGroup)),
         updateScatter: (runID, selectedGroup) => dispatch(Actions.thunks.updateScatter({runID, selectedGroup})),
-        changeFeatureSearch: searchQuery => dispatch(Actions.thunks.changeFeatureSearch(searchQuery)),
         changeSelectedFeature: feature => dispatch(Actions.thunks.changeSelectedFeature(feature)),
         fetchScatter: () => dispatch(Actions.thunks.fetchScatter()),
+        fetchOpacity: () => dispatch(Actions.thunks.fetchOpacity()),
         fetchViolin: () => dispatch(Actions.thunks.fetchViolin())
       }
     }

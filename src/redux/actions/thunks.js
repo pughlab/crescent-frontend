@@ -23,6 +23,17 @@ const fetchEndpoint = (endpoint) => {
   })
 }
 
+// uses parameters in the store to fetch opacity data
+const fetchOpacity = () => (dispatch, getState) => {
+  const {
+    app: {
+      run: {runID},
+      toggle: {vis: {results: {selectedGroup, selectedFeature}}}
+    }
+  } = getState()
+  return fetchEndpoint(`/opacity/${selectedGroup}/${selectedFeature}/${runID}`)
+}
+
 // uses the parameters in the store to fetch the scatter data
 const fetchScatter = () => (dispatch, getState) => {
   const {
@@ -31,12 +42,7 @@ const fetchScatter = () => (dispatch, getState) => {
       toggle: {vis: {results: {activeResult, selectedGroup, selectedFeature}}}
     }
   } = getState()
-  if (R.isNil(selectedFeature) || R.isEmpty(selectedFeature)){
-    return fetchEndpoint(`/scatter/${activeResult}/${selectedGroup}/${runID}`)
-  }
-  else{
-    return fetchEndpoint(`/opacity/${selectedGroup}/${selectedFeature}/${runID}`)
-  }
+  return fetchEndpoint(`/scatter/${activeResult}/${selectedGroup}/${runID}`)
 }
 
 // uses paramters in store to fetch violin plot data
@@ -96,28 +102,6 @@ const initializeResults = runID => (dispatch, getState) => {
   )    
 }
 
-const changeFeatureSearch = searchQuery => (dispatch, getState) => {
-  const {
-    app: {
-      run: {runID}
-    }
-  } = getState()
-  // If searchQuery is empty (i.e. being reset) then don't search anything
-  if (R.isEmpty(searchQuery)) {
-    return []
-  } else {
-    return fetch(`/search/${searchQuery}/${runID}`)
-      // Check response and return data
-      .then(checkResponse)
-      .then(resp => resp.json())
-      .then(R.identity)
-      .catch(error => {
-        console.log(error)
-        return []
-      })
-  }
-}
-
 const changeSelectedFeature = feature => (dispatch, getState) => {
   if (R.isEmpty(feature)){
     feature = null;
@@ -132,9 +116,9 @@ export default {
   initializeResults,
   clearResults,
   changeActiveGroup,
-  changeFeatureSearch,
   changeSelectedFeature,
   fetchScatter,
+  fetchOpacity,
   fetchViolin
 }
 
