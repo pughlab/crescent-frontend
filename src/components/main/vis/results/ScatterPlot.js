@@ -66,6 +66,7 @@ const ScatterPlot = withRedux(
 
   // add or clear opacity from plot
   useEffect(() => {
+    if(isLoading){return} // the other hook is already dealing with this 
     setIsLoading(true)
     let prev = scatterData
     if(! R.or(R.isNil,R.isEmpty)(selectedFeature)){
