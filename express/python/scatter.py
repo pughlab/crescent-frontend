@@ -89,6 +89,7 @@ def main():
 		return_error("unable to read arguments: "+str(e))
 
 	result = get_plot_data(vis, group, runID)
+	helper.sort_traces(result)
 	print(json.dumps(result))
 	sys.stdout.flush()
 
