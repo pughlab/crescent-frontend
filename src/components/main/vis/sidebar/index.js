@@ -37,18 +37,18 @@ const PipelineRunStatusMessage = withRedux(
         <Message.Header as={Header} textAlign='center'>
         {
           currentUserNotCreator ?
-            "You are not the creator of this run. You won't be able to submit this run but you can view results once it is completed."
+            "You are not the creator of this run. You won't be able to submit it but can view results once it is complete."
           :
             R.concat(
               R.ifElse(
                 R.equals('pending'),
-                R.always('Configure your parameters below. '),
-                R.always(`Run is ${status} and so parameters are not configurable. `)
+                R.always('Configure parameters below. '),
+                R.always(`Run ${status}. Parameters are not configurable. `)
               )(status),
               R.prop(status, {
-                pending: `Click 'SUBMIT RUN' to send to HPC.`,
-                submitted: 'You will be notified when your run is completed.',
-                completed: "Click 'Results' on the right to view visualizations.",
+                pending: `Click 'SUBMIT RUN' to start pipeline.`,
+                submitted: 'Pipeline is currently running.',
+                completed: "Click 'RESULTS' to view visualizations.",
                 failed: 'This run failed.'
               })
             )

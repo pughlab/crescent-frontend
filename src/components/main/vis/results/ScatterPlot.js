@@ -66,11 +66,10 @@ const ScatterPlot = withRedux(
 
   // add or clear opacity from plot
   useEffect(() => {
-    console.log("this one?")
     setIsLoading(true)
     let prev = scatterData
     if(! R.or(R.isNil,R.isEmpty)(selectedFeature)){
-      addOpacity(prev)
+       addOpacity(prev)
       .then((merged) => {
         setScatterData(merged);
         setIsLoading(false);

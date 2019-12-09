@@ -51,8 +51,9 @@ const MenuComponent = withRedux(({
               </Button>
             }
             content={
-              'Click To Go To Projects'
+              'Go To Projects'
             }
+            position='bottom center'
           />
           <Popup inverted size='large'
             trigger={
@@ -64,8 +65,9 @@ const MenuComponent = withRedux(({
               </Button>
             }
             content={
-              'Click To Go To Runs'
+              'Go To Runs'
             }
+            position='bottom center'
           />
         </Button.Group>
       }
