@@ -66,16 +66,17 @@ const ProjectCard = withRedux(({
         </Label.Group>
       </Card.Content>
       <Card.Content>
-        <Button.Group widths={3}>
+        <Button.Group widths={4}>
         {
           R.compose(
             R.flatten,
-            R.props(['pending', 'submitted', 'completed']),
+            R.props(['pending', 'submitted', 'completed', 'failed']),
             R.mapObjIndexed((runs, status) => {
               const statusColor = R.prop(status, {
                 pending: 'orange',
                 submitted: 'yellow',
-                completed: 'green'
+                completed: 'green',
+                failed: 'red'
               })
               return (
                 <Popup key={status} size='large'
@@ -99,7 +100,8 @@ const ProjectCard = withRedux(({
                             name={R.prop(status, {
                               pending: 'circle outline',
                               submitted: 'circle notch',
-                              completed: 'circle outline check'
+                              completed: 'circle outline check',
+                              failed: 'circle exclamation'
                             })}
                             loading={R.equals('submitted', status)}
                           />
@@ -133,7 +135,7 @@ const ProjectCard = withRedux(({
                 R.append(run),
                 runsByStatus
               ),
-              {pending: [], submitted: [], completed: []}
+              {pending: [], submitted: [], completed: [], failed: []}
             )
           )(runs)
         }

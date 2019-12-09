@@ -28,7 +28,7 @@ const RunSchema = new mongoose.Schema({
 
   status: {
     type: String,
-    enum: ['pending', 'submitted', 'completed'],
+    enum: ['pending', 'submitted', 'completed', 'failed'],
     default: 'pending'
   },
 

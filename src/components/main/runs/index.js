@@ -28,9 +28,9 @@ const RunsStatusLegend = ({
   runFilter,
   setRunFilter
 }) => {
-  const {pending: pendingCount, submitted: submittedCount, completed: completedCount} = R.reduce(
+  const {pending: pendingCount, submitted: submittedCount, completed: completedCount, failed: failedCount} = R.reduce(
     (runCountsByStatus, {status}) => R.over(R.lensProp(status), R.inc, runCountsByStatus),
-    {pending: 0, submitted: 0, completed: 0},
+    {pending: 0, submitted: 0, completed: 0, failed: 0},
     projectRuns
   )
   const totalCount = R.length(projectRuns)
@@ -40,7 +40,7 @@ const RunsStatusLegend = ({
   )(runsBySize)
 
   return (
-    <Step.Group fluid widths={4}>
+    <Step.Group fluid widths={5}>
       {
         R.compose(
           R.map(
@@ -72,21 +72,28 @@ const RunsStatusLegend = ({
             icon: 'circle outline',
             color: 'orange',
             title: `${pendingCount} Pending`,
-            description: 'To configure and submit'
+            description: 'To Submit'
           },
           {
             key: 'submitted',
             icon: 'circle notch',
             color: 'yellow',
             title: `${submittedCount} Submitted`,
-            description: 'Computing on the cloud'
+            description: 'Computing'
           },
           {
             key: 'completed',
             icon: 'circle outline check',
             color: 'green',
             title: `${completedCount} Completed`,
-            description: 'Runs completed'
+            description: 'Successfully'
+          },
+          {
+            key: 'failed',
+            icon: 'circle exclamation',
+            color: 'red',
+            title: `${failedCount} Failed`,
+            description: 'Errored'
           }
         ])
       }

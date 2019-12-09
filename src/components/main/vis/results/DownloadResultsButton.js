@@ -16,7 +16,12 @@ const DownloadResultsButton = withRedux(
   }) => {
     return (
       <Button fluid color='violet'
-        content={R.prop(runStatus, {pending: 'RESULTS UNAVAILABLE', submitted: 'COMPUTING RESULTS IN THE CLOUD', completed: 'DOWNLOAD RESULTS'})}
+        content={R.prop(runStatus, {
+          pending: 'RESULTS UNAVAILABLE',
+          submitted: 'COMPUTING RESULTS',
+          completed: 'DOWNLOAD RESULTS',
+          failed: 'RUN FAILED'
+        })}
         disabled={R.not(R.equals('completed', runStatus))}
         download
         target='_blank'

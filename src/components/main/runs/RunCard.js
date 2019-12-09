@@ -43,16 +43,28 @@ const RunCard = withRedux(({
   })
   
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
+  const color = R.prop(status, {
+    pending: 'orange',
+    submitted: 'yellow',
+    completed: 'green',
+    failed: 'red'
+  })
+  const icon = R.prop(status, {
+    pending: 'circle outline',
+    submitted: 'circle notch',
+    completed: 'circle outline check',
+    failed: 'circle exclamation'
+  })
   return (
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
-    <Card color={R.prop(status, {pending: 'orange', completed: 'green', submitted: 'yellow'})}>
+    <Card color={color}>
       <Card.Content>
         <Label attached='top'
           // Color based on whether run is complete or not
-          color={R.prop(status, {pending: 'orange', completed: 'green', submitted: 'yellow'})}
+          color={color}
         >
           <Icon
-            name={R.prop(status, {pending: 'circle outline', completed: 'circle outline check', submitted: 'circle notch'})}
+            name={icon}
             loading={R.equals('submitted', status)}
             size='large' style={{marginLeft: 0}}
           />
@@ -60,7 +72,8 @@ const RunCard = withRedux(({
             R.prop(status, {
               pending: 'PENDING USER SUBMISSION',
               submitted: 'SUBMITTED AND RUNNING',
-              completed: 'RUN COMPLETED'
+              completed: 'RUN COMPLETED',
+              failed: 'FAILED'
             })
           }
         </Label>

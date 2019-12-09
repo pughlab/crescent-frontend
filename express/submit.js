@@ -113,7 +113,6 @@ const submitCWL = async (
      rm -f frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
      toil-cwl-runner \
-        --debug \
         --singularity \
         /usr/src/app/crescent/seurat-v3.cwl \
         frontend_seurat_inputs.json \ 
@@ -133,7 +132,8 @@ const submitCWL = async (
   })
   cwl.on( 'close', code => {
       console.log( `child process exited with code ${code}`)
-      run.status = 'completed'
+      const isErrorCode = R.compose(R.not, R.equals(0))
+      run.status = isErrorCode(code) ? 'failed' : 'completed'
       run.completedOn = new Date()
       run.save()
   })
