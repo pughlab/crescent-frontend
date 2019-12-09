@@ -160,6 +160,21 @@ const RunsCardList = withRedux(({
 
   const [runFilter, setRunFilter] = useState('all')
   const isUploadedProject = R.equals('uploaded', projectKind)
+
+  const filteredProjectRuns = R.compose(
+    R.reject(
+      R.compose(
+        R.and(R.not(isUploadedProject)),
+        R.propEq('status', 'pending')
+      )
+    ),
+    R.filter(
+      R.compose(
+        R.or(R.equals('all', runFilter)),
+        R.propEq('status', runFilter)
+      )
+    )
+  )(projectRuns)
   return (
     <Container>
       <Segment attached='top'>
@@ -191,49 +206,28 @@ const RunsCardList = withRedux(({
         }
         <NewRunModal {...{refetch}} />
         {/* LIST OF EXISTING RUNS FOR PROJECT */}
-        <Segment attached='bottom'>
-          {
-            R.ifElse(
-              R.isEmpty,
-              R.always(
-                <Segment placeholder>
-                  <Header icon>
-                    <Icon name='exclamation' />
-                    {`No Runs`}
-                  </Header>
-                </Segment>
-              ),
-              runs => (
-                <>
-                  <Card.Group itemsPerRow={3}>
-                  <Transition.Group>
-                  {
-                    R.compose(
-                      R.map(run => <RunCard key={R.prop('runID', run)} {...{run, refetch}} />),
-                    )(runs)
-                  }
-                  </Transition.Group>
-                  </Card.Group>
-                </>
-              )
-            )(
-              R.compose(
-                R.reject(
-                  R.compose(
-                    R.and(R.equals('curated', projectKind)),
-                    R.propEq('status', 'pending')
-                  )
-                ),
-                R.filter(
-                  R.compose(
-                    R.or(R.equals('all', runFilter)),
-                    R.propEq('status', runFilter)
-                  )
+        {
+          R.isEmpty(filteredProjectRuns) ?
+            <Segment attached='bottom'>
+              <Segment placeholder>
+                <Header icon>
+                  <Icon name='exclamation' />
+                  {`No Runs`}
+                </Header>
+              </Segment>
+            </Segment>
+          :
+            <Segment attached='bottom'>
+              <Card.Group itemsPerRow={3}>
+              {
+                R.map(
+                  run => <RunCard key={R.prop('runID', run)} {...{run, refetch}} />,
+                  filteredProjectRuns
                 )
-              )(projectRuns)
-            )
-          }
-        </Segment>
+              }
+              </Card.Group>
+            </Segment>
+        }
       </Segment>
     </Container>
   )

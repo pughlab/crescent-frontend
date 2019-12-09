@@ -60,21 +60,19 @@ const UploadedProjectsList = withRedux(({
   return (
     <>
     <NewProjectModal {...{refetch}} />
-    <Segment attached='bottom'>
     {
-      R.ifElse(
-        R.isEmpty,
-        R.always(
+      R.isEmpty(userProjects) ?
+        <Segment attached='bottom'>
           <Segment placeholder>
             <Header icon>
               <Icon name='exclamation' />
               No Projects
             </Header>
           </Segment>
-        ),
-        userProjects => (
+        </Segment>
+      :
+        <Segment attached='bottom'>
           <Card.Group itemsPerRow={1}>
-          <Transition.Group>
           {
             R.addIndex(R.map)(
               (project, index) => (
@@ -83,13 +81,9 @@ const UploadedProjectsList = withRedux(({
               userProjects
             )
           }
-          </Transition.Group>
           </Card.Group>
-        )
-      )(userProjects)
+        </Segment>
     }
-
-    </Segment>
     </>
   )
 })
