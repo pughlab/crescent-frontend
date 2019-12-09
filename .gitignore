@@ -19,4 +19,4 @@ frontend_seurat_inputs.json
 # results/
 
 .env
-
+package-lock.json
