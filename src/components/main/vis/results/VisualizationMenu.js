@@ -11,7 +11,7 @@ const VisualizationMenu = withRedux(
   app: {
     run: { runID },
     toggle: {
-      vis: {results: {availableGroups, selectedFeature}}
+      vis: {results: {availableGroups, selectedFeature, selectedGroup}}
     }
   },
   actions: {
@@ -57,7 +57,7 @@ const VisualizationMenu = withRedux(
           fluid
           selection
           labeled
-          defaultValue={availableGroups[0]}
+          defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : availableGroups[0]}
           options={formatList(availableGroups)}
           onChange={(event, {value}) => changeActiveGroup(value)}
         />
