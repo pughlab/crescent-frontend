@@ -47,7 +47,7 @@ const ResultsSidebar = withRedux(
           <Segment placeholder>
             <Header icon>
               <Icon name='exclamation' />
-              Currently running in the cloud
+              The pipeline is currently running. 
             </Header>
           </Segment>
         :
