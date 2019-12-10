@@ -55,7 +55,7 @@ const ResultsComponent = withRedux(
           R.ifElse(
             R.isNil,
             R.always(
-              <Segment basic placeholder style={{height: '80vh'}}>
+              <Segment basic placeholder style={{height: '75vh'}}>
                 <Header textAlign='center' icon>
                   <Icon name='right arrow' />
                   Select a visualization on the right
