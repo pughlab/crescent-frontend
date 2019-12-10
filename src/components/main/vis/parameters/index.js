@@ -105,8 +105,10 @@ const ParametersComponent = withRedux(
       {
         isActivePipelineStep('quality') ?
           <>
+            {/*
             <SingleCellInputType {...{singleCell, setSingleCell}} />
             <Divider />
+            */}
             <NumberGenes {...{numberGenes, setNumberGenes}} />
             <Divider />
             <PercentMito {...{percentMito, setPercentMito}} />
