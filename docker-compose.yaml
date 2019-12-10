@@ -5,7 +5,7 @@ services:
 ##### MONGO ####
 
   mongo: 
-    image: suluxan/mongo
+    image: mongo:latest
     expose:
       - ${MONGO_PORT}
 #    environment:
