@@ -32,19 +32,24 @@ const VisualizationMenu = withRedux(
 
   const handleSearchChange = (event, {searchQuery}) => {
     changeSearch(searchQuery)
-    if(! R.isEmpty(searchQuery)){
+    if (RA.isNotEmpty(searchQuery)) {
       fetch(`/search/${searchQuery}/${runID}`)
-      .then(checkResponse)
-      .then(resp => resp.json())
-      .then(changeCurrentOptions)
-      .catch((err) => console.log(err))
+        .then(checkResponse)
+        .then(resp => resp.json())
+        .then(changeCurrentOptions)
+        .catch((err) => console.log(err))
     }
   }
 
   const handleSelectFeature = (event, {value}) => {
-    if(R.isNil(value)){value = '';}
     changeSearch('') // reset search
     changeSelectedFeature(value) // store
+  }
+
+  const resetSelectFeature = () => {
+    changeSearch('')
+    changeCurrentOptions([])
+    changeSelectedFeature(null)
   }
 
   // format a list for a dropdown
@@ -69,21 +74,24 @@ const VisualizationMenu = withRedux(
           fluid
           animated='vertical'
           color='violet'
-          onClick={handleSelectFeature}        
+          disabled={R.isNil(selectedFeature)}
+          onClick={resetSelectFeature}
         >
           <Button.Content visible>
           {
-            RA.isNotNil(selectedFeature) ? selectedFeature : <Icon name='close' />
-          } 
+            RA.isNotNil(selectedFeature) ? selectedFeature : 'Search below'
+          }
           </Button.Content>
           <Button.Content hidden>
-            Click to reset
+          {
+            RA.isNotNil(selectedFeature) && 'Click to reset'
+          }
           </Button.Content>
         </Form.Button>
       </Form.Field>
 
       <Form.Dropdown
-        placeholder='Search Features'
+        placeholder='Features'
         fluid
         search
         renderLabel = {({text}) => (<Label color='violet' content={text}/>)}
