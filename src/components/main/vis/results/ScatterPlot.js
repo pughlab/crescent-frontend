@@ -93,6 +93,7 @@ const ScatterPlot = withRedux(
     </Dimmer>
     <Header textAlign='center' content={currentScatterPlotType} />
       <Plot
+        config={{showTips: false}}
         data={scatterData}
         useResizeHandler
         style={{width: '100%', height:'90%'}}

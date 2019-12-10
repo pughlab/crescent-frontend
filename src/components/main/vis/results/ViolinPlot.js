@@ -53,6 +53,7 @@ const ViolinPlot = withRedux(
       <>
       <Header textAlign='center' content='Violin' />
       <Plot
+        config={{showTips: false}}
         data={violinData}
         useResizeHandler
         style={{width: '100%', height:'90%'}}
