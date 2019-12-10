@@ -20,9 +20,11 @@ const DownloadResultsButton = withRedux(
           pending: 'RESULTS UNAVAILABLE',
           submitted: 'COMPUTING RESULTS',
           completed: 'DOWNLOAD RESULTS',
-          failed: 'RUN FAILED'
+          failed: 'DOWNLOAD RUN LOGS'
         })}
-        disabled={R.not(R.equals('completed', runStatus))}
+        disabled={
+          R.either(R.equals('pending'), R.equals('submitted'))(runStatus)
+        }
         download
         target='_blank'
         // Should only work with nginx reverse proxy
