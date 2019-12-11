@@ -55,7 +55,7 @@ const VisComponent = withRedux(
     }, [])
     return (
       <>
-      <Grid style={{minHeight: 'calc(100vh - 12rem - 2px)'}}>
+      <Grid style={{minHeight: 'calc(100vh - 5rem - 3px)'}}>
         <Grid.Column width={11} style={{minHeight: '100%'}}>
           <Transition visible animation='fade right' duration={1000} unmountOnHide={true} transitionOnMount={true}>
           <Segment style={{height: '100%'}}
