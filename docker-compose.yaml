@@ -1,84 +1,35 @@
-version: '2'
+version: "3"
 
 services: 
-
-##### MONGO ####
-
   mongo: 
     image: mongo:latest
-    expose:
-      - ${MONGO_PORT}
-#    environment:
-#      HOST: ${HOST}
-#      SERVER_PORT: ${SERVER_PORT}
+    container_name: mongo
     ports:
-      - ${MONGO_PORT}:${MONGO_PORT}
+      - "27017:27017"
     volumes:
       - ./mongodb:/data/db
-#      - type: bind
-#      source: ./mongodb
-#      target: /data/db
-#    command: mongod
-
-##### MINIO #####
 
   minio: 
-    image: minio/minio
-    expose:
-      - ${MINIO_PORT}
- #   environment:
- #     HOST: ${HOST}
- #     SERVER_PORT: ${SERVER_PORT}
+    image: minio/minio:latest
+    container_name: minio
     ports:
-      - ${MINIO_PORT}:${MINIO_PORT}
+      - "9000:9000"
     environment:
-      MINIO_ACCESS_KEY: crescent-access
-      MINIO_SECRET_KEY: crescent-secret
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
     volumes:
       - ./minio/upload:/export
     command: server /export
 
-
-##### NODE ####
-
   server: 
-    # build:
-    #   context: ./
-    #   dockerfile: Dockerfile.server
-    image: crescentdev/crescent-server-py3
-    privileged: true
-    expose:
-      - ${SERVER_PORT}
-      - ${GRAPHQL_PORT}
-#    environment:
-#      HOST: ${HOST}
-#      SERVER_PORT: ${SERVER_PORT}
+    image: crescent-conglomerate
+    build: express
+    container_name: server
     ports:
-      - ${SERVER_PORT}:${SERVER_PORT}
-      - ${GRAPHQL_PORT}:${GRAPHQL_PORT}
+      - "4001:4001"
+      - "5000:5000"
     volumes:
       - .:/usr/src/app
-    #  - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - minio 
       - mongo
-    #mem_limit: 20g
-    command: npm run server
-
-##### REACT #####
-  react: 
-    image: react-gql
-    expose:
-      - ${REACT_PORT}
-#    environment:
-#      HOST: ${HOST}
-#      SERVER_PORT: ${SERVER_PORT}
-    ports:
-      - ${REACT_PORT}:${REACT_PORT}
-    volumes:
-      - .:/usr/src/app
-    depends_on:
-      - server
-    command: npm run start
-
-
