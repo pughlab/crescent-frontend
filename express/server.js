@@ -7,8 +7,6 @@ const { spawn } = require("child_process");
 
 // Servers
 const express = require('express')
-// MINIO
-const Minio = require('minio')
 // Multer to handle multi form data
 const multer = require('multer')
 const upload = multer({ dest: '/usr/src/app/minio/upload' })
@@ -28,17 +26,7 @@ const Run = db.model('run')
 const Project = db.model('project')
 const Upload = db.model('upload')
 
-// Minio client
-// Instantiate the minio client with the endpoint
-// and access keys as shown below.
-const minioClient = new Minio.Client({
-  endPoint: 'minio',
-  port: 9000,
-  useSSL: false,
-  // CHANGE THESE WHEN RUNNING MINIO FROM DOCKER
-  accessKey: 'crescent-access',
-  secretKey: 'crescent-secret'
-});
+const minioClient = require('../database/minio-client');
 // Make a bucket called crescent.
 minioClient.makeBucket('crescent', 'us-east-1', function(err) {
   if (err) return console.log(err)

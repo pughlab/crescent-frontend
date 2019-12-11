@@ -14,20 +14,7 @@ const Run = db.model('run')
 const Project = db.model('project')
 const Dataset = db.model('dataset')
 
-
-// Minio client
-const Minio = require('minio')
-// Instantiate the minio client with the endpoint
-// and access keys as shown below.
-const minioClient = new Minio.Client({
-  endPoint: 'minio',
-  port: 9000,
-  useSSL: false,
-  // CHANGE THESE WHEN RUNNING MINIO FROM DOCKER
-  accessKey: 'crescent-access',
-  secretKey: 'crescent-secret'
-});
-
+const minioClient = require('../database/minio-client');
 
 // Make object to write as CWL job JSON file
 const makeCWLJobJSON = async (
