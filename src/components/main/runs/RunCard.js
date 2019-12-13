@@ -18,7 +18,12 @@ import {queryIsNotNil} from '../../../utils'
 
 const RunCard = withRedux(({
   app: {
-    user: {userID: currentUserID}
+    user: {userID: currentUserID},
+    project: {
+      createdBy: {
+        userID: projectCreatorUserID
+      }
+    }
   },
   // Redux actions
   actions: {setRun},
@@ -28,7 +33,7 @@ const RunCard = withRedux(({
 }) => {
   const {
     runID, name, params,
-    createdBy: {userID: creatorUserID, name: creatorName},
+    createdBy: {userID: runCreatorUserID, name: creatorName},
     status, createdOn, submittedOn, completedOn
   } = run
   const [deleteRun, {data, loading, error}] = useMutation(gql`
@@ -42,7 +47,9 @@ const RunCard = withRedux(({
     onCompleted: data => refetch()
   })
   
-  const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
+  const currentUserIsRunCreator = R.equals(currentUserID, runCreatorUserID)
+  const currentUserIsProjectCreator = R.equals(currentUserID, projectCreatorUserID)
+  const currentUserCanDeleteRun = R.or(currentUserIsProjectCreator, currentUserIsRunCreator)
   const color = R.prop(status, {
     pending: 'orange',
     submitted: 'yellow',
@@ -84,7 +91,7 @@ const RunCard = withRedux(({
         </Card.Header>
       </Card.Content>
       <Card.Content>
-        <Button.Group widths={currentUserIsCreator ? 3 : 2}>
+        <Button.Group widths={currentUserCanDeleteRun ? 3 : 2}>
         <Button basic fluid animated='vertical' onClick={() => setRun(run)}>
           <Button.Content visible><Icon name='eye'/></Button.Content>
           <Button.Content hidden content='View' />
@@ -127,7 +134,7 @@ const RunCard = withRedux(({
         </Modal>
         
         {
-          currentUserIsCreator &&
+          currentUserCanDeleteRun &&
             <Modal
               basic size='small'
               trigger={
@@ -157,15 +164,15 @@ const RunCard = withRedux(({
       <Card.Content>
         <Label.Group>
           <Label content='Owner' detail={creatorName} />
-          <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} />
+          {/* <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} /> */}
           {
             RA.isNotNil(submittedOn) &&
               <Label content='Submitted' detail={`${moment(submittedOn).format('D MMMM YYYY, h:mm a')}`} />
           }
-          {
+          {/* {
             RA.isNotNil(completedOn) &&
               <Label content='Completed' detail={`${moment(completedOn).format('D MMMM YYYY, h:mm a')}`}/>
-          }
+          } */}
           {
             RA.isNotNil(submittedOn) &&
               <Label content='Time Elapsed' detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
