@@ -10,8 +10,9 @@ import withRedux from '../../../../redux/hoc'
 import ResultsSidebar from './ResultsSidebar'
 import PipelineSidebar from './PipelineSidebar'
 
-import SubmitRunButton from '../parameters/SubmitRunButton'
-import DownloadResultsButton from '../results/DownloadResultsButton'
+import SubmitRunButton from './SubmitRunButton'
+import DownloadResultsButton from './DownloadResultsButton'
+import RefreshRunButton from './RefreshRunButton'
 
 
 const PipelineRunStatusMessage = withRedux(
@@ -76,6 +77,9 @@ const SidebarComponent = withRedux(
       project: {
         kind: projectKind
       },
+      run: {
+        status: runStatus
+      },
       view: {sidebar: sidebarView}
     },
     actions: {toggleSidebar}
@@ -114,8 +118,16 @@ const SidebarComponent = withRedux(
         <Segment attached='bottom'>
         {
           R.cond([
-            [R.equals('pipeline'), R.always(<SubmitRunButton />)],
-            [R.equals('results'), R.always(<DownloadResultsButton />)]
+            [
+              R.equals('pipeline'),
+              R.always(<SubmitRunButton />)
+            ],
+            [
+              R.equals('results'),
+              R.always(
+                R.equals('submitted', runStatus) ? <RefreshRunButton /> : <DownloadResultsButton />
+              )
+            ]
           ])(sidebarView)
         }
         </Segment>
