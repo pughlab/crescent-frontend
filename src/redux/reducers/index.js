@@ -138,6 +138,7 @@ const GQLReducer = {
         R.lensPath(['toggle','vis','pipeline','activeStep']),
         null
       )
+      const {status: runStatus} = run
       return R.compose(
         resetIsSubmitted,
         resetActiveStep,
@@ -152,7 +153,9 @@ const GQLReducer = {
             }
           : JSON.parse(params)
         ),
-        setSidebarView('pipeline'),
+        setSidebarView(
+          R.equals('pending', runStatus) ? 'pipeline' : 'results'
+        ),
         setMainView('vis'),
         setRunFromGQL(run), 
       )(state)
@@ -245,7 +248,9 @@ const CWLReducer = {
   'SET_IS_SUBMITTED':
     (state, payload) => {
       const {isSubmitted} = payload
+
       return R.compose(
+        setMainView('runs'),
         R.set(
           R.lensPath(['toggle','vis','pipeline','isSubmitted']),
           isSubmitted
