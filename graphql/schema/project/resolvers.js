@@ -100,7 +100,7 @@ const resolvers = {
         const project = await Projects.findOne({projectID})
         const {sharedWith} = project
         // Use built in ObjectID equality method
-        project.sharedWith = R.reject(memberID => memberID.equals(userID), sharedWith)
+        project.sharedWith = R.reject(memberObjectID => memberObjectID.equals(userID), sharedWith)
         await project.save()
         return project
       } catch(error) {
