@@ -39,15 +39,13 @@ const MenuComponent = withRedux(({
     <Segment attached='top' style={{height: '5rem'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
       {
-        // RA.isNotNil(project) &&
         <Button.Group fluid size='mini'>
           <Popup inverted size='large'
             trigger={
               <Button icon basic inverted color='grey'
-                onClick={() => toggleProjects()}
-                disabled={isMainView('projects')}
+                onClick={() => toggleProjects('published')}
               >
-                <Icon color='black' name='folder open' size='large'/>
+                <Icon color='black' name='home' size='large'/>
               </Button>
             }
             content={
@@ -58,15 +56,19 @@ const MenuComponent = withRedux(({
           <Popup inverted size='large'
             trigger={
               <Button icon basic inverted color='grey'
-                onClick={() => toggleRuns()}
-                disabled={isMainView('runs') || R.isNil(project) || R.and(RA.isNotNil(project), isMainView('projects'))}
+                onClick={() => {
+                  if (isMainView('runs')) {
+                    toggleProjects()
+                  } else if (isMainView('vis')) {
+                    toggleRuns()
+                  }
+                }}
+                disabled={R.or(isMainView('projects'), R.isNil(project))}
               >
-                <Icon color='black' name='file' size='large'/>
+                <Icon color='black' name='left arrow' size='large'/>
               </Button>
             }
-            content={
-              'Go To Runs'
-            }
+            content={isMainView('runs') ? 'Go back to projects' : 'Go back to runs'}
             position='bottom center'
           />
         </Button.Group>

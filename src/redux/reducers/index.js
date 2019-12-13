@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 // CONSTANTS
 import PARAMETERS from '../../components/main/vis/parameters/PARAMETERS'
@@ -20,7 +21,7 @@ const initialState = {
   toggle: {
     projects: {
       // "Explore" part of crescent
-      activeKind: 'published' // 'example', 'uploaded' 
+      activeKind: 'published' // 'uploaded' 
     },
     runs: {},
     vis: {
@@ -175,7 +176,13 @@ const MainViewReducer = {
     },
   'TOGGLE_PROJECTS':
     (state, payload) => {
+      const {kind} = payload
       return R.compose(
+        R.isNil(kind) ? R.identity :
+          R.set(
+            R.lensPath(['toggle','projects','activeKind']),
+            kind
+          ),
         setMainView('projects')
       )(state)
     },
