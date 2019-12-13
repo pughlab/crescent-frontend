@@ -21,6 +21,7 @@ const UploadButton = ({
   url, // Express url to upload temporary file
   setUploadedFile
 }) => {
+  const [loading, setLoading] = useState(false)
   const [localUploadedFile, setLocalUploadedFile] = useState(null)
   return (
   <>
@@ -31,10 +32,12 @@ const UploadButton = ({
       content={R.isNil(localUploadedFile) ? label : localUploadedFile.name}
       as={'label'}
       htmlFor={label}
+      loading={loading}
     />
     <input hidden id={label} type='file'
       onChange={
         (event) => {
+          setLoading(true)
           const file = R.head(event.target.files)
           // Send file to minio
           const xhr = new XMLHttpRequest ()
@@ -48,9 +51,9 @@ const UploadButton = ({
           xhr.onload = () => {
             if (xhr.status == 200) {
               const uploadID = JSON.parse(xhr.response)
-              // console.log(uploadID)
               setUploadedFile(uploadID)
               setLocalUploadedFile(file)
+              setLoading(false)
             }
           }
           // console.log(event.target.files)
