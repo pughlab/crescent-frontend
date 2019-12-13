@@ -38,8 +38,12 @@ const toggleInfo = () => ({
 const toggleLogin = () => ({
   type: 'TOGGLE_LOGIN'
 })
-const toggleProjects = () => ({
-  type: 'TOGGLE_PROJECTS'
+// If null then don't change activeKind
+const toggleProjects = ({kind = null}) => ({
+  type: 'TOGGLE_PROJECTS',
+  payload: {
+    kind
+  }
 })
 const toggleRuns = () => ({
   type: 'TOGGLE_RUNS'

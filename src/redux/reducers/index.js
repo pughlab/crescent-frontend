@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux'
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 // CONSTANTS
 import PARAMETERS from '../../components/main/vis/parameters/PARAMETERS'
@@ -20,7 +21,7 @@ const initialState = {
   toggle: {
     projects: {
       // "Explore" part of crescent
-      activeKind: 'published' // 'example', 'uploaded' 
+      activeKind: 'published' // 'uploaded' 
     },
     runs: {},
     vis: {
@@ -137,6 +138,7 @@ const GQLReducer = {
         R.lensPath(['toggle','vis','pipeline','activeStep']),
         null
       )
+      const {status: runStatus} = run
       return R.compose(
         resetIsSubmitted,
         resetActiveStep,
@@ -151,7 +153,9 @@ const GQLReducer = {
             }
           : JSON.parse(params)
         ),
-        setSidebarView('pipeline'),
+        setSidebarView(
+          R.equals('pending', runStatus) ? 'pipeline' : 'results'
+        ),
         setMainView('vis'),
         setRunFromGQL(run), 
       )(state)
@@ -175,7 +179,13 @@ const MainViewReducer = {
     },
   'TOGGLE_PROJECTS':
     (state, payload) => {
+      const {kind} = payload
       return R.compose(
+        R.isNil(kind) ? R.identity :
+          R.set(
+            R.lensPath(['toggle','projects','activeKind']),
+            kind
+          ),
         setMainView('projects')
       )(state)
     },
@@ -238,7 +248,9 @@ const CWLReducer = {
   'SET_IS_SUBMITTED':
     (state, payload) => {
       const {isSubmitted} = payload
+
       return R.compose(
+        setMainView('runs'),
         R.set(
           R.lensPath(['toggle','vis','pipeline','isSubmitted']),
           isSubmitted

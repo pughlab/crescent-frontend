@@ -50,7 +50,7 @@ const RunsStatusLegend = ({
                 onClick={() => setRunFilter(key)}
               >
                 <Icon name={icon} color={color}
-                  loading={R.equals('pending', key)}
+                  loading={R.and(R.equals('submitted', key), R.not(R.equals(0, submittedCount)))}
                 />
                 <Step.Content
                   title={title}
@@ -103,13 +103,16 @@ const RunsStatusLegend = ({
 
 const RunsCardList = withRedux(({
   app: {
+    user: {
+      userID: currentUserID
+    },
     project: {
       projectID,
       name: projectName,
       kind: projectKind,
       description,
       createdOn: projectCreatedOn,
-      createdBy: {name: creatorName}
+      createdBy: {name: creatorName, userID: creatorUserID}
     },
     view: {
       isGuest
@@ -160,6 +163,7 @@ const RunsCardList = withRedux(({
 
   const [runFilter, setRunFilter] = useState('all')
   const isUploadedProject = R.equals('uploaded', projectKind)
+  const currentUserIsProjectCreator = R.equals(creatorUserID, currentUserID)
 
   const filteredProjectRuns = R.compose(
     R.reject(
@@ -178,11 +182,9 @@ const RunsCardList = withRedux(({
   return (
     <Container>
       <Segment attached='top'>
-        <Divider horizontal
-          content={
-            `${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`
-          }
-        />
+        <Divider horizontal>
+          <Header size='large' content={`${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`} />
+        </Divider>
         <Header
           content={projectName}
           subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
@@ -192,14 +194,16 @@ const RunsCardList = withRedux(({
       </Segment>
       {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
       {
-        isUploadedProject &&
+        R.and(isUploadedProject, currentUserIsProjectCreator) && 
           <Button.Group attached widths={2}>
             <ShareProjectModal />
             <ArchiveProjectModal />
           </Button.Group>
       }
       <Segment attached='bottom'>
-        <Divider horizontal content={`Project Runs`} />
+        <Divider horizontal>
+          <Header size='large' content={'Project Runs'} />
+        </Divider>
         {
           isUploadedProject &&
             <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />

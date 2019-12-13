@@ -1,5 +1,9 @@
 const R = require('ramda')
 
+const {
+  ApolloError
+} = require('apollo-server')
+
 const resolvers = {
   Query: {
     // Query a single project
@@ -73,6 +77,37 @@ const resolvers = {
         console.error(error)
       }
     },
+
+    shareProjectByEmail: async (parent, {projectID, email}, {Projects, Users}) => {
+      try {
+        const project = await Projects.findOne({projectID})
+        const {sharedWith} = project
+        const user = await Users.findOne({email})
+        if (R.isNil(user)) {
+          return null
+        } else {
+          const {userID} = user
+          project.sharedWith = R.append(userID, sharedWith)
+          await project.save()
+          return project
+        }
+      } catch(error) {
+        console.error(error)
+      }
+    },
+    unshareProjectByUserID: async (parent, {projectID, userID}, {Projects, Users}) => {
+      try {
+        const project = await Projects.findOne({projectID})
+        const {sharedWith} = project
+        // Use built in ObjectID equality method
+        project.sharedWith = R.reject(memberObjectID => memberObjectID.equals(userID), sharedWith)
+        await project.save()
+        return project
+      } catch(error) {
+        console.error(error)
+      }
+    },
+
 
     // Set the 'sharedWith' property  of a project to remove or add members
     shareProject: async (parent, {projectID, sharedWith}, {Projects}) => {

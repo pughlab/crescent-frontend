@@ -18,7 +18,7 @@ const DownloadResultsButton = withRedux(
       <Button fluid color='violet'
         content={R.prop(runStatus, {
           pending: 'RESULTS UNAVAILABLE',
-          submitted: 'COMPUTING RESULTS',
+          // missing 'submitted' because RefreshRunButton rendered if run status is so
           completed: 'DOWNLOAD RESULTS',
           failed: 'DOWNLOAD RUN LOGS'
         })}

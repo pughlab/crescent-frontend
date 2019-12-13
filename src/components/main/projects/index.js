@@ -27,6 +27,7 @@ const ProjectsCardList = withRedux(({
       <Divider horizontal
         content={
           <Header
+            size='huge'
             content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
             subheader={'Select a public project (below) or sign in (top right) to start'}
           />

@@ -36,6 +36,7 @@ const UploadedProjectsList = withRedux(({
         createdOn
         createdBy {
           name
+          userID
         }
         
         runs {
