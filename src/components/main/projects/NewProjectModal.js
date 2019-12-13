@@ -100,7 +100,16 @@ const NewProjectModal = withRedux(({
         createdOn
         createdBy {
           name
+          userID
         }
+        
+        runs {
+          runID
+          name
+          status
+        }
+
+        datasetSize
       }
     }
   `, {

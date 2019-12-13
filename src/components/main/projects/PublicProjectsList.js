@@ -32,6 +32,7 @@ const PublicProjectsList = withRedux(({
         createdOn
         createdBy {
           name
+          userID
         }
         
         runs {

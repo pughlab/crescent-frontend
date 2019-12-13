@@ -103,13 +103,16 @@ const RunsStatusLegend = ({
 
 const RunsCardList = withRedux(({
   app: {
+    user: {
+      userID: currentUserID
+    },
     project: {
       projectID,
       name: projectName,
       kind: projectKind,
       description,
       createdOn: projectCreatedOn,
-      createdBy: {name: creatorName}
+      createdBy: {name: creatorName, userID: creatorUserID}
     },
     view: {
       isGuest
@@ -160,6 +163,7 @@ const RunsCardList = withRedux(({
 
   const [runFilter, setRunFilter] = useState('all')
   const isUploadedProject = R.equals('uploaded', projectKind)
+  const currentUserIsProjectCreator = R.equals(creatorUserID, currentUserID)
 
   const filteredProjectRuns = R.compose(
     R.reject(
@@ -192,7 +196,7 @@ const RunsCardList = withRedux(({
       </Segment>
       {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
       {
-        isUploadedProject &&
+        R.and(isUploadedProject, currentUserIsProjectCreator) && 
           <Button.Group attached widths={2}>
             <ShareProjectModal />
             <ArchiveProjectModal />
