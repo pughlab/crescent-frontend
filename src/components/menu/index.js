@@ -49,7 +49,7 @@ const MenuComponent = withRedux(({
               </Button>
             }
             content={
-              'Go To Projects'
+              isMainView('projects') ? "You're already home..." : 'Go to projects'
             }
             position='bottom center'
           />

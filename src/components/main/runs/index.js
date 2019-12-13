@@ -182,11 +182,9 @@ const RunsCardList = withRedux(({
   return (
     <Container>
       <Segment attached='top'>
-        <Divider horizontal
-          content={
-            `${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`
-          }
-        />
+        <Divider horizontal>
+          <Header size='large' content={`${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`} />
+        </Divider>
         <Header
           content={projectName}
           subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
@@ -203,7 +201,9 @@ const RunsCardList = withRedux(({
           </Button.Group>
       }
       <Segment attached='bottom'>
-        <Divider horizontal content={`Project Runs`} />
+        <Divider horizontal>
+          <Header size='large' content={'Project Runs'} />
+        </Divider>
         {
           isUploadedProject &&
             <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
