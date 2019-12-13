@@ -1,3 +1,15 @@
+// Schema for parameter json
+// step: the key for the step this parameter belongs to
+// parameter: keyword for CWL
+// label: human readable form of parameter
+// prompt: header of message+input box
+// description: content of message+input box
+// input: {
+//  type: boolean | integer | long | float | double | single | string | file | directory
+//        NOTE: we only use... float, integer, (and technically ranges)
+//  default: (see above) 
+// }
+
 // step: the key for the step this parameter belongs to
 // parameter: keyword for CWL
 // label: menu label when selecting parameter values
