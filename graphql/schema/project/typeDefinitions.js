@@ -34,6 +34,16 @@ const typeDefs = gql`
       matrixObjectName: ID!,
     ): Project
     
+    shareProjectByEmail(
+      projectID: ID
+      email: Email
+    ): Project
+    unshareProjectByUserID(
+      projectID: ID
+      userID: ID
+    ): Project
+
+
     # Sets 'sharedWith' property to whatever array of IDs is passed
     shareProject(
       projectID: ID

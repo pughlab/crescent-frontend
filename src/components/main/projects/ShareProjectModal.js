@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid} from 'semantic-ui-react'
+import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Input} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -23,7 +23,8 @@ const ShareProjectModal = withRedux(({
   },
 }) => {
   // State variable to keep track of who to add
-  const [newSharedWith, setNewSharedWith] = useState([])
+  const [emailToShare, setEmailToShare] = useState('')
+  const [emailError, setEmailError] = useState(false)
 
   // Project users
   const {loading: loadingProjectUsers, data: dataProjectUsers, error: errorProjectUsers, refetch: refetchProjectUsers} = useQuery(gql`
@@ -42,60 +43,49 @@ const ShareProjectModal = withRedux(({
     fetchPolicy: 'network-only',
       variables: {projectID}
     })
-  const creator = R.ifElse(
-    queryIsNotNil('project'),
-    R.path(['project', 'createdBy']),
-    R.always(null)
-  )(dataProjectUsers)
   const sharedWith = R.ifElse(
     queryIsNotNil('project'),
     R.path(['project', 'sharedWith']),
     R.always([])
   )(dataProjectUsers)
 
-  // All users to search throughR.compose()
-  const notCurrentUser = R.compose(R.not, R.propEq('userID', userID))
-  const notInProject = R.compose(R.or(loadingProjectUsers), R.not, R.includes(R.__, sharedWith))
-  const notProjectCreator = loadingProjectUsers ? R.always(false) : R.compose(R.not, R.propEq('userID', R.prop('userID', creator)))
-  const {loading: loadingUsers, data: dataUsers, error: errorUsers, refetchUsers} = useQuery(gql`
-    query AllUsers {
-      users {
-        userID
-        name
+  const [unshareProjectByUserID, {error: unshareProjectByUserIDError}] = useMutation(gql`
+    mutation UnshareProjectByUserID($projectID: ID, $userID: ID) {
+      unshareProjectByUserID(projectID: $projectID, userID: $userID) {
+        projectID
+        sharedWith {
+          userID
+        }
       }
-    }`, {
-      fetchPolicy: 'network-only'
-    })
-  const possibleUsersToAdd = R.ifElse(
-    queryIsNotNil('users'),
-    R.compose(
-      R.map(
-        ({userID, name}) => ({
-          value: userID,
-          text: name,
-          content: name
-        })
-      ),
-      R.filter(R.allPass([notInProject, notCurrentUser, notProjectCreator,])),
-      R.prop('users')
-    ),
-    R.always([])
-  )(dataUsers)
-
-  // Mutation to set new sharedWith members
-  const [shareProject, {loadingShareProject}] = useMutation(gql`
-    mutation ShareProject($projectID: ID, $sharedWith: [ID]) {
-      shareProject(projectID: $projectID, sharedWith: $sharedWith) {
+    }
+  `, {
+    variables: {projectID},
+    onCompleted: ({unshareProjectByUserID}) => {
+      // setNewSharedWith([])
+      console.log('unshare', unshareProjectByUserID)
+      setEmailToShare('')
+      refetchProjectUsers()
+    }
+  })
+  const [shareProjectByEmail, {error: shareProjectByEmailError}] = useMutation(gql`
+    mutation ShareProjectByEmail($projectID: ID, $email: Email) {
+      shareProjectByEmail(projectID: $projectID, email: $email) {
         projectID
       }
     }
   `, {
     variables: {projectID},
-    onCompleted: data => {
-      setNewSharedWith([])
+    onCompleted: ({shareProjectByEmail}) => {
+      // setNewSharedWith([])
+      console.log('share', shareProjectByEmail)
+      if (R.isNil(shareProjectByEmail)) {
+        setEmailError(true)
+      }
+      setEmailToShare('')
       refetchProjectUsers()
     }
   })
+
 
   return (
     <Modal basic size='small'
@@ -113,13 +103,7 @@ const ShareProjectModal = withRedux(({
         <Segment attached='top'>
           <Header icon='add user' content={projectName} subheader='Share this project with other users?' />
         </Segment>
-        <Segment attached='bottom' loading={R.or(loadingProjectUsers, loadingShareProject)}>
-          {/* <Divider content='Created by' horizontal />
-          {
-            RA.isNotNil(creator) &&
-            <Label size='large' color='green' content={R.prop('name', creator)} />
-          }
-           */}
+        <Segment attached='bottom' loading={loadingProjectUsers}>
           <Grid>
             {
               RA.isNotEmpty(sharedWith) &&
@@ -131,16 +115,11 @@ const ShareProjectModal = withRedux(({
                     ({userID, name}, index) => (
                       <Label key={index}
                         basic
-                        color='green'
+                        color='grey'
                         content={name}
                         onRemove={
-                          () => shareProject({
-                            variables: {
-                              sharedWith: R.compose(
-                                R.reject(R.equals(userID)),
-                                R.pluck('userID')
-                              )(sharedWith)
-                            }
+                          () => unshareProjectByUserID({
+                            variables: {userID}
                           })
                         }
                       />
@@ -152,21 +131,22 @@ const ShareProjectModal = withRedux(({
               </Grid.Column>
             }
             <Grid.Column width={12}>
-              <Dropdown multiple selection fluid search options={possibleUsersToAdd} loading={loadingUsers}
-                placeholder='Search users to share project with'
-                onChange={(event, {value}) => setNewSharedWith(value)}
+              <Input 
+                placeholder='Enter user email to share'
+                fluid
+                value={emailToShare}
+                onChange={(e, {value}) => {
+                  setEmailError(false)
+                  setEmailToShare(value)
+                }}
+                error={emailError}
               />
             </Grid.Column>
             <Grid.Column width={4}>
-              <Button fluid color='green' inverted icon='plus'
-                disabled={R.or(loadingProjectUsers, loadingUsers)}
-                onClick={() => shareProject({
-                    variables: {
-                      sharedWith: R.compose(
-                          R.concat(newSharedWith),
-                          R.pluck('userID')
-                        )(sharedWith)
-                    }
+              <Button fluid content='Add'
+                onClick={
+                  () => shareProjectByEmail({
+                    variables: {email: emailToShare}
                   })
                 }
               />
