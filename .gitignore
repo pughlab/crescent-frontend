@@ -12,10 +12,11 @@ mongodb/
 
 
 /results
-minio/download/*
-minio/upload/*
+minio/download/
+minio/upload/
 SEURAT/
 frontend_seurat_inputs.json
 # results/
 
 .env
+nginx/certs/

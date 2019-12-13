@@ -1,0 +1,16 @@
+version: "3"
+
+services: 
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./react/build:/var/www
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/certs:/etc/nginx/certs
+    depends_on:
+      - server
+    command: nginx -g "daemon off;"
