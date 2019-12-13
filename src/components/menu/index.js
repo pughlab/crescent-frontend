@@ -61,6 +61,12 @@ const MenuComponent = withRedux(({
                     toggleProjects()
                   } else if (isMainView('vis')) {
                     toggleRuns()
+                  } else if (isMainView('login')) {
+                    // Go back to projects for now
+                    toggleProjects()
+                  } else if (isMainView('info')) {
+                    // Go back to projects for now
+                    toggleProjects()
                   }
                 }}
                 disabled={R.or(isMainView('projects'), R.isNil(project))}
