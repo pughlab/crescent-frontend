@@ -6,9 +6,22 @@
 // description: content of message+input box
 // input: {
 //  type: boolean | integer | long | float | double | single | string | file | directory
-//        NOTE: we only use... float, integer, (and technically ranges)
+//        NOTE: we only use... string, float, integer, (and technically ranges)
 //  default: (see above) 
 // }
+// disabled: boolean for whether we accept these parameters or they're default/blocked
+const example = {
+  step: 'quality',
+  parameter: 'sc_input_type',
+  label: 'Single Cell Input Type',
+  prompt: 'Select data type of single cell input',
+  description: 'Input can be either MTX: barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz files or DGE: tab delimited digital gene expression (DGE) file with genes in rows vs. barcodes in columns. Default is MTX.',
+  input: {
+    type: 'string',
+    default: 'MTX'
+  },
+  disabled: false
+}
 
 // step: the key for the step this parameter belongs to
 // parameter: keyword for CWL
