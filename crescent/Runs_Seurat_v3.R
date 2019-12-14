@@ -227,6 +227,7 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   dir.create(file.path(paste0(Tempdir,"/normalized")), showWarnings = F) ## Note Tempdir will be the final out-directory as well
   dir.create(file.path(paste0(Tempdir,"/coordinates")), showWarnings = F) ## Note Tempdir will be the final out-directory as well
   dir.create(file.path(paste0(Tempdir,"/raw")), showWarnings = F) ## Note Tempdir will be the final out-directory as well
+  dir.create(file.path(paste0(Tempdir,"/markers")), showWarnings = F) ## Note Tempdir will be the final out-directory as well
 
 }else{
   PrefixOutfiles <- c(paste(PrefixOutfiles,"_res",Resolution,sep=""))
@@ -907,6 +908,10 @@ FindMarkers.Pseudocount  <- 1/length(rownames(seurat.object.f@meta.data))
 StartTimeFindAllMarkers<-Sys.time()
 seurat.object.markers <- FindAllMarkers(object = seurat.object.f, only.pos = T, min.pct = DefaultParameters$FindAllMarkers.MinPct, return.thresh = ThreshReturn, logfc.threshold = DefaultParameters$FindAllMarkers.ThreshUse, pseudocount.use = FindMarkers.Pseudocount)
 EndTimeFindAllMarkers<-Sys.time()
+
+markers_file <- (seurat.object.markers[(c("gene","avg_logFC","p_val"))])
+markers_file_top <- markers_file[order(-markers_file$avg_logFC),]
+write.table(data.frame(head(markers_file_top, 10)), paste(Tempdir,"/","markers/","TopTenMarkers.tsv",sep=""),row.names = F,sep="\t",quote = F)
 
 write.table(data.frame("GENE"=rownames(seurat.object.markers),seurat.object.markers),paste(Tempdir,"/","img/",PrefixOutfiles,".SEURAT_MarkersPerCluster.tsv",sep=""),row.names = F,sep="\t",quote = F)
 ### Get top-2 genes sorted by cluster, then by p-value
