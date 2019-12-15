@@ -23,12 +23,14 @@ const ResultsSidebar = withRedux(
       },
       thunks: {
         initializeResults,
+        fetchTopExpressed,
         clearResults
       }
     },
   }) => {
     useEffect(() => {
       initializeResults(runID)
+      fetchTopExpressed(runID)
       return clearResults()
     }, [])
 

@@ -63,6 +63,15 @@ const clearResults = () => (dispatch, getState) => {
   });
 }
 
+const fetchTopExpressed = runID => (dispatch, getState) => {
+  fetchEndpoint(`/top-expressed/${runID}`).then((result) => {
+    dispatch({
+      type: 'SET_TOP_EXPRESSED',
+      payload: {"features": result}
+    });
+  });
+}
+
 const initializeResults = runID => (dispatch, getState) => {
   dispatch({
     type: 'TOGGLE_LOADING_RESULTS',
@@ -119,7 +128,8 @@ export default {
   changeSelectedFeature,
   fetchScatter,
   fetchOpacity,
-  fetchViolin
+  fetchViolin,
+  fetchTopExpressed
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING
