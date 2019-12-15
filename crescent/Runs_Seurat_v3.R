@@ -228,6 +228,7 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   dir.create(file.path(paste0(Tempdir,"/coordinates")), showWarnings = F) ## Note Tempdir will be the final out-directory as well
   dir.create(file.path(paste0(Tempdir,"/raw")), showWarnings = F) ## Note Tempdir will be the final out-directory as well
   dir.create(file.path(paste0(Tempdir,"/markers")), showWarnings = F) ## Note Tempdir will be the final out-directory as well
+  dir.create(file.path(paste0(Tempdir,"/qc")), showWarnings = F) ## Note Tempdir will be the final out-directory as well
 
 }else{
   PrefixOutfiles <- c(paste(PrefixOutfiles,"_res",Resolution,sep=""))
@@ -537,6 +538,16 @@ print(plot_grid(Headers.plot, bottom_row, ncol = 1, rel_heights = c(0.2,1)))
 dev.off()
 
 StopWatchEnd$QCviolinplots  <- Sys.time()
+
+interactive_qc_plot_u  <-data.frame(Barcodes = row.names(seurat.object.u@meta.data), Number_of_Genes = seurat.object.u@meta.data$nFeature_RNA, Number_of_Reads = seurat.object.u@meta.data$nCount_RNA, Mitochondrial_Genes_Fraction = seurat.object.u@meta.data$percent.mito, Ribosomal_Protein_Genes_Fraction = seurat.object.u@meta.data$percent.ribo)
+colnames(interactive_qc_plot_u) <- c("Barcodes","Number of Genes","Number of Reads","Mitochondrial Genes Fraction","Ribosomal Protein Genes Fraction")
+write.table(interactive_qc_plot_u, paste(Tempdir,"/","qc/","BeforeFiltering.tsv",sep=""),row.names = F,sep="\t",quote = F)
+
+
+
+interactive_qc_plot_f  <-data.frame(Barcodes = row.names(seurat.object.f@meta.data), Number_of_Genes = seurat.object.f@meta.data$nFeature_RNA, Number_of_Reads = seurat.object.f@meta.data$nCount_RNA, Mitochondrial_Genes_Fraction = seurat.object.f@meta.data$percent.mito, Ribosomal_Protein_Genes_Fraction = seurat.object.f@meta.data$percent.ribo )
+colnames(interactive_qc_plot_f) <- c("Barcodes","Number of Genes","Number of Reads","Mitochondrial Genes Fraction","Ribosomal Protein Genes Fraction")
+write.table(interactive_qc_plot_f, paste(Tempdir,"/","qc/","AfterFiltering.tsv",sep=""),row.names = F,sep="\t",quote = F)
 
 ####################################
 ### Feature-vs-feature scatter plot
