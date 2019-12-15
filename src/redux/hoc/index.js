@@ -38,7 +38,8 @@ export default connect(
         changeSelectedFeature: feature => dispatch(Actions.thunks.changeSelectedFeature(feature)),
         fetchScatter: () => dispatch(Actions.thunks.fetchScatter()),
         fetchOpacity: () => dispatch(Actions.thunks.fetchOpacity()),
-        fetchViolin: () => dispatch(Actions.thunks.fetchViolin())
+        fetchViolin: () => dispatch(Actions.thunks.fetchViolin()),
+        fetchTopExpressed: runID => dispatch(Actions.thunks.fetchTopExpressed(runID))
       }
     }
   })

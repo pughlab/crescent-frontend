@@ -42,7 +42,8 @@ const initialState = {
         selectedFeature: null,
         availableGroups: [], // ways to label the data (i.e. PatientID)
         availablePlots: [], // will store objects for each of the available plots
-        isLoading: false
+        isLoading: false,
+        topExpressed: [] // will store the top X expressed genes for the run
       }
     }
   }
@@ -305,6 +306,27 @@ const VisualizationReducer = {
       data
     )(state)
   },
+  'CHANGE_ACTIVE_GROUP': (state, payload) => {
+    const {group} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','selectedGroup']),
+      group
+    )(state)
+  },
+  'CHANGE_SELECTED_FEATURE': (state, payload) => {
+    const {feature} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','selectedFeature']),
+      feature
+    )(state)
+  },
+  'SET_TOP_EXPRESSED': (state, payload) => {
+    const {features} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','topExpressed']),
+      features
+    )(state)
+  },
   'CLEAR_RESULTS': (state, payload) => {
     return R.compose(
       R.set(
@@ -326,24 +348,13 @@ const VisualizationReducer = {
       R.set(
         R.lensPath(['toggle','vis','results','selectedFeature']),
         null
+      ),
+      R.set(
+        R.lensPath(['toggle','vis','results','topExpressed']),
+        []
       )
     )(state)
-  },
-  'CHANGE_ACTIVE_GROUP': (state, payload) => {
-    const {group} = payload
-    return R.set(
-      R.lensPath(['toggle','vis','results','selectedGroup']),
-      group
-    )(state)
-  },
-  'CHANGE_SELECTED_FEATURE': (state, payload) => {
-    const {feature} = payload
-    return R.set(
-      R.lensPath(['toggle','vis','results','selectedFeature']),
-      feature
-    )(state)
   }
-
 }
 
 const app = createReducer(initialState, {
