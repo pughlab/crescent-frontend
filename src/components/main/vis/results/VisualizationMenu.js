@@ -91,7 +91,7 @@ const VisualizationMenu = withRedux(
       </Form.Field>
 
       <Form.Dropdown
-        placeholder='Features'
+        placeholder='Search for a Feature'
         fluid
         search
         renderLabel = {({text}) => (<Label color='violet' content={text}/>)}
