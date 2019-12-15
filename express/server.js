@@ -228,6 +228,17 @@ app.get(
   }
 );
 
+app.get(
+  `/top-expressed/:runID`,
+  (req, res) => {
+    const {
+      params: {runID}
+    } = req;
+    python_process = call_python('get_top_expressed.py', {runID})
+    python_process.then((result) => {res.send(result);})
+  }
+);
+
 app.get('/search/:query/:runID',
   async (req, res) => {
     const {
