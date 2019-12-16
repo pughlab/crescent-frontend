@@ -1002,6 +1002,10 @@ dev.off()
 
 StopWatchEnd$CellClustersHeatmap  <- Sys.time()
 
+HeatMapTSV <- (seurat.object.f@assays[["RNA"]]@scale.data)[(top_genes_by_cluster_for_heatmap$gene),]
+write.table(HeatMapTSV, paste(Tempdir,"/","coordinates/","Heatmap.tsv",sep=""),row.names = T, col.names= T , sep="\t",quote = F)
+
+
 ####################################
 ### Create summary plots outfile
 ####################################
