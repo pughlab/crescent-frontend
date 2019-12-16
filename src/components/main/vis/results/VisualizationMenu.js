@@ -52,6 +52,22 @@ const VisualizationMenu = withRedux(
     changeSelectedFeature(null)
   }
 
+  const featureButton = ({gene, p_val, avg_logFC}) => {
+    return (
+      <Popup
+      size={'tiny'}
+      trigger={<Button color='violet' style={{margin: '0.25rem'}} basic>
+        {gene}
+      </Button>}
+      >
+        <Popup.Content>
+          {'p-value: '+p_val}<br></br>
+          {'avg. log fold change: '+avg_logFC}
+        </Popup.Content>
+      </Popup>
+    )
+  }
+
   // format a list for a dropdown
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
   return (
@@ -68,27 +84,13 @@ const VisualizationMenu = withRedux(
         />
       </Form.Field>
       <Divider horizontal content='Feature Selection' />
-      <Segment basic textAlign={'center'}>
       {
-        R.addIndex(R.map)(
-          (value, index) => (
-            R.always(
-              <Popup
-              size={'tiny'}
-              trigger={<Button color='violet' style={{margin: '0.25rem'}} basic>
-                {value['gene']}
-              </Button>}
-              >
-                <Popup.Content>
-                  {'p-value: '+value['p_val']}<br></br>
-                  {'avg. log fold change: '+value['avg_logFC']}
-                </Popup.Content>
-              </Popup>
-            )
-          )(index, value)
-        )(topExpressed)
+      R.ifElse(
+        R.isEmpty,
+        R.always(),
+        R.always(<Segment basic textAlign={'center'}>{R.map(featureButton)(topExpressed)}</Segment>)
+      )(topExpressed)
       }
-      </Segment>
       <Form.Field>
         {/* Reset feature selection */}
         <Form.Button
