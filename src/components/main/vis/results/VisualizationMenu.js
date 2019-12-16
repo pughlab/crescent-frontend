@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Button, Form, Divider, Segment, List, Label, Icon, Header, Grid } from 'semantic-ui-react'
+import { Button, Form, Divider, Segment, Popup, Label, Icon, Header, Grid } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -73,9 +73,18 @@ const VisualizationMenu = withRedux(
         R.addIndex(R.map)(
           (value, index) => (
             R.always(
-            <Button color='violet' style={{margin: '0.25rem'}} basic>
-              {value['gene']}
-            </Button>)
+              <Popup
+              size={'tiny'}
+              trigger={<Button color='violet' style={{margin: '0.25rem'}} basic>
+                {value['gene']}
+              </Button>}
+              >
+                <Popup.Content>
+                  {'p-value: '+value['p_val']}<br></br>
+                  {'avg. log fold change: '+value['avg_logFC']}
+                </Popup.Content>
+              </Popup>
+            )
           )(index, value)
         )(topExpressed)
       }
