@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Button, Form, Divider, Segment, List, Label, Icon, Header } from 'semantic-ui-react'
+import { Button, Form, Divider, Segment, List, Label, Icon, Header, Grid } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -11,7 +11,7 @@ const VisualizationMenu = withRedux(
   app: {
     run: { runID },
     toggle: {
-      vis: {results: {availableGroups, selectedFeature, selectedGroup}}
+      vis: {results: {availableGroups, selectedFeature, selectedGroup, topExpressed}}
     }
   },
   actions: {
@@ -68,6 +68,18 @@ const VisualizationMenu = withRedux(
         />
       </Form.Field>
       <Divider horizontal content='Feature Selection' />
+      <Segment basic textAlign={'center'}>
+      {
+        R.addIndex(R.map)(
+          (value, index) => (
+            R.always(
+            <Button color='violet' style={{margin: '0.25rem'}} basic>
+              {value['gene']}
+            </Button>)
+          )(index, value)
+        )(topExpressed)
+      }
+      </Segment>
       <Form.Field>
         {/* Reset feature selection */}
         <Form.Button
@@ -89,7 +101,6 @@ const VisualizationMenu = withRedux(
           </Button.Content>
         </Form.Button>
       </Form.Field>
-
       <Form.Dropdown
         placeholder='Search for a Feature'
         fluid
