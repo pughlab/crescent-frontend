@@ -183,7 +183,7 @@ const RunsCardList = withRedux(({
     <Container>
       <Segment attached='top'>
         <Divider horizontal>
-          <Header size='large' content={`${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`} />
+          <Header size='big' content={`${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`} />
         </Divider>
         <Header
           content={projectName}
@@ -202,7 +202,7 @@ const RunsCardList = withRedux(({
       }
       <Segment attached='bottom'>
         <Divider horizontal>
-          <Header size='large' content={'Project Runs'} />
+          <Header size='big' content={'Project Runs'} />
         </Divider>
         {
           isUploadedProject &&
