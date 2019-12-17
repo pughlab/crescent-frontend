@@ -46,7 +46,6 @@ def get_qc_data(runID):
 				reader = csv.reader(tsv_file, delimiter="\t")
 				header = next(reader)
 				traces = intialize_traces(header) if not traces else traces
-				print(traces)
 				for row in reader:
 					for trace in traces:
 						trace['label'].append(row[header.index('Barcodes')])
