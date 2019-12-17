@@ -42,7 +42,6 @@ const VisualizationMenu = withRedux(
   }
 
   const handleSelectFeature = (event, {value}) => {
-    console.log(value)
     changeSearch('') // reset search
     changeSelectedFeature(value) // store
   }
