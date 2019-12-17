@@ -14,7 +14,7 @@ import * as RA from 'ramda-adjunct'
 const PortalInfo = ({
 }) => (
   <Container>
-    <Divider horizontal content='Need Help?' />
+    {/* <Divider horizontal content='Need Help?' /> */}
   <Segment.Group>
     <Segment>
       <Header content='Help'/>
