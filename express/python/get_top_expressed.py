@@ -27,7 +27,15 @@ def get_top_expressed(runID):
 		for row in reader:
 			feature_result = {}
 			for i in range(0, len(header)):
-				feature_result[header[i]] = row[i]
+				value = row[i]
+				# deal with formatting for known columns
+				if header[i] == 'avg_logFC':
+					value = round(float(value),3)
+				elif header[i] == 'p_val':
+					num, exp = value.split('e')
+					num = round(float(num),3)
+					value = str(num)+"e"+exp
+				feature_result[header[i]] = str(value)
 			result.append(feature_result)
 
 	return result
