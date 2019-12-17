@@ -49,11 +49,6 @@ const ParametersComponent = withRedux(
       setParameters,
       R.equals('pending', runStatus) ? R.mergeRight(parameters) : R.mergeLeft(parameters)
     )
-    // const setSingleCell = singleCell => mergeAndSetParameters({singleCell})
-    // const setNumberGenes = numberGenes => mergeAndSetParameters({numberGenes})
-    // const setPercentMito = percentMito => mergeAndSetParameters({percentMito})
-    // const setResolution = resolution => mergeAndSetParameters({resolution})
-    // const setPrincipalDimensions = principalDimensions => mergeAndSetParameters({principalDimensions})
     // TODO: redux action to set parameter key
     const valueSetters = {
       'sc_input_type': singleCell => mergeAndSetParameters({singleCell}),
@@ -107,38 +102,23 @@ const ParametersComponent = withRedux(
                 return R.cond([
                   [R.equals('range'), R.always(
                     <RangeParameterInput
-                      {...{
-                        parameter,
-                        value,
-                        setValue
-                      }}
+                      {...{parameter, value, setValue}}
                     />
                   )],
                   [R.equals('float'), R.always(
                     <FloatParameterInput
-                      {...{
-                        parameter,
-                        value,
-                        setValue
-                      }}
+                      {...{parameter, value, setValue}}
                     />
                   )],
                   [R.equals('integer'), R.always(
                     <IntegerParameterInput
-                      {...{
-                        parameter,
-                        value,
-                        setValue
+                      {...{parameter, value, setValue
                       }}
                     />
                   )],
                   [R.equals('enum'), R.always(
                     <EnumParameterInput
-                      {...{
-                        parameter,
-                        value,
-                        setValue
-                      }}
+                      {...{parameter, value, setValue}}
                     />
                   )],
                 ])(type)
