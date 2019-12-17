@@ -11,13 +11,11 @@ import * as RA from 'ramda-adjunct'
 const QCPlot = withRedux(
   ({
   app: {
-    toggle: {
-      vis: {results: {selectedFeature, selectedGroup}}
-    }
+    run: {runID}
   },
   actions: {
     thunks: {
-      fetchViolin
+      fetchQC
     }
   }
 }) => {
@@ -26,7 +24,15 @@ const QCPlot = withRedux(
 
   useEffect(() => {
     setQCData( [] ) // set to loading
-    //fetchQC().then(setQCData)
+    fetchQC(runID).then((data) => {
+      R.ifElse(
+        R.has('error'),
+        R.always(console.log(data['error'])),
+        setQCData
+      )(data)
+      console.log(data)
+    })
+    
 
     //TODO: return clear qc redux state change
   }, [])
@@ -50,10 +56,10 @@ const QCPlot = withRedux(
         style={{width: '100%', height:'90%'}}
         layout={{
           autosize: true,
+          grid: {rows: 1, columns: 4, pattern: 'independent'},
           hovermode: 'closest',
-          xaxis: {tickmode: 'linear'},
-          yaxis: {showgrid: false, ticks: '', showticklabels: false},
-          margin: {l:20, r:20, b:20, t:20},
+          margin: {l:50, r:50, b:20, t:20},
+          showlegend: false
         }}
       />
       </>

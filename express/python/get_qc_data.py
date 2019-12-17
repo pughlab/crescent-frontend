@@ -10,6 +10,7 @@ import helper
 def intialize_traces(header):
 	""" given a list of the column headers, intialize the list of trace objects """
 	result = []
+	count = 1
 	for col in header:
 		if col != 'Barcodes':
 			result.append({
@@ -20,8 +21,11 @@ def intialize_traces(header):
 				"meanline": {"visible":"true"},
 				"label": [],
 				"x": [],
-				"y": []
+				"y": [],
+				"xaxis": 'x'+str(count),
+				"yaxis": 'y'+str(count)
 			})
+			count += 1
 
 	return result
 
@@ -33,7 +37,7 @@ def get_qc_data(runID):
 		# try command-line path
 		dir_path = "../../results/{runID}/SEURAT/qc".format(runID=runID)
 		if not os.path.isdir(dir_path):
-			helper.return_error("QC results folder not found")
+			helper.return_error("QC results folder not found: "+str(dir_path))
 
 	traces = []
 	qc_files = ['BeforeFiltering.tsv','AfterFiltering.tsv']

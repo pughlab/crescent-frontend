@@ -12,6 +12,7 @@ const changeActiveGroup = newGroup => (dispatch, getState) => {
   });
 }
 
+// re-useable function for fetching and error-checking endpoints
 const fetchEndpoint = (endpoint) => {
   return fetch(endpoint).then(checkResponse)
   .then((resp) => resp.json())
@@ -72,6 +73,12 @@ const fetchTopExpressed = runID => (dispatch, getState) => {
   });
 }
 
+const fetchQC = runID => (dispatch, getState) => {
+  //TODO: toggle loading state
+  console.log(runID)
+  return fetchEndpoint(`/qc-data/${runID}`)
+}
+
 const initializeResults = runID => (dispatch, getState) => {
   dispatch({
     type: 'TOGGLE_LOADING_RESULTS',
@@ -129,7 +136,8 @@ export default {
   fetchScatter,
   fetchOpacity,
   fetchViolin,
-  fetchTopExpressed
+  fetchTopExpressed,
+  fetchQC
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING
