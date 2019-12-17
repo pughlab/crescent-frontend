@@ -42,6 +42,7 @@ const VisualizationMenu = withRedux(
   }
 
   const handleSelectFeature = (event, {value}) => {
+    console.log(value)
     changeSearch('') // reset search
     changeSelectedFeature(value) // store
   }
@@ -55,8 +56,13 @@ const VisualizationMenu = withRedux(
   const featureButton = ({gene, p_val, avg_logFC}) => {
     return (
       <Popup
-      size={'tiny'}
-      trigger={<Button color='violet' style={{margin: '0.25rem'}} basic>
+        size={'tiny'}
+        trigger={<Button value={gene}
+        onClick={handleSelectFeature}
+        color='violet'
+        style={{margin: '0.25rem'}}
+        basic={R.not(R.equals(selectedFeature,gene))}
+      >
         {gene}
       </Button>}
       >
@@ -84,13 +90,6 @@ const VisualizationMenu = withRedux(
         />
       </Form.Field>
       <Divider horizontal content='Feature Selection' />
-      {
-      R.ifElse(
-        R.isEmpty,
-        R.always(),
-        R.always(<Segment basic textAlign={'center'}>{R.map(featureButton)(topExpressed)}</Segment>)
-      )(topExpressed)
-      }
       <Form.Field>
         {/* Reset feature selection */}
         <Form.Button
@@ -102,21 +101,27 @@ const VisualizationMenu = withRedux(
         >
           <Button.Content visible>
           {
-            RA.isNotNil(selectedFeature) ? selectedFeature : 'Search below'
+            RA.isNotNil(selectedFeature) ? selectedFeature : 'Select or Search for a Feature'
           }
           </Button.Content>
           <Button.Content hidden>
           {
-            RA.isNotNil(selectedFeature) && 'Click to reset'
+            RA.isNotNil(selectedFeature) && 'Click to Reset'
           }
           </Button.Content>
         </Form.Button>
       </Form.Field>
+      {
+      R.ifElse(
+        R.isEmpty,
+        R.always(),
+        R.always(<Segment basic textAlign={'center'}>{R.map(featureButton)(topExpressed)}</Segment>)
+      )(topExpressed)
+      }
       <Form.Dropdown
-        placeholder='Search for a Feature'
+        placeholder={'Search for Feature'}
         fluid
         search
-        renderLabel = {({text}) => (<Label color='violet' content={text}/>)}
         searchQuery={currentSearch}
         selection
         options={currentOptions}
