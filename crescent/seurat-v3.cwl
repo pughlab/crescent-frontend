@@ -27,7 +27,7 @@ inputs:
       prefix: -t
 
   resolution:
-    type: int?
+    type: float?
     inputBinding:
       position: 3
       prefix: -r
