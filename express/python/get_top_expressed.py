@@ -16,7 +16,6 @@ def get_top_expressed(runID):
 		# try command-line path
 		file_path = "../../results/{runID}/SEURAT/markers/TopTenMarkers.tsv".format(runID=runID)
 		if not os.path.isfile(file_path):
-			print(file_path)
 			helper.return_error("top 10 expressed markers file not found")
 
 	result = []
