@@ -8,7 +8,7 @@ import {Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Ico
 import withRedux from '../../../../redux/hoc'
 
 import TOOLS from './TOOLS'
-import {FloatParameterInput, IntegerParameterInput, RangeParameterInput} from './ParameterInputs'
+import {FloatParameterInput, IntegerParameterInput, RangeParameterInput, EnumParameterInput} from './ParameterInputs'
 
 const ParametersComponent = withRedux(
   ({
@@ -49,19 +49,16 @@ const ParametersComponent = withRedux(
       setParameters,
       R.equals('pending', runStatus) ? R.mergeRight(parameters) : R.mergeLeft(parameters)
     )
-    const setSingleCell = singleCell => mergeAndSetParameters({singleCell})
-    const setNumberGenes = numberGenes => mergeAndSetParameters({numberGenes})
-    const setPercentMito = percentMito => mergeAndSetParameters({percentMito})
-    const setResolution = resolution => mergeAndSetParameters({resolution})
-    const setPrincipalDimensions = principalDimensions => mergeAndSetParameters({principalDimensions})
     // TODO: redux action to set parameter key
     const valueSetters = {
-      'number_genes': setNumberGenes,
-      'percent_mito': setPercentMito,
-      'pca_dimensions': setPrincipalDimensions,
-      'resolution': setResolution
+      'sc_input_type': singleCell => mergeAndSetParameters({singleCell}),
+      'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
+      'percent_mito': percentMito => mergeAndSetParameters({percentMito}),
+      'pca_dimensions': principalDimensions => mergeAndSetParameters({principalDimensions}),
+      'resolution': resolution => mergeAndSetParameters({resolution})
     }
     const values = {
+      'sc_input_type': singleCell,
       'number_genes': numberGenes,
       'percent_mito': percentMito,
       'pca_dimensions': principalDimensions,
@@ -100,41 +97,28 @@ const ParametersComponent = withRedux(
             R.addIndex(R.map)(
               (parameter, index) => {
                 const {parameter: parameterName, input: {type}, disabled} = parameter
-                if (disabled) {
-                  return (
-                    <Segment>
-                      Disabled
-                    </Segment>
-                  )
-                }
                 const setValue = R.prop(parameterName, valueSetters)
                 const value = R.prop(parameterName, values)
                 return R.cond([
                   [R.equals('range'), R.always(
                     <RangeParameterInput
-                      {...{
-                        parameter,
-                        value,
-                        setValue
-                      }}
+                      {...{parameter, value, setValue}}
                     />
                   )],
                   [R.equals('float'), R.always(
                     <FloatParameterInput
-                      {...{
-                        parameter,
-                        value,
-                        setValue
-                      }}
+                      {...{parameter, value, setValue}}
                     />
                   )],
                   [R.equals('integer'), R.always(
                     <IntegerParameterInput
-                      {...{
-                        parameter,
-                        value,
-                        setValue
+                      {...{parameter, value, setValue
                       }}
+                    />
+                  )],
+                  [R.equals('enum'), R.always(
+                    <EnumParameterInput
+                      {...{parameter, value, setValue}}
                     />
                   )],
                 ])(type)

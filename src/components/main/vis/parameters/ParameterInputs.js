@@ -1,116 +1,232 @@
-import React, {useState} from 'react'
-import { Button, Segment, Form, Message, Divider, Label } from 'semantic-ui-react';
+import React, {useState, useEffect} from 'react'
+import { Button, Segment, Form, Message, Divider, Label, Input, Icon } from 'semantic-ui-react';
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-// TODO: add yup validation (define in TOOLS.js)
+// TODO: use formik with yup once pipeline gets more advanced and we have more parameter types
 
+// Component for displaying parameter details
 const ParameterInputMessage = ({
-  prompt,
-  description,
-  disabled,
+  parameter: {
+    prompt,
+    description,
+    disabled,
+    input: {
+      type
+    }
+  },
   children
 }) => {
   return (
-    <Segment basic disabled={disabled}>
+    <Segment basic>
       <Message color='blue'>
         <Message.Header content={prompt} />
         <Message.Content content={description} />
         <Divider horizontal />
-        {children}
+        <Segment>
+          <Label attached='top left' content={R.toUpper(type)} />
+          {children}
+        </Segment>
       </Message>
     </Segment>
   )  
 }
 
-// TYPES OF INPUT: float, range, integer
+// Button to reset whatever input to its default value
+const SetToDefaultValueButton = ({
+  setValue,
+  defaultValue,
+  disabled
+}) => (
+  R.not(disabled) &&
+  <Form.Button fluid
+    animated='vertical'
+    onClick={() => setValue(defaultValue)}
+  >
+    <Button.Content visible>
+    {
+      disabled ? 'Set to default value' : <Icon name='undo' />
+    }
+    </Button.Content>
+    <Button.Content hidden content={disabled ? 'You can not change this value' : 'Reset to default value?'} />
+  </Form.Button>
+)
 
+////////////////
+// TYPES OF INPUT: float, range, integer
+////////////////
 const FloatParameterInput = ({
-  parameter: {
-    label,
-    prompt,
-    description,
-    input,
-    disabled,
-  },
+  parameter,
   // For local state
   value,
   setValue
 }) => {
-  const {defaultValue} = input
+  const {
+    label,
+    prompt,
+    description,
+    input: {defaultValue, schema},
+    disabled,
+  } = parameter
+  const [warning, setWarning] = useState(false)
+  useEffect(
+    () => {
+      schema.isValid(value).then(
+        valid => {
+          setWarning(R.not(valid))
+          console.log('valid float parameter', valid, value, parseFloat(value))
+        }
+      )
+    }, [
+      value
+    ]
+  )
   return (
-    <ParameterInputMessage {...{prompt, description, disabled}}>
+    <ParameterInputMessage {...{parameter}}>
       <Form>
-        <Form.Input label={label} value={value}
+        <Form.Input
+          label={label} value={value} disabled={disabled}
+          error={warning}
+          type='number'
+          placeholder={defaultValue}
           onChange={(e, {value}) => setValue(value)}
         />
-        <Form.Button fluid content='Set to default'
-          onClick={() => setValue(defaultValue)}
-        />
+        <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} />
       </Form>
     </ParameterInputMessage>
   )
 }
 
 const IntegerParameterInput = ({
-  parameter: {
-    label,
-    prompt,
-    description,
-    input,
-    disabled,
-  },
+  parameter,
   // For local state
   value,
   setValue
 }) => {
-  const {defaultValue} = input
+  const {
+    label,
+    prompt,
+    description,
+    input: {defaultValue, schema},
+    disabled,
+  } = parameter
+  const [warning, setWarning] = useState(false)
+  useEffect(
+    () => {
+      schema.isValid(value).then(
+        valid => {
+          setWarning(R.not(valid))
+          console.log('valid integer parameter', valid, value, parseInt(value))
+        }
+      )
+    }, [
+      value
+    ]
+  )
   return (
-    <ParameterInputMessage {...{prompt, description, disabled}}>
+    <ParameterInputMessage {...{parameter}}>
       <Form>
-        <Form.Input label={label} value={value}
-          onChange={(e, {value}) => setValue(parseInt(value))}
+        <Form.Input
+          label={label} value={value} disabled={disabled}
+          type='number'
+          error={warning}
+          onChange={(e, {value}) => setValue(value)}
         />
-        <Form.Button fluid content='Set to default'
-          onClick={() => setValue(defaultValue)}
-        />
+        <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} />
       </Form>
     </ParameterInputMessage>
   )
 }
 
 const RangeParameterInput = ({
-  parameter: {
+  parameter,
+  // For local state
+  value,
+  setValue
+}) => {
+  const {
     label,
     prompt,
     description,
-    input,
+    input: {defaultValue, schema, step},
     disabled,
-  },
-  // For local state
-  value: {min, max},
-  setValue
-}) => {
-  const {defaultValue} = input
+  } = parameter
+  const {min, max} = value
+  const {min: defaultMin, max: defaultMax} = defaultValue
+  const [warning, setWarning] = useState(false)
+  useEffect(
+    () => {
+      schema.isValid(value).then(
+        valid => {
+          setWarning(R.not(valid))
+          console.log('valid range parameter', valid, value)
+        }
+      )
+    }, [
+      value
+    ]
+  )
   return (
-    <ParameterInputMessage {...{prompt, description, disabled}}>
+    <ParameterInputMessage {...{parameter}}>
       <Form>
         <Form.Group widths={2}>
-          <Form.Input
+          <Form.Input disabled={disabled}
+            error={warning}
+            type='number'
+            step={step}
+            placeholder={defaultMin}
             label={`Min ${label}`}
             value={min}
-            onChange={(e, {value}) => setValue({min: value, max})}
+            onChange={(e, {value: newMin}) => setValue({min: newMin, max})}
           />
-          <Form.Input
+          <Form.Input disabled={disabled}
+            error={warning}
+            step={step}
+            type='number'
+            placeholder={defaultMax}
             label={`Max ${label}`}
             value={max}
-            onChange={(e, {value}) => setValue({min, max: value})}
+            onChange={(e, {value: newMax}) => setValue({min, max: newMax})}
           />
         </Form.Group>
-        <Form.Button fluid content='Set to default'
-          onClick={() => setValue(defaultValue)}
+        <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} />
+      </Form>
+    </ParameterInputMessage>
+  ) 
+}
+
+const EnumParameterInput = ({
+  parameter,
+  // For local state
+  value,
+  setValue
+}) => {
+  const {
+    label,
+    prompt,
+    description,
+    input: {defaultValue, options},
+    disabled,
+  } = parameter
+  const dropdownOptions = R.map(
+    option => ({key: option, value: option, text: option}),
+    options
+  )
+  return (
+    <ParameterInputMessage {...{parameter}}>
+      <Form>
+        <Form.Dropdown
+          selection
+          search
+          placeholder={defaultValue}
+          disabled={disabled}
+          options={dropdownOptions}
+          label={label}
+          value={value}
+          onChange={(e, {value}) => setValue(value)}
         />
+        <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} />
       </Form>
     </ParameterInputMessage>
   ) 
@@ -119,5 +235,6 @@ const RangeParameterInput = ({
 export {
   FloatParameterInput,
   IntegerParameterInput,
-  RangeParameterInput
+  RangeParameterInput,
+  EnumParameterInput
 }
