@@ -116,7 +116,7 @@ const RangeParameterInput = ({
   ) 
 }
 
-export default {
+export {
   FloatParameterInput,
   IntegerParameterInput,
   RangeParameterInput
