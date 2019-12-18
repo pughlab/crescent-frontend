@@ -58,8 +58,51 @@ const QCPlot = withRedux(
           autosize: true,
           grid: {rows: 1, columns: 4, pattern: 'independent'},
           hovermode: 'closest',
-          margin: {l:50, r:50, b:20, t:20},
-          showlegend: false
+          //margin: {l:50, r:50, b:20, t:20},
+          showlegend: false,
+          //colorway: ['red','blue'],
+          annotations: [
+            {
+              "x": 0.11,
+              "y": 1,
+              "text": "Number of Genes",
+              "xref": "paper",
+              "yref": "paper",
+              "xanchor": "center",
+              "yanchor": "bottom",
+              "showarrow": false
+            },
+            {
+              "x": 0.37,
+              "y": 1,
+              "text": "Number of Reads",
+              "xref": "paper",
+              "yref": "paper",
+              "xanchor": "center",
+              "yanchor": "bottom",
+              "showarrow": false
+            },
+            {
+              "x": 0.65,
+              "y": 1,
+              "text": "Mitochondrial Genes Fraction",
+              "xref": "paper",
+              "yref": "paper",
+              "xanchor": "center",
+              "yanchor": "bottom",
+              "showarrow": false
+            },
+            {
+              "x": 0.89,
+              "y": 1,
+              "text": "Ribosomal Protein Genes Fraction",
+              "xref": "paper",
+              "yref": "paper",
+              "xanchor": "center",
+              "yanchor": "bottom",
+              "showarrow": false
+            }
+          ]
         }}
       />
       </>
