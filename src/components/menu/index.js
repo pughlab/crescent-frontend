@@ -36,7 +36,7 @@ const MenuComponent = withRedux(({
 }) => {
   const isMainView = R.equals(main)
   return (
-    <Segment attached='top' style={{height: '5rem'}} as={Grid}>
+    <Segment attached='top' style={{height: '6rem'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
       {
         <Button.Group fluid size='mini'>
@@ -46,13 +46,13 @@ const MenuComponent = withRedux(({
                 onClick={() => toggleProjects(isGuest ? 'published' : 'uploaded')}
               >
                 {/* <Icon color='black' name='home' size='large'/> */}
-                <Icon size='big'>
+                <Icon fluid size='huge'>
                   <Image src={Logo} centered/>
                 </Icon>
               </Button>
             }
             content={
-              isMainView('projects') ? "You're already home..." : 'Go to projects'
+              isMainView('projects') ? 'Go to projects' : 'Go to projects'
             }
             position='bottom center'
           />
@@ -74,7 +74,7 @@ const MenuComponent = withRedux(({
                 }}
                 disabled={R.or(isMainView('projects'), R.isNil(project))}
               >
-                <Icon color='black' name='left arrow' size='large'/>
+                <Icon color='black' name='left arrow' size='big'/>
               </Button>
             }
             content={isMainView('runs') ? 'Go back to projects' : 'Go back to runs'}
@@ -87,6 +87,7 @@ const MenuComponent = withRedux(({
         {
           isMainView('projects')  ? 
             <Header
+              textAlign='center'
               // size='large'
               content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
             />
@@ -97,12 +98,10 @@ const MenuComponent = withRedux(({
             />
           : isMainView('login') ?
             <Header textAlign='center'
-              size='large'
             >
               {
                 RA.isNotNil(user) ? 
                   <>
-                    <Icon name='user circle' />
                     User
                   </>
                 :
@@ -118,7 +117,7 @@ const MenuComponent = withRedux(({
               content={R.prop('name', project)}
               subheader={R.prop('name', run)}
             />
-          : <Image src={Logo} size='tiny' centered/>
+          : <Header textAlign='center' content={'Info'} /> 
         }
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
@@ -128,11 +127,11 @@ const MenuComponent = withRedux(({
               <Button color='grey' inverted basic icon size='large'
                 onClick={() => toggleInfo()}
               >
-                <Icon color='black' size='large' name='info circle' />
+                <Icon color='black' size='big' name='info circle' />
               </Button>
             }
             content={
-              'Click For Info/Help'
+              'Info/Help'
             }
           />
           <Popup inverted size='large'
@@ -140,7 +139,7 @@ const MenuComponent = withRedux(({
               <Button basic inverted icon color='grey' size='large'
                 onClick={() => toggleLogin()}
               >
-                <Icon color='black' size='large' name={'user circle'} />
+                <Icon color='black' size='big' name={'user circle'} />
               </Button>
             }
             content={
