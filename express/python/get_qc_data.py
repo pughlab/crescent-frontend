@@ -4,8 +4,23 @@ import sys
 import os
 import json
 import csv
+from copy import deepcopy
 
 import helper
+
+DEFAULT_VIOLIN = {
+	"type": "violin",
+	"points": "jitter",
+	"jitter": 0.85,
+	"text": [],
+	"hoverinfo": "text+y",
+	"points": "all",
+	"meanline": {"visible": "true", "color":"black"},
+	"x": [],
+	"y": [],
+	"marker": {"opacity": 0.3},
+	"pointpos": 0
+}
 
 def intialize_traces(header):
 	""" given a list of the column headers, intialize the list of trace objects """
@@ -13,38 +28,22 @@ def intialize_traces(header):
 	count = 1
 	for col in header:
 		if col != 'Barcodes':
-			result.append({
+			before_trace = deepcopy(DEFAULT_VIOLIN)
+			before_trace.update({
 				"name": str(col)+"_Before",
-				"type": "violin",
-				"points": "jitter",
-				"jitter": 0.85,
-				"text": [],
-				"hoverinfo": "text+y",
-				"points": "all",
-				"x": [],
-				"y": [],
 				"xaxis": 'x'+str(count),
 				"yaxis": 'y'+str(count),
-				'pointpos': 0,
 				"line": {"color": helper.COLOURS[0]},
-				"marker": {"opacity": 0.5}
 			})
-			result.append({
+			result.append(before_trace)
+			after_trace = deepcopy(DEFAULT_VIOLIN)
+			after_trace.update({
 				"name": str(col)+"_After",
-				"type": "violin",
-				"points": "jitter",
-				"jitter": 0.85,
-				"text": [],
-				"hoverinfo": "text+y",
-				"points": "all",
-				"x": [],
-				"y": [],
 				"xaxis": 'x'+str(count),
 				"yaxis": 'y'+str(count),
-				'pointpos': 0,
 				"line": {"color": helper.COLOURS[1]},
-				"marker": {"opacity": 0.5}
 			})
+			result.append(after_trace)
 			count += 1
 
 	return result
