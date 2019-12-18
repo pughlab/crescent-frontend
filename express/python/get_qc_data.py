@@ -14,7 +14,7 @@ def intialize_traces(header):
 	for col in header:
 		if col != 'Barcodes':
 			result.append({
-				"name": str(col),
+				"name": str(col)+"_Before",
 				"type": "violin",
 				"points": "jitter",
 				"jitter": 0.85,
@@ -26,7 +26,24 @@ def intialize_traces(header):
 				"xaxis": 'x'+str(count),
 				"yaxis": 'y'+str(count),
 				'pointpos': 0,
-				"marker": {"opacity": 0.5},
+				"line": {"color": helper.COLOURS[0]},
+				"marker": {"opacity": 0.5}
+			})
+			result.append({
+				"name": str(col)+"_After",
+				"type": "violin",
+				"points": "jitter",
+				"jitter": 0.85,
+				"text": [],
+				"hoverinfo": "text+y",
+				"points": "all",
+				"x": [],
+				"y": [],
+				"xaxis": 'x'+str(count),
+				"yaxis": 'y'+str(count),
+				'pointpos': 0,
+				"line": {"color": helper.COLOURS[1]},
+				"marker": {"opacity": 0.5}
 			})
 			count += 1
 
@@ -55,10 +72,16 @@ def get_qc_data(runID):
 				traces = intialize_traces(header) if not traces else traces
 				for row in reader:
 					for trace in traces:
-						trace['text'].append(row[header.index('Barcodes')])
-						trace['x'].append("Before" if qc_file == 'BeforeFiltering.tsv' else "After")
-						trace['y'].append(row[header.index(trace['name'])])
-
+						# only append to 'before' trace if using 'before' file & vice versa
+						if trace['name'].split('_')[1] == 'Before' and qc_file == 'BeforeFiltering.tsv':
+							trace['text'].append(row[header.index('Barcodes')])
+							trace['x'].append("Before")
+							trace['y'].append(row[header.index(trace['name'].split("_")[0])])
+						elif trace['name'].split('_')[1] == 'After' and qc_file == 'AfterFiltering.tsv':
+							trace['text'].append(row[header.index('Barcodes')])
+							trace['x'].append("After")
+							trace['y'].append(row[header.index(trace['name'].split("_")[0])])
+					
 	return traces
 
 def main():
