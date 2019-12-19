@@ -11,12 +11,12 @@ def get_top_expressed(runID):
 	""" given a runID get the top 10 expressed genes + their avg log fold change and p-value """
 
 	# check file existence
-	file_path = "/usr/src/app/results/{runID}/SEURAT/markers/TopTenMarkers.tsv".format(runID=runID)
+	file_path = "/usr/src/app/results/{runID}/SEURAT/markers/TopTwoMarkersPerCluster.tsv".format(runID=runID)
 	if not os.path.isfile(file_path):
 		# try command-line path
-		file_path = "../../results/{runID}/SEURAT/markers/TopTenMarkers.tsv".format(runID=runID)
+		file_path = "../../results/{runID}/SEURAT/markers/TopTwoMarkersPerCluster.tsv".format(runID=runID)
 		if not os.path.isfile(file_path):
-			helper.return_error("top 10 expressed markers file not found")
+			helper.return_error("top expressed markers file not found")
 
 	result = []
 	# open and parse
