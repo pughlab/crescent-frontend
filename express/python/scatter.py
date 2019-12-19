@@ -37,6 +37,11 @@ def label_barcodes(barcode_coords, group, runID):
 	plotly_obj = []	
 	num_cells = helper.get_cellcount(runID)
 	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+	if not os.path.isfile(path):
+		# try command-line path
+		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		if not os.path.isfile(path):
+			helper.return_error("group label file not found ("+path+")")
 	
 	with open(path) as group_definitions:
 		reader = csv.reader(group_definitions, delimiter="\t")

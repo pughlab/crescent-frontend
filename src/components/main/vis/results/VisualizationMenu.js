@@ -92,7 +92,7 @@ const VisualizationMenu = withRedux(
           onChange={(event, {value}) => changeActiveGroup(value)}
         />
       </Form.Field>
-      <Divider horizontal content='Feature Selection' />
+      <Divider horizontal content='Differentially Expressed Genes' />
       <Form.Field>
         {/* Reset feature selection */}
         <Form.Button
@@ -114,6 +114,8 @@ const VisualizationMenu = withRedux(
           </Button.Content>
         </Form.Button>
       </Form.Field>
+
+
       {
       R.ifElse(
         R.isEmpty,
@@ -121,8 +123,9 @@ const VisualizationMenu = withRedux(
         R.always(<Segment basic textAlign={'center'}>{R.map(featureButton)(topExpressed)}</Segment>)
       )(topExpressed)
       }
+      <Divider horizontal content='Search Genes' />
       <Form.Dropdown
-        placeholder={'Search for Feature'}
+        placeholder={"Enter Gene Symbol"}
         fluid
         search
         searchQuery={currentSearch}

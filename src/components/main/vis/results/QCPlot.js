@@ -32,8 +32,6 @@ const QCPlot = withRedux(
       )(data)
       console.log(data)
     })
-    
-
     //TODO: return clear qc redux state change
   }, [])
 
@@ -57,9 +55,21 @@ const QCPlot = withRedux(
         layout={{
           autosize: true,
           grid: {rows: 1, columns: 4, pattern: 'independent'},
-          hovermode: 'compare',
           margin: {l:40, r:40, b:20, t:30},
           showlegend: false,
+          hovermode: 'closest',
+          yaxis: {
+            range: [0, Math.max(...R.map(parseInt, qcData[0]['y']))+1]
+          },
+          yaxis2: {
+            range: [0, Math.round(Math.max(...R.map(parseInt, qcData[2]['y'])))+1]
+          },
+          yaxis3: {
+            range: [0,1.1]
+          },
+          yaxis4: {
+            range: [0,1.1]
+          },
           annotations: [
             {
               "x": 0.11,
