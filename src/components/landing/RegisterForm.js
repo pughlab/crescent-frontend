@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Button, Form, Grid, Container, Image, Modal, Segment, Card } from 'semantic-ui-react'
+import { Button, Form, Grid, Container, Image, Modal, Segment, Card, Icon, Divider, Header } from 'semantic-ui-react'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
@@ -126,20 +126,34 @@ const RegisterForm = withRedux(
                   <Modal.Content>
                     <Card fluid>
                       <Card.Content>
-                        <Button fluid size='massive' animated='vertical'
-                          color='grey'
-                          onClick={() => {
-                            const {firstName, lastName, email, password} = values
-                            createUser({variables: {firstName, lastName, email, password}})
-                          }}
-                        >
-                          <Button.Content visible content={'You need to accept terms of usage'} />
-                          <Button.Content hidden content={'Accept Terms'} />
-                        </Button>
+                        <Header size='large' textAlign='center' content={'You need to accept terms of usage'}/>
                       </Card.Content>
                       <Card.Content textAlign='center'>
                         {/* Obviously put something more legal here */}
                         I will not upload personal health information to this portal.
+                      </Card.Content>
+                      <Card.Content>
+                        <Button.Group fluid widths={2} size='massive'>
+                          <Button animated='vertical'
+                            color='grey'
+                            onClick={() => {
+                              setShowTerms(false)
+                            }}
+                          >
+                            <Button.Content visible content={<Icon name='close' />} />
+                            <Button.Content hidden content={'No'} />
+                          </Button>
+                          <Button animated='vertical'
+                            color='grey'
+                            onClick={() => {
+                              const {firstName, lastName, email, password} = values
+                              createUser({variables: {firstName, lastName, email, password}})
+                            }}
+                          >
+                            <Button.Content visible content={<Icon name='check' />} />
+                            <Button.Content hidden content={'Yes'} />
+                          </Button>
+                        </Button.Group>
                       </Card.Content>
                     </Card>
                   </Modal.Content>
