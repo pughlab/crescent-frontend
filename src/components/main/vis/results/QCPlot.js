@@ -57,7 +57,7 @@ const QCPlot = withRedux(
         layout={{
           autosize: true,
           grid: {rows: 1, columns: 4, pattern: 'independent'},
-          hovermode: 'closest',
+          hovermode: 'compare',
           margin: {l:40, r:40, b:20, t:30},
           showlegend: false,
           annotations: [
