@@ -5,23 +5,30 @@ const checkResponse = (resp) => {
   return resp
 }
 
+// re-useable function for fetching and error-checking endpoints
+const fetchEndpoint = (endpoint) => {
+  return fetch(endpoint)
+  .then(checkResponse)
+  .then((resp) => resp.json())
+  .then((data) => {
+    if(R.has('error',data)){
+      // specific error from endpoint
+      console.log(data['error']);
+      return []
+    }
+    return data
+  })
+  .catch((error) => {
+      console.log(error, endpoint)
+      return []
+  });
+}
+
 const changeActiveGroup = newGroup => (dispatch, getState) => {
   return dispatch({
     type: 'CHANGE_ACTIVE_GROUP',
     payload: {"group": newGroup}
   });
-}
-
-// re-useable function for fetching and error-checking endpoints
-const fetchEndpoint = (endpoint) => {
-  return fetch(endpoint).then(checkResponse)
-  .then((resp) => resp.json())
-  .then((data) => {return data})
-  .catch(
-    error => {
-      console.log(error, endpoint)
-      return []
-  })
 }
 
 // uses parameters in the store to fetch opacity data
@@ -74,8 +81,6 @@ const fetchTopExpressed = runID => (dispatch, getState) => {
 }
 
 const fetchQC = runID => (dispatch, getState) => {
-  //TODO: toggle loading state
-  console.log(runID)
   return fetchEndpoint(`/qc-data/${runID}`)
 }
 
