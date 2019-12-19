@@ -58,9 +58,8 @@ const QCPlot = withRedux(
           autosize: true,
           grid: {rows: 1, columns: 4, pattern: 'independent'},
           hovermode: 'closest',
-          //margin: {l:50, r:50, b:20, t:20},
+          margin: {l:40, r:40, b:20, t:30},
           showlegend: false,
-          //colorway: ['red','blue'],
           annotations: [
             {
               "x": 0.11,
@@ -83,7 +82,7 @@ const QCPlot = withRedux(
               "showarrow": false
             },
             {
-              "x": 0.65,
+              "x": 0.63,
               "y": 1,
               "text": "Mitochondrial Genes Fraction",
               "xref": "paper",
