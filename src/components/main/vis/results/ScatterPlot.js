@@ -96,7 +96,7 @@ const ScatterPlot = withRedux(
         config={{showTips: false}}
         data={scatterData}
         useResizeHandler
-        style={{width: '100%', height:'90%'}}
+        style={{width: '100%', height:'100%'}}
         layout={{
           autosize: true,
           hovermode: 'closest',
