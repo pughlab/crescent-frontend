@@ -11,12 +11,12 @@ def get_top_expressed(runID):
 	""" given a runID get the top 10 expressed genes + their avg log fold change and p-value """
 
 	# check file existence
-	file_path = "/usr/src/app/results/{runID}/SEURAT/markers/TopTenMarkers.tsv".format(runID=runID)
+	file_path = "/usr/src/app/results/{runID}/SEURAT/markers/TopTwoMarkersPerCluster.tsv".format(runID=runID)
 	if not os.path.isfile(file_path):
 		# try command-line path
-		file_path = "../../results/{runID}/SEURAT/markers/TopTenMarkers.tsv".format(runID=runID)
+		file_path = "../../results/{runID}/SEURAT/markers/TopTwoMarkersPerCluster.tsv".format(runID=runID)
 		if not os.path.isfile(file_path):
-			helper.return_error("top 10 expressed markers file not found")
+			helper.return_error("top expressed markers file not found")
 
 	result = []
 	# open and parse
@@ -31,9 +31,13 @@ def get_top_expressed(runID):
 				if header[i] == 'avg_logFC':
 					value = round(float(value),3)
 				elif header[i] == 'p_val':
-					num, exp = value.split('e')
-					num = round(float(num),3)
-					value = str(num)+"e"+exp
+					if 'e' in value:
+						num, exp = value.split('e')
+						num = round(float(num),3)
+						value = str(num)+"e"+exp
+					else:
+						# if p-value not reported in sci. notation, format it to match
+						value = format(float(value), ".3e")
 				feature_result[header[i]] = str(value)
 			result.append(feature_result)
 

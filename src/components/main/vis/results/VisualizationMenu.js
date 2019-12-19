@@ -52,22 +52,26 @@ const VisualizationMenu = withRedux(
     changeSelectedFeature(null)
   }
 
-  const featureButton = ({gene, p_val, avg_logFC}) => {
+  const featureButton = ({gene, p_val, avg_logFC, cluster}) => {
     return (
       <Popup
         size={'tiny'}
-        trigger={<Button value={gene}
-        onClick={handleSelectFeature}
-        color='violet'
-        style={{margin: '0.25rem'}}
-        basic={R.not(R.equals(selectedFeature,gene))}
-      >
-        {gene}
-      </Button>}
+        inverted
+        trigger={
+          <Button value={gene}
+            onClick={handleSelectFeature}
+            color='violet'
+            style={{margin: '0.25rem'}}
+            basic={R.not(R.equals(selectedFeature,gene))}
+          >
+            {gene}
+          </Button>
+        }
       >
         <Popup.Content>
           {'p-value: '+p_val}<br></br>
-          {'avg. log fold change: '+avg_logFC}
+          {'avg. log fold change: '+avg_logFC}<br></br>
+          {'cluster: '+cluster}
         </Popup.Content>
       </Popup>
     )

@@ -51,7 +51,7 @@ const ViolinPlot = withRedux(
     :
     // Plot data
       <>
-      <Header textAlign='center' content='Violin' />
+      <Header textAlign='center' content='Gene Expression Violin' />
       <Plot
         config={{showTips: false}}
         data={violinData}
@@ -61,8 +61,8 @@ const ViolinPlot = withRedux(
           autosize: true,
           hovermode: 'closest',
           xaxis: {tickmode: 'linear'},
-          yaxis: {showgrid: false, ticks: '', showticklabels: false},
-          margin: {l:20, r:20, b:20, t:20},
+          yaxis: {showgrid: false, title: {text: 'Normalized Expression'}},
+          margin: {l:45, r:20, b:20, t:20},
         }}
       />
       </>

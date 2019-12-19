@@ -10,7 +10,7 @@ import helper
 DESC = {
 	'TSNE': {"label": 't-SNE', "result": 'tsne', "description": 't-Distributed Stochastic Neighbour Embedding'},
 	'UMAP': {"label": 'UMAP', "result": 'umap', "description": 'Uniform Manifold Approximation and Projection for Dimension Reduction'},
-	'VIOLIN': {"label": 'Violin', "result": 'violin', "description": 'Violin Plots'},
+	'VIOLIN': {"label": 'Gene Expression Violin', "result": 'violin', "description": 'Violin Plots'},
 	'QC': {"label": "QC", "result": 'qc', "description": 'Quality Control Plots'}
 }
 

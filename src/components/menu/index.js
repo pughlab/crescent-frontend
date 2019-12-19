@@ -36,7 +36,7 @@ const MenuComponent = withRedux(({
 }) => {
   const isMainView = R.equals(main)
   return (
-    <Segment attached='top' style={{height: '6rem'}} as={Grid}>
+    <Segment attached='top' style={{height: '5rem'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
       {
         <Button.Group fluid size='mini'>

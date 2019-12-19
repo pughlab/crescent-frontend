@@ -920,9 +920,9 @@ StartTimeFindAllMarkers<-Sys.time()
 seurat.object.markers <- FindAllMarkers(object = seurat.object.f, only.pos = T, min.pct = DefaultParameters$FindAllMarkers.MinPct, return.thresh = ThreshReturn, logfc.threshold = DefaultParameters$FindAllMarkers.ThreshUse, pseudocount.use = FindMarkers.Pseudocount)
 EndTimeFindAllMarkers<-Sys.time()
 
-markers_file <- (seurat.object.markers[(c("gene","avg_logFC","p_val"))])
-markers_file_top <- markers_file[order(-markers_file$avg_logFC),]
-write.table(data.frame(head(markers_file_top, 10)), paste(Tempdir,"/","markers/","TopTenMarkers.tsv",sep=""),row.names = F,sep="\t",quote = F)
+#markers_file <- (seurat.object.markers[(c("gene","avg_logFC","p_val"))])
+#markers_file_top <- markers_file[order(-markers_file$avg_logFC),]
+#write.table(data.frame(head(markers_file_top, 10)), paste(Tempdir,"/","markers/","TopTenMarkers.tsv",sep=""),row.names = F,sep="\t",quote = F)
 
 write.table(data.frame("GENE"=rownames(seurat.object.markers),seurat.object.markers),paste(Tempdir,"/","img/",PrefixOutfiles,".SEURAT_MarkersPerCluster.tsv",sep=""),row.names = F,sep="\t",quote = F)
 ### Get top-2 genes sorted by cluster, then by p-value
@@ -930,6 +930,9 @@ top_genes_by_cluster_for_tsne<-(seurat.object.markers %>% group_by(cluster) %>% 
 NumberOfClusters<-length(unique(seurat.object.markers[["cluster"]]))
 
 StopWatchEnd$FindDiffMarkers  <- Sys.time()
+
+markers_file <- top_genes_by_cluster_for_tsne[,c("gene","cluster","p_val","avg_logFC")]
+write.table(markers_file, paste(Tempdir,"/","markers/","TopTwoMarkersPerCluster.tsv",sep=""),row.names = F,sep="\t",quote = F)
 
 ####################################
 ### Saving the R object
@@ -1002,8 +1005,8 @@ dev.off()
 
 StopWatchEnd$CellClustersHeatmap  <- Sys.time()
 
-HeatMapTSV <- (seurat.object.f@assays[["RNA"]]@scale.data)[(top_genes_by_cluster_for_heatmap$gene),]
-write.table(HeatMapTSV, paste(Tempdir,"/","coordinates/","Heatmap.tsv",sep=""),row.names = T, col.names= T , sep="\t",quote = F)
+#HeatMapTSV <- (seurat.object.f@assays[["RNA"]]@scale.data)[(top_genes_by_cluster_for_heatmap$gene),]
+#write.table(HeatMapTSV, paste(Tempdir,"/","coordinates/","Heatmap.tsv",sep=""),row.names = T, col.names= T , sep="\t",quote = F)
 
 
 ####################################
