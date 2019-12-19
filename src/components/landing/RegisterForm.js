@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Button, Form, Grid, Container, Image, Modal, Segment, Card } from 'semantic-ui-react'
+import { Button, Form, Grid, Container, Image, Modal, Segment, Card, Icon, Divider, Header } from 'semantic-ui-react'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
@@ -37,6 +37,7 @@ const RegisterForm = withRedux(
     },
     setShowLogin
   }) => {
+    const [showTerms, setShowTerms] = useState(false)
     const [showErrorModal, setShowErrorModal] = useState(false)
     const [createUser, {loading, data, error}] = useMutation(gql`
       mutation CreateUser(
@@ -60,7 +61,6 @@ const RegisterForm = withRedux(
       onCompleted: ({createUser}) => {
         if (RA.isNotNil(createUser)) {
           setUser(createUser)
-          setShowLogin(true)
         } else {
           setShowErrorModal(true)
         }
@@ -78,16 +78,17 @@ const RegisterForm = withRedux(
               password: '', passwordConfirm: ''
             }}
             onSubmit={(values) => {
-              const {firstName, lastName, email, password} = values
-              console.log(values)
-              createUser({variables: {firstName, lastName, email, password}})
+              // Show terms of usage that user must accept before registering
+              setShowTerms(true)
             }}
             validationSchema={RegisterValidationSchema}
             render={({
+              values,
               touched,
               errors,
               handleSubmit, handleChange, handleBlur
             }) => {
+              // Should be moved into utils once we start using formik more (e.g. for pipelines)?
               const isError = valueName => R.and(
                 R.both(
                   R.has(valueName),
@@ -100,6 +101,7 @@ const RegisterForm = withRedux(
               )
               return (
                 <Container text>
+                {/* ERROR MODAL */}
                 <Modal open={showErrorModal} size='small' basic dimmer='inverted'>
                   <Modal.Content>
                     <Card fluid>
@@ -118,6 +120,46 @@ const RegisterForm = withRedux(
                     </Card>
                   </Modal.Content>
                 </Modal>
+                {/* CLICK THRU LICENSE */}
+                {/* REGISTER USER ONLY IF THEY ACCEPT TERMS */}
+                <Modal open={showTerms} size='small' basic dimmer='inverted'>
+                  <Modal.Content>
+                    <Card fluid>
+                      <Card.Content>
+                        <Header size='large' textAlign='center' content={'You need to accept terms of usage'}/>
+                      </Card.Content>
+                      <Card.Content textAlign='center'>
+                        {/* Obviously put something more legal here */}
+                        I will not upload personal health information to this portal.
+                      </Card.Content>
+                      <Card.Content>
+                        <Button.Group fluid widths={2} size='massive'>
+                          <Button animated='vertical'
+                            color='grey'
+                            onClick={() => {
+                              setShowTerms(false)
+                            }}
+                          >
+                            <Button.Content visible content={<Icon name='close' />} />
+                            <Button.Content hidden content={'No'} />
+                          </Button>
+                          <Button animated='vertical'
+                            color='grey'
+                            onClick={() => {
+                              const {firstName, lastName, email, password} = values
+                              createUser({variables: {firstName, lastName, email, password}})
+                            }}
+                          >
+                            <Button.Content visible content={<Icon name='check' />} />
+                            <Button.Content hidden content={'Yes'} />
+                          </Button>
+                        </Button.Group>
+                      </Card.Content>
+                    </Card>
+                  </Modal.Content>
+                </Modal>
+
+
                 <Segment.Group>
                   <Segment>
                     <Form size='large' onSubmit={handleSubmit}>
@@ -185,7 +227,6 @@ const RegisterForm = withRedux(
                         type='submit'
                         disabled={
                           R.any(RA.isTrue, [
-                            // true, // Remove when deployed, only one user for now
                             R.any(isError, [
                               'firstName',
                               'lastName',
