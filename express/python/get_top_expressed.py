@@ -31,9 +31,13 @@ def get_top_expressed(runID):
 				if header[i] == 'avg_logFC':
 					value = round(float(value),3)
 				elif header[i] == 'p_val':
-					num, exp = value.split('e')
-					num = round(float(num),3)
-					value = str(num)+"e"+exp
+					if 'e' in value:
+						num, exp = value.split('e')
+						num = round(float(num),3)
+						value = str(num)+"e"+exp
+					else:
+						# if p-value not reported in sci. notation, format it to match
+						value = format(float(value), ".3e")
 				feature_result[header[i]] = str(value)
 			result.append(feature_result)
 
