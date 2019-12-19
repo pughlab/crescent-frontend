@@ -74,11 +74,11 @@ def get_qc_data(runID):
 						# only append to 'before' trace if using 'before' file & vice versa
 						if trace['name'].split('_')[1] == 'Before' and qc_file == 'BeforeFiltering.tsv':
 							trace['text'].append(row[header.index('Barcodes')])
-							trace['x'].append("Before")
+							trace['x'].append("Before QC")
 							trace['y'].append(row[header.index(trace['name'].split("_")[0])])
 						elif trace['name'].split('_')[1] == 'After' and qc_file == 'AfterFiltering.tsv':
 							trace['text'].append(row[header.index('Barcodes')])
-							trace['x'].append("After")
+							trace['x'].append("After QC")
 							trace['y'].append(row[header.index(trace['name'].split("_")[0])])
 					
 	return traces
