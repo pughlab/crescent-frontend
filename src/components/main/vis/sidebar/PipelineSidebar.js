@@ -7,8 +7,7 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 
-
-import STEPS from '../parameters/STEPS'
+import TOOLS from '../parameters/TOOLS'
 
 const StepAccordion = withRedux(
   ({
@@ -61,12 +60,13 @@ const PipelineSidebar = withRedux(
     return (
       <Accordion styled>
       {
-        R.addIndex(R.map)(
-          ({step, label}, index) => (
-            <StepAccordion key={index} {...{step, label}} />
+        R.compose(
+          R.addIndex(R.map)(
+            ({step, label}, index) => (<StepAccordion key={index} {...{step, label}} />)
           ),
-          STEPS
-        )
+          R.map(R.pick(['step', 'label'])),
+          R.prop('SEURAT')
+        )(TOOLS)
       }
       </Accordion>
     )

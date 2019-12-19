@@ -1,7 +1,7 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Button, Form, Divider, Segment, List, Label, Icon, Header } from 'semantic-ui-react'
+import { Button, Form, Divider, Segment, Popup, Label, Icon, Header, Grid } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -11,7 +11,7 @@ const VisualizationMenu = withRedux(
   app: {
     run: { runID },
     toggle: {
-      vis: {results: {availableGroups, selectedFeature, selectedGroup}}
+      vis: {results: {availableGroups, selectedFeature, selectedGroup, topExpressed}}
     }
   },
   actions: {
@@ -52,6 +52,27 @@ const VisualizationMenu = withRedux(
     changeSelectedFeature(null)
   }
 
+  const featureButton = ({gene, p_val, avg_logFC}) => {
+    return (
+      <Popup
+        size={'tiny'}
+        trigger={<Button value={gene}
+        onClick={handleSelectFeature}
+        color='violet'
+        style={{margin: '0.25rem'}}
+        basic={R.not(R.equals(selectedFeature,gene))}
+      >
+        {gene}
+      </Button>}
+      >
+        <Popup.Content>
+          {'p-value: '+p_val}<br></br>
+          {'avg. log fold change: '+avg_logFC}
+        </Popup.Content>
+      </Popup>
+    )
+  }
+
   // format a list for a dropdown
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
   return (
@@ -79,22 +100,27 @@ const VisualizationMenu = withRedux(
         >
           <Button.Content visible>
           {
-            RA.isNotNil(selectedFeature) ? selectedFeature : 'Search below'
+            RA.isNotNil(selectedFeature) ? selectedFeature : 'Select or Search for a Feature'
           }
           </Button.Content>
           <Button.Content hidden>
           {
-            RA.isNotNil(selectedFeature) && 'Click to reset'
+            RA.isNotNil(selectedFeature) && 'Click to Reset'
           }
           </Button.Content>
         </Form.Button>
       </Form.Field>
-
+      {
+      R.ifElse(
+        R.isEmpty,
+        R.always(),
+        R.always(<Segment basic textAlign={'center'}>{R.map(featureButton)(topExpressed)}</Segment>)
+      )(topExpressed)
+      }
       <Form.Dropdown
-        placeholder='Features'
+        placeholder={'Search for Feature'}
         fluid
         search
-        renderLabel = {({text}) => (<Label color='violet' content={text}/>)}
         searchQuery={currentSearch}
         selection
         options={currentOptions}

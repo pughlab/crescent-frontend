@@ -12,19 +12,6 @@ import helper
 
 fileName = "normalized_counts.loom"
 
-colours = [
-  '#1f77b4',  # muted blue
-  '#ff7f0e',  # safety orange
-  '#2ca02c',  # cooked asparagus green
-  '#d62728',  # brick red
-  '#9467bd',  # muted purple
-  '#8c564b',  # chestnut brown
-  '#e377c2',  # raspberry yogurt pink
-  '#7f7f7f',  # middle gray
-  '#bcbd22',  # curry yellow-green
-  '#17becf'   # blue-teal
-]
-
 colour_counter = 0
 
 def add_barcode(plotly_obj, barcode, label, opacities):
@@ -122,7 +109,7 @@ def new_violin_group(label, y_coord):
 		"type": "violin",
 		"spanmode": "hard",
 		"fillcolor": "",
-		"line": {"color": colours[colour_counter%len(colours)] },
+		"line": {"color": helper.COLOURS[colour_counter%len(helper.COLOURS)] },
 		"points": "jitter",
 		"jitter": 0.85,
 		"width": 0.75,

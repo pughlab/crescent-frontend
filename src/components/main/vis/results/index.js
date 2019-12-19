@@ -8,6 +8,8 @@ import withRedux from '../../../../redux/hoc'
 
 import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
+import QCPlot from './QCPlot'
+
 
 import {ClimbingBoxLoader} from 'react-spinners'
 
@@ -26,11 +28,13 @@ const ResultsComponent = withRedux(
       toggle: {}
     }
   }) => {
-    const determinePlotType = R.ifElse(
-      R.equals('violin'),
-      R.always(<ViolinPlot/>),
-      R.always(<ScatterPlot/>)
-    )
+
+    const determinePlotType = R.cond([
+      [R.equals('violin'), R.always(<ViolinPlot/>)],
+      [R.equals('qc'), R.always(<QCPlot/>)],
+      [R.equals('tsne'), R.always(<ScatterPlot/>)],
+      [R.equals('umap'), R.always(<ScatterPlot/>)]
+    ])
 
     return (
       <>

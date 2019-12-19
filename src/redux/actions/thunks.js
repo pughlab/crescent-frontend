@@ -5,22 +5,30 @@ const checkResponse = (resp) => {
   return resp
 }
 
+// re-useable function for fetching and error-checking endpoints
+const fetchEndpoint = (endpoint) => {
+  return fetch(endpoint)
+  .then(checkResponse)
+  .then((resp) => resp.json())
+  .then((data) => {
+    if(R.has('error',data)){
+      // specific error from endpoint
+      console.log(data['error']);
+      return []
+    }
+    return data
+  })
+  .catch((error) => {
+      console.log(error, endpoint)
+      return []
+  });
+}
+
 const changeActiveGroup = newGroup => (dispatch, getState) => {
   return dispatch({
     type: 'CHANGE_ACTIVE_GROUP',
     payload: {"group": newGroup}
   });
-}
-
-const fetchEndpoint = (endpoint) => {
-  return fetch(endpoint).then(checkResponse)
-  .then((resp) => resp.json())
-  .then((data) => {return data})
-  .catch(
-    error => {
-      console.log(error, endpoint)
-      return []
-  })
 }
 
 // uses parameters in the store to fetch opacity data
@@ -61,6 +69,19 @@ const clearResults = () => (dispatch, getState) => {
     type: 'CLEAR_RESULTS',
     payload: {}
   });
+}
+
+const fetchTopExpressed = runID => (dispatch, getState) => {
+  fetchEndpoint(`/top-expressed/${runID}`).then((result) => {
+    dispatch({
+      type: 'SET_TOP_EXPRESSED',
+      payload: {"features": result}
+    });
+  });
+}
+
+const fetchQC = runID => (dispatch, getState) => {
+  return fetchEndpoint(`/qc-data/${runID}`)
 }
 
 const initializeResults = runID => (dispatch, getState) => {
@@ -119,7 +140,9 @@ export default {
   changeSelectedFeature,
   fetchScatter,
   fetchOpacity,
-  fetchViolin
+  fetchViolin,
+  fetchTopExpressed,
+  fetchQC
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING

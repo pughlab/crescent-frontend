@@ -23,12 +23,14 @@ const ResultsSidebar = withRedux(
       },
       thunks: {
         initializeResults,
+        fetchTopExpressed,
         clearResults
       }
     },
   }) => {
     useEffect(() => {
       initializeResults(runID)
+      fetchTopExpressed(runID)
       return clearResults()
     }, [])
 
@@ -90,7 +92,13 @@ const ResultsSidebar = withRedux(
                   </Button.Content>
                 </Button>
                 <Segment>
-                  <VisualizationMenu/>
+                  {
+                  R.ifElse(
+                    R.equals('qc'),
+                    R.always(<Segment content={'View QC results on left'} />),
+                    R.always(<VisualizationMenu/>)
+                  )(activeResult)
+                  }
                 </Segment>
               </Segment.Group>
             )

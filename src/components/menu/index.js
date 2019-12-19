@@ -24,7 +24,7 @@ const MenuComponent = withRedux(({
     user,
     project,
     run,
-    view: {main}
+    view: {main, isGuest}
   },
   actions: {
     // logout,
@@ -36,26 +36,29 @@ const MenuComponent = withRedux(({
 }) => {
   const isMainView = R.equals(main)
   return (
-    <Segment attached='top' style={{height: '5rem'}} as={Grid}>
+    <Segment attached='top' style={{height: '6rem'}} as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
       {
         <Button.Group fluid size='mini'>
           <Popup inverted size='large'
             trigger={
-              <Button icon basic inverted color='grey'
-                onClick={() => toggleProjects('published')}
+              <Button icon basic inverted color='grey' size='large'
+                onClick={() => toggleProjects(isGuest ? 'published' : 'uploaded')}
               >
-                <Icon color='black' name='home' size='large'/>
+                {/* <Icon color='black' name='home' size='large'/> */}
+                <Icon fluid size='huge'>
+                  <Image src={Logo} centered/>
+                </Icon>
               </Button>
             }
             content={
-              isMainView('projects') ? "You're already home..." : 'Go to projects'
+              isMainView('projects') ? 'Go to projects' : 'Go to projects'
             }
             position='bottom center'
           />
           <Popup inverted size='large'
             trigger={
-              <Button icon basic inverted color='grey'
+              <Button icon basic inverted color='grey' size='large'
                 onClick={() => {
                   if (isMainView('runs')) {
                     toggleProjects()
@@ -71,7 +74,7 @@ const MenuComponent = withRedux(({
                 }}
                 disabled={R.or(isMainView('projects'), R.isNil(project))}
               >
-                <Icon color='black' name='left arrow' size='large'/>
+                <Icon color='black' name='left arrow' size='big'/>
               </Button>
             }
             content={isMainView('runs') ? 'Go back to projects' : 'Go back to runs'}
@@ -83,15 +86,22 @@ const MenuComponent = withRedux(({
       <Grid.Column width={12} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
         {
           isMainView('projects')  ? 
-            <Image src={Logo} size='tiny' centered/>
+            <Header
+              textAlign='center'
+              // size='large'
+              content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
+            />
           : isMainView('runs')  ?
-            <Image src={Logo} size='tiny' centered/>
+            <Header textAlign='center'
+              // size='large'
+              content={R.prop('name', project)}
+            />
           : isMainView('login') ?
-            <Header textAlign='center'>
+            <Header textAlign='center'
+            >
               {
                 RA.isNotNil(user) ? 
                   <>
-                    <Icon name='user circle' />
                     User
                   </>
                 :
@@ -102,33 +112,34 @@ const MenuComponent = withRedux(({
               }
             </Header>
           : isMainView('vis') ?
-            <Header textAlign='center' size='small'
+            <Header textAlign='center'
+              // size='large'
               content={R.prop('name', project)}
               subheader={R.prop('name', run)}
             />
-          : <Image src={Logo} size='tiny' centered/>
+          : <Header textAlign='center' content={'Info'} /> 
         }
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
           <Popup inverted size='large'
             trigger={
-              <Button color='grey' inverted basic icon
+              <Button color='grey' inverted basic icon size='large'
                 onClick={() => toggleInfo()}
               >
-                <Icon color='black' size='large' name='info circle' />
+                <Icon color='black' size='big' name='info circle' />
               </Button>
             }
             content={
-              'Click For Info/Help'
+              'Info/Help'
             }
           />
           <Popup inverted size='large'
             trigger={
-              <Button basic inverted icon color='grey'
+              <Button basic inverted icon color='grey' size='large'
                 onClick={() => toggleLogin()}
               >
-                <Icon color='black' size='large' name={'user circle'} />
+                <Icon color='black' size='big' name={'user circle'} />
               </Button>
             }
             content={

@@ -10,26 +10,43 @@ import helper
 DESC = {
 	'TSNE': {"label": 't-SNE', "result": 'tsne', "description": 't-Distributed Stochastic Neighbour Embedding'},
 	'UMAP': {"label": 'UMAP', "result": 'umap', "description": 'Uniform Manifold Approximation and Projection for Dimension Reduction'},
-	'VIOLIN': {"label": 'Violin', "result": 'violin', "description": 'Violin Plots'}	
+	'VIOLIN': {"label": 'Violin', "result": 'violin', "description": 'Violin Plots'},
+	'QC': {"label": "QC", "result": 'qc', "description": 'Quality Control Plots'}
 }
+
+def has_qc(runID):
+	""" check for the existence of qc data """
+	folder_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
+	if not os.path.isdir(folder_path):
+		# try command-line path
+		folder_path = "../../results/{runID}/SEURAT/qc".format(runID=runID)
+		if not os.path.isdir(folder_path):
+			return False
+	return True
 
 def find_plot_files(runID):
 	""" given a runID get the available plots """
+	available_plots = {}
+
+	# add qc plots to list if available
+	if has_qc(runID):
+		available_plots['qc'] = DESC['QC']
 	
+	# check if the scatterplot coordinates are available
 	folder_path = "/usr/src/app/results/{runID}/SEURAT/coordinates".format(runID=runID)
 	if not os.path.isdir(folder_path):
 		# try command-line path
 		folder_path = "../../results/{runID}/SEURAT/coordinates".format(runID=runID)
 		if not os.path.isdir(folder_path):
 			helper.return_error("coordinates folder not found ("+folder_path+")")	
-	available_plots = {}
 	for filename in os.listdir(folder_path):
 		if filename.endswith("Coordinates.tsv"):
 			plot_name = filename.split("Coordinates")[0].upper()
 			if plot_name in DESC:
 				available_plots[plot_name.lower()] = DESC[plot_name]
 
-	available_plots['violin']	= DESC['VIOLIN'] # violin always available
+	# violin always available
+	available_plots['violin']	= DESC['VIOLIN']
 	
 	return available_plots
 

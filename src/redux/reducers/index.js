@@ -2,10 +2,6 @@ import { combineReducers } from 'redux'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-// CONSTANTS
-import PARAMETERS from '../../components/main/vis/parameters/PARAMETERS'
-import hardSet from 'redux-persist/es/stateReconciler/hardSet'
-
 // Reducer
 const initialState = {
   // Data from GQL
@@ -42,7 +38,8 @@ const initialState = {
         selectedFeature: null,
         availableGroups: [], // ways to label the data (i.e. PatientID)
         availablePlots: [], // will store objects for each of the available plots
-        isLoading: false
+        isLoading: false,
+        topExpressed: [] // will store the top X expressed genes for the run
       }
     }
   }
@@ -305,6 +302,27 @@ const VisualizationReducer = {
       data
     )(state)
   },
+  'CHANGE_ACTIVE_GROUP': (state, payload) => {
+    const {group} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','selectedGroup']),
+      group
+    )(state)
+  },
+  'CHANGE_SELECTED_FEATURE': (state, payload) => {
+    const {feature} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','selectedFeature']),
+      feature
+    )(state)
+  },
+  'SET_TOP_EXPRESSED': (state, payload) => {
+    const {features} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','topExpressed']),
+      features
+    )(state)
+  },
   'CLEAR_RESULTS': (state, payload) => {
     return R.compose(
       R.set(
@@ -326,24 +344,13 @@ const VisualizationReducer = {
       R.set(
         R.lensPath(['toggle','vis','results','selectedFeature']),
         null
+      ),
+      R.set(
+        R.lensPath(['toggle','vis','results','topExpressed']),
+        []
       )
     )(state)
-  },
-  'CHANGE_ACTIVE_GROUP': (state, payload) => {
-    const {group} = payload
-    return R.set(
-      R.lensPath(['toggle','vis','results','selectedGroup']),
-      group
-    )(state)
-  },
-  'CHANGE_SELECTED_FEATURE': (state, payload) => {
-    const {feature} = payload
-    return R.set(
-      R.lensPath(['toggle','vis','results','selectedFeature']),
-      feature
-    )(state)
   }
-
 }
 
 const app = createReducer(initialState, {
@@ -353,123 +360,6 @@ const app = createReducer(initialState, {
   ...CWLReducer,
   ...VisualizationReducer,
 })
-
-// const app = (state = initialState, action) => {
-//   const {type, payload} = action
-
-//   switch (type) {
-//     // case 'LOGOUT':
-//     //   return initialState
-
-//     // GraphQL entrypoints
-//     // Need to reset selected project and run if new user entrypoint
-//     // And same for setting new project 
-//     // case 'SET_USER':
-//     //   const {user} = payload
-//     //   return R.compose(
-//     //     R.set(
-//     //       R.lensPath(['toggle','projects','activeKind']),
-//     //       'uploaded',
-//     //     ),
-//     //     setMainView('projects'),
-//     //     setRunFromGQL(null),
-//     //     setProjectFromGQL(null),
-//     //     setUserFromGQL(user)
-//     //   )(state)
-//     // case 'SET_PROJECT':
-//     //   const {project} = payload
-//     //   return R.compose(
-//     //     setMainView('runs'),
-//     //     setRunFromGQL(null),
-//     //     setProjectFromGQL(project)
-//     //   )(state)
-//     // case 'SET_RUN':
-//     //   const {run} = payload
-//     //   return R.compose(
-//     //     setSidebarView('pipeline'),
-//     //     setMainView('vis'),
-//     //     setRunFromGQL(run), 
-//     //   )(state)
-
-//     // App can either be selecting projects and selecting/inspecting runs
-//     // Inspecting a run requires sidebar to be showing
-//     // case 'TOGGLE_LOGIN':
-//     //   return R.compose(
-//     //     setMainView('login')
-//     //   )(state)
-//     // case 'TOGGLE_PROJECTS':
-//     //   return R.compose(
-//     //     setMainView('projects')
-//     //   )(state)
-//     // case 'TOGGLE_RUNS':
-//     //   return R.compose(
-//     //     setMainView('runs')
-//     //   )(state)
-//     // case 'TOGGLE_SIDEBAR':
-//     //   const {sidebar} = payload
-//     //   return R.compose(
-//     //     setSidebarView(sidebar)
-//     //   )(state)
-
-//     // // Toggling different subviews
-//     // case 'TOGGLE_PROJECT_ACTIVE_KIND':
-//     //   const {projectKind} = payload
-//     //   const setActiveProjectKind = R.set(
-//     //     R.lensPath(['toggle','projects','activeKind']),
-//     //     projectKind
-//     //   )
-//     //   return setActiveProjectKind(state)
-//     // case 'TOGGLE_PIPELINE_ACTIVE_STEP':
-//     //   const {step} = payload 
-//     //   const setActivePipelineStep = R.set(
-//     //     R.lensPath(['toggle','vis','pipeline','activeStep']),
-//     //     step,
-//     //   )
-//     //   return R.compose(
-//     //     setActivePipelineStep
-//     //   )(state)
-//     // case 'TOGGLE_RESULT_ACTIVE_RESULT':
-//     //   const {result} = payload
-//     //   const setActiveResultToggle = R.set(
-//     //     R.lensPath(['toggle','vis','results','activeResult']),
-//     //     result
-//     //   )
-//     //   return setActiveResultToggle(state)
-
-//     // // Local data
-//     // case 'SET_PARAMETERS':
-//     //   const {parameters} = payload
-//     //   return R.compose(
-//     //     setParameters(parameters)
-//     //   )(state)
-    
-//     // // visualization stuff
-//     // case 'SET_AVAILABLE_RESULTS':
-//     //   const {plots} = payload
-//     //   const setAvailableResults = R.set(
-//     //     R.lensPath(['toggle','vis', 'results', 'availableResults']),
-//     //     plots
-//     //   )
-//     //   return setAvailableResults(state)
-//     // case 'SET_AVAILABLE_GROUPS':
-//     //   const {groups} = payload
-//     //   const setAvailableGroups = R.set(
-//     //     R.lensPath(['toggle','vis', 'results', 'availableGroups']),
-//     //     groups 
-//     //   )
-//     //   return setAvailableGroups(state)
-//     // case 'SET_ACTIVE_GROUP':
-//     //   const {group} = payload
-//     //   const setActiveGroup = R.set(
-//     //     R.lensPath(['toggle','vis', 'results', 'activeGroup']),
-//     //     group
-//     //   )
-//     //   return setActiveGroup(state)
-    
-//     default:
-//       return state
-//   }
-// }
 
 // Combine all reducers for application
 export default combineReducers({

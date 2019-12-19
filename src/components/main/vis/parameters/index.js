@@ -7,14 +7,8 @@ import {Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Ico
 
 import withRedux from '../../../../redux/hoc'
 
-import PARAMETERS from './PARAMETERS'
-import {
-  SingleCellInputType,
-  NumberGenes,
-  PercentMito,
-  Resolution,
-  PCADimensions,
-} from './Inputs'
+import TOOLS from './TOOLS'
+import {FloatParameterInput, IntegerParameterInput, RangeParameterInput, EnumParameterInput} from './ParameterInputs'
 
 const ParametersComponent = withRedux(
   ({
@@ -52,23 +46,24 @@ const ParametersComponent = withRedux(
     // Disable changing parameters if run is not pending
     // Also disable segment below
     const mergeAndSetParameters = R.compose(
-        setParameters,
-        R.equals('pending', runStatus) ? R.mergeRight(parameters) : R.mergeLeft(parameters)
-      )      
-
-    const setSingleCell = singleCell => mergeAndSetParameters({singleCell})
-    const setNumberGenes = numberGenes => mergeAndSetParameters({numberGenes})
-    const setPercentMito = percentMito => mergeAndSetParameters({percentMito})
-    const setResolution = resolution => mergeAndSetParameters({resolution})
-    const setPrincipalDimensions = principalDimensions => mergeAndSetParameters({principalDimensions})
-
-    const isActivePipelineStep = R.equals(activePipelineStep)
-       
-    const stepHasNoParameter = R.compose(
-      R.and(RA.isNotNil(activePipelineStep)),
-      R.isEmpty,
-      R.filter(R.propEq('step', activePipelineStep))
-    )(PARAMETERS)
+      setParameters,
+      R.equals('pending', runStatus) ? R.mergeRight(parameters) : R.mergeLeft(parameters)
+    )
+    // TODO: redux action to set parameter key
+    const valueSetters = {
+      'sc_input_type': singleCell => mergeAndSetParameters({singleCell}),
+      'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
+      'percent_mito': percentMito => mergeAndSetParameters({percentMito}),
+      'pca_dimensions': principalDimensions => mergeAndSetParameters({principalDimensions}),
+      'resolution': resolution => mergeAndSetParameters({resolution})
+    }
+    const values = {
+      'sc_input_type': singleCell,
+      'number_genes': numberGenes,
+      'percent_mito': percentMito,
+      'pca_dimensions': principalDimensions,
+      'resolution': resolution
+    }
 
     const currentUserNotCreator = R.not(R.equals(currentUserID, creatorUserID))
     const runNotPending = R.compose(R.not, R.equals('pending'))(runStatus)
@@ -88,37 +83,52 @@ const ParametersComponent = withRedux(
         </Segment>
       )
     }
-    if (stepHasNoParameter) {
-      return (
-        <Segment basic placeholder style={{height: '100%'}}>
-          <Header textAlign='center' icon>
-            <Icon name='dont' />
-            Step has no parameters
-          </Header>
-        </Segment>
-      )
-    }
+
     return (
       <Segment basic
-        disabled={R.any(RA.isTrue, [currentUserNotCreator, isSubmitted, runNotPending])}
+        disabled={R.any(RA.isTrue, [
+          currentUserNotCreator,
+          isSubmitted,
+          runNotPending
+        ])}
       >
-      {
-        isActivePipelineStep('quality') ?
-          <>
-            {/*
-            <SingleCellInputType {...{singleCell, setSingleCell}} />
-            <Divider />
-            */}
-            <NumberGenes {...{numberGenes, setNumberGenes}} />
-            <Divider />
-            <PercentMito {...{percentMito, setPercentMito}} />
-          </>
-        : isActivePipelineStep('reduction') ?
-          <PCADimensions {...{principalDimensions, setPrincipalDimensions}} />
-        : isActivePipelineStep('clustering') ?
-          <Resolution {...{resolution, setResolution}} />
-        : null
-      }
+        {
+          R.compose(
+            R.addIndex(R.map)(
+              (parameter, index) => {
+                const {parameter: parameterName, input: {type}, disabled} = parameter
+                const setValue = R.prop(parameterName, valueSetters)
+                const value = R.prop(parameterName, values)
+                return R.cond([
+                  [R.equals('range'), R.always(
+                    <RangeParameterInput
+                      {...{parameter, value, setValue}}
+                    />
+                  )],
+                  [R.equals('float'), R.always(
+                    <FloatParameterInput
+                      {...{parameter, value, setValue}}
+                    />
+                  )],
+                  [R.equals('integer'), R.always(
+                    <IntegerParameterInput
+                      {...{parameter, value, setValue
+                      }}
+                    />
+                  )],
+                  [R.equals('enum'), R.always(
+                    <EnumParameterInput
+                      {...{parameter, value, setValue}}
+                    />
+                  )],
+                ])(type)
+              },
+            ),
+            R.prop('parameters'),
+            R.find(R.propEq('step', activePipelineStep)),
+            R.prop('SEURAT')
+          )(TOOLS)
+        }
       </Segment>
     )
   }
