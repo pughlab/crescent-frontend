@@ -38,7 +38,19 @@ def return_error(msg):
 	sys.stdout.flush()
 	sys.exit()
 
+def is_int(cluster_name):
+	try:
+		test = int(cluster_name)
+	except ValueError as e:
+		return False
+	return True
+
 def sort_traces(trace_objects):
 	""" sort the lists of violin, opacity, or scatter objects by cluster name """
-	trace_objects.sort(key=itemgetter('name'))
+	# if all cluster names can be cast to int, sort by their integer value
+	if all(is_int(x['name']) for x in trace_objects):
+		trace_objects.sort(key=lambda i: int(i['name']))
+	# otherwise, sort alphabetically
+	else:
+		trace_objects.sort(key=lambda i: i['name'])
 	return 
