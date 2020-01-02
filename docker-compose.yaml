@@ -5,7 +5,7 @@ services:
     image: mongo:latest
     container_name: mongo
     ports:
-      - "27017:27017"
+      - "${MONGO_HOST_PORT}:27017"
     volumes:
       - ./mongodb:/data/db
 
@@ -13,7 +13,7 @@ services:
     image: minio/minio:latest
     container_name: minio
     ports:
-      - "9000:9000"
+      - "${MINIO_HOST_PORT}:9000"
     environment:
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
@@ -25,9 +25,12 @@ services:
     image: crescent-conglomerate
     build: express
     container_name: server
+    expose:
+      - ${EXPRESS_PORT}
+      - ${GRAPHQL_PORT}
     ports:
-      - "4001:4001"
-      - "5000:5000"
+      - "${EXPRESS_PORT}:${EXPRESS_PORT}"
+      - "${GRAPHQL_PORT}:${GRAPHQL_PORT}"
     volumes:
       - .:/usr/src/app
     depends_on:

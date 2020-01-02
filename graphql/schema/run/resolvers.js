@@ -1,7 +1,7 @@
 const R = require('ramda')
 const A = require('axios')
 const axios = A.create({
-  baseURL: 'http://server:4001',
+  baseURL: `http://localhost:${process.env.EXPRESS_PORT}`,
   timeout: 10000,
 });
 

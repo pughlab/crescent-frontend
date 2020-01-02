@@ -1,3 +1,4 @@
+require('dotenv').config();
 const submitCWL = require('./submit')
 
 const fs = require('fs')
@@ -66,7 +67,6 @@ const colours = [
 
 // Start node server for HTTP stuff
 const app = express()
-const port = 4001
 
 // API endpoint called by GQL to submit a job
 app.post(
@@ -323,7 +323,7 @@ app.get('/size/:runID', async (req, res) => {
 
 db.once('open', () => {
   console.log('Database connection open')
-  app.listen(port, () => console.log(`Express server listening on port ${port}!`));
+  app.listen(process.env.EXPRESS_PORT, () => console.log(`Express server listening on port ${process.env.EXPRESS_PORT}!`));
 })
 
 mongooseConnection.connect('mongodb://mongo/crescent', {useNewUrlParser: true})
