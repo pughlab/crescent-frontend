@@ -15,9 +15,6 @@ const AdmZip = require('adm-zip')
 const recursiveReadDir = require('recursive-readdir');
 const jsonQuery = require('json-query')
 
-const zlib = require('zlib');
-// Fuzzy Search
-const fuzz = require('fuzzball');
 // Mongo connection
 const mongooseConnection = require('../database/mongo')
 const db = mongooseConnection.connection
