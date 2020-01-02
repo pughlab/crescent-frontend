@@ -32,10 +32,8 @@ const store = createStore(
 )
 const persistor = persistStore(store)
 
-const portal_ip = process.env.REACT_APP_PORTAL_IP
-
 const client = new ApolloClient({
-  uri: `http://${portal_ip}:5000`,
+  uri: process.env.REACT_APP_GRAPHQL_URL,
 })
 
 
