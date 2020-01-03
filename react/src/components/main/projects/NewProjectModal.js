@@ -49,7 +49,7 @@ const UploadButton = ({
           xhr.send(formData)
           // xhr.onprogress = () => {}
           xhr.onload = () => {
-            if (xhr.status == 200) {
+            if (xhr.status === 200) {
               const uploadID = JSON.parse(xhr.response)
               setUploadedFile(uploadID)
               setLocalUploadedFile(file)
