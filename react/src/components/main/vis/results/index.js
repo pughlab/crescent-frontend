@@ -23,9 +23,6 @@ const ResultsComponent = withRedux(
       toggle: {
         vis: {results: {activeResult, availablePlots}}
       }
-    },
-    actions: {
-      toggle: {}
     }
   }) => {
 

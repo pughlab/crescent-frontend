@@ -14,9 +14,7 @@ import Logo from './components/landing/logo.jpg'
 import withRedux from './redux/hoc'
 
 const App = withRedux(
-  ({
-    
-  }) => {
+  () => {
     return (
       <Segment style={{padding: 0}}>
         <MenuComponent />

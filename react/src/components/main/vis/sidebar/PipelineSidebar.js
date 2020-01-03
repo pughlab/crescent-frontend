@@ -54,9 +54,7 @@ const StepAccordion = withRedux(
 )
 
 const PipelineSidebar = withRedux(
-  ({
-
-  }) => {
+  () => {
     return (
       <Accordion styled>
       {

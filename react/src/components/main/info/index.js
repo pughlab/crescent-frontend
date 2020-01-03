@@ -11,8 +11,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 
-const PortalInfo = ({
-}) => (
+const PortalInfo = () => (
   <Container>
     {/* <Divider horizontal content='Need Help?' /> */}
   <Segment.Group>

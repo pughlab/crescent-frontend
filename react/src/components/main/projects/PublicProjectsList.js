@@ -19,8 +19,7 @@ import withRedux from '../../../redux/hoc'
 import ProjectCard from './ProjectCard'
 
 
-const PublicProjectsList = withRedux(({
-}) => {
+const PublicProjectsList = withRedux(() => {
   // GQL query to find all public projects
   const {loading, data, error} = useQuery(gql`
     query {
