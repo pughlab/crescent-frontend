@@ -3,16 +3,10 @@
 
 const fs = require('fs')
 const fsp = fs.promises
-// Mongo connection
-const mongooseConnection = require('../database/mongo')
 const R = require('ramda')
 const { spawn } = require( 'child_process' )
 
-const db = mongooseConnection.connection
-// Mongo collections
-const Run = db.model('run')
-const Project = db.model('project')
-const Dataset = db.model('dataset')
+const { Run, Project, Dataset } = require('../database/mongo');
 
 const minioClient = require('../database/minio-client');
 

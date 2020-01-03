@@ -6,6 +6,7 @@ const R = require('ramda')
 const { spawn } = require("child_process");
 
 // Servers
+const mongooseConnection = require('mongoose').connection;
 const express = require('express')
 // Multer to handle multi form data
 const multer = require('multer')
@@ -15,13 +16,7 @@ const AdmZip = require('adm-zip')
 const recursiveReadDir = require('recursive-readdir');
 const jsonQuery = require('json-query')
 
-// Mongo connection
-const mongooseConnection = require('../database/mongo')
-const db = mongooseConnection.connection
-// Mongo collections
-const Run = db.model('run')
-const Project = db.model('project')
-const Upload = db.model('upload')
+const { Run, Project, Upload } = require('../database/mongo');
 
 const minioClient = require('../database/minio-client');
 // Make a bucket called crescent.
@@ -306,10 +301,6 @@ app.get('/size/:runID', async (req, res) => {
   }
 });
 
-db.once('open', () => {
-  console.log('Database connection open')
+mongooseConnection.once('open', () => {
   app.listen(process.env.EXPRESS_PORT, () => console.log(`Express server listening on port ${process.env.EXPRESS_PORT}!`));
-})
-
-mongooseConnection.connect('mongodb://mongo/crescent', {useNewUrlParser: true})
-
+});

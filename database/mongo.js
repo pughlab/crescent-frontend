@@ -1,24 +1,18 @@
-const mongoose = require('mongoose')
-const Promise = require('bluebird')
-mongoose.Promise = Promise
+const mongoose = require('mongoose');
+const Schemas = require('./schema');
 
-const Schemas = require('./schema')
+mongoose.connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+}).then(() => console.log("Connected to MongoDB at", process.env.MONGO_URL)).catch(console.log);
 
-mongoose.connection.on('error', console.error.bind(console, 'Connection error, unable to connect to MongoDB'))
-mongoose.connection.once('open', () => console.log('MongoDB connected'))
-// Schema for 'user' model
-const {
-  UserSchema,
-  RunSchema,
-  ProjectSchema,
-  DatasetSchema,
-  UploadSchema
-} = Schemas
-mongoose.connection.model('user', UserSchema)
-mongoose.connection.model('run', RunSchema)
-mongoose.connection.model('project', ProjectSchema)
-mongoose.connection.model('dataset', DatasetSchema)
-mongoose.connection.model('upload', UploadSchema)
+const Models = {};
+for (let schema in Schemas) {
+    const model = schema.slice(0, -"Schema".length);
+    Models[model] = mongoose.model(model.toLowerCase(), Schemas[schema]);
+    console.log("Created MongoDB model", model);
+}
 
-
-module.exports = mongoose
+module.exports = Models;

@@ -1,9 +1,10 @@
-const mongooseConnection = require('../database/mongo')
 const { ApolloServer } = require('apollo-server')
 
 const { mergeTypes, mergeResolvers } = require('merge-graphql-schemas')
 
 const R = require('ramda')
+
+const Models = require('../database/mongo');
 
 // GRAPHQL SCHEMAS
 const UserSchema = require('./schema/user')
@@ -24,14 +25,14 @@ const server = new ApolloServer({
     mergeResolvers,
     R.map(R.prop('resolvers'))
   )(schemas),
-  context: async ({req}) => {
+  context: () => {
     return {
       // TODO: use DataSource rather than putting connection into context
       // Data models can be provided in context...
-      Users: mongooseConnection.model('user'),
-      Projects: mongooseConnection.model('project'),
-      Runs: mongooseConnection.model('run'),
-      Datasets: mongooseConnection.model('dataset'),
+      Users: Models.User,
+      Projects: Models.Project,
+      Runs: Models.Run,
+      Datasets: Models.Dataset,
 
       // MINIO
       minioClient
