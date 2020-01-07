@@ -20,7 +20,7 @@ In the `react` folder, `npm install` for frontend dependencies and then `npm sta
 git clone https://github.com/suluxan/crescent-frontend.git
 cd crescent-frontend
 cp sample.env .env
-cp react/sample.env .env
+cp react/sample.env react/.env
 npm i
 docker-compose up -d
 cd react
@@ -32,9 +32,7 @@ npm start
 Clone this repo and create folders `minio/download` and `minio/upload` (BUG TO FIX).
 
 Copy the SSL certificate files specified in `nginx/conf/default.conf` to `nginx/certs/`.
-Copy `sample.env` to `.env` and customize as needed.
-
-In `react/.env`, set `REACT_APP_GRAPHQL_URL=/graphql`.
+Copy `sample.env` to `.env` and `react/sample.env` to `react/.env` and customize as needed.
 
 `npm install` to install server dependencies.
 In the `react` folder, `npm install` for frontend dependencies and then `npm build` to compile a release version of the frontend in `build`.
@@ -47,12 +45,11 @@ cd crescent-frontend
 mkdir nginx/certs
 cp YOUR_CERTIFICATES_HERE nginx/certs
 cp sample.env .env
-echo "REACT_APP_GRAPHQL_URL=/graphql" > react/.env
-npm i
+cp react/sample.env react/.env
+npm ci
 cd react
-npm i
+npm ci
 npm build
 cd ..
-npm i
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
 ```

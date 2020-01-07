@@ -33,7 +33,9 @@ const store = createStore(
 const persistor = persistStore(store)
 
 const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPHQL_URL,
+  uri: process.env.NODE_ENV === 'development'
+    ? process.env.REACT_APP_GRAPHQL_URL_DEV
+    : process.env.REACT_APP_GRAPHQL_URL_PROD
 })
 
 
