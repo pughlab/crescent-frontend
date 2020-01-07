@@ -173,19 +173,19 @@ const NewProjectModal = withRedux(({
               <Form.Group widths={3}>
                 <Form.Field>
                   <UploadButton label='Barcodes'
-                    url='/upload/barcodes'
+                    url='/express/upload/barcodes'
                     setUploadedFile={setUploadedBarcodesFile}
                   />
                 </Form.Field>
                 <Form.Field>
                   <UploadButton label='Genes/Features'
-                    url='/upload/genes' 
+                    url='/express/upload/genes' 
                     setUploadedFile={setUploadedGenesFile}
                   />
                 </Form.Field>
                 <Form.Field>
                   <UploadButton label='Matrix'
-                    url='/upload/matrix' 
+                    url='/express/upload/matrix' 
                     setUploadedFile={setUploadedMatrixFile}
                   />
                 </Form.Field>

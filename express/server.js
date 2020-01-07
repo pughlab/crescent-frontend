@@ -47,9 +47,9 @@ const colours = [
 
 // Start node server for HTTP stuff
 const app = express()
-
+const router = express.Router();
 // API endpoint called by GQL to submit a job
-app.post(
+router.post(
   // '/runs/submit/:runID',
   '/runs/submit',
   async (req, res) => {
@@ -65,7 +65,7 @@ app.post(
 );
 
 // API endpoint for temporary uploading files
-app.put(
+router.put(
   '/upload/:kind',
   upload.single('uploadedFile'),
   async (req, res, next) => {
@@ -93,7 +93,7 @@ app.put(
 );
 
 
-app.get(
+router.get(
   '/result',
   (req, res) => {
     const { runID, visType } = req.query
@@ -111,7 +111,7 @@ app.get(
   }
 );
 
-app.get(
+router.get(
   '/download/:runID',
   async (req, res) => {
     const runID = req.params.runID
@@ -141,7 +141,7 @@ put any endpoints for fetching metadata here:
 'groups' - available groups to categorize barcodes
 'cellcount' - number of (unfiltered) cells for the dataset
 */
-app.get(
+router.get(
   '/metadata/:type/:runID',
   (req, res) => {
     const {
@@ -170,7 +170,7 @@ app.get(
   }
 );
 
-app.get(
+router.get(
   '/scatter/:vis/:group/:runID',
   (req, res) => {
     const {
@@ -186,7 +186,7 @@ app.get(
   }
 );
 
-app.get(
+router.get(
   '/opacity/:group/:feature/:runID',
   (req, res) => {
     const {
@@ -197,7 +197,7 @@ app.get(
   }
 );
 
-app.get(
+router.get(
   '/violin/:group/:feature/:runID',
   (req, res) => {
     const {
@@ -208,7 +208,7 @@ app.get(
   }
 );
 
-app.get(
+router.get(
   `/top-expressed/:runID`,
   (req, res) => {
     const {
@@ -219,7 +219,7 @@ app.get(
   }
 );
 
-app.get(
+router.get(
   `/qc-data/:runID`,
   (req, res) => {
     const {
@@ -230,7 +230,7 @@ app.get(
   }
 );
 
-app.get('/search/:query/:runID',
+router.get('/search/:query/:runID',
   async (req, res) => {
     const {
       params: {runID, query}
@@ -278,7 +278,7 @@ app.get('/search/:query/:runID',
 );
 
 
-app.get('/size/:runID', async (req, res) => {
+router.get('/size/:runID', async (req, res) => {
   try {
     // Needs to check 
     const files = await recursiveReadDir(`/usr/src/app/results/${req.params.runID}`);
@@ -300,6 +300,8 @@ app.get('/size/:runID', async (req, res) => {
     }
   }
 });
+
+app.use("/express", router);
 
 mongooseConnection.once('open', () => {
   app.listen(process.env.EXPRESS_PORT, () => console.log(`Express server listening on port ${process.env.EXPRESS_PORT}!`));

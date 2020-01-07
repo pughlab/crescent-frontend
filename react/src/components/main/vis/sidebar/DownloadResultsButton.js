@@ -29,7 +29,7 @@ const DownloadResultsButton = withRedux(
         target='_blank'
         // Should only work with nginx reverse proxy
         // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
-        href={`/download/${runID}`}
+        href={`/express/download/${runID}`}
       />
     )
   }

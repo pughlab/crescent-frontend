@@ -31,7 +31,7 @@ const resolvers = {
       const {name} = run
       console.log('Submitting run', runID, params)
       const submit = await axios.post(
-        `/runs/submit`,
+        `/express/runs/submit`,
         {},
         {params: {name, params, runID}}
       )

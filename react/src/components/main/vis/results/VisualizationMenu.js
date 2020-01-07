@@ -33,7 +33,7 @@ const VisualizationMenu = withRedux(
   const handleSearchChange = (event, {searchQuery}) => {
     changeSearch(searchQuery)
     if (RA.isNotEmpty(searchQuery)) {
-      fetch(`/search/${searchQuery}/${runID}`)
+      fetch(`/express/search/${searchQuery}/${runID}`)
         .then(checkResponse)
         .then(resp => resp.json())
         .then(changeCurrentOptions)

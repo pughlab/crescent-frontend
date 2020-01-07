@@ -39,7 +39,7 @@ const fetchOpacity = () => (dispatch, getState) => {
       toggle: {vis: {results: {selectedGroup, selectedFeature}}}
     }
   } = getState()
-  return fetchEndpoint(`/opacity/${selectedGroup}/${selectedFeature}/${runID}`)
+  return fetchEndpoint(`/express/opacity/${selectedGroup}/${selectedFeature}/${runID}`)
 }
 
 // uses the parameters in the store to fetch the scatter data
@@ -50,7 +50,7 @@ const fetchScatter = () => (dispatch, getState) => {
       toggle: {vis: {results: {activeResult, selectedGroup, selectedFeature}}}
     }
   } = getState()
-  return fetchEndpoint(`/scatter/${activeResult}/${selectedGroup}/${runID}`)
+  return fetchEndpoint(`/express/scatter/${activeResult}/${selectedGroup}/${runID}`)
 }
 
 // uses paramters in store to fetch violin plot data
@@ -61,7 +61,7 @@ const fetchViolin = () => (dispatch, getState) => {
       toggle: {vis: {results: {selectedGroup, selectedFeature}}}
     }
   } = getState()
-  return fetchEndpoint(`/violin/${selectedGroup}/${selectedFeature}/${runID}`)
+  return fetchEndpoint(`/express/violin/${selectedGroup}/${selectedFeature}/${runID}`)
 }
 
 const clearResults = () => (dispatch, getState) => {
@@ -72,7 +72,7 @@ const clearResults = () => (dispatch, getState) => {
 }
 
 const fetchTopExpressed = runID => (dispatch, getState) => {
-  fetchEndpoint(`/top-expressed/${runID}`).then((result) => {
+  fetchEndpoint(`/express/top-expressed/${runID}`).then((result) => {
     dispatch({
       type: 'SET_TOP_EXPRESSED',
       payload: {"features": result}
@@ -81,7 +81,7 @@ const fetchTopExpressed = runID => (dispatch, getState) => {
 }
 
 const fetchQC = runID => (dispatch, getState) => {
-  return fetchEndpoint(`/qc-data/${runID}`)
+  return fetchEndpoint(`/express/qc-data/${runID}`)
 }
 
 const initializeResults = runID => (dispatch, getState) => {
@@ -90,8 +90,8 @@ const initializeResults = runID => (dispatch, getState) => {
     payload: {"loading": true}
   });
   return Promise.all([
-    fetch(`/metadata/plots/${runID}`),
-    fetch(`/metadata/groups/${runID}`) 
+    fetch(`/express/metadata/plots/${runID}`),
+    fetch(`/express/metadata/groups/${runID}`) 
   ]).then(
     R.map(checkResponse)
    ).then(
