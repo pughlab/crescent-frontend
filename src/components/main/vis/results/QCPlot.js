@@ -46,7 +46,7 @@ const QCPlot = withRedux(
     :
     // Plot data
       <>
-      <Header textAlign='center' content='QC' />
+      <Header textAlign='center' content='Quality Control' />
       <Plot
         config={{showTips: false}}
         data={qcData}
