@@ -1,5 +1,5 @@
 import React, {useState} from 'react'
-import { Button, Form, Grid, Container, Image, Modal, Segment, Card, Icon, Divider, Header } from 'semantic-ui-react'
+import { Button, Form, Grid, Container, Image, Modal, Segment, Card, Icon, Divider, Header, Message } from 'semantic-ui-react'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
@@ -163,6 +163,12 @@ const RegisterForm = withRedux(
                 <Segment.Group>
                   <Segment>
                     <Form size='large' onSubmit={handleSubmit}>
+                      <Message 
+                        size='huge'
+                        header={'Registering is totally voluntary.'}
+                        content={'Registered users may upload their own data for analysis. Public users can still submit runs on existing public projects.'}
+                      />
+
                       <Form.Group widths={2}>
                         <Form.Input
                           fluid iconPosition='left' icon='user'
@@ -240,6 +246,7 @@ const RegisterForm = withRedux(
                         }
                         content='Register'
                       />
+
                     </Form>
                   </Segment>
                   <Segment>
