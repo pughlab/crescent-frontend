@@ -744,7 +744,7 @@ StopWatchStart$CellClusterTables  <- Sys.time()
 
 CellNames<-rownames(seurat.object.f@meta.data)
 ClusterIdent<-seurat.object.f@meta.data$seurat_clusters
-Headers<-paste("Cell_barcode", paste("seurat_cluster_r", Resolution, sep = "", collapse = "") ,sep="\t")
+Headers<-paste("Cell_barcode", paste("seurat_cluster_resolution", Resolution, sep = "", collapse = "") ,sep="\t")
 clusters_data<-paste(CellNames, ClusterIdent, sep="\t")
 #
 
