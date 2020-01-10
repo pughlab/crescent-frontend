@@ -35,7 +35,7 @@ const TOOLS = {
           prompt: 'Select data type of single cell input',
           description: 'Input can be either MTX: barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz files or DGE: tab delimited digital gene expression (DGE) file with genes in rows vs. barcodes in columns. Default is MTX.',
           input: {
-            type: 'enum',
+            type: 'select',
             defaultValue: 'MTX',
             options: ['MTX', 'DGE']
           },
@@ -121,7 +121,7 @@ const TOOLS = {
       ]
     },
     {
-      label: 'Differential Expression',
+      label: 'Differential Gene Expression',
       step: 'expression',
       parameters: []
     },
