@@ -104,7 +104,7 @@ const VisualizationMenu = withRedux(
         >
           <Button.Content visible>
           {
-            RA.isNotNil(selectedFeature) ? selectedFeature : 'Select or Search for a Feature'
+            RA.isNotNil(selectedFeature) ? selectedFeature : 'Select or Search for a Gene'
           }
           </Button.Content>
           <Button.Content hidden>
