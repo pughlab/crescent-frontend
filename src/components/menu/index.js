@@ -64,20 +64,26 @@ const MenuComponent = withRedux(({
                     toggleProjects()
                   } else if (isMainView('vis')) {
                     toggleRuns()
-                  } else if (isMainView('login')) {
+                  } else if (
+                    R.any(isMainView, ['login', 'info'])
+                  ) {
                     // Go back to projects for now
-                    toggleProjects()
-                  } else if (isMainView('info')) {
-                    // Go back to projects for now
-                    toggleProjects()
+                    R.isNil(project) ? toggleProjects() : toggleRuns()
                   }
                 }}
-                disabled={R.or(isMainView('projects'), R.isNil(project))}
+                // disabled={R.or(isMainView('projects'), R.isNil(project))}
+                disabled={isMainView('projects')}
               >
                 <Icon color='black' name='left arrow' size='big'/>
               </Button>
             }
-            content={isMainView('runs') ? 'Go back to projects' : 'Go back to runs'}
+            content={
+              isMainView('runs') ?
+                'Go back to projects'
+              : isMainView('vis') ?
+                'Go back to runs'
+              : R.isNil(project) ? 'Go back to projects' : 'Go back to runs'
+            }
             position='bottom center'
           />
         </Button.Group>

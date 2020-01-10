@@ -178,6 +178,8 @@ const MainViewReducer = {
     (state, payload) => {
       const {kind} = payload
       return R.compose(
+        setRunFromGQL(null),
+        setProjectFromGQL(null),
         R.isNil(kind) ? R.identity :
           R.set(
             R.lensPath(['toggle','projects','activeKind']),
