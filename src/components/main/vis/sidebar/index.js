@@ -66,7 +66,7 @@ const PiplinePublicRunMessage = () => {
     <Message
       color='grey'
     >
-      <Message.Header as={Header} textAlign='center' content='This is a public run' />
+      <Message.Header as={Header} textAlign='center' content='Public Run' />
     </Message>
   )
 }

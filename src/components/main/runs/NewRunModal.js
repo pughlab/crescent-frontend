@@ -54,7 +54,7 @@ const NewRunModal = withRedux(({
           animated='vertical'
         >
           <Button.Content visible><Icon size='large' name='add'/></Button.Content>
-          <Button.Content hidden content="Configure a pipeline and submit a run to the cloud using this project's uploaded data"/>
+          <Button.Content hidden content="Configure a pipeline and submit a run using this project's uploaded data"/>
         </Button>
       }
     >
