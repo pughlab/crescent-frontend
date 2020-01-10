@@ -86,11 +86,11 @@ const FloatParameterInput = ({
     <ParameterInputMessage {...{parameter}}>
       <Form>
         <Form.Input
-          label={label} value={value} disabled={disabled}
+          label={label} value={parseFloat(value)} disabled={disabled}
           error={warning}
           type='number'
-          placeholder={defaultValue}
-          onChange={(e, {value}) => setValue(value)}
+          placeholder={parseFloat(defaultValue)}
+          onChange={(e, {value}) => setValue(parseFloat(value))}
         />
         <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} />
       </Form>
@@ -196,7 +196,7 @@ const RangeParameterInput = ({
   ) 
 }
 
-const EnumParameterInput = ({
+const SelectParameterInput = ({
   parameter,
   // For local state
   value,
@@ -236,5 +236,5 @@ export {
   FloatParameterInput,
   IntegerParameterInput,
   RangeParameterInput,
-  EnumParameterInput
+  SelectParameterInput
 }
