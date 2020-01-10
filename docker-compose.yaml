@@ -23,6 +23,7 @@ services:
 
   server: 
     image: crescent-conglomerate
+    privileged: true
     build: express
     container_name: server
     expose:
