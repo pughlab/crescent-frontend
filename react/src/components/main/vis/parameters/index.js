@@ -8,7 +8,7 @@ import {Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Ico
 import withRedux from '../../../../redux/hoc'
 
 import TOOLS from './TOOLS'
-import {FloatParameterInput, IntegerParameterInput, RangeParameterInput, EnumParameterInput} from './ParameterInputs'
+import {FloatParameterInput, IntegerParameterInput, RangeParameterInput, SelectParameterInput} from './ParameterInputs'
 
 const ParametersComponent = withRedux(
   ({
@@ -116,8 +116,8 @@ const ParametersComponent = withRedux(
                       }}
                     />
                   )],
-                  [R.equals('enum'), R.always(
-                    <EnumParameterInput
+                  [R.equals('select'), R.always(
+                    <SelectParameterInput
                       {...{parameter, value, setValue}}
                     />
                   )],

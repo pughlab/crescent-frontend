@@ -95,7 +95,7 @@ const ResultsSidebar = withRedux(
                   {
                   R.ifElse(
                     R.equals('qc'),
-                    R.always(<Segment content={'View QC results on left'} />),
+                    R.always(<Segment content={'View quality control (QC) results on left'} />),
                     R.always(<VisualizationMenu/>)
                   )(activeResult)
                   }

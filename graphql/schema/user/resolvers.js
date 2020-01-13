@@ -26,7 +26,7 @@ const resolvers = {
       variables,
       {Users}
     ) => {
-      const [firstName, lastName] = ['Anonymous Guest', 'User']
+      const [firstName, lastName] = ['Public', 'User']
       const password = passwordGenerator.generate({
         length: 10,
         numbers: true
