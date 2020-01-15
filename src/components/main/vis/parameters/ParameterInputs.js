@@ -66,7 +66,7 @@ const FloatParameterInput = ({
     label,
     prompt,
     description,
-    input: {defaultValue, schema},
+    input: {defaultValue, schema, step},
     disabled,
   } = parameter
   const [warning, setWarning] = useState(false)
@@ -89,6 +89,7 @@ const FloatParameterInput = ({
           label={label} value={parseFloat(value)} disabled={disabled}
           error={warning}
           type='number'
+          step={step}
           placeholder={parseFloat(defaultValue)}
           onChange={(e, {value}) => setValue(parseFloat(value))}
         />
@@ -128,10 +129,10 @@ const IntegerParameterInput = ({
     <ParameterInputMessage {...{parameter}}>
       <Form>
         <Form.Input
-          label={label} value={value} disabled={disabled}
+          label={label} value={parseInt(value)} disabled={disabled}
           type='number'
           error={warning}
-          onChange={(e, {value}) => setValue(value)}
+          onChange={(e, {value}) => setValue(parseInt(value))}
         />
         <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} />
       </Form>
