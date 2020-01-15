@@ -18,16 +18,16 @@ const PortalInfo = ({
   <Segment.Group>
     <Segment>
       <Header content='Help'/>
-      A quick walkthrough of accessing and exploring public datasets can be found on <a href='https://youtu.be/KK4Xc6SBSSY' target='_blank'>Youtube.</a> 
+      A quick walkthrough of accessing and exploring public datasets can be found on <a href='https://youtu.be/7a23FASMn6I' target='_blank'>Youtube.</a> 
       <Embed
-        id='KK4Xc6SBSSY'
+        id='7a23FASMn6I'
         source='youtube'
       />
     </Segment>
 
     <Segment>
       <Header content='Contact Us'/>
-      To reach the crescent.cloud portal-dev team, please email <a href='mailto:crescent@uhnresearch.ca'>crescent@uhnresearch.ca</a> using these template forms to: <a href='https://github.com/pughlab/crescent/blob/master/.github/ISSUE_TEMPLATE/bug_report.md' target='_blank'>report bugs</a> or <a href='https://github.com/pughlab/crescent/blob/master/.github/ISSUE_TEMPLATE/feature_request.md' target='_blank'>request features.</a> This can also be done on our <a href='https://github.com/pughlab/crescent' target='_blank'>Github.</a>
+      To reach the crescent.cloud portal-dev team and to report bugs or request features, please use the template forms found on our <a href='https://github.com/pughlab/crescent/issues' target='_blank'>Github</a> or email us at <a href='mailto:crescent@uhnresearch.ca'>crescent@uhnresearch.ca</a>.
     </Segment>
 
     <Segment>
