@@ -1,4 +1,4 @@
-version: "3"
+version: "2"
 
 services: 
   mongo: 
@@ -22,7 +22,7 @@ services:
     command: server /export
 
   server: 
-    image: crescent-conglomerate
+    image: crescentdev/crescent-conglomerate
     privileged: true
     build: express
     container_name: server

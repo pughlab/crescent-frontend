@@ -149,7 +149,7 @@ const RunsCardList = withRedux(({
   useEffect(() => {
     Promise.all(
       R.compose(
-        R.map(runID => fetch(`size/${runID}`).then(res => res.json())),
+        R.map(runID => fetch(`/express/size/${runID}`).then(res => res.json())),
         R.pluck('runID')
       )(projectRuns)
     ).then(
