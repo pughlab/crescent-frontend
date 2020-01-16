@@ -113,6 +113,7 @@ const TOOLS = {
           description: 'Value of the resolution parameter, use a value above 1.0 if you want to obtain a larger number of cell clusters or below 1.0 for a smaller number of cell clusters. Default is 1.0.',
           input: {
             type: 'float',
+            step: 0.1,
             defaultValue: 1.0,
             schema: yupRequiredPositiveNumber
           },
