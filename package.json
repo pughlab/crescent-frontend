@@ -23,7 +23,11 @@
   "scripts": {
     "express": "nodemon express/server.js",
     "graphql": "nodemon graphql/index.js",
-    "server": "concurrently \"npm run express\" \"npm run graphql\""
+    "server": "concurrently \"npm run express\" \"npm run graphql\"",
+    "start": "docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d",
+    "restart": "docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml restart",
+    "stop": "docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml down",
+    "logs": "docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml logs"
   },
   "nodemonConfig": {
     "watch": [
