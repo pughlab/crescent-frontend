@@ -24,5 +24,12 @@
     "express": "nodemon express/server.js",
     "graphql": "nodemon graphql/index.js",
     "server": "concurrently \"npm run express\" \"npm run graphql\""
+  },
+  "nodemonConfig": {
+    "watch": [
+      "database/",
+      "express/",
+      "graphql/"
+    ]
   }
 }
