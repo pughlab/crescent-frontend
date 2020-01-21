@@ -11,13 +11,12 @@ const express = require('express')
 // Multer to handle multi form data
 const multer = require('multer')
 const upload = multer({ dest: '/usr/src/app/minio/upload' })
-// Zip
-const AdmZip = require('adm-zip')
+
 const recursiveReadDir = require('recursive-readdir');
 const jsonQuery = require('json-query')
 
 const { Run, Project, Upload } = require('../database/mongo');
-
+const zipThread = require('./zip');
 const minioClient = require('../database/minio-client');
 // Make a bucket called crescent.
 minioClient.makeBucket('crescent', 'us-east-1', function(err) {
@@ -117,10 +116,14 @@ router.get(
     const runID = req.params.runID
     const {name: runName, projectID} = await Run.findOne({runID})
     const {name: projectName} = await Project.findOne({projectID})
-    const zip = new AdmZip()
-    zip.addLocalFolder(`/usr/src/app/results/${runID}`)
-    zip.writeZip(`/usr/src/app/results/${runID}.zip`)
-    res.download(`/usr/src/app/results/${runID}.zip`,`${projectName}_${runName}.zip`)
+    const input = `/usr/src/app/results/${runID}`;
+    const output = `${input}.zip`;
+    try {
+      await zipThread(input, output);
+      res.download(output, `${projectName}_${runName}.zip`);
+    } catch(err) {
+      res.sendStatus(500);
+    }
   }
 );
 
