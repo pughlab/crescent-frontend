@@ -7,7 +7,7 @@
 - [docker-compose](https://docs.docker.com/compose/install/)
 
 ## Local development
-Clone this repo and create folders `minio/download` and `minio/upload` (BUG TO FIX).
+Clone this repo and create folders `results`, `minio/download` and `minio/upload` (BUG TO FIX).
 
 Copy `sample.env` to `.env` and `react/sample.env` to `react/.env` and customize as needed.
 
@@ -37,7 +37,7 @@ Copy `sample.env` to `.env` and `react/sample.env` to `react/.env` and customize
 `npm install` to install server dependencies.
 In the `react` folder, `npm install` for frontend dependencies and then `npm build` to compile a release version of the frontend in `build`.
 
-In the root folder, `docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up` to start an HTTPS nginx reverse proxy for the entire application.
+In the root folder, `docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up` or `npm start` to start an HTTPS nginx reverse proxy for the entire application.
 
 ```bash
 git clone https://github.com/suluxan/crescent-frontend.git
@@ -49,7 +49,8 @@ cp react/sample.env react/.env
 npm ci
 cd react
 npm ci
-npm build
+npm run build
 cd ..
-docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d 
+# or npm start 
 ```
