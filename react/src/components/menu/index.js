@@ -46,7 +46,7 @@ const MenuComponent = withRedux(({
                 onClick={() => toggleProjects(isGuest ? 'published' : 'uploaded')}
               >
                 {/* <Icon color='black' name='home' size='large'/> */}
-                <Icon fluid size='huge'>
+                <Icon size='huge'>
                   <Image src={Logo} centered/>
                 </Icon>
               </Button>
