@@ -18,16 +18,16 @@ const jsonQuery = require('json-query')
 const { Run, Project, Upload } = require('../database/mongo');
 const zipThread = require('./zip');
 const minioClient = require('../database/minio-client');
-// Make a bucket called crescent.
-minioClient.makeBucket('crescent', 'us-east-1', function(err) {
-  if (err) return console.log(err)
-  console.log('Bucket created successfully in "us-east-1".')
-})
+// // Make a bucket called crescent.
+// minioClient.makeBucket('crescent', 'us-east-1', function(err) {
+//   if (err) return console.log(err)
+//   console.log('Bucket created successfully in "us-east-1".')
+// })
 minioClient.makeBucket('temporary', 'us-east-1', function(err) {
   if (err) return console.log(err)
   console.log('Bucket created successfully in "us-east-1".')
 })
-const bucketName = 'crescent'
+// const bucketName = 'crescent'
 const minioPath = '/usr/src/app/minio/download'
 
 const colours = [
@@ -68,26 +68,56 @@ router.put(
   '/upload/:kind',
   upload.single('uploadedFile'),
   async (req, res, next) => {
-    // File that needs to be uploaded.
-    const {
-      params: {kind}, // 'barcodes', 'genes', 'matrix', 'metadata'
-      file: {path: filePath}
-    } = req
-    // Upload type
-    // Create temporary directory inside minio if doesn't exist
-    const upload = await new Upload()
-    const {uploadID} = upload
-    const metaData = {
-      'Content-Type': 'application/octet-stream',
-      'X-Amz-Meta-Testing': 1235,
-      'example': 5678
+    try {
+      // File that needs to be uploaded.
+      const {
+        params: {kind}, // 'barcodes', 'genes', 'matrix', 'metadata'
+        file: {path: filePath}
+      } = req
+      // Upload type
+      // Should be using `kind` value here to add metadata to Upload document in Mongo
+      const upload = await new Upload()
+      const {uploadID} = upload
+      const metaData = {
+        'Content-Type': 'application/octet-stream',
+        'X-Amz-Meta-Testing': 1235,
+        'example': 5678
+      }
+      // Using fPutObject API upload your file to the bucket
+      minioClient.fPutObject('temporary', `${uploadID}`, filePath, metaData, function(err, etag) {
+        if (err) return console.log(err, etag)
+        console.log('File uploaded successfully to minio.', uploadID)
+        res.json(uploadID)
+      })
+    } catch(error) {
+      console.error(error)
     }
-    // Using fPutObject API upload your file to the bucket
-    minioClient.fPutObject('temporary', `${uploadID}`, filePath, metaData, function(err, etag) {
-      if (err) return console.log(err, etag)
-      console.log('File uploaded successfully to minio.', uploadID)
-      res.json(uploadID)
-    })
+  } 
+);
+
+// API endpoint for adding a metadata file currently in temp bucket to project folder
+router.put(
+  '/projects/:projectID/metadata/:uploadID',
+  async (req, res, next) => {
+    try {
+      const {
+        params: {projectID, uploadID}, // 'barcodes', 'genes', 'matrix', 'metadata'
+      } = req
+      const projectPath = `/usr/src/app/minio/upload/project-${projectID}`
+      // NOT NAMING WITH UPLOADID SINCE HILLARY WILL NEED IT TO
+      // BE A STANDARD FILE NAME
+      const filePath = `${projectPath}/metadata.tsv`
+      console.log(projectID, uploadID)
+      
+      // Using fGetObject API to move to project directory
+      minioClient.fGetObject('temporary', `${uploadID}`, filePath, function(err) {
+        if (err) return console.log(err)
+        console.log('File uploaded successfully to project directory', projectID, uploadID)
+        res.json(uploadID)
+      })
+    } catch(error) {
+      console.error(error)
+    }
   } 
 );
 

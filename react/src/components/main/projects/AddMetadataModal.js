@@ -58,7 +58,7 @@ const UploadButton = ({
   )
 }
 
-const ShareProjectModal = withRedux(({
+const AddMetadataModal = withRedux(({
   app: {
     user: {
       userID
@@ -69,9 +69,10 @@ const ShareProjectModal = withRedux(({
     },
   },
 }) => {
+  // Hacked for indicating that it has been uploaded
+  const [uploadedStatus, setUploadedStatus] = useState(false)
   // objectName in the minio temporary bucket
   const [uploadedMetadataFile, setUploadedMetadataFile] = useState(null)
-  console.log('uploaded', uploadedMetadataFile)
   return (
     <Modal basic size='small'
       trigger={
@@ -96,11 +97,27 @@ const ShareProjectModal = withRedux(({
               setUploadedFile={setUploadedMetadataFile}
             />
           </Segment>
-          <Button fluid content='Upload' />
+          <Button fluid
+            content={uploadedStatus ? 'Uploaded and added to project' : 'Upload'}
+            disabled={R.isNil(uploadedMetadataFile)}
+            onClick={() => {
+              const xhr = new XMLHttpRequest ()
+              xhr.open('PUT', `/express/projects/${projectID}/metadata/${uploadedMetadataFile}`, true)
+              xhr.withCredentials = true
+              xhr.send()
+              // xhr.onprogress = () => {}
+              xhr.onload = () => {
+                if (xhr.status === 200) {
+                  setUploadedMetadataFile(null)
+                  setUploadedStatus(true)
+                }
+              }
+            }}
+          />
         </Segment>
       </Modal.Content>
     </Modal>
   )
 })
 
-export default ShareProjectModal
+export default AddMetadataModal
