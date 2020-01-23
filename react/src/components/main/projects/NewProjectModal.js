@@ -99,6 +99,7 @@ const NewProjectModal = withRedux(({
       ) {
         projectID
         name
+        kind
         description
         createdOn
         createdBy {
