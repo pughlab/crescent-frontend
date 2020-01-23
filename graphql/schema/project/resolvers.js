@@ -16,7 +16,6 @@ const resolvers = {
       })
     },
     projects: async (parent, {userID}, {Projects}) => {
-      console.log(userID, 'projects')
       const projects = await Projects.find({
         kind: 'uploaded',
         $or: [
@@ -134,7 +133,6 @@ const resolvers = {
       return await Users.findOne({userID: createdBy})
     },
     runs: async ({projectID}, variables, {Runs}) => {
-      console.log('find runs', projectID)
       return await Runs.find({projectID})
     },
 

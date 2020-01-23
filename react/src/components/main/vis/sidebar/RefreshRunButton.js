@@ -44,7 +44,6 @@ const RefreshRunButton = withRedux(
     })
     useEffect(() => {
       if (queryIsNotNil('run', data)) {
-        console.log('new run data', data)
         const {run} = data
         setRun(run)
       }

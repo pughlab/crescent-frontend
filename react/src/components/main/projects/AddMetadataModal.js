@@ -51,7 +51,6 @@ const UploadButton = ({
               setLoading(false)
             }
           }
-          // console.log(event.target.files)
         }
       }
     />

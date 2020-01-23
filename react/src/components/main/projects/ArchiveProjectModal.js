@@ -33,7 +33,6 @@ const ArchiveProjectModal = withRedux(({
   `, {
     variables: {projectID},
     onCompleted: data => {
-      console.log('archived project', data)
       setUser(user)
     }
   })

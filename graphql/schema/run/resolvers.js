@@ -11,7 +11,6 @@ const resolvers = {
       return await Runs.find({})
     },
     runs: async (parent, {projectID}, {Runs}) => {
-      console.log('resolver', projectID)
       const runs = await Runs.find({projectID})
       return runs
     },

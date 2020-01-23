@@ -57,7 +57,6 @@ const UploadedProjectsList = withRedux(({
     R.prop('projects'),
     R.always([])
   )(data)
-  console.log('projects list', data)
   return (
     <>
     <NewProjectModal {...{refetch}} />

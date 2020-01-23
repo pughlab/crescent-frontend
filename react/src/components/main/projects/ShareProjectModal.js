@@ -49,6 +49,7 @@ const ShareProjectModal = withRedux(({
     R.always([])
   )(dataProjectUsers)
 
+  // Share and unshare project GQL mutations
   const [unshareProjectByUserID, {error: unshareProjectByUserIDError}] = useMutation(gql`
     mutation UnshareProjectByUserID($projectID: ID, $userID: ID) {
       unshareProjectByUserID(projectID: $projectID, userID: $userID) {
@@ -61,8 +62,6 @@ const ShareProjectModal = withRedux(({
   `, {
     variables: {projectID},
     onCompleted: ({unshareProjectByUserID}) => {
-      // setNewSharedWith([])
-      console.log('unshare', unshareProjectByUserID)
       setEmailToShare('')
       refetchProjectUsers()
     }
@@ -76,8 +75,6 @@ const ShareProjectModal = withRedux(({
   `, {
     variables: {projectID},
     onCompleted: ({shareProjectByEmail}) => {
-      // setNewSharedWith([])
-      console.log('share', shareProjectByEmail)
       if (R.isNil(shareProjectByEmail)) {
         setEmailError(true)
       }

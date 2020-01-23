@@ -30,6 +30,7 @@ const VisComponent = withRedux(
       }
     },
   }) => {
+    // In case we want to delete unsubmitted runs
     const [deleteRun, {data, loading, error}] = useMutation(gql`
       mutation DeleteRun($runID: ID!) {
         deleteRun(runID: $runID) {
@@ -40,19 +41,18 @@ const VisComponent = withRedux(
       variables: {runID},
       onCompleted: data => {
         // refetch()
-        console.log(data)
       }
     })
-
-    // In case we want to delete unsubmitted runs
     useEffect(() => () => {
       if (R.not(isSubmitted)) {
-        console.log('not submitted')
+        console.log('run is not submitted')
         // deleteRun()
       } else {
-        console.log('submitted')
+        console.log('run is submitted')
       }
     }, [])
+
+
     return (
       <>
       <Grid style={{minHeight: 'calc(100vh - 5rem - 3px)'}}>

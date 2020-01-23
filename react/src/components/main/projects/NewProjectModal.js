@@ -56,7 +56,6 @@ const UploadButton = ({
               setLoading(false)
             }
           }
-          // console.log(event.target.files)
         }
       }
     />
@@ -78,7 +77,6 @@ const NewProjectModal = withRedux(({
   const [uploadedBarcodesFile, setUploadedBarcodesFile] = useState(null)    
   const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
   const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
-  console.log(uploadedBarcodesFile, uploadedGenesFile, uploadedMatrixFile)
   // GQL mutation to create a project
   const [createProject, {loading, data, error}] = useMutation(gql`
     mutation CreateProject(

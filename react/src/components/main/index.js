@@ -39,7 +39,6 @@ const MainComponent = withRedux(
       }
     `, {
       onCompleted: ({createGuestUser}) => {
-        console.log('guest', createGuestUser)
         setGuestUser(createGuestUser)
       }
     })
