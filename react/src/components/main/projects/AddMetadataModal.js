@@ -87,7 +87,7 @@ const AddMetadataModal = withRedux(({
     >
       <Modal.Content>
         <Segment attached='top'>
-          <Header icon='add user' content={projectName} subheader='Upload/replace metadata file for this project?' />
+          <Header icon='upload' content={projectName} subheader='Upload/replace metadata file for this project?' />
         </Segment>
         <Segment attached='bottom' loading={false}>
           <Segment placeholder>
