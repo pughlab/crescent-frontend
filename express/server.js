@@ -70,7 +70,7 @@ router.put(
   async (req, res, next) => {
     // File that needs to be uploaded.
     const {
-      params: {kind}, // 'barcodes', 'genes', 'matrix'
+      params: {kind}, // 'barcodes', 'genes', 'matrix', 'metadata'
       file: {path: filePath}
     } = req
     // Upload type
@@ -85,7 +85,7 @@ router.put(
     // Using fPutObject API upload your file to the bucket
     minioClient.fPutObject('temporary', `${uploadID}`, filePath, metaData, function(err, etag) {
       if (err) return console.log(err, etag)
-      console.log('File uploaded successfully.')
+      console.log('File uploaded successfully to minio.', uploadID)
       res.json(uploadID)
     })
   } 

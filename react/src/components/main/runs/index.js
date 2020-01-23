@@ -19,7 +19,7 @@ import NewRunModal from './NewRunModal'
 
 import ArchiveProjectModal from '../projects/ArchiveProjectModal'
 import ShareProjectModal from '../projects/ShareProjectModal'
-
+import AddMetadataModal from '../projects/AddMetadataModal'
 
 
 const RunsStatusLegend = ({
@@ -195,8 +195,9 @@ const RunsCardList = withRedux(({
       {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
       {
         R.and(isUploadedProject, currentUserIsProjectCreator) && 
-          <Button.Group attached widths={2}>
+          <Button.Group attached widths={3}>
             <ShareProjectModal />
+            <AddMetadataModal />
             <ArchiveProjectModal />
           </Button.Group>
       }
