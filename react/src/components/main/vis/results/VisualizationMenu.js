@@ -92,7 +92,7 @@ const VisualizationMenu = withRedux(
           onChange={(event, {value}) => changeActiveGroup(value)}
         />
       </Form.Field>
-      <Divider horizontal content='Differentially Expressed Genes' />
+      <Divider horizontal />
       <Form.Field>
         {/* Reset feature selection */}
         <Form.Button
@@ -114,15 +114,6 @@ const VisualizationMenu = withRedux(
           </Button.Content>
         </Form.Button>
       </Form.Field>
-
-
-      {
-      R.ifElse(
-        R.isEmpty,
-        R.always(),
-        R.always(<Segment basic textAlign={'center'}>{R.map(featureButton)(topExpressed)}</Segment>)
-      )(topExpressed)
-      }
       <Divider horizontal content='Search Genes' />
       <Form.Dropdown
         placeholder={"Enter Gene Symbol"}
@@ -135,6 +126,30 @@ const VisualizationMenu = withRedux(
         onSearchChange={handleSearchChange}
         onChange={handleSelectFeature}
       />
+      <Divider horizontal content='Top Differentially Expressed Genes' />
+
+      {
+        RA.isNotEmpty(topExpressed) &&
+        <Segment basic
+          style={{maxHeight: '40vh', overflowY: 'scroll'}}
+        >
+          {
+            R.compose(
+              R.map(
+                ([cluster, features]) => (
+                  !console.log(cluster, features) &&
+                  <Segment key={cluster} compact>
+                    <Label attached='top' content={`Cluster ${cluster}`} />
+                    {R.map(featureButton, features)}
+                  </Segment>
+                )
+              ),
+              R.toPairs,
+              R.groupBy(R.prop('cluster'))
+            )(topExpressed)
+          }
+        </Segment>
+      }
       </Form>
   )
 })
