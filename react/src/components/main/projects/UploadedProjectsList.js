@@ -17,7 +17,7 @@ import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider
 import withRedux from '../../../redux/hoc'
 
 import ProjectCard from './ProjectCard'
-import NewProjectModal from './NewProjectModal'
+import NewProjectModal from './NewProjectModal/index'
 
 
 const UploadedProjectsList = withRedux(({
