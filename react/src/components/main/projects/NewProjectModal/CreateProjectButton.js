@@ -13,37 +13,10 @@ import {queryIsNotNil} from '../../../../utils'
 
 import {useDropzone} from 'react-dropzone'
 
-import {Form, Card, Header, Menu, Button, Segment, Modal, Label, Divider, Icon, Image, Popup, Grid, Step} from 'semantic-ui-react'
+import {Form, Card, Header, Message, Button, Segment, Modal, Label, Divider, Icon, Image, Popup, Grid, Step} from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
-const DatasetCard = ({
-  dataset
-}) => {
-  // Get directory name from matrix file
-  const dirName = R.compose(
-    R.prop(1),
-    R.split('/'),
-    R.prop('path'),
-    R.prop('matrix')
-  )(dataset)
-
-  const hasMetadata = R.compose(
-    RA.isNotNil,
-    R.prop('metadata')
-  )(dataset)
-
-  return (
-    <Card>
-      <Card.Content>
-        <Card.Header as={Header} sub content={dirName} />
-      </Card.Content>
-      <Card.Content>
-        <Label content='Metadata' detail={hasMetadata ? 'Yes' : 'No'} />
-      </Card.Content>
-    </Card>
-  )
-}
 
 const CreateProjectButton = ({
   name, setName,
@@ -51,16 +24,53 @@ const CreateProjectButton = ({
   datasetDirectories, setDatasetDirectories,
   existingDatasets, setExistingDatasets
 }) => {
+
+  const noDetails = R.any(R.isEmpty, [name, description])
+  const noExistingDatasets = R.isEmpty(existingDatasets)
+  const noUploadedDatasets = R.isEmpty(datasetDirectories)
   const disabled = R.any(RA.isTrue, [
-    R.isEmpty(name),
-    R.isEmpty(description),
-    R.and(R.isEmpty(datasetDirectories), R.isEmpty(existingDatasets))
+    noDetails,
+    R.and(noExistingDatasets, noUploadedDatasets)
   ])
   return (
-    <Button size='huge' fluid
-      disabled={disabled}
-      content='Create Project'
-    />
+    <Segment basic>
+      <Message>
+      {
+        noDetails ?
+          'You need to enter in the project name and description'
+        :
+          <Header>
+            {name}
+            <Header.Subheader>
+              {description}
+            </Header.Subheader>
+          </Header>
+      }
+      </Message>
+
+      <Message>
+      {
+        noExistingDatasets ?
+          'You did not select any projects to merge'
+        :
+          `${R.length(existingDatasets)} Project${R.equals(1, R.length(existingDatasets)) ? '' : 's'} Selected ${R.equals(1, R.length(existingDatasets)) ? '' : 'To Merge'}`
+      }
+      </Message>
+
+      <Message>
+      {
+        noUploadedDatasets ?
+          'You did not upload any single-cell sample datasets'
+        :
+          `${R.length(datasetDirectories)} Uploaded Dataset${R.equals(1, R.length(datasetDirectories)) ? '' : 's'}`
+      }
+      </Message>
+
+      <Button size='huge' fluid
+        disabled={disabled}
+        content='Create Project'
+      />
+    </Segment>
   )
 }
 
