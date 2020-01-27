@@ -18,7 +18,8 @@ import {Form, Card, Header, Menu, Button, Segment, Modal, Label, Divider, Icon, 
 import withRedux from '../../../../redux/hoc'
 
 const DatasetCard = ({
-  dataset
+  dataset,
+  datasetDirectories, setDatasetDirectories
 }) => {
   // Get directory name from matrix file
   const dirName = R.compose(
@@ -40,6 +41,19 @@ const DatasetCard = ({
       </Card.Content>
       <Card.Content>
         <Label content='Metadata' detail={hasMetadata ? 'Yes' : 'No'} />
+      </Card.Content>
+      <Card.Content>
+        <Button fluid animated='vertical'
+          size='small'
+          onClick={() => setDatasetDirectories(R.without([dataset], datasetDirectories))}
+        >
+          <Button.Content visible>
+            <Icon name='trash' />
+          </Button.Content>
+          <Button.Content hidden>
+            REMOVE
+          </Button.Content>
+        </Button>
       </Card.Content>
     </Card>
   )
@@ -98,7 +112,7 @@ const DirectoryUploadSegment = ({
       <Card.Group itemsPerRow={4}>
       {
         R.addIndex(R.map)(
-          (dataset, index) => <DatasetCard {...{dataset}} key={index} />,
+          (dataset, index) => <DatasetCard {...{dataset, datasetDirectories, setDatasetDirectories}} key={index} />,
           datasetDirectories
         )
       }
