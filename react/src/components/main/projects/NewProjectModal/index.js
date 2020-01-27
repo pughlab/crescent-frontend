@@ -120,11 +120,74 @@ const NewProjectModal = withRedux(({
   const [description, setDescription] = useState('')
   const [datasetDirectories, setDatasetDirectories] = useState([])
   const [existingDatasets, setExistingDatasets] = useState([])
+
+  const [currentContent, setCurrentContent] = useState('details')
+  const CONTENTS = [
+    {
+      name: 'details',
+      label: 'Details',
+      icon: 'info',
+      component: (
+        <Segment basic>
+          <Form>
+            <Form.Input fluid
+              placeholder='Enter a project name'
+              value={name}
+              onChange={(e, {value}) => {setName(value)}}
+            />
+            <Form.TextArea
+              placeholder='Enter a short project description'
+              value={description}
+              onChange={(e, {value}) => {setDescription(value)}}
+            />
+          </Form>
+        </Segment>
+      )
+    },
+    {
+      name: 'existing',
+      label: 'Existing Projects',
+      icon: 'folder open',
+      component: (
+        <Segment basic>
+          <ExistingDatasets {...{existingDatasets, setExistingDatasets}} />
+        </Segment>
+      )
+    },
+    {
+      name: 'upload',
+      label: 'Upload Dataset(s)',
+      icon: 'cloud upload',
+      component: (
+        <Segment basic>
+          <DirectoryUploadSegment {...{datasetDirectories, setDatasetDirectories}} />
+        </Segment>
+      )
+    },
+    {
+      name: 'submit',
+      label: 'Create Project',
+      icon: 'paper plane',
+      component: (
+        <Segment basic>
+          <CreateProjectButton
+            {...{
+              name, setName,
+              description, setDescription,
+              datasetDirectories, setDatasetDirectories,
+              existingDatasets, setExistingDatasets,
+            }}
+          />
+        </Segment>
+      )
+    },
+  ]
   const resetNewProjectModal = () => {
     setName('')
     setDescription('')
     setDatasetDirectories([])
     setExistingDatasets([])
+    setCurrentContent('details')
   }
   // Minio object names for uploaded files in temporary bucket
   // const [uploadedBarcodesFile, setUploadedBarcodesFile] = useState(null)    
@@ -188,68 +251,7 @@ const NewProjectModal = withRedux(({
   //   uploadedGenesFile,
   //   uploadedMatrixFile
   // ])
-  const [currentContent, setCurrentContent] = useState('details')
-  const CONTENTS = [
-    {
-      name: 'details',
-      label: 'Details',
-      icon: 'info',
-      component: (
-        <Segment basic>
-          <Form>
-            <Form.Input fluid
-              placeholder='Enter a project name'
-              value={name}
-              onChange={(e, {value}) => {setName(value)}}
-            />
-            <Form.TextArea
-              placeholder='Enter a short project description'
-              value={description}
-              onChange={(e, {value}) => {setDescription(value)}}
-            />
-          </Form>
-        </Segment>
-      )
-    },
-    {
-      name: 'existing',
-      label: 'Existing Projects',
-      icon: 'folder open',
-      component: (
-        <Segment basic>
-          <ExistingDatasets {...{existingDatasets, setExistingDatasets}} />
-        </Segment>
-      )
-    },
-    {
-      name: 'upload',
-      label: 'Upload Dataset(s)',
-      icon: 'cloud upload',
-      component: (
-        <Segment basic>
-          <DirectoryUploadSegment {...{datasetDirectories, setDatasetDirectories}} />
-        </Segment>
-      )
-    },
-    {
-      name: 'submit',
-      label: 'Create Project',
-      icon: 'paper plane',
-      component: (
-        <Segment basic>
-          <CreateProjectButton
-            {...{
-              name, setName,
-              description, setDescription,
-              datasetDirectories, setDatasetDirectories,
-              existingDatasets, setExistingDatasets,
-            }}
-          />
-        </Segment>
-      )
-    },
-
-  ]
+  
   return (
     <Modal
       size='large'
