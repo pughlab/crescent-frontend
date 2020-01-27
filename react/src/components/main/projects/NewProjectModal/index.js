@@ -16,6 +16,7 @@ import withRedux from '../../../../redux/hoc'
 
 import DirectoryUploadSegment from './DirectoryUploadSegment'
 import CreateProjectButton from './CreateProjectButton'
+import ExistingDatasets from './ExistingDatasets'
 
 // const DatasetCard = ({
 //   dataset
@@ -192,6 +193,7 @@ const NewProjectModal = withRedux(({
     {
       name: 'details',
       label: 'Details',
+      icon: 'info',
       component: (
         <Segment basic>
           <Form>
@@ -211,16 +213,18 @@ const NewProjectModal = withRedux(({
     },
     {
       name: 'existing',
-      label: 'Existing Datasets',
+      label: 'Existing Projects',
+      icon: 'folder open',
       component: (
         <Segment basic>
-          Not implemented yet
+          <ExistingDatasets {...{existingDatasets, setExistingDatasets}} />
         </Segment>
       )
     },
     {
       name: 'upload',
       label: 'Upload Dataset(s)',
+      icon: 'cloud upload',
       component: (
         <Segment basic>
           <DirectoryUploadSegment {...{datasetDirectories, setDatasetDirectories}} />
@@ -230,6 +234,7 @@ const NewProjectModal = withRedux(({
     {
       name: 'submit',
       label: 'Create Project',
+      icon: 'paper plane',
       component: (
         <Segment basic>
           <CreateProjectButton
@@ -251,7 +256,6 @@ const NewProjectModal = withRedux(({
       onOpen={() => resetNewProjectModal()}
       trigger={
         <Button fluid size='large'
-          attached='top'
           color='black'
           animated='vertical'
         >
@@ -262,11 +266,11 @@ const NewProjectModal = withRedux(({
     >
       <Modal.Header as={Header} textAlign='center' content='New Project' />
       <Modal.Header>
-        <Step.Group ordered fluid size='small' widths={4}>
+        <Step.Group fluid size='small' widths={4}>
         {
           R.map(
-            ({name, label}) => (
-              <Step key={name} content={label} onClick={() => setCurrentContent(name)}
+            ({name, label, icon}) => (
+              <Step key={name} title={label} onClick={() => setCurrentContent(name)} icon={icon}
                 active={R.equals(currentContent, name)}
               />
             ),
@@ -276,12 +280,12 @@ const NewProjectModal = withRedux(({
         </Step.Group>
       </Modal.Header>
       <Modal.Content scrolling>
-        {
-          R.compose(
-            R.prop('component'),
-            R.find(R.propEq('name', currentContent))
-          )(CONTENTS)
-        }
+      {
+        R.compose(
+          R.prop('component'),
+          R.find(R.propEq('name', currentContent))
+        )(CONTENTS)
+      }
       </Modal.Content>
     </Modal>
   )

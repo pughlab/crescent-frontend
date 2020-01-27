@@ -259,19 +259,17 @@ const RunsCardList = withRedux(({
             <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
         }
         <NewRunModal {...{refetch}} />
+        <Divider horizontal />
         {/* LIST OF EXISTING RUNS FOR PROJECT */}
         {
           R.isEmpty(filteredProjectRuns) ?
-            <Segment attached='bottom'>
               <Segment placeholder>
                 <Header icon>
                   <Icon name='exclamation' />
                   {`No Runs`}
                 </Header>
               </Segment>
-            </Segment>
           :
-            <Segment attached='bottom'>
               <Card.Group itemsPerRow={3}>
               {
                 R.map(
@@ -280,7 +278,6 @@ const RunsCardList = withRedux(({
                 )
               }
               </Card.Group>
-            </Segment>
         }
       </Segment>
     </Container>

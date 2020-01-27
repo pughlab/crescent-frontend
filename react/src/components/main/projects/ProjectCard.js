@@ -38,31 +38,36 @@ const ProjectCard = withRedux(({
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
     <Card link onClick={() => setProject(project)} color='grey'>
-      <Button attached='top' color='grey' animated='vertical'>
-        <Button.Content visible>
-          <Icon name='folder open' size='large' />
-        </Button.Content>
-        <Button.Content hidden>
-          <Icon name='eye' size='large' />
-        </Button.Content>
-      </Button>
+      <Popup
+          size='large' wide='very'
+          inverted
+          trigger={
+            <Button attached='top' color='grey' animated='vertical'>
+              <Button.Content visible>
+                <Icon name='folder open' size='large' />
+              </Button.Content>
+              <Button.Content hidden>
+                <Icon name='eye' size='large' />
+              </Button.Content>
+            </Button>
+          }
+          content={description}
+        />
       <Card.Content>
         <Card.Header>
           <Header size='small'>
             <Header.Content>
-              <Marquee text={name} />
-              <Header.Subheader>
-              {description}
-              </Header.Subheader>
+            {name}
             </Header.Content>
           </Header>
         </Card.Header>
       </Card.Content>
       <Card.Content>
         <Label.Group>
-          <Label content='Owner' detail={creatorName} />
-          <Label content='Created' detail={moment(createdOn).format('D MMMM YYYY')} />
-          <Label content='Dataset Size' detail={filesize(datasetSize)} />
+          <Label content={<Icon style={{margin: 0}} name='user' />} detail={creatorName} />
+          <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
+          <Label content={<Icon style={{margin: 0}} name='file archive' />} detail={'#'} />
+          <Label content={<Icon style={{margin: 0}} name='save' />} detail={filesize(datasetSize)} />
         </Label.Group>
       </Card.Content>
       <Card.Content>
@@ -83,10 +88,11 @@ const ProjectCard = withRedux(({
                   wide='very'
                   trigger={
                     <Button
+                      size='small'
                       animated='vertical'
                       color={statusColor}
                     >
-                      <Button.Content visible
+                      <Button.Content hidden
                         content={
                           R_.joinWithSpace([
                             R.length(runs),
@@ -94,19 +100,20 @@ const ProjectCard = withRedux(({
                           ])
                         }
                       />
-                      <Button.Content hidden
-                        content={
-                          <Icon
-                            name={R.prop(status, {
-                              pending: 'circle outline',
-                              submitted: 'circle notch',
-                              completed: 'circle outline check',
-                              failed: 'circle exclamation'
-                            })}
-                            loading={R.equals('submitted', status)}
-                          />
-                        }
-                      />
+                      <Button.Content visible>
+                      {R.length(runs)}
+                      {' '}
+                        <Icon
+                              style={{margin: 0}}
+                              name={R.prop(status, {
+                                pending: 'circle outline',
+                                submitted: 'circle notch',
+                                completed: 'circle outline check',
+                                failed: 'circle exclamation'
+                              })}
+                              loading={R.equals('submitted', status)}
+                            />
+                      </Button.Content>
                     </Button>
                   }
                   content={

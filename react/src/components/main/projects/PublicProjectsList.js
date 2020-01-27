@@ -57,8 +57,8 @@ const PublicProjectsList = withRedux(() => {
       R.always([])
     )(data)
   return (
-    <Segment>
-    <Card.Group itemsPerRow={1}>
+    // <Segment>
+    <Card.Group itemsPerRow={3}>
     {
       R.addIndex(R.map)(
         (project, index) => (
@@ -68,7 +68,7 @@ const PublicProjectsList = withRedux(() => {
       )
     }
     </Card.Group>
-    </Segment>
+    // </Segment>
   )
 })
 

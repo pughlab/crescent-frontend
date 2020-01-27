@@ -22,7 +22,7 @@ const ProjectsCardList = withRedux(({
 }) => {
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
-    <Container>
+    <>
       <Divider horizontal
         content={
           <Header
@@ -63,7 +63,7 @@ const ProjectsCardList = withRedux(({
         : isActiveProjectKind('published') ? <PublicProjectsList />
         : null
       }
-    </Container>
+    </>
   )
 })
 

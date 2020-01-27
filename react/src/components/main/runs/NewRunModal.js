@@ -49,7 +49,6 @@ const NewRunModal = withRedux(({
     <Modal
       trigger={
         <Button fluid size='large'
-          attached='top'
           color='black'
           animated='vertical'
         >

@@ -65,25 +65,21 @@ const RunCard = withRedux(({
   return (
     <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
     <Card color={color}>
-      <Card.Content>
-        <Label attached='top'
-          // Color based on whether run is complete or not
-          color={color}
-        >
+      <Button attached='top' color={color} animated='vertical'
+        onClick={() => setRun(run)}
+      >
+        <Button.Content visible>
           <Icon
             name={icon}
             loading={R.equals('submitted', status)}
             size='large' style={{marginLeft: 0}}
           />
-          {
-            R.prop(status, {
-              pending: 'PENDING USER SUBMISSION',
-              submitted: 'SUBMITTED AND RUNNING',
-              completed: 'RUN COMPLETED',
-              failed: 'FAILED'
-            })
-          }
-        </Label>
+        </Button.Content>
+        <Button.Content hidden>
+          <Icon name='eye' size='large' />
+        </Button.Content>
+      </Button>
+      <Card.Content>
         <Card.Header>
           <Header size='small'>
             <Marquee text={name} />
@@ -91,12 +87,7 @@ const RunCard = withRedux(({
         </Card.Header>
       </Card.Content>
       <Card.Content>
-        <Button.Group widths={currentUserCanDeleteRun ? 3 : 2}>
-        <Button basic fluid animated='vertical' onClick={() => setRun(run)}>
-          <Button.Content visible><Icon name='eye'/></Button.Content>
-          <Button.Content hidden content='View' />
-        </Button>
-
+        <Button.Group widths={currentUserCanDeleteRun ? 2 : 1}>
         <Modal
           trigger={
             <Button basic fluid animated='vertical'>
@@ -185,6 +176,21 @@ const RunCard = withRedux(({
           }
         </Label.Group>
       </Card.Content>
+      {/* <Card.Content textAlign='center'>
+        <Label
+          // Color based on whether run is complete or not
+          color={color}
+        >
+          {
+            R.prop(status, {
+              pending: 'PENDING USER SUBMISSION',
+              submitted: 'SUBMITTED AND RUNNING',
+              completed: 'RUN COMPLETED',
+              failed: 'FAILED'
+            })
+          }
+        </Label>
+      </Card.Content> */}
     </Card>
     </Transition>
   )
