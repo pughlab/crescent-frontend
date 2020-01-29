@@ -828,22 +828,32 @@ StopWatchEnd$ClusterCells  <- Sys.time()
 
 StopWatchStart$CellClusterTables  <- Sys.time()
 
-CellNames<-rownames(seurat.object.f@meta.data)
-ClusterIdent<-seurat.object.f@meta.data$seurat_clusters
-Headers<-paste("Cell_barcode", paste("seurat_cluster_resolution", Resolution, sep = "", collapse = "") ,sep="\t")
-clusters_data<-paste(CellNames, ClusterIdent, sep="\t")
-#
+### putting qc data in metadata to test continuous metadata tsne/umap
+
 if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+  metadata_tsv  <-data.frame(NAME = row.names(seurat.object.f@meta.data), seurat_clusters = seurat.object.f@meta.data$seurat_clusters, Number_of_Genes = seurat.object.f@meta.data$nFeature_RNA, Number_of_Reads = seurat.object.f@meta.data$nCount_RNA, Mitochondrial_Genes_Fraction = seurat.object.f@meta.data$percent.mito, Ribosomal_Protein_Genes_Fraction = seurat.object.f@meta.data$percent.ribo )
+  metadata_tsv_string <- sapply(metadata_tsv, as.character)
+  metadata_tsv_string_TYPE <- rbind(data.frame(NAME = "TYPE", seurat_clusters = "group", Number_of_Genes = "numeric", Number_of_Reads = "numeric", Mitochondrial_Genes_Fraction = "numeric", Ribosomal_Protein_Genes_Fraction = "numeric"), metadata_tsv_string)
+  colnames(metadata_tsv_string_TYPE) <- c("NAME", paste("Seurat_Clusters_Resolution", Resolution, sep = "", collapse = ""),"Number_of_Genes","Number_of_Reads","Mitochondrial_Genes_Fraction","Ribosomal_Protein_Genes_Fraction")
+
   OutfileClusters<-paste(Tempdir,"/","groups.tsv", sep="")
+  write.table(data.frame(metadata_tsv_string_TYPE),file = OutfileClusters, row.names = F, col.names = T, sep="\t", quote = F, append = T)
+
  } else {
+  CellNames<-rownames(seurat.object.f@meta.data)
+  ClusterIdent<-seurat.object.f@meta.data$seurat_clusters
+  Headers<-paste("Cell_barcode", paste("seurat_cluster_resolution", Resolution, sep = "", collapse = "") ,sep="\t")
+  clusters_data<-paste(CellNames, ClusterIdent, sep="\t")
+
   OutfileClusters<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_CellClusters.tsv", sep="")
+  write.table(Headers,file = OutfileClusters, row.names = F, col.names = F, sep="\t", quote = F)
+  write.table(data.frame(clusters_data),file = OutfileClusters, row.names = F, col.names = F, sep="\t", quote = F, append = T)
+  NumberOfClusters<-length(unique(ClusterIdent))
+  OutfileNumbClusters<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_NumbCellClusters", ".tsv", sep="")
+  write(x=NumberOfClusters,file = OutfileNumbClusters)
 }
-write.table(Headers,file = OutfileClusters, row.names = F, col.names = F, sep="\t", quote = F)
-write.table(data.frame(clusters_data),file = OutfileClusters, row.names = F, col.names = F, sep="\t", quote = F, append = T)
+
 #
-NumberOfClusters<-length(unique(ClusterIdent))
-OutfileNumbClusters<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_NumbCellClusters", ".tsv", sep="")
-write(x=NumberOfClusters,file = OutfileNumbClusters)
 
 StopWatchEnd$CellClusterTables  <- Sys.time()
 
