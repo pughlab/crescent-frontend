@@ -21,17 +21,21 @@ def read_groups_file(runID, projectID):
 	with open(groups_path) as group_definitions:
 		reader = csv.reader(group_definitions, delimiter="\t")
 		available_groups = next(reader)[1:]
-	
+
 	if os.path.isfile(metadata_path):
-		# open up and read the file
-		with open(metadata_path) as metadata:
-			reader = csv.reader(metadata, delimiter="\t")
-			metadata_groups = next(reader)[1:]
-		# merge in the metadata but keep existing order of columns
-		for group in metadata_groups:
-			if group not in available_groups:
-				available_groups.append(col)
-	
+		try:
+			# open up and read the file
+			with open(metadata_path) as metadata:
+				reader = csv.reader(metadata, delimiter="\t")
+				metadata_groups = next(reader)[1:]
+			# merge in the metadata but keep existing order of columns
+			for group in metadata_groups:
+				if group not in available_groups:
+					available_groups.append(col)
+		except Exception as e:
+			# this means the user-defined metadata is likely misconfigured, skip adding it
+			pass
+		
 	return available_groups
 
 def main():
