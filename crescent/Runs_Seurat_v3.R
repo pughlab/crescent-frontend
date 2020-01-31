@@ -639,6 +639,14 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   interactive_qc_plot_f  <-data.frame(Barcodes = row.names(seurat.object.f@meta.data), Number_of_Genes = seurat.object.f@meta.data$nFeature_RNA, Number_of_Reads = seurat.object.f@meta.data$nCount_RNA, Mitochondrial_Genes_Fraction = seurat.object.f@meta.data$percent.mito, Ribosomal_Protein_Genes_Fraction = seurat.object.f@meta.data$percent.ribo )
   colnames(interactive_qc_plot_f) <- c("Barcodes","Number of Genes","Number of Reads","Mitochondrial Genes Fraction","Ribosomal Protein Genes Fraction")
   write.table(interactive_qc_plot_f, paste(Tempdir,"/","qc/","AfterFiltering.tsv",sep=""),row.names = F,sep="\t",quote = F)
+
+  qc_tsv <- data.frame(NAME = row.names(seurat.object.f@meta.data), Number_of_Genes = seurat.object.f@meta.data$nFeature_RNA, Number_of_Reads = seurat.object.f@meta.data$nCount_RNA, Mitochondrial_Genes_Fraction = seurat.object.f@meta.data$percent.mito, Ribosomal_Protein_Genes_Fraction = seurat.object.f@meta.data$percent.ribo )
+  qc_tsv_string <- sapply(qc_tsv, as.character)
+  qc_tsv_string_TYPE <- rbind(data.frame(NAME = "TYPE", Number_of_Genes = "numeric", Number_of_Reads = "numeric", Mitochondrial_Genes_Fraction = "numeric", Ribosomal_Protein_Genes_Fraction = "numeric"), qc_tsv_string)
+
+  qc_outfile <-paste(Tempdir,"/","qc/","qc_data.tsv", sep="")
+  write.table(data.frame(qc_tsv_string_TYPE),file = qc_outfile, row.names = F, col.names = T, sep="\t", quote = F, append = T)
+
 } 
 
 ####################################
