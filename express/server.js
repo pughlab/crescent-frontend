@@ -183,8 +183,11 @@ router.get(
     let python_process = null;
     switch(type) {
       case 'groups':
-        python_process = call_python('get_groups.py', {runID});
-        python_process.then((result) => {res.send(result)})
+        // use mongoose to get the projectID from the runID
+        Run.findOne({'runID': runID}, 'projectID').exec((err, {projectID}) => {
+          python_process = call_python('get_groups.py', {runID, projectID});
+          python_process.then((result) => {res.send(result)})
+        })
         break;
       case 'cellcount':
         python_process = call_python('cellcount.py', {runID});
