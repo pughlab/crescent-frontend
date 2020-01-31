@@ -31,7 +31,7 @@ def read_groups_file(runID, projectID):
 			# merge in the metadata but keep existing order of columns
 			for group in metadata_groups:
 				if group not in available_groups:
-					available_groups.append(col)
+					available_groups.append(group)
 		except Exception as e:
 			# this means the user-defined metadata is likely misconfigured, skip adding it
 			pass

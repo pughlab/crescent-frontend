@@ -213,8 +213,10 @@ router.get(
       params: {vis, group, runID}
     } = req;
     if (['tsne','bisne','umap'].includes(vis)){
-      python_process = call_python('scatter.py', {vis, group, runID});
-      python_process.then((result) => {res.send(result);})
+      Run.findOne({'runID': runID}, 'projectID').exec((err, {projectID}) => {
+        python_process = call_python('scatter.py', {vis, group, runID, projectID});
+        python_process.then((result) => {res.send(result);})
+      })
     }
     else{
       res.status(500).send("ERROR: unrecognized visualization type")
