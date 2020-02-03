@@ -110,19 +110,35 @@ def label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv
 	# the requested group is in the user-defined metadata.tsv
 	label_idx = metadata_tsv[0].index(str(group)) # column index of group
 	group_type = metadata_tsv[1][label_idx] # datatype
+	# master dictionary of all barcodes with x,y coordinates for the selected scatterplot
+	all_barcodes = {key: True for key in barcode_coords.keys()}
 	if group_type == 'group':
 		# colour by discrete label, for any barcode that doesn't have a label, give "NA"
-		all_barcodes = list(barcode_coords.keys())
-		if len(all_barcodes) == len(metadata_tsv[2:]):
-			for row in metadata_tsv[2:]:
-				barcode = str(row[0])
+		for row in metadata_tsv[2:]:
+			barcode = str(row[0])
+			if all_barcodes.pop(barcode, None):
+				# exists in all barcodes, ok to add (will be skipped otherwise)
 				label = str(row[label_idx])
 				add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells)
-		else:
-			# deal with missing cases
-			pass
+		# remaining keys in the dictionary weren't defined in metadata file
+		for barcode in all_barcodes.keys():
+			label = 'NA'
+			add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells)
 	elif group_type == 'numeric':
-			pass
+		# colour by gradient, grab all data and sort it
+		barcode_values = []
+		all_ints = True # track if all the values can be cast to int
+		for row in metadata_tsv[2:]:
+			barcode = str(row[0])
+			if all_barcodes.pop(barcode, None):
+				# store (barcode,value) for every barcode in the master list
+				num_value = float(row[label_idx])
+				all_ints = False if not num_value.is_integer() else all_ints
+				barcode_values.append((barcode,num_value))
+		barcode_values = sorted(barcode_values, key=lambda x: x[1])
+		# if all values are ints, cast them, otherwise round to 2 decimals
+		barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
+		add_barcodes(plotly_obj, group, barcode_values, barcode_coords, num_cells)
 	else:
 		helper.return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
 
@@ -146,6 +162,7 @@ def label_barcodes(barcode_coords, group, runID, projectID):
 	metadata_tsv = [line.rstrip('\n').split('\t') for line in open(metadata_path)] if os.path.isfile(metadata_path) else []
 
 	if group in groups_tsv[0]:
+		# groups tsv definition supercedes metadata
 		label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv)
 	elif group in metadata_tsv[0]:
 		# it's defined in the metadata, need to merge with groups_tsv
