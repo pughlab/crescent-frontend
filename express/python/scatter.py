@@ -96,10 +96,7 @@ def label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv):
 			all_ints = False if not num_value.is_integer() else all_ints
 			barcode_values.append((str(row[0]),num_value))
 		barcode_values = sorted(barcode_values, key=lambda x: x[1])
-		if all_ints:
-			barcode_values = [(x,int(y)) for x, y in barcode_values]
-		else:
-			barcode_values = [(x,round(y, 2)) for x, y in barcode_values]
+		barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
 		add_barcodes(plotly_obj, group, barcode_values, barcode_coords, num_cells)
 	else:
 		helper.return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")

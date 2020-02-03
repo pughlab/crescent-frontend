@@ -137,7 +137,6 @@ const VisualizationMenu = withRedux(
             R.compose(
               R.map(
                 ([cluster, features]) => (
-                  !console.log(cluster, features) &&
                   <Segment key={cluster} compact>
                     <Label attached='top' content={`Cluster ${cluster}`} />
                     {R.map(featureButton, features)}
