@@ -144,6 +144,7 @@ def categorize_barcodes(group, expression_values, runID):
 	with open(path) as group_definitions:
 		reader = csv.reader(group_definitions, delimiter="\t")
 		available_groups = next(reader)[1:]
+		group_types = next(reader)[1:]
 		try:
 			label_idx = available_groups.index(str(group)) + 1
 		except ValueError as e:
