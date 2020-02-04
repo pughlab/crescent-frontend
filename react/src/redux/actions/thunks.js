@@ -24,6 +24,15 @@ const fetchEndpoint = (endpoint) => {
   });
 }
 
+const fetchAvailableQC = () => (dispatch, getState) => {
+  // get active runID from state
+  const {
+    app: {run: {runID}}
+  } = getState()
+  console.log(`/express/available-qc/${runID}`)
+  return fetchEndpoint(`/express/available-qc/${runID}`)
+}
+
 const changeActiveGroup = newGroup => (dispatch, getState) => {
   return dispatch({
     type: 'CHANGE_ACTIVE_GROUP',
@@ -142,7 +151,8 @@ export default {
   fetchOpacity,
   fetchViolin,
   fetchTopExpressed,
-  fetchQC
+  fetchQC,
+  fetchAvailableQC
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING

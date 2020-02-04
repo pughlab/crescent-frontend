@@ -22,6 +22,7 @@ const QCPlot = withRedux(
   // use local state for data
   const [qcData, setQCData] = useState( [] )
 
+  // use the selected plot type to determine this
   useEffect(() => {
     setQCData( [] ) // set to loading
     fetchQC(runID).then((data) => {

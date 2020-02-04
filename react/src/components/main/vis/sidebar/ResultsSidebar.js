@@ -1,11 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Icon, Divider, Step, Header } from 'semantic-ui-react'
+import { Segment, Button, Icon, Step, Header } from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 import VisualizationMenu from '../results/VisualizationMenu';
+import QualityControlMenu from '../results/QualityControlMenu'
 
 
 const ResultsSidebar = withRedux(
@@ -95,7 +96,7 @@ const ResultsSidebar = withRedux(
                   {
                   R.ifElse(
                     R.equals('qc'),
-                    R.always(<Segment content={'View quality control (QC) results on left'} />),
+                    R.always(<QualityControlMenu/>),
                     R.always(<VisualizationMenu/>)
                   )(activeResult)
                   }
