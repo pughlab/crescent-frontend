@@ -48,16 +48,27 @@ def intialize_traces(header):
 
 	return result
 
-def get_qc_data(runID):
-	""" given a runID get the qc results """
-	# check directory existence
-	dir_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
-	if not os.path.isdir(dir_path):
-		# try command-line path
-		dir_path = "../../results/{runID}/SEURAT/qc".format(runID=runID)
-		if not os.path.isdir(dir_path):
-			helper.return_error("QC results folder not found: "+str(dir_path))
+def scatter_qc_plots(dir_path, runID, qc_type):
+	""" scatter plot labelled with tsv of chosen type """
+	from scatter import get_coordinates, label_with_groups 
+	barcode_coords = get_coordinates('tsne', runID)
+	traces = []
+	num_cells = helper.get_cellcount(runID)
+	qc_file = os.path.join(dir_path,'qc_data.tsv')
+	if not os.path.isfile(qc_file):
+		print(qc_file)
+		helper.return_error("qc_data.tsv file not found")
+	qc_data = [line.rstrip('\n').split('\t') for line in open(qc_file)]
+	if qc_type in qc_data[0]:
+		# do the thing
+		label_with_groups(traces, barcode_coords, num_cells, qc_type, qc_data)
+	else:
+		helper.return_error("selected QC data not found in file")
+	
+	return traces
 
+def before_after_plots(dir_path):
+	""" before/after filtering is chosen plot"""
 	traces = []
 	qc_files = ['BeforeFiltering.tsv','AfterFiltering.tsv']
 	for qc_file in qc_files:
@@ -80,7 +91,26 @@ def get_qc_data(runID):
 							trace['text'].append(row[header.index('Barcodes')])
 							trace['x'].append("After QC")
 							trace['y'].append(row[header.index(trace['name'].split("_")[0])])
-					
+
+	return traces
+
+def get_qc_data(runID, qc_type):
+	""" given a runID get the qc results """
+	# check directory existence
+	dir_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
+	if not os.path.isdir(dir_path):
+		# try command-line path
+		dir_path = "../../results/{runID}/SEURAT/qc".format(runID=runID)
+		if not os.path.isdir(dir_path):
+			helper.return_error("QC results folder not found: "+str(dir_path))
+
+	if qc_type == 'Before_After_Filtering':
+		traces = before_after_plots(dir_path)
+	elif qc_type in ['Number_of_Genes','Number_of_Reads','Mitochondrial_Genes_Fraction','Ribosomal_Protein_Genes_Fraction']:
+		traces = scatter_qc_plots(dir_path, runID, qc_type)
+	else:
+		helper.return_error(str(qc_type)+ " is not a valid option")
+
 	return traces
 
 def main():
@@ -93,7 +123,7 @@ def main():
 		print(json.dumps(error))
 		sys.exit()
 
-	qc_data = get_qc_data(runID)
+	qc_data = get_qc_data(runID, qc_type)
 	print(json.dumps(qc_data))
 	sys.stdout.flush()
 

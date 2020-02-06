@@ -12,7 +12,7 @@ const QCPlot = withRedux(
   ({
   app: {
     run: {runID},
-    toggle: {vis: {results: selectedQC}}
+    toggle: {vis: {results: {selectedQC}}}
   },
   actions: {
     thunks: {
@@ -26,7 +26,6 @@ const QCPlot = withRedux(
   // use the selected plot type to determine this
   useEffect(() => {
     setQCData( [] ) // set to loading
-    console.log('fetching')
     fetchQC(selectedQC).then((data) => {
       R.ifElse(
         R.has('error'),
@@ -37,7 +36,7 @@ const QCPlot = withRedux(
     })
     //TODO: return clear qc redux state change
   }, [selectedQC])
-
+ 
   return (
     // Empty qc data => loading
     R.isEmpty(qcData) ?
@@ -47,77 +46,93 @@ const QCPlot = withRedux(
         </Header>
       </Segment>
     :
-    // Plot data
-      <>
-      <Header textAlign='center' content='Quality Control' />
-      <Plot
-        config={{showTips: false}}
-        data={qcData}
-        useResizeHandler
-        style={{width: '100%', height:'90%'}}
-        layout={{
-          autosize: true,
-          grid: {rows: 1, columns: 4, pattern: 'independent'},
-          margin: {l:40, r:40, b:20, t:30},
-          showlegend: false,
-          hovermode: 'closest',
-          yaxis: {
-            range: [0, Math.max(...R.map(parseInt, qcData[0]['y']))+1]
-          },
-          yaxis2: {
-            range: [0, Math.round(Math.max(...R.map(parseInt, qcData[2]['y'])))+1]
-          },
-          yaxis3: {
-            range: [0,1.1]
-          },
-          yaxis4: {
-            range: [0,1.1]
-          },
-          annotations: [
-            {
-              "x": 0.11,
-              "y": 1,
-              "text": "Number of Genes",
-              "xref": "paper",
-              "yref": "paper",
-              "xanchor": "center",
-              "yanchor": "bottom",
-              "showarrow": false
+      // Plot data
+      R.equals('Before_After_Filtering', selectedQC) ?
+        <>
+        <Header textAlign='center' content='Quality Control' />
+        <Plot
+          config={{showTips: false}}
+          data={qcData}
+          useResizeHandler
+          style={{width: '100%', height:'90%'}}
+          layout={{
+            autosize: true,
+            grid: {rows: 1, columns: 4, pattern: 'independent'},
+            margin: {l:40, r:40, b:20, t:30},
+            showlegend: false,
+            hovermode: 'closest',
+            yaxis: {
+              range: [0, R.isNil(qcData[0]) ? 1.1 : Math.max(...R.map(parseInt, qcData[0]['y']))+1]
             },
-            {
-              "x": 0.37,
-              "y": 1,
-              "text": "Number of Reads",
-              "xref": "paper",
-              "yref": "paper",
-              "xanchor": "center",
-              "yanchor": "bottom",
-              "showarrow": false
+            yaxis2: {
+              range: [0, R.isNil(qcData[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcData[2]['y'])))+1]
             },
-            {
-              "x": 0.63,
-              "y": 1,
-              "text": "Mitochondrial Genes Fraction",
-              "xref": "paper",
-              "yref": "paper",
-              "xanchor": "center",
-              "yanchor": "bottom",
-              "showarrow": false
+            yaxis3: {
+              range: [0,1.1]
             },
-            {
-              "x": 0.89,
-              "y": 1,
-              "text": "Ribosomal Protein Genes Fraction",
-              "xref": "paper",
-              "yref": "paper",
-              "xanchor": "center",
-              "yanchor": "bottom",
-              "showarrow": false
-            }
-          ]
-        }}
-      />
-      </>
+            yaxis4: {
+              range: [0,1.1]
+            },
+            annotations: [
+              {
+                "x": 0.11,
+                "y": 1,
+                "text": "Number of Genes",
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "center",
+                "yanchor": "bottom",
+                "showarrow": false
+              },
+              {
+                "x": 0.37,
+                "y": 1,
+                "text": "Number of Reads",
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "center",
+                "yanchor": "bottom",
+                "showarrow": false
+              },
+              {
+                "x": 0.63,
+                "y": 1,
+                "text": "Mitochondrial Genes Fraction",
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "center",
+                "yanchor": "bottom",
+                "showarrow": false
+              },
+              {
+                "x": 0.89,
+                "y": 1,
+                "text": "Ribosomal Protein Genes Fraction",
+                "xref": "paper",
+                "yref": "paper",
+                "xanchor": "center",
+                "yanchor": "bottom",
+                "showarrow": false
+              }
+              ]
+          }}
+        />
+        </>
+      :
+        <Plot
+          config={{showTips: false}}
+          data={qcData}
+          useResizeHandler
+          style={{width: '100%', height:'100%'}}
+          layout={{
+            autosize: true,
+            hovermode: 'closest',
+            xaxis: {showgrid: false, ticks: '', showticklabels: false},
+            yaxis: {showgrid: false, ticks: '', showticklabels: false},
+            margin: {l:20, r:20, b:20, t:20},
+            legend: {"orientation": "v"}
+          }}
+        />
   )
 })
 
