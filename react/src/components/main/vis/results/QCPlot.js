@@ -32,11 +32,12 @@ const QCPlot = withRedux(
         R.always(console.log(data['error'])),
         setQCData
       )(data)
-      console.log(data)
     })
     //TODO: return clear qc redux state change
+    return setQCData([])
+  
   }, [selectedQC])
- 
+
   return (
     // Empty qc data => loading
     R.isEmpty(qcData) ?
