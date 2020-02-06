@@ -98,6 +98,10 @@ const fetchQC = selectedQC => (dispatch, getState) => {
   return fetchEndpoint(`/express/qc-data/${runID}/${selectedQC}`)
 }
 
+const fetchMetrics = runID => (dispatch, getState) => {
+  return fetchEndpoint(`/express/metadata/qc_metrics/${runID}`)
+}
+
 const initializeResults = runID => (dispatch, getState) => {
   dispatch({
     type: 'TOGGLE_LOADING_RESULTS',
@@ -158,6 +162,7 @@ export default {
   fetchTopExpressed,
   fetchQC,
   fetchAvailableQC,
+  fetchMetrics
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING

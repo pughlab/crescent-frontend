@@ -42,7 +42,8 @@ export default connect(
         fetchViolin: () => dispatch(Actions.thunks.fetchViolin()),
         fetchTopExpressed: runID => dispatch(Actions.thunks.fetchTopExpressed(runID)),
         fetchQC: runID => dispatch(Actions.thunks.fetchQC(runID)),
-        fetchAvailableQC: runID => dispatch(Actions.thunks.fetchAvailableQC(runID))
+        fetchAvailableQC: runID => dispatch(Actions.thunks.fetchAvailableQC(runID)),
+        fetchMetrics: runID => dispatch(Actions.thunks.fetchMetrics(runID))
       }
     }
   })
