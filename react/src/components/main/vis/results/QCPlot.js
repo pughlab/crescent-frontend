@@ -131,7 +131,7 @@ const QCPlot = withRedux(
             autosize: true,
             hovermode: 'closest',
             xaxis: {showgrid: false, ticks: '', showticklabels: false},
-            yaxis: {showgrid: false, ticks: '', showticklabels: false},
+            yaxis: {showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x"},
             margin: {l:20, r:20, b:20, t:20},
             legend: {"orientation": "v"}
           }}
