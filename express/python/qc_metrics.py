@@ -23,7 +23,8 @@ def get_qc_metrics(runID):
 			with open(filepath) as f:
 				for i, l in enumerate(f):
 					pass
-			metrics.append({qc_file.split('Filtering.tsv',1)[0] : str(i)})
+			metrics.append({'label': qc_file.split('Filtering.tsv',1)[0], 'count': str(i)})
+			#metrics.append({ : str(i)})
 		else:
 			helper.return_error(qc_file + " file not found")
 
