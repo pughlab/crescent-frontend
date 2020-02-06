@@ -49,7 +49,7 @@ const QCPlot = withRedux(
       // Plot data
       R.equals('Before_After_Filtering', selectedQC) ?
         <>
-        <Header textAlign='center' content='Quality Control' />
+        <Header textAlign='center' content={R.isNil(selectedQC) ? '' : selectedQC.replace(/_/g," ")} />
         <Plot
           config={{showTips: false}}
           data={qcData}
@@ -119,6 +119,8 @@ const QCPlot = withRedux(
         />
         </>
       :
+      <>
+        <Header textAlign='center' content={R.isNil(selectedQC) ? '' : selectedQC.replace(/_/g," ")} />
         <Plot
           config={{showTips: false}}
           data={qcData}
@@ -133,6 +135,7 @@ const QCPlot = withRedux(
             legend: {"orientation": "v"}
           }}
         />
+      </>
   )
 })
 

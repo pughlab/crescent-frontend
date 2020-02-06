@@ -103,7 +103,7 @@ const ScatterPlot = withRedux(
           xaxis: {showgrid: false, ticks: '', showticklabels: false},
           yaxis: {showgrid: false, ticks: '', showticklabels: false},
           margin: {l:20, r:20, b:20, t:20},
-          legend: {"orientation": "h"}
+          legend: {"orientation": "v"}
         }}
       />
     </Dimmer.Dimmable>

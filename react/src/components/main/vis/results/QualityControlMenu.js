@@ -28,10 +28,16 @@ const QualityControlMenu = withRedux(
       R.ifElse(
         R.has('error'),
         R.always(console.log(data['error'])),
-        setAvailableQCPlots
+        initializeQC
       )(data)
     });
   }, [])
+
+  const initializeQC = (data) => {
+    // set the dropdown values
+    setAvailableQCPlots(data)
+    setSelectedQC(R.isEmpty(data) ? '' : data[0]['value'])
+  }
 
   return (
     <Dropdown
