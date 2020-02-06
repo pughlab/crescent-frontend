@@ -60,8 +60,8 @@ const ViolinPlot = withRedux(
         layout={{
           autosize: true,
           hovermode: 'closest',
-          xaxis: {tickmode: 'linear'},
-          yaxis: {showgrid: false, title: {text: 'Normalized Expression'}},
+          xaxis: {tickmode: 'linear', automargin: true},
+          yaxis: {showgrid: false, title: {text: 'Normalized Expression'}, automargin: true},
           margin: {l:45, r:20, b:20, t:20},
         }}
       />
