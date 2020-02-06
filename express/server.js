@@ -260,12 +260,23 @@ router.get(
 );
 
 router.get(
-  `/qc-data/:runID`,
+  `/available-qc/:runID`,
   (req, res) => {
     const {
       params: {runID}
     } = req;
-    python_process = call_python('get_qc_data.py', {runID})
+    python_process = call_python('available_qc_data.py', {runID})
+    python_process.then((result) => {res.send(result);})
+  }
+);
+
+router.get(
+  `/qc-data/:runID/:qc_type`,
+  (req, res) => {
+    const {
+      params: {runID, qc_type}
+    } = req;
+    python_process = call_python('get_qc_data.py', {runID, qc_type})
     python_process.then((result) => {res.send(result);})
   }
 );

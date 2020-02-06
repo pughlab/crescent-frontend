@@ -26,6 +26,7 @@ export default connect(
         setActiveProjectKind: projectKind => dispatch(Actions.toggle.project.setActiveProjectKind({projectKind})),
         setActivePipelineStep: step => dispatch(Actions.toggle.vis.pipeline.setActivePipelineStep({step})),
         setActiveResult: result => dispatch(Actions.toggle.vis.results.setActiveResult({result})),
+        setSelectedQC: value => dispatch(Actions.toggle.vis.results.setSelectedQC({value}))
       },
 
       thunks: {
@@ -40,7 +41,8 @@ export default connect(
         fetchOpacity: () => dispatch(Actions.thunks.fetchOpacity()),
         fetchViolin: () => dispatch(Actions.thunks.fetchViolin()),
         fetchTopExpressed: runID => dispatch(Actions.thunks.fetchTopExpressed(runID)),
-        fetchQC: runID => dispatch(Actions.thunks.fetchQC(runID))
+        fetchQC: runID => dispatch(Actions.thunks.fetchQC(runID)),
+        fetchAvailableQC: runID => dispatch(Actions.thunks.fetchAvailableQC(runID))
       }
     }
   })
