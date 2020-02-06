@@ -271,12 +271,12 @@ router.get(
 );
 
 router.get(
-  `/qc-data/:runID`,
+  `/qc-data/:runID/:qc_type`,
   (req, res) => {
     const {
-      params: {runID}
+      params: {runID, qc_type}
     } = req;
-    python_process = call_python('get_qc_data.py', {runID})
+    python_process = call_python('get_qc_data.py', {runID, qc_type})
     python_process.then((result) => {res.send(result);})
   }
 );

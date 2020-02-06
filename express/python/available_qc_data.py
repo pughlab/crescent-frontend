@@ -8,10 +8,10 @@ import csv
 import helper
 
 dropdown_plots = {
-	"filtered": {
-		"key": 'filtered',
+	"Before_After_Filtering": {
+		"key": 'Before_After_Filtering',
 		"text": 'Before and After Filtering',
-		"value": 'filtered'
+		"value": 'Before_After_Filtering'
 	},
 	"Number_of_Genes": {
 		"key": 'Number_of_Genes',
@@ -47,7 +47,7 @@ def get_available_qc_data(runID):
 	available_plots = []
 	# if both before and after tsv files exist, can show filtering
 	if os.path.exists(os.path.join(dir_path, 'AfterFiltering.tsv')) and os.path.exists(os.path.join(dir_path, 'BeforeFiltering.tsv')):
-		available_plots.append(dropdown_plots['filtered'])
+		available_plots.append(dropdown_plots['Before_After_Filtering'])
 
 	qc_file = os.path.join(dir_path, 'qc_data.tsv')
 	if os.path.exists(qc_file):

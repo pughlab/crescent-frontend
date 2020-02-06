@@ -87,7 +87,7 @@ def main():
 	try:
 		# try to get the inputs
 		params = json.loads(sys.argv[1])
-		runID = params['runID']
+		runID, qc_type = params['runID'], params['qc_type']
 	except Exception as e:
 		error = {"error": "unable to read arguments: " + str(e)}
 		print(json.dumps(error))
