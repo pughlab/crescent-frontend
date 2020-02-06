@@ -18,11 +18,14 @@ const QualityControlMenu = withRedux(
     },
     thunks: {
       fetchAvailableQC,
+      fetchMetrics
     }
   }
 }) => {
 
   const [AvailableQCPlots, setAvailableQCPlots] = useState([])
+  const [qcMetrics, setMetrics] = useState([])
+
 
   useEffect(() => {
     fetchAvailableQC(runID).then((data) => {
@@ -34,6 +37,21 @@ const QualityControlMenu = withRedux(
     });
   }, [])
 
+  useEffect(() => {
+    fetchMetrics(runID).then((data) => {
+      R.ifElse(
+        R.has('error'),
+        R.always(console.log(data['error'])),
+        setMetrics
+      )(data)
+    })
+
+    console.log(qcMetrics)
+    return setMetrics([])
+
+  }, [runID])
+
+
   const initializeQC = (data) => {
     // set the dropdown values
     setAvailableQCPlots(data)
@@ -42,6 +60,24 @@ const QualityControlMenu = withRedux(
 
   return (
     <>
+    <Divider horizontal content='QC Metrics' />
+
+    <Segment basic textAlign='center'>
+    {
+      R.compose(
+        R.addIndex(R.map)(
+          ({label, count}, index) => (
+            <Button
+              key={index}
+              color={R.equals(1,index) ? 'orange' : 'blue'}
+              content={`Cells ${label} QC: ${count}`}
+              style={{margin: '0.25rem'}}
+            />
+          )
+        ),
+      )(qcMetrics)
+    }
+    </Segment>
     <Divider horizontal content='QC Plot Type' />
     <Dropdown
       selection

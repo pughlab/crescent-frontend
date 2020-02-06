@@ -200,6 +200,12 @@ router.get(
           res.send(result)
         })
         break;
+      case 'qc_metrics':
+        python_process = call_python('qc_metrics.py', {runID});
+        python_process.then((result) => {
+          res.send(result)
+        })
+        break;
       default:
         res.status(404).send("ERROR: invalid metadata endpoint")
     }
