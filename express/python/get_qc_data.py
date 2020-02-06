@@ -51,7 +51,7 @@ def intialize_traces(header):
 def scatter_qc_plots(dir_path, runID, qc_type):
 	""" scatter plot labelled with tsv of chosen type """
 	from scatter import get_coordinates, label_with_groups 
-	barcode_coords = get_coordinates('tsne', runID)
+	barcode_coords = get_coordinates('umap', runID)
 	traces = []
 	num_cells = helper.get_cellcount(runID)
 	qc_file = os.path.join(dir_path,'qc_data.tsv')
