@@ -9,7 +9,7 @@ import helper
 def get_qc_metrics(runID):
 	""" given a runID, return the cells before and after filtering """
 
-	metrics = {}
+	metrics = []
 	dir_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
 	if not os.path.isdir(dir_path):
 		dir_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
@@ -23,7 +23,7 @@ def get_qc_metrics(runID):
 			with open(filepath) as f:
 				for i, l in enumerate(f):
 					pass
-			metrics[qc_file.split('Filtering.tsv',1)[0]] = str(i)
+			metrics.append({qc_file.split('Filtering.tsv',1)[0] : str(i)})
 		else:
 			helper.return_error(qc_file + " file not found")
 
@@ -40,7 +40,7 @@ def main():
 		sys.exit()
 
 	metrics = get_qc_metrics(runID)
-	print(json.dumps({"qc_metrics": metrics}))
+	print(json.dumps(metrics))
 	sys.stdout.flush()
 
 if __name__ == "__main__":
