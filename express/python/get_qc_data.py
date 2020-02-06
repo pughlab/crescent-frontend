@@ -18,7 +18,7 @@ DEFAULT_VIOLIN = {
 	"meanline": {"visible": "true", "color":"black"},
 	"x": [],
 	"y": [],
-	"marker": {"opacity": 0.3},
+	"marker": {"opacity": 0.05},
 	"pointpos": 0
 }
 
