@@ -52,7 +52,7 @@ def get_available_qc_data(runID):
 	qc_file = os.path.join(dir_path, 'qc_data.tsv')
 	if os.path.exists(qc_file):
 		qc_data = open(qc_file, 'r')
-		header = qc_data.readline().split("\t")
+		header = [x.strip() for x in qc_data.readline().split("\t")]
 		for col in header:
 			if col in dropdown_plots:
 				available_plots.append(dropdown_plots[col])
