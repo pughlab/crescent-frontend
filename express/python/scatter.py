@@ -39,7 +39,8 @@ def add_barcodes(plotly_obj, column_name, barcode_values, barcode_coords, num_ce
 	#colours = ['#6d2b82', '#85318a', '#9c3993', '#b2429b', '#c74da4', '#da59ac', '#ec68b4', '#f97abb', '#ff91c1']
 	#colours = ['#200092', '#4f009c', '#7006a6', '#8d16b0', '#a726bb', '#c036c7', '#d748d4', '#ed59e3', '#ff6bff']
 	#colours = ['#2a0d82', '#491796', '#6623aa', '#8130be', '#9c3fd0', '#b74fe1', '#d161ef', '#e975fa', '#ff8cff']
-	colours = ['#2a0d82', '#4f0e90', '#6e129e', '#8b1aaa', '#a625b5', '#c034be', '#d846c5', '#ed5bc8', '#ff72c7']
+	#colours = ['#2a0d82', '#4f0e90', '#6e129e', '#8b1aaa', '#a625b5', '#c034be', '#d846c5', '#ed5bc8', '#ff72c7']
+	colours = ['#dfdfdf', '#6435c9']
 	#colours = ['#2a0d82', '#ff72c7']
 
 	gradient = polylinear_gradient(colours,len(barcode_values)+1)['hex']
