@@ -12,8 +12,11 @@ const QualityControlMenu = withRedux(
     run: { runID },
   },
   actions: {
+    toggle: {
+      setSelectedQC
+    },
     thunks: {
-      fetchAvailableQC
+      fetchAvailableQC,
     }
   }
 }) => {
@@ -30,17 +33,15 @@ const QualityControlMenu = withRedux(
     });
   }, [])
 
-  const checkResponse = (resp) => {
-    if(!resp.ok){throw Error(resp.statusText);}
-    return resp
-  }
-
   return (
     <Dropdown
       selection
       fluid
       options={AvailableQCPlots}
-      //options={[{key: 'Violin', text: 'Violin', value: 'violin'}, {key: 'Number of Genes', text: 'Num Genes',value: 'Number_of_genes'}]}
+      onChange={(e, {value}) => setSelectedQC(value)}
+      defaultValue={'Before_After_Filtering'}
+      // why doesn't this work?
+      //defaultValue={RA.isNotNilOrEmpty(AvailableQCPlots) ? AvailableQCPlots[0]['key'] : ''}
     />
   )
 })

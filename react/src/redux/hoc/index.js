@@ -26,6 +26,7 @@ export default connect(
         setActiveProjectKind: projectKind => dispatch(Actions.toggle.project.setActiveProjectKind({projectKind})),
         setActivePipelineStep: step => dispatch(Actions.toggle.vis.pipeline.setActivePipelineStep({step})),
         setActiveResult: result => dispatch(Actions.toggle.vis.results.setActiveResult({result})),
+        setSelectedQC: value => dispatch(Actions.toggle.vis.results.setSelectedQC({value}))
       },
 
       thunks: {

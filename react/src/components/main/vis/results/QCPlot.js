@@ -11,7 +11,8 @@ import * as RA from 'ramda-adjunct'
 const QCPlot = withRedux(
   ({
   app: {
-    run: {runID}
+    run: {runID},
+    toggle: {vis: {results: selectedQC}}
   },
   actions: {
     thunks: {
@@ -25,7 +26,8 @@ const QCPlot = withRedux(
   // use the selected plot type to determine this
   useEffect(() => {
     setQCData( [] ) // set to loading
-    fetchQC(runID).then((data) => {
+    console.log('fetching')
+    fetchQC(selectedQC).then((data) => {
       R.ifElse(
         R.has('error'),
         R.always(console.log(data['error'])),
@@ -34,7 +36,7 @@ const QCPlot = withRedux(
       console.log(data)
     })
     //TODO: return clear qc redux state change
-  }, [])
+  }, [selectedQC])
 
   return (
     // Empty qc data => loading

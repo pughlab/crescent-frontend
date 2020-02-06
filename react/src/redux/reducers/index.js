@@ -39,7 +39,8 @@ const initialState = {
         availableGroups: [], // ways to label the data (i.e. PatientID)
         availablePlots: [], // will store objects for each of the available plots
         isLoading: false,
-        topExpressed: [] // will store the top X expressed genes for the run
+        topExpressed: [],// will store the top X expressed genes for the run
+        selectedQC: null
       }
     }
   }
@@ -232,8 +233,8 @@ const MainViewReducer = {
         result
       )
       return setActiveResultToggle(state)
-    },
-}
+    }}
+
 
 const CWLReducer = {
   // Local data
@@ -323,6 +324,13 @@ const VisualizationReducer = {
     return R.set(
       R.lensPath(['toggle','vis','results','topExpressed']),
       features
+    )(state)
+  },
+  'SET_SELECTED_QC': (state, payload) => {
+    const {value} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','selectedQC']),
+      value
     )(state)
   },
   'CLEAR_RESULTS': (state, payload) => {

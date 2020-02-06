@@ -91,11 +91,17 @@ const setActiveResult = ({result}) => ({
   }
 })
 
-
 const setActiveGroup = ({group}) => ({
   type: 'SET_ACTIVE_GROUP',
   payload: {
     group
+  }
+})
+
+const setSelectedQC =  ({value}) => ({
+  type: 'SET_SELECTED_QC',
+  payload: {
+    value
   }
 })
 
@@ -110,7 +116,8 @@ const toggle = {
     },
     results: {
       setActiveResult,
-      setActiveGroup
+      setActiveGroup,
+      setSelectedQC
     }
   }
 }

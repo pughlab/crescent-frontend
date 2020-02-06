@@ -89,8 +89,13 @@ const fetchTopExpressed = runID => (dispatch, getState) => {
   });
 }
 
-const fetchQC = runID => (dispatch, getState) => {
-  return fetchEndpoint(`/express/qc-data/${runID}`)
+const fetchQC = selectedQC => (dispatch, getState) => {
+  const {
+    app: {
+      run: {runID},
+    }
+  } = getState()
+  return fetchEndpoint(`/express/qc-data/${runID}/${selectedQC}`)
 }
 
 const initializeResults = runID => (dispatch, getState) => {
@@ -152,7 +157,7 @@ export default {
   fetchViolin,
   fetchTopExpressed,
   fetchQC,
-  fetchAvailableQC
+  fetchAvailableQC,
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING
