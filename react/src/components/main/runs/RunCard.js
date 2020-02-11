@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup} from 'semantic-ui-react'
+import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup, Message} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -63,74 +63,76 @@ const RunCard = withRedux(({
     failed: 'circle exclamation'
   })
   return (
-    <Transition visible animation='fade down' duration={500} unmountOnHide={true} transitionOnMount={true}>
-    <Card color={color}>
-      <Button attached='top' color={color} animated='vertical'
-        onClick={() => setRun(run)}
-      >
-        <Button.Content visible>
-          <Icon
-            name={icon}
-            loading={R.equals('submitted', status)}
-            size='large' style={{marginLeft: 0}}
-          />
-        </Button.Content>
-        <Button.Content hidden>
-          <Icon name='eye' size='large' />
-        </Button.Content>
+    <Popup
+      size='large' wide='very'
+      trigger={
+        <Card color={color}
+          onClick={() => setRun(run)}
+        >
+      <Button attached='top' color={color} animated='vertical'>
+        <Icon
+          name={icon}
+          loading={R.equals('submitted', status)}
+          size='large'
+        />
       </Button>
       <Card.Content>
         <Card.Header>
           <Header size='small'>
             <Marquee text={name} />
           </Header>
+          <Label.Group>
+            <Label content='Owner' detail={creatorName} />
+            {/* <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} /> */}
+            {
+              RA.isNotNil(submittedOn) &&
+                <Label content='Submitted' detail={`${moment(submittedOn).format('D MMMM YYYY, h:mm a')}`} />
+            }
+            {/* {
+              RA.isNotNil(completedOn) &&
+                <Label content='Completed' detail={`${moment(completedOn).format('D MMMM YYYY, h:mm a')}`}/>
+            } */}
+            {
+              RA.isNotNil(submittedOn) &&
+                <Label content='Time Elapsed' detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
+            }
+          </Label.Group>
         </Card.Header>
       </Card.Content>
-      <Card.Content>
-        <Button.Group widths={currentUserCanDeleteRun ? 2 : 1}>
-        <Modal
-          trigger={
-            <Button basic fluid animated='vertical'>
-              <Button.Content visible><Icon name='sliders horizontal'/></Button.Content>
-              <Button.Content hidden content='Parameters' />
-            </Button>
-          }
-        >
-          <Modal.Header as={Header} textAlign='center' content='Run Parameters' />
-          <Modal.Content>
-          {
-            RA.isNotNil(params) ?
-              R.compose(
-                ({
-                  singleCell,
-                  numberGenes: {min: minNumberGenes, max: maxNumberGenes},
-                  percentMito: {min: minPercentMito, max: maxPercentMito},
-                  // percentRibo: {min: minPercentRibo, max: maxPercentRibo},
-                  resolution,
-                  principalDimensions,
-                  normalizationMethod,
-                  returnThreshold,
-                }) => (
-                  <Label.Group>
-                    <Label content='Single Cell Input Type' detail={singleCell} />
-                    <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
-                    <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
-                    {/* <Label content='Ribosomal Protein Genes Fraction' detail={`Min = ${minPercentRibo} | Max = ${maxPercentRibo}`} /> */}
-                    <Label content='Normalization Method' detail={normalizationMethod} />
-                    <Label content='Clustering Resolution' detail={resolution} />
-                    <Label content='PCA Dimensions' detail={principalDimensions} />
-                    <Label content='Return Threshold' detail={returnThreshold} />
-                  </Label.Group>
-                ),
-                JSON.parse
-              )(params)
-            :
-              <Divider horizontal content='No parameters saved yet' />
-          }
-          </Modal.Content>
-        </Modal>
-        
+
+    </Card>
+    
+      }
+    >
+      <Message>
+        <Message.Header content='Run Parameters' />
         {
+          RA.isNotNil(params) ?
+            R.compose(
+              ({
+                singleCell,
+                numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+                percentMito: {min: minPercentMito, max: maxPercentMito},
+                resolution,
+                principalDimensions,
+              }) => (
+                <Label.Group>
+                  <Label content='Single Cell Input Type' detail={singleCell} />
+                  <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
+                  <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
+                  <Label content='Clustering Resolution' detail={resolution} />
+                  <Label content='PCA Dimensions' detail={principalDimensions} />
+                </Label.Group>
+              ),
+              JSON.parse
+            )(params)
+          :
+            <Divider horizontal content='No parameters saved yet' />
+        }
+      </Message>
+
+
+        {/* {
           currentUserCanDeleteRun &&
             <Modal
               basic size='small'
@@ -155,44 +157,8 @@ const RunCard = withRedux(({
                 </Segment>
               </Modal.Content>
             </Modal>
-        }
-        </Button.Group>
-      </Card.Content>
-      <Card.Content>
-        <Label.Group>
-          <Label content='Owner' detail={creatorName} />
-          {/* <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} /> */}
-          {
-            RA.isNotNil(submittedOn) &&
-              <Label content='Submitted' detail={`${moment(submittedOn).format('D MMMM YYYY, h:mm a')}`} />
-          }
-          {/* {
-            RA.isNotNil(completedOn) &&
-              <Label content='Completed' detail={`${moment(completedOn).format('D MMMM YYYY, h:mm a')}`}/>
-          } */}
-          {
-            RA.isNotNil(submittedOn) &&
-              <Label content='Time Elapsed' detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
-          }
-        </Label.Group>
-      </Card.Content>
-      {/* <Card.Content textAlign='center'>
-        <Label
-          // Color based on whether run is complete or not
-          color={color}
-        >
-          {
-            R.prop(status, {
-              pending: 'PENDING USER SUBMISSION',
-              submitted: 'SUBMITTED AND RUNNING',
-              completed: 'RUN COMPLETED',
-              failed: 'FAILED'
-            })
-          }
-        </Label>
-      </Card.Content> */}
-    </Card>
-    </Transition>
+        } */}
+    </Popup>
   )
 })
 

@@ -45,13 +45,8 @@ const ProjectCard = withRedux(({
       trigger={
         <Card link onClick={() => setProject(project)} color='grey'>
 
-        <Button attached='top' color='grey' animated='vertical'>
-          <Button.Content visible>
-            <Icon name='folder open' size='large' />
-          </Button.Content>
-          <Button.Content hidden>
-            <Icon name='eye' size='large' />
-          </Button.Content>
+        <Button attached='top' color='grey'>
+          <Icon name='folder open' size='large' />
         </Button>
 
         <Card.Content>
