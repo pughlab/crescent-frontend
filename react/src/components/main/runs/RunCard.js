@@ -82,11 +82,11 @@ const RunCard = withRedux(({
             <Marquee text={name} />
           </Header>
           <Label.Group>
-            <Label content='Owner' detail={creatorName} />
+            <Label content={<Icon style={{margin: 0}} name='user' />}  detail={creatorName} />
             {/* <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} /> */}
             {
               RA.isNotNil(submittedOn) &&
-                <Label content='Submitted' detail={`${moment(submittedOn).format('D MMMM YYYY, h:mm a')}`} />
+                <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={`${moment(submittedOn).format('D MMMM YYYY, h:mm a')}`} />
             }
             {/* {
               RA.isNotNil(completedOn) &&
@@ -94,7 +94,15 @@ const RunCard = withRedux(({
             } */}
             {
               RA.isNotNil(submittedOn) &&
-                <Label content='Time Elapsed' detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
+                <Label content={<Icon style={{margin: 0}} name='clock' />} detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
+            }
+            {
+              RA.isNotNil(submittedOn) &&
+                <Label content={<Icon style={{margin: 0}} name='file archive' />} detail='1'/>
+            }
+            {
+              RA.isNotNil(submittedOn) &&
+                <Label content={<Icon style={{margin: 0}} name='certificate' />} detail='1000'/>
             }
           </Label.Group>
         </Card.Header>
