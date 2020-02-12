@@ -83,7 +83,7 @@ const RunsStatusLegend = ({
           },
           {
             key: 'completed',
-            icon: 'circle outline check',
+            icon: 'circle check',
             color: 'green',
             title: `${completedCount} Completed`,
             description: 'Successfully'
