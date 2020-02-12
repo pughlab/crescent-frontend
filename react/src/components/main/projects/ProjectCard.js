@@ -69,8 +69,8 @@ const ProjectCard = withRedux(({
             <Label content={<Icon style={{margin: 0}} name='file archive' />} detail={'1'} />
             <Label content={<Icon style={{margin: 0}} name='certificate' />} detail={'1000000'} />
             <Label content={<Icon style={{margin: 0}} name='save' />} detail={filesize(datasetSize)} />
-            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='cancer' />
-            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='mouse' />
+            {/* <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='cancer' />
+            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='mouse' /> */}
 
 
           </Label.Group>
