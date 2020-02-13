@@ -90,7 +90,7 @@ const RunsStatusLegend = ({
           },
           {
             key: 'failed',
-            icon: 'circle exclamation',
+            icon: 'times circle',
             color: 'red',
             title: `${failedCount} Failed`,
             description: 'Errored'

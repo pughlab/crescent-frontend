@@ -59,8 +59,8 @@ const RunCard = withRedux(({
   const icon = R.prop(status, {
     pending: 'circle outline',
     submitted: 'circle notch',
-    completed: 'circle outline check',
-    failed: 'circle exclamation'
+    completed: 'circle check outline',
+    failed: 'times circle outline'
   })
   return (
     <Popup

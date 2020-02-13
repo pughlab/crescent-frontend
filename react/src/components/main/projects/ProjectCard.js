@@ -98,7 +98,7 @@ const ProjectCard = withRedux(({
                       pending: 'circle outline',
                       submitted: 'circle notch',
                       completed: 'circle outline check',
-                      failed: 'circle exclamation'
+                      failed: 'times circle outline'
                     })}
                     loading={R.equals('submitted', status)}
                   />
