@@ -37,3 +37,18 @@ services:
     depends_on:
       - minio 
       - mongo
+  wes-server:
+    image: candig/wes-server:${WES_VERSION}
+    container_name: wes-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /var/lib/docker/volumes:/var/lib/docker/volumes:rw
+      - /tmp:/tmp
+    ports:
+      - "${WES_PORT}:8080"
+    entrypoint: ["wes-server"]
+    command:
+      - --port=8080
+      - --backend=${WES_BACKEND}
+      - --opt=runner=${WES_CWL_RUNNER}
+
