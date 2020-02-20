@@ -63,53 +63,20 @@ const RunCard = withRedux(({
     failed: 'times circle outline'
   })
   return (
+    <Card color={color}
+      onClick={() => setRun(run)}
+    >
+
     <Popup
       size='large' wide='very'
       trigger={
-        <Card color={color}
-          onClick={() => setRun(run)}
-        >
-      <Button attached='top' color={color} animated='vertical'>
-        <Icon
-          name={icon}
-          loading={R.equals('submitted', status)}
-          size='large'
-        />
-      </Button>
-      <Card.Content>
-        <Card.Header>
-          <Header size='small'>
-            <Marquee text={name} />
-          </Header>
-          <Label.Group>
-            <Label content={<Icon style={{margin: 0}} name='user' />}  detail={creatorName} />
-            {/* <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} /> */}
-            {
-              RA.isNotNil(submittedOn) &&
-                <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={`${moment(submittedOn).format('D MMMM YYYY, h:mm a')}`} />
-            }
-            {/* {
-              RA.isNotNil(completedOn) &&
-                <Label content='Completed' detail={`${moment(completedOn).format('D MMMM YYYY, h:mm a')}`}/>
-            } */}
-            {
-              RA.isNotNil(submittedOn) &&
-                <Label content={<Icon style={{margin: 0}} name='clock' />} detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
-            }
-            {
-              RA.isNotNil(submittedOn) &&
-                <Label content={<Icon style={{margin: 0}} name='file archive' />} detail='1'/>
-            }
-            {
-              RA.isNotNil(submittedOn) &&
-                <Label content={<Icon style={{margin: 0}} name='certificate' />} detail='1000'/>
-            }
-          </Label.Group>
-        </Card.Header>
-      </Card.Content>
-
-    </Card>
-    
+        <Button attached='top' color={color} animated='vertical'>
+          <Icon
+            name={icon}
+            loading={R.equals('submitted', status)}
+            size='large'
+          />
+        </Button>
       }
     >
       <Message>
@@ -167,6 +134,38 @@ const RunCard = withRedux(({
             </Modal>
         } */}
     </Popup>
+    <Card.Content>
+        <Card.Header>
+          <Header size='small'>
+            <Marquee text={name} />
+          </Header>
+          <Label.Group>
+            <Label content={<Icon style={{margin: 0}} name='user' />}  detail={creatorName} />
+            {/* <Label content='Created' detail={`${moment(createdOn).format('D MMMM YYYY, h:mm a')}`} /> */}
+            {
+              RA.isNotNil(submittedOn) &&
+                <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={`${moment(submittedOn).format('D MMMM YYYY, h:mm a')}`} />
+            }
+            {/* {
+              RA.isNotNil(completedOn) &&
+                <Label content='Completed' detail={`${moment(completedOn).format('D MMMM YYYY, h:mm a')}`}/>
+            } */}
+            {
+              RA.isNotNil(submittedOn) &&
+                <Label content={<Icon style={{margin: 0}} name='clock' />} detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
+            }
+            {
+              RA.isNotNil(submittedOn) &&
+                <Label content={<Icon style={{margin: 0}} name='file archive' />} detail='1'/>
+            }
+            {
+              RA.isNotNil(submittedOn) &&
+                <Label content={<Icon style={{margin: 0}} name='certificate' />} detail='1000'/>
+            }
+          </Label.Group>
+        </Card.Header>
+      </Card.Content>
+    </Card>
   )
 })
 
