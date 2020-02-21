@@ -81,8 +81,8 @@ const CreateProjectButton = withRedux(({
     onCompleted: ({createMergedProject: newProject}) => {
       if (RA.isNotNil(newProject)) {
         // Should call refetch before setting to new project
-        // refetch()
-        // setProject(newProject)
+        refetch()
+        setProject(newProject)
       }
     }
   })
