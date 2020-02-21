@@ -20,6 +20,7 @@ import NewRunModal from './NewRunModal'
 import ArchiveProjectModal from '../projects/ArchiveProjectModal'
 import ShareProjectModal from '../projects/ShareProjectModal'
 import AddMetadataModal from '../projects/AddMetadataModal'
+import MergedProjectsDetails from '../projects/MergedProjectsDetails'
 
 
 const RunsStatusLegend = ({
@@ -113,7 +114,8 @@ const RunsCardList = withRedux(({
       description,
       externalUrls,
       createdOn: projectCreatedOn,
-      createdBy: {name: creatorName, userID: creatorUserID}
+      createdBy: {name: creatorName, userID: creatorUserID},
+      mergedProjects
     },
     view: {
       isGuest
@@ -250,6 +252,7 @@ const RunsCardList = withRedux(({
             <ArchiveProjectModal />
           </Button.Group>
       }
+      <MergedProjectsDetails />
       <Segment attached='bottom'>
         <Divider horizontal>
           <Header content={'Project Runs'} subheader={'Please refresh the page to see latest updates to runs'} />

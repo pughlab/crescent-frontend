@@ -21,6 +21,11 @@ const typeDefs = gql`
 
     runs: [Run]
 
+    mergedProjectIDs: [ID]
+    mergedProjects: [Project]
+
+    uploadedDatasetIDs: [ID]
+
     datasetSize: Int
   }
   type Query {
@@ -31,6 +36,13 @@ const typeDefs = gql`
     projects(userID: ID): [Project]
   }
   type Mutation {
+    createMergedProject(
+      userID: ID,
+      name: String,
+      description: String,
+      projectIDs: [ID]!
+    ): Project
+
     createProject(
       userID: ID,
       name: String,

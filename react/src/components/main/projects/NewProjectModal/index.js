@@ -176,6 +176,8 @@ const NewProjectModal = withRedux(({
               description, setDescription,
               datasetDirectories, setDatasetDirectories,
               existingDatasets, setExistingDatasets,
+
+              refetch
             }}
           />
         </Segment>

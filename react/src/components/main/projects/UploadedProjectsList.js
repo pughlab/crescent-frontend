@@ -50,6 +50,11 @@ const UploadedProjectsList = withRedux(({
           status
         }
 
+        mergedProjects {
+          projectID
+          name
+        }
+
         datasetSize
       }
     }

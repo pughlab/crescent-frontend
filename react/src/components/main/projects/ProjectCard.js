@@ -33,7 +33,9 @@ const ProjectCard = withRedux(({
     //   name,
     //   status
     // }
-    datasetSize
+    datasetSize,
+
+    mergedProjects
   } = project
 
 
@@ -43,7 +45,6 @@ const ProjectCard = withRedux(({
       <Card link onClick={() => setProject(project)} color='grey'>
         <Popup
             size='large' wide='very'
-            inverted
             trigger={
               <Button attached='top' color='grey' animated='vertical'>
                 <Button.Content>
@@ -51,7 +52,26 @@ const ProjectCard = withRedux(({
                 </Button.Content>
               </Button>
             }
-            content={description}
+            content={
+              <Segment.Group>
+                <Segment>
+                {description}
+                </Segment>
+                {/* <Segment as={Label.Group}>
+                {
+                  R.compose(
+                    R.addIndex(R.map)(
+                      ({name, projectID}, index) => (
+                        <Label key={index}>
+                          {name}
+                        </Label>
+                      )
+                    )
+                  )(mergedProjects)
+                }
+                </Segment> */}
+              </Segment.Group>
+            }
           />
         <Card.Content>
           <Card.Header>

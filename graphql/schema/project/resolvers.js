@@ -30,6 +30,31 @@ const resolvers = {
     }
   },
   Mutation: {
+    createMergedProject: async (
+      parent,
+      {
+        userID,
+        name, description,
+        projectIDs = [],
+      },
+      {
+        Datasets,
+        Projects,
+        minioClient 
+      }
+    ) => {
+      try {
+        const project = await Projects.create({
+          name, description,
+          createdBy: userID,
+          mergedProjectIDs: projectIDs
+        })
+        return project
+      } catch(error) {
+        console.error(error)
+      }
+    },
+
     // Create a project given a userID
     // TODO: move userID into context
     createProject: async (
@@ -157,6 +182,17 @@ const resolvers = {
         console.error(error)
       }
 
+    },
+
+    mergedProjects: async ({mergedProjectIDs}, variables, {Projects}) => {
+      try {
+        return await Promise.all(R.map(
+          projectID => Projects.findOne({projectID}),
+          mergedProjectIDs
+        ))
+      } catch(error) {
+        console.error(error)
+      }
     }
   }
 }

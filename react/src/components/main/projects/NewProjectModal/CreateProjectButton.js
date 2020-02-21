@@ -18,17 +18,77 @@ import {Form, Card, Header, Message, Button, Segment, Modal, Label, Divider, Ico
 import withRedux from '../../../../redux/hoc'
 
 
-const CreateProjectButton = ({
+const CreateProjectButton = withRedux(({
+  app: {user: {userID}},
+  actions: {
+    setProject
+  },
+
   name, setName,
   description, setDescription,
   datasetDirectories, setDatasetDirectories,
-  existingDatasets, setExistingDatasets
+  existingDatasets, setExistingDatasets,
+
+  refetch
 }) => {
+  // GQL mutation to create a project
+  const [createMergedProject, {loading, data, error}] = useMutation(gql`
+    mutation CreateMergedProject(
+      $userID: ID!,
+      $name: String!,
+      $description: String!,
+      $projectIDs: [ID]!,
+    ) {
+      createMergedProject(
+        userID: $userID,
+        name: $name,
+        description: $description,
+        projectIDs: $projectIDs
+      ) {
+        projectID
+        name
+        kind
+        description
+        createdOn
+        createdBy {
+          name
+          userID
+        }
+        
+        runs {
+          runID
+          name
+          status
+        }
+
+        mergedProjects {
+          name
+          projectID
+        }
+
+        datasetSize
+      }
+    }
+  `, {
+    variables: {
+      userID, name, description,
+      projectIDs: existingDatasets,
+    },
+    onCompleted: ({createMergedProject: newProject}) => {
+      if (RA.isNotNil(newProject)) {
+        // Should call refetch before setting to new project
+        refetch()
+        setProject(newProject)
+      }
+    }
+  })
+
 
   const noDetails = R.any(R.isEmpty, [name, description])
   const noExistingDatasets = R.isEmpty(existingDatasets)
   const noUploadedDatasets = R.isEmpty(datasetDirectories)
   const disabled = R.any(RA.isTrue, [
+    loading,
     noDetails,
     R.and(noExistingDatasets, noUploadedDatasets)
   ])
@@ -68,10 +128,11 @@ const CreateProjectButton = ({
 
       <Button size='huge' fluid
         disabled={disabled}
+        onClick={() => createMergedProject()}
         content='Create Project'
       />
     </Segment>
   )
-}
+})
 
 export default CreateProjectButton
