@@ -68,7 +68,7 @@ const NewRunModal = withRedux(({
           />
           <Form.Field>
           {
-
+            RA.isNotNil(mergedProjects) &&
             R.ifElse(
               R.isEmpty,
               R.always(null),
