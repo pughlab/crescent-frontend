@@ -46,6 +46,40 @@ const resolvers = {
     ) => {
       try {
         console.log('datasets', datasets)
+        // const putUploadIntoBucket = async (bucketName, objectName, file) => {
+        // }
+
+        // let mergedDatasetIDs = []
+
+        // for (const {directoryName, matrix, features, barcodes, metadata} of datasets) {
+        //   console.log(directoryName)
+        //   const dataset = await Datasets.create({})
+        //   const {datasetID} = dataset
+        //   const bucketName = `dataset-${datasetID}`
+        //   await minioClient.makeBucket(bucketName)
+
+        //   const {filename, mimetype, encoding, createReadStream} = await features
+        //   console.log(filename)
+        //   const stream = createReadStream()
+        //   minioClient.putObject(bucketName, 'test', stream, (err, etag) => console.log(err, etag))
+
+        //   // await putUploadIntoBucket(bucketName, 'matrix', matrix)
+        //   // await putUploadIntoBucket(bucketName, 'features', features)
+        //   // await putUploadIntoBucket(bucketName, ' barcodes', barcodes)
+        //   // if (R.not(R.isNil(metadata))) {
+        //   //   await putUploadIntoBucket(bucketName, 'metadata', metadata)
+        //   // }
+          
+        //   mergedDatasetIDs.push(datasetID)
+        // }
+
+        // const uploadedDatasets = await Promise.all(
+        //   R.compose(
+        //     R.map(makeDatasetBucket)
+        //   )(datasets)
+        // )
+        // console.log(uploadedDatasets)
+
         // const {filename, mimetype, encoding, createReadStream} = await file
         // const stream = createReadStream()
         // const newUpload = new Upload({ bucketName: userID, filename});
@@ -56,12 +90,12 @@ const resolvers = {
         //   }
         // })
         // return null
-        for (const dataset of datasets) {
-          console.log(Object.values(dataset))
-          const file = dataset[0]
-          const {filename, mimetype, encoding, createReadStream} = await file
-          console.log(filename, mimetype, encoding, createReadStream)
-        }
+        // for (const dataset of datasets) {
+        //   console.log(Object.values(dataset))
+        //   const file = dataset[0]
+        //   const {filename, mimetype, encoding, createReadStream} = await file
+        //   console.log(filename, mimetype, encoding, createReadStream)
+        // }
         const project = await Projects.create({
           name, description,
           createdBy: userID,

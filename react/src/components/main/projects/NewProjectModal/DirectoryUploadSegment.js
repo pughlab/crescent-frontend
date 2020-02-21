@@ -21,55 +21,47 @@ const DatasetCard = ({
   dataset,
   datasetDirectories, setDatasetDirectories
 }) => {
-  //   // GQL mutation to create a project
-  // const [createDataset, {loading, data, error}] = useMutation(gql`
-  //   mutation CreateDataset(
-  //     $files: [Upload!]!
-  //     $matrix: Upload!
-  //     $features: Upload!
-  //     $barcodes: Upload!
-  //     $metadata: Upload
-  //   ) {
-  //     createDataset(
-  //       files: $files
-  //       matrix: $matrix
-  //       features: $features
-  //       barcodes: $barcodes
-  //       metadata: $metadata
-  //     ) {
-  //       datasetID
-  //     }
-  //   }
-  // `, {
-  //   variables: {
-  //     ...dataset,
-  //     files: [dataset.matrix]
-  //   },
-  //   onCompleted: ({createDataset}) => {
-  //     console.log('createDataset', createDataset)
-  //   }
-  // })
-  // useEffect(() => {
-  //   console.log('upload dataset', dataset)
-  //   createDataset()
-  // }, [dataset])
   // Get directory name from matrix file
-  const dirName = R.compose(
-    R.prop(1),
-    R.split('/'),
-    R.prop('path'),
-    R.prop('matrix')
-  )(dataset)
+  const {directoryName, matrix, features, barcodes, metadata} = dataset
 
-  const hasMetadata = R.compose(
-    RA.isNotNil,
-    R.prop('metadata')
-  )(dataset)
+  const hasMetadata = RA.isNotNil(metadata)
+
+  // GQL mutation to create a project
+  const [createDataset, {loading, data, error}] = useMutation(gql`
+    mutation CreateDataset(
+      $matrix: Upload!
+      $features: Upload!
+      $barcodes: Upload!
+      $metadata: Upload
+    ) {
+      createDataset(
+        matrix: $matrix
+        features: $features
+        barcodes: $barcodes
+        metadata: $metadata
+      ) {
+        datasetID
+      }
+    }
+  `, {
+    variables: {
+      matrix,
+      features,
+      barcodes,
+      metadata,
+    },
+    onCompleted: ({createDataset}) => {
+      console.log('created dataset', createDataset)
+    }
+  })
+  useEffect(() => {
+    createDataset()
+  }, [dataset])
 
   return (
     <Card>
       <Card.Content>
-        <Card.Header as={Header} sub content={dirName} />
+        <Card.Header as={Header} sub content={directoryName} />
       </Card.Content>
       <Card.Content>
         <Label content='Metadata' detail={hasMetadata ? 'Yes' : 'No'} />
@@ -94,34 +86,6 @@ const DatasetCard = ({
 const DirectoryUploadSegment = ({
   datasetDirectories, setDatasetDirectories
 }) => {
-      // GQL mutation to create a project
-    const [createDataset, {loading, data, error}] = useMutation(gql`
-      mutation CreateDataset(
-        $files: [Upload!]!
-        # $matrix: Upload!
-        # $features: Upload!
-        # $barcodes: Upload!
-        # $metadata: Upload
-      ) {
-        createDataset(
-          files: $files
-          # matrix: $matrix
-          # features: $features
-          # barcodes: $barcodes
-          # metadata: $metadata
-        ) {
-          datasetID
-        }
-      }
-    `, {
-      // variables: {
-      //   ...dataset,
-      //   files: [dataset.matrix]
-      // },
-      onCompleted: ({createDataset}) => {
-        console.log('createDataset', createDataset)
-      }
-    })
   const [datasetDirs, setDatasetDirs] = useState([])
   const isValidDatasetDir = R.compose(
     R.all(RA.isNotNil),
@@ -129,7 +93,6 @@ const DirectoryUploadSegment = ({
   )
   const onDrop = useCallback(acceptedFiles => {
     console.log(acceptedFiles)
-    createDataset({variables: {files: acceptedFiles}})
     // Group flat array of files into first level directory
     // [] => {directoryName: [File]}
     const groupByDirectory = R.groupBy(R.compose(
@@ -153,11 +116,12 @@ const DirectoryUploadSegment = ({
       },
       {matrix: null, features: null, barcodes: null, metadata: null}
     )
+
     R.compose(
       setDatasetDirs,
       R.filter(isValidDatasetDir),
-      R.map(checkDirectoryForRequiredFiles),
-      R.values,
+      R.map(([directoryName, files]) => ({directoryName, ... checkDirectoryForRequiredFiles(files)})),
+      R.toPairs,
       groupByDirectory
     )(acceptedFiles)
   }, [])

@@ -6,19 +6,19 @@ const DatasetSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true
   },
-  // MinIO object names
-  barcodesID: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true
-  },
-  featuresID: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true
-  },
-  matrixID: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true
-  }
+  // // MinIO object names
+  // barcodesID: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true
+  // },
+  // featuresID: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true
+  // },
+  // matrixID: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true
+  // }
 })
 
 module.exports = DatasetSchema

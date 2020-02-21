@@ -39,7 +39,7 @@ const CreateProjectButton = withRedux(({
       $name: String!,
       $description: String!,
       $projectIDs: [ID]!,
-      $datasets: [[Upload]]
+      $datasets: [DatasetDirectory]
     ) {
       createMergedProject(
         userID: $userID,
@@ -76,7 +76,7 @@ const CreateProjectButton = withRedux(({
     variables: {
       userID, name, description,
       projectIDs: existingDatasets,
-      datasets: R.map(R.values, datasetDirectories)
+      datasets: datasetDirectories
     },
     onCompleted: ({createMergedProject: newProject}) => {
       if (RA.isNotNil(newProject)) {

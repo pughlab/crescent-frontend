@@ -4,7 +4,11 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-import ApolloClient from 'apollo-boost'
+
+import { ApolloClient } from 'apollo-client'
+import { InMemoryCache } from 'apollo-cache-inmemory'
+import {createUploadLink} from 'apollo-upload-client'
+
 import { ApolloProvider } from '@apollo/react-hooks'
 
 import { Provider as ReduxProvider } from 'react-redux'
@@ -32,10 +36,20 @@ const store = createStore(
 )
 const persistor = persistStore(store)
 
+// const client = new ApolloClient({
+//   uri: process.env.NODE_ENV === 'development'
+//     ? process.env.REACT_APP_GRAPHQL_URL_DEV
+//     : process.env.REACT_APP_GRAPHQL_URL_PROD
+// })
+
+
+const link = createUploadLink({uri: process.env.NODE_ENV === 'development'
+? process.env.REACT_APP_GRAPHQL_URL_DEV
+: process.env.REACT_APP_GRAPHQL_URL_PROD})
+
 const client = new ApolloClient({
-  uri: process.env.NODE_ENV === 'development'
-    ? process.env.REACT_APP_GRAPHQL_URL_DEV
-    : process.env.REACT_APP_GRAPHQL_URL_PROD
+  cache: new InMemoryCache(),
+  link
 })
 
 

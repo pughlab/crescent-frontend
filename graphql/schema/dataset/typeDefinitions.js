@@ -11,11 +11,10 @@ const typeDefs = gql`
 
   type Mutation {
     createDataset(
-      files: [Upload!]!
-      # matrix: Upload!
-      # features: Upload!
-      # barcodes: Upload!
-      # metadata: Upload
+      matrix: Upload!
+      features: Upload!
+      barcodes: Upload!
+      metadata: Upload
     ): Dataset
   }
 `

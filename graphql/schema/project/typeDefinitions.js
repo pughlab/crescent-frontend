@@ -36,10 +36,12 @@ const typeDefs = gql`
     projects(userID: ID): [Project]
   }
   
-  type File {
-    filename: String!
-    mimetype: String!
-    encoding: String!
+  input DatasetDirectory {
+    directoryName: String!
+    matrix: Upload!
+    features: Upload!
+    barcodes: Upload!
+    metadata: Upload
   }
 
   type Mutation {
@@ -48,7 +50,7 @@ const typeDefs = gql`
       name: String,
       description: String,
       projectIDs: [ID]!
-      datasets: [[Upload]]
+      datasets: [DatasetDirectory]
     ): Project
 
     createProject(

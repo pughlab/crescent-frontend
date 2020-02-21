@@ -12,12 +12,25 @@ const resolvers = {
   },
   Mutation: {
     // replaceMetadata
-    createDataset: async (parent, {files, matrix, features, barcodes, metadata}, {Datasets, minioClient}) => {
-      console.log(files)
-      const file = files[0] 
-      const {filename} = await file
-      console.log(filename)
-      return null
+    createDataset: async (parent, {matrix, features, barcodes, metadata}, {Datasets, minioClient}) => {
+      try {
+        const dataset = await Datasets.create({})
+        const {datasetID} = dataset
+        const bucketName = `dataset-${datasetID}`
+        await minioClient.makeBucket(bucketName)
+
+        const {filename, mimetype, encoding, createReadStream} = await matrix
+        console.log(filename)
+        const stream = createReadStream()
+        await minioClient.putObject(bucketName, filename, stream)
+
+        // for (const file of [matrix, features, barcodes, ... R.isNil(metadata) ? [] : [metadata]]) {
+
+        // }
+        return dataset
+      } catch(error) {
+        console.log(error)
+      }
     }
   }
 }
