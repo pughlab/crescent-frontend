@@ -121,6 +121,7 @@ const MergedProjectsDetails = withRedux(({
   },
 }) => { 
   return (
+    RA.isNotNil(mergedProjects) &&
     RA.isNotEmpty(mergedProjects) &&
     <Segment attached>
       <Divider horizontal>
