@@ -21,6 +21,38 @@ const DatasetCard = ({
   dataset,
   datasetDirectories, setDatasetDirectories
 }) => {
+  //   // GQL mutation to create a project
+  // const [createDataset, {loading, data, error}] = useMutation(gql`
+  //   mutation CreateDataset(
+  //     $files: [Upload!]!
+  //     $matrix: Upload!
+  //     $features: Upload!
+  //     $barcodes: Upload!
+  //     $metadata: Upload
+  //   ) {
+  //     createDataset(
+  //       files: $files
+  //       matrix: $matrix
+  //       features: $features
+  //       barcodes: $barcodes
+  //       metadata: $metadata
+  //     ) {
+  //       datasetID
+  //     }
+  //   }
+  // `, {
+  //   variables: {
+  //     ...dataset,
+  //     files: [dataset.matrix]
+  //   },
+  //   onCompleted: ({createDataset}) => {
+  //     console.log('createDataset', createDataset)
+  //   }
+  // })
+  // useEffect(() => {
+  //   console.log('upload dataset', dataset)
+  //   createDataset()
+  // }, [dataset])
   // Get directory name from matrix file
   const dirName = R.compose(
     R.prop(1),
@@ -62,6 +94,34 @@ const DatasetCard = ({
 const DirectoryUploadSegment = ({
   datasetDirectories, setDatasetDirectories
 }) => {
+      // GQL mutation to create a project
+    const [createDataset, {loading, data, error}] = useMutation(gql`
+      mutation CreateDataset(
+        $files: [Upload!]!
+        # $matrix: Upload!
+        # $features: Upload!
+        # $barcodes: Upload!
+        # $metadata: Upload
+      ) {
+        createDataset(
+          files: $files
+          # matrix: $matrix
+          # features: $features
+          # barcodes: $barcodes
+          # metadata: $metadata
+        ) {
+          datasetID
+        }
+      }
+    `, {
+      // variables: {
+      //   ...dataset,
+      //   files: [dataset.matrix]
+      // },
+      onCompleted: ({createDataset}) => {
+        console.log('createDataset', createDataset)
+      }
+    })
   const [datasetDirs, setDatasetDirs] = useState([])
   const isValidDatasetDir = R.compose(
     R.all(RA.isNotNil),
@@ -69,6 +129,7 @@ const DirectoryUploadSegment = ({
   )
   const onDrop = useCallback(acceptedFiles => {
     console.log(acceptedFiles)
+    createDataset({variables: {files: acceptedFiles}})
     // Group flat array of files into first level directory
     // [] => {directoryName: [File]}
     const groupByDirectory = R.groupBy(R.compose(

@@ -59,11 +59,10 @@ const ViewProjectModal = withRedux(({
   )(data)
   return (
     <Modal
-      inverted
       trigger={
-        <Button>
+        <Label as={Button}>
           {name}
-        </Button>
+        </Label>
       }
     >
       <Modal.Content>
@@ -127,7 +126,7 @@ const MergedProjectsDetails = withRedux(({
       <Divider horizontal>
         <Header content={'Merged Projects'} />
       </Divider>
-      <Button.Group size='large'>
+      <Label.Group size='large'>
       {
         R.compose(
           R.addIndex(R.map)(
@@ -137,7 +136,7 @@ const MergedProjectsDetails = withRedux(({
           )
         )(mergedProjects)
       }
-      </Button.Group>
+      </Label.Group>
     </Segment>
   )
 })

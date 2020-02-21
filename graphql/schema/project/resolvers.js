@@ -36,6 +36,7 @@ const resolvers = {
         userID,
         name, description,
         projectIDs = [],
+        datasets = []
       },
       {
         Datasets,
@@ -44,6 +45,23 @@ const resolvers = {
       }
     ) => {
       try {
+        console.log('datasets', datasets)
+        // const {filename, mimetype, encoding, createReadStream} = await file
+        // const stream = createReadStream()
+        // const newUpload = new Upload({ bucketName: userID, filename});
+        // const {objectName} = await newUpload.save()
+        // minioClient.putObject(`${userID}`,`${objectName}`, stream, function(err, etag) {
+        //   if (err) {
+        //     return console.log(err)
+        //   }
+        // })
+        // return null
+        for (const dataset of datasets) {
+          console.log(Object.values(dataset))
+          const file = dataset[0]
+          const {filename, mimetype, encoding, createReadStream} = await file
+          console.log(filename, mimetype, encoding, createReadStream)
+        }
         const project = await Projects.create({
           name, description,
           createdBy: userID,
@@ -179,7 +197,7 @@ const resolvers = {
           stream.on('end', () => {resolve(size)})
         })
       } catch(error) {
-        console.error(error)
+        // console.error(error)
       }
 
     },

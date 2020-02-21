@@ -10,8 +10,9 @@ const Models = require('../database/mongo');
 const UserSchema = require('./schema/user')
 const ProjectSchema = require('./schema/project')
 const RunSchema = require('./schema/run')
+const DatasetSchema = require('./schema/dataset')
 
-const schemas = [UserSchema, ProjectSchema, RunSchema]
+const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema]
 
 const minioClient = require('../database/minio-client');
 

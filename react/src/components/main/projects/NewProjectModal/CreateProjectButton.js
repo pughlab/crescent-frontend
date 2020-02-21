@@ -31,6 +31,7 @@ const CreateProjectButton = withRedux(({
 
   refetch
 }) => {
+  console.log(datasetDirectories)
   // GQL mutation to create a project
   const [createMergedProject, {loading, data, error}] = useMutation(gql`
     mutation CreateMergedProject(
@@ -38,12 +39,14 @@ const CreateProjectButton = withRedux(({
       $name: String!,
       $description: String!,
       $projectIDs: [ID]!,
+      $datasets: [[Upload]]
     ) {
       createMergedProject(
         userID: $userID,
         name: $name,
         description: $description,
-        projectIDs: $projectIDs
+        projectIDs: $projectIDs,
+        datasets: $datasets
       ) {
         projectID
         name
@@ -73,12 +76,13 @@ const CreateProjectButton = withRedux(({
     variables: {
       userID, name, description,
       projectIDs: existingDatasets,
+      datasets: R.map(R.values, datasetDirectories)
     },
     onCompleted: ({createMergedProject: newProject}) => {
       if (RA.isNotNil(newProject)) {
         // Should call refetch before setting to new project
-        refetch()
-        setProject(newProject)
+        // refetch()
+        // setProject(newProject)
       }
     }
   })

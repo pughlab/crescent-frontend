@@ -35,12 +35,20 @@ const typeDefs = gql`
 
     projects(userID: ID): [Project]
   }
+  
+  type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
+  }
+
   type Mutation {
     createMergedProject(
       userID: ID,
       name: String,
       description: String,
       projectIDs: [ID]!
+      datasets: [[Upload]]
     ): Project
 
     createProject(
