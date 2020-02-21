@@ -16,7 +16,9 @@ import withRedux from '../../../../redux/hoc'
 
 import DirectoryUploadSegment from './DirectoryUploadSegment'
 import CreateProjectButton from './CreateProjectButton'
-import ExistingDatasets from './ExistingDatasets'
+// import ExistingDatasets from './ExistingProjects'
+
+import DataForm from './DataForm'
 
 // const DatasetCard = ({
 //   dataset
@@ -145,25 +147,40 @@ const NewProjectModal = withRedux(({
       )
     },
     {
-      name: 'existing',
-      label: 'Existing Projects',
-      icon: 'folder open',
+      name: 'data',
+      label: 'Data',
+      icon: 'database',
       component: (
         <Segment basic>
-          <ExistingDatasets {...{existingDatasets, setExistingDatasets}} />
+          <DataForm
+            {...{
+              existingDatasets, setExistingDatasets,
+              datasetDirectories, setDatasetDirectories
+            }}
+          />
         </Segment>
       )
     },
-    {
-      name: 'upload',
-      label: 'Upload Dataset(s)',
-      icon: 'cloud upload',
-      component: (
-        <Segment basic>
-          <DirectoryUploadSegment {...{datasetDirectories, setDatasetDirectories}} />
-        </Segment>
-      )
-    },
+    // {
+    //   name: 'existing',
+    //   label: 'Existing Projects',
+    //   icon: 'folder open',
+    //   component: (
+    //     <Segment basic>
+    //       <ExistingDatasets {...{existingDatasets, setExistingDatasets}} />
+    //     </Segment>
+    //   )
+    // },
+    // {
+    //   name: 'upload',
+    //   label: 'Upload Dataset(s)',
+    //   icon: 'cloud upload',
+    //   component: (
+    //     <Segment basic>
+    //       <DirectoryUploadSegment {...{datasetDirectories, setDatasetDirectories}} />
+    //     </Segment>
+    //   )
+    // },
     {
       name: 'submit',
       label: 'Create Project',

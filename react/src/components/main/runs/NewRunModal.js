@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup} from 'semantic-ui-react'
+import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup, List} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -14,11 +14,13 @@ import {queryIsNotNil} from '../../../utils'
 const NewRunModal = withRedux(({
   app: {
     user: {userID},
-    project: {projectID}
+    project: {projectID, mergedProjects}
   },
   actions: {setRun},
   refetch
 }) => {
+  console.log(mergedProjects)
+
   const [runName, setRunName] = useState('')
   const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
     mutation CreateUnsubmittedRun($name: String!, $projectID: ID!, $userID: ID!) {
@@ -64,6 +66,31 @@ const NewRunModal = withRedux(({
             placeholder='Enter a Run Name'
             onChange={(e, {value}) => {setRunName(value)}}
           />
+          <Form.Field>
+          {
+
+            R.ifElse(
+              R.isEmpty,
+              R.always(null),
+              mergedProjects => (
+                <List celled size='large'>
+                {
+                  R.map(({projectID, name}) => (
+                    <List.Item key={projectID}>
+                      <List.Header content={name} />
+                      <Label.Group>
+                        <Label content='Dataset 1' />
+                      </Label.Group>
+                      
+                    </List.Item>
+                  ), mergedProjects)
+                }
+                </List>
+              )
+            )(mergedProjects)
+          }
+          </Form.Field>
+
           <Form.Button fluid
             content='Create new run'
             onClick={() => createUnsubmittedRun()}

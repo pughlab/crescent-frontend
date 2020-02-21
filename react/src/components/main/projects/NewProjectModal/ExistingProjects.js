@@ -13,7 +13,7 @@ import {queryIsNotNil} from '../../../../utils'
 
 import {useDropzone} from 'react-dropzone'
 
-import {Form, Card, Header, Menu, Button, Transition, Modal, Label, Divider, Icon, Image, Popup, Grid, Step} from 'semantic-ui-react'
+import {Form, Card, Header, Menu, Button, Transition, Modal, Label, Divider, Icon, Image, Popup, Grid, Step, Segment} from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
@@ -77,7 +77,7 @@ const ProjectCard = ({
   )
 }
 
-const PublicDatasets = ({
+const PublicProjects = ({
   existingDatasets, setExistingDatasets
 }) => {
   // GQL query to find all public projects
@@ -105,6 +105,14 @@ const PublicDatasets = ({
     )(data)
 
   return (
+    R.isEmpty(curatedProjects) ? 
+    <Segment placeholder>
+      <Header icon>
+        <Icon name='exclamation' />
+        No Projects
+      </Header>
+    </Segment>
+    :
     <Card.Group itemsPerRow={3}>
     {
       R.addIndex(R.map)(
@@ -116,7 +124,7 @@ const PublicDatasets = ({
   )
 }
 
-const UploadedDatasets = withRedux(({
+const UploadedProjects = withRedux(({
   app: {
     user: {userID}
   },
@@ -146,6 +154,14 @@ const UploadedDatasets = withRedux(({
     R.always([])
   )(data)
   return (
+    R.isEmpty(userProjects) ?
+    <Segment placeholder>
+      <Header icon>
+        <Icon name='exclamation' />
+        No Projects
+      </Header>
+    </Segment>
+    :
     <Card.Group itemsPerRow={3}>
     {
       R.addIndex(R.map)(
@@ -157,39 +173,4 @@ const UploadedDatasets = withRedux(({
   )
 })
 
-const ExistingDatasets = ({
-  existingDatasets, setExistingDatasets
-}) => {
-  const [projectKind, setProjectKind] = useState('published')
-  const isProjectKind = R.equals(projectKind)
-
-  return (
-    <>
-      <Button.Group fluid widths={2}>
-        <Button color='black'
-          onClick={() => setProjectKind('published')}
-          active={isProjectKind('published')} 
-          basic={R.not(isProjectKind('published'))}
-        >
-          Public Data
-        </Button>
-        <Button color='black'
-          onClick={() => setProjectKind('uploaded')}
-          active={isProjectKind('uploaded')} 
-          basic={R.not(isProjectKind('uploaded'))}
-        >
-          Uploaded Data
-        </Button>
-      </Button.Group>
-      <Divider horizontal />
-      {
-        isProjectKind('published') ? 
-          <PublicDatasets {...{existingDatasets, setExistingDatasets}} />
-        :
-          <UploadedDatasets {...{existingDatasets, setExistingDatasets}} />
-      }
-    </>
-  )
-}
-
-export default ExistingDatasets
+export {PublicProjects, UploadedProjects}
