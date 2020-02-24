@@ -20,7 +20,11 @@
     "ramda": "^0.26.1",
     "recursive-readdir": "^2.2.2"
   },
+  "resolutions": {
+    "fs-capacitor": "5.0.0"
+  },
   "scripts": {
+    "preinstall": "npx npm-force-resolutions",
     "express": "nodemon express/server.js",
     "graphql": "nodemon graphql/index.js",
     "server": "concurrently \"npm run express\" \"npm run graphql\"",
