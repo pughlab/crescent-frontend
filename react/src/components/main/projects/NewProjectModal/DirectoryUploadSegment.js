@@ -56,7 +56,7 @@ const DatasetCard = ({
   })
   useEffect(() => {
     createDataset()
-  }, [dataset])
+  }, [])
 
   return (
     <Card>
