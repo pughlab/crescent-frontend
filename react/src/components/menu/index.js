@@ -27,18 +27,18 @@ const MenuComponent = withRedux(({
 }) => {
   const isMainView = R.equals(main)
   return (
-    <Segment attached='top' style={{height: '5rem'}} as={Grid}>
+    <Segment attached='top' as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
-      {
-        <Button.Group fluid size='mini'>
-          <Popup inverted size='large'
+        <Button.Group fluid>
+          <Popup inverted
             trigger={
-              <Button icon basic inverted color='grey' size='large'
+              <Button icon basic inverted color='grey'
+                size='large'
                 onClick={() => toggleProjects(isGuest ? 'published' : 'uploaded')}
               >
                 {/* <Icon color='black' name='home' size='large'/> */}
-                <Icon size='huge'>
-                  <Image src={Logo} centered/>
+                <Icon size='big'>
+                  <Image src={Logo}centered/>
                 </Icon>
               </Button>
             }
@@ -47,9 +47,9 @@ const MenuComponent = withRedux(({
             }
             position='bottom center'
           />
-          <Popup inverted size='large'
+          <Popup inverted
             trigger={
-              <Button icon basic inverted color='grey' size='large'
+              <Button icon basic inverted color='grey'
                 onClick={() => {
                   if (isMainView('runs')) {
                     toggleProjects()
@@ -65,7 +65,7 @@ const MenuComponent = withRedux(({
                 // disabled={R.or(isMainView('projects'), R.isNil(project))}
                 disabled={isMainView('projects')}
               >
-                <Icon color='black' name='left arrow' size='big'/>
+                <Icon color='black' name='left arrow' size='large' />
               </Button>
             }
             content={
@@ -78,7 +78,6 @@ const MenuComponent = withRedux(({
             position='bottom center'
           />
         </Button.Group>
-      }
       </Grid.Column>
       <Grid.Column width={12} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
         {
