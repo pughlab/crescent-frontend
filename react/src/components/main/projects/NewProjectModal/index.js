@@ -14,101 +14,9 @@ import {Form, Card, Header, Menu, Button, Segment, Modal, Label, Divider, Icon, 
 
 import withRedux from '../../../../redux/hoc'
 
-import DirectoryUploadSegment from './DirectoryUploadSegment'
 import CreateProjectButton from './CreateProjectButton'
-// import ExistingDatasets from './ExistingProjects'
 
 import DataForm from './DataForm'
-
-// const DatasetCard = ({
-//   dataset
-// }) => {
-//   // Get directory name from matrix file
-//   const dirName = R.compose(
-//     R.prop(1),
-//     R.split('/'),
-//     R.prop('path'),
-//     R.prop('matrix')
-//   )(dataset)
-
-//   const hasMetadata = R.compose(
-//     RA.isNotNil,
-//     R.prop('metadata')
-//   )(dataset)
-
-//   return (
-//     <Card>
-//       <Card.Content>
-//         <Card.Header as={Header} sub content={dirName} />
-//       </Card.Content>
-//       <Card.Content>
-//         <Label content='Metadata' detail={hasMetadata ? 'Yes' : 'No'} />
-//       </Card.Content>
-//     </Card>
-//   )
-// }
-
-// const DirectoryUploadSegment = ({
-//   datasetDirectories, setDatasetDirectories
-// }) => {
-//   const emptyDatasetDir = {
-//     matrix: null,
-//     features: null,
-//     barcodes: null,
-//     metadata: null
-//   }
-//   const [datasetDir, setDatasetDir] = useState(emptyDatasetDir)
-//   const isValidDatasetDir = R.compose(
-//     R.all(RA.isNotNil),
-//     R.props(['matrix', 'features', 'barcodes'])
-//   )
-//   const onDrop = useCallback(acceptedFiles => {
-//     console.log(acceptedFiles)
-
-
-//     // Check that directory has expected files
-//     const uploadedDatasetDir = R.reduce(
-//       (dataset, file) => {
-//         const nameEquals = filename => R.compose(R.equals(filename), R.prop('name'))
-//         const addToDataset = R.assoc(R.__, R.__, dataset)
-//         return R.cond([
-//           [nameEquals('matrix.mtx.gz'), addToDataset('matrix')],
-//           [nameEquals('barcodes.tsv.gz'), addToDataset('barcodes')],
-//           [nameEquals('features.tsv.gz'), addToDataset('features')],
-//           [nameEquals('metadata.tsv'), addToDataset('metadata')],
-//           [R.T, R.always(dataset)]
-//         ])(file)
-//       },
-//       {matrix: null, features: null, barcodes: null, metadata: null},
-//       acceptedFiles
-//     )
-//     if (isValidDatasetDir(uploadedDatasetDir)) {
-//       setDatasetDir(uploadedDatasetDir)
-//     }
-//   }, [])
-
-//   useEffect(() => {
-//     if (isValidDatasetDir(datasetDir)) {
-//       setDatasetDirectories(R.append(datasetDir, datasetDirectories))
-//     }
-//   }, [datasetDir])
-//   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
-//   return (
-//     <div {...getRootProps()}>
-//     <Segment placeholder>
-//       <Header textAlign='center' content='Drag and drop single-cell sample dataset directory' />
-//       <Card.Group itemsPerRow={4}>
-//       {
-//         R.addIndex(R.map)(
-//           (dataset, index) => <DatasetCard {...{dataset}} key={index} />,
-//           datasetDirectories
-//         )
-//       }
-//       </Card.Group>
-//     </Segment>
-//     </div>
-//   )
-// }
 
 const NewProjectModal = withRedux(({
   app: {user: {userID}},
@@ -161,26 +69,6 @@ const NewProjectModal = withRedux(({
         </Segment>
       )
     },
-    // {
-    //   name: 'existing',
-    //   label: 'Existing Projects',
-    //   icon: 'folder open',
-    //   component: (
-    //     <Segment basic>
-    //       <ExistingDatasets {...{existingDatasets, setExistingDatasets}} />
-    //     </Segment>
-    //   )
-    // },
-    // {
-    //   name: 'upload',
-    //   label: 'Upload Dataset(s)',
-    //   icon: 'cloud upload',
-    //   component: (
-    //     <Segment basic>
-    //       <DirectoryUploadSegment {...{datasetDirectories, setDatasetDirectories}} />
-    //     </Segment>
-    //   )
-    // },
     {
       name: 'submit',
       label: 'Create Project',
@@ -208,68 +96,6 @@ const NewProjectModal = withRedux(({
     setExistingDatasets([])
     setCurrentContent('details')
   }
-  // Minio object names for uploaded files in temporary bucket
-  // const [uploadedBarcodesFile, setUploadedBarcodesFile] = useState(null)    
-  // const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
-  // const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
-  // GQL mutation to create a project
-  // const [createProject, {loading, data, error}] = useMutation(gql`
-  //   mutation CreateProject(
-  //     $userID: ID!,
-  //     $name: String!,
-  //     $description: String!,
-  //     $barcodesObjectName: ID!,
-  //     $genesObjectName: ID!,
-  //     $matrixObjectName: ID!,
-  //   ) {
-  //     createProject(
-  //       userID: $userID,
-  //       name: $name,
-  //       description: $description,
-  //       barcodesObjectName: $barcodesObjectName,
-  //       genesObjectName: $genesObjectName,
-  //       matrixObjectName: $matrixObjectName,
-  //     ) {
-  //       projectID
-  //       name
-  //       kind
-  //       description
-  //       createdOn
-  //       createdBy {
-  //         name
-  //         userID
-  //       }
-        
-  //       runs {
-  //         runID
-  //         name
-  //         status
-  //       }
-
-  //       datasetSize
-  //     }
-  //   }
-  // `, {
-  //   variables: {
-  //     userID, name, description,
-  //     barcodesObjectName: uploadedBarcodesFile,
-  //     genesObjectName: uploadedGenesFile,
-  //     matrixObjectName: uploadedMatrixFile,
-  //   },
-  //   onCompleted: ({createProject: newProject}) => {
-  //     if (RA.isNotNil(newProject)) {
-  //       // Should call refetch before setting to new project
-  //       refetch()
-  //       setProject(newProject)
-  //     }
-  //   }
-  // })
-  // const disableSubmit = R.any(RA.isNilOrEmpty)([
-  //   name, description,
-  //   uploadedBarcodesFile,
-  //   uploadedGenesFile,
-  //   uploadedMatrixFile
-  // ])
   
   return (
     <Modal
