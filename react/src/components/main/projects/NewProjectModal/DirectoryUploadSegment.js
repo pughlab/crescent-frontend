@@ -21,6 +21,20 @@ const DatasetCard = ({
   datasetID,
   newProjectDispatch
 }) => {
+  const {loading, data, error} = useQuery(gql`
+    query DatasetDetails(
+      $datasetID: ID!
+    ) {
+      dataset(datasetID: $datasetID) {
+        datasetID
+        name
+        hasMetadata
+      }
+    }
+  `, {
+    variables: {datasetID}
+  })
+
   // Mutation to delete uploaded dataset
   const [deleteDataset, {}] = useMutation(gql`
     mutation DeleteDataset(
@@ -42,13 +56,20 @@ const DatasetCard = ({
     }
   })
 
+  const dataset = R.ifElse(
+    queryIsNotNil('dataset'),
+    R.prop('dataset'),
+    R.always(null)
+  )(data)
+  console.log(dataset)
   return (
+    RA.isNotNil(dataset) &&
     <Card>
       <Card.Content>
-        <Card.Header as={Header} sub content={datasetID} />
+        <Card.Header as={Header} sub content={dataset.name} />
       </Card.Content>
       <Card.Content>
-        {/* <Label content='Metadata' detail={datasetID ? 'Yes' : 'No'} /> */}
+        <Label content='Metadata' detail={dataset.hasMetadata ? 'Yes' : 'No'} />
       </Card.Content>
       <Card.Content>
         <Button fluid animated='vertical'
@@ -73,12 +94,14 @@ const DirectoryUploadSegment = ({
   // GQL mutation to create a dataset on mount
   const [createDataset, {}] = useMutation(gql`
     mutation CreateDataset(
+      $name: String!
       $matrix: Upload!
       $features: Upload!
       $barcodes: Upload!
       $metadata: Upload
     ) {
       createDataset(
+        name: $name
         matrix: $matrix
         features: $features
         barcodes: $barcodes
@@ -130,7 +153,7 @@ const DirectoryUploadSegment = ({
       R.compose(
         // Call GQL mutation for each valid directory dropped
         R.map(
-          ({directoryName, ...files}) => createDataset({variables: {...files}})
+          ({directoryName, ...files}) => createDataset({variables: {name: directoryName, ...files}})
         ),
         // Filter objects
         R.filter(isValidDatasetDir),

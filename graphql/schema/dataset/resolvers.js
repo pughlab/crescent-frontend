@@ -1,21 +1,35 @@
 const R = require('ramda')
-
-const {
-  ApolloError
-} = require('apollo-server')
+const RA = require('ramda-adjunct')
+const {ApolloError} = require('apollo-server')
 
 const resolvers = {
+  Dataset: {
+    hasMetadata: async ({datasetID}, variables, {Datasets, minioClient}) => {
+      try {
+        const objectStat = await minioClient.statObject(`dataset-${datasetID}`, 'metadata.tsv')
+        return RA.isNotNil(objectStat)
+      } catch(error) {
+        console.log(error)
+      }
+    }
+  },
+
   Query: {
     dataset: async (parent, {datasetID}, {Datasets}) => {
-      return null
+      try {
+        const dataset = await Datasets.findOne({datasetID})
+        return dataset
+      } catch(error) {
+        console.log(error)
+      }
     }
   },
   Mutation: {
     // replaceMetadata
-    createDataset: async (parent, {matrix, features, barcodes, metadata}, {Datasets, minioClient}) => {
+    createDataset: async (parent, {name, matrix, features, barcodes, metadata}, {Datasets, minioClient}) => {
       try {
         // Make dataset document and bucket
-        const dataset = await Datasets.create({})
+        const dataset = await Datasets.create({name})
         const {datasetID} = dataset
         const bucketName = `dataset-${datasetID}`
         await minioClient.makeBucket(bucketName)

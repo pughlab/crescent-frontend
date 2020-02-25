@@ -3,6 +3,8 @@ const { gql } = require('apollo-server')
 const typeDefs = gql`
   type Dataset {
     datasetID: ID
+    name: String
+    hasMetadata: Boolean
   }
 
   type Query {
@@ -11,6 +13,7 @@ const typeDefs = gql`
 
   type Mutation {
     createDataset(
+      name: String!
       matrix: Upload!
       features: Upload!
       barcodes: Upload!

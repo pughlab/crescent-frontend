@@ -6,6 +6,10 @@ const DatasetSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     auto: true
   },
+  name: {
+    type: String,
+    required: true
+  }
   // // MinIO object names
   // barcodesID: {
   //   type: mongoose.Schema.Types.ObjectId,
