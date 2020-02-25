@@ -21,6 +21,7 @@ import ArchiveProjectModal from '../projects/ArchiveProjectModal'
 import ShareProjectModal from '../projects/ShareProjectModal'
 import AddMetadataModal from '../projects/AddMetadataModal'
 import MergedProjectsDetails from '../projects/MergedProjectsDetails'
+import UploadedDatasetsDetails from '../projects/UploadedDatasetsDetails'
 
 
 const RunsStatusLegend = ({
@@ -214,7 +215,16 @@ const RunsCardList = withRedux(({
 
   return (
     <Container>
-      <Segment attached='top'>
+      {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
+      {
+        R.and(isUploadedProject, currentUserIsProjectCreator) && 
+          <Button.Group attached='top' widths={3} size='large'>
+            <ShareProjectModal />
+            <AddMetadataModal />
+            <ArchiveProjectModal />
+          </Button.Group>
+      }
+      <Segment attached>
         <Divider horizontal>
           <Header content={`${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`} />
         </Divider>
@@ -243,16 +253,11 @@ const RunsCardList = withRedux(({
           </>
         }
       </Segment>
-      {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
-      {
-        R.and(isUploadedProject, currentUserIsProjectCreator) && 
-          <Button.Group attached widths={3}>
-            <ShareProjectModal />
-            <AddMetadataModal />
-            <ArchiveProjectModal />
-          </Button.Group>
-      }
+
       <MergedProjectsDetails />
+
+      <UploadedDatasetsDetails />
+
       <Segment attached='bottom'>
         <Divider horizontal>
           <Header content={'Project Runs'} subheader={'Please refresh the page to see latest updates to runs'} />

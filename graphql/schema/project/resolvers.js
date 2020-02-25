@@ -195,6 +195,16 @@ const resolvers = {
       } catch(error) {
         console.error(error)
       }
+    },
+
+    uploadedDatasets: async ({uploadedDatasetIDs}, variables, {Datasets}) => {
+      try {
+        return await Datasets.find({
+          datasetID: {$in: uploadedDatasetIDs}
+        })
+      } catch(error) {
+        console.error(error)
+      }
     }
   }
 }

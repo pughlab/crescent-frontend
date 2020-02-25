@@ -25,6 +25,7 @@ const typeDefs = gql`
     mergedProjects: [Project]
 
     uploadedDatasetIDs: [ID]
+    uploadedDatasets: [Dataset]
 
     datasetSize: Int
   }

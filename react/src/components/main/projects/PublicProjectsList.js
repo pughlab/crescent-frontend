@@ -45,6 +45,15 @@ const PublicProjectsList = withRedux(() => {
           status
         }
 
+        mergedProjects {
+          projectID
+          name
+        }
+        uploadedDatasets {
+          datasetID
+          name
+        }
+
         datasetSize
       }
     }
