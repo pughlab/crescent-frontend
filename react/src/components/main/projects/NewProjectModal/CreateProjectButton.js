@@ -24,14 +24,11 @@ const CreateProjectButton = withRedux(({
     setProject
   },
 
-  name, setName,
-  description, setDescription,
-  datasetDirectories, setDatasetDirectories,
-  existingDatasets, setExistingDatasets,
+  newProjectState, newProjectDispatch,
 
   refetch
 }) => {
-  console.log(datasetDirectories)
+  const {name, description, mergedProjectIDs, uploadedDatasetIDs} = newProjectState
   // GQL mutation to create a project
   const [createMergedProject, {loading, data, error}] = useMutation(gql`
     mutation CreateMergedProject(
@@ -39,14 +36,14 @@ const CreateProjectButton = withRedux(({
       $name: String!,
       $description: String!,
       $projectIDs: [ID]!,
-      $datasets: [DatasetDirectory]
+      $datasetIDs: [ID]!
     ) {
       createMergedProject(
         userID: $userID,
         name: $name,
         description: $description,
         projectIDs: $projectIDs,
-        datasets: $datasets
+        datasetIDs: $datasetIDs
       ) {
         projectID
         name
@@ -75,8 +72,8 @@ const CreateProjectButton = withRedux(({
   `, {
     variables: {
       userID, name, description,
-      projectIDs: existingDatasets,
-      datasets: datasetDirectories
+      projectIDs: mergedProjectIDs,
+      datasetIDs: uploadedDatasetIDs
     },
     onCompleted: ({createMergedProject: newProject}) => {
       if (RA.isNotNil(newProject)) {
@@ -89,12 +86,12 @@ const CreateProjectButton = withRedux(({
 
 
   const noDetails = R.any(R.isEmpty, [name, description])
-  const noExistingDatasets = R.isEmpty(existingDatasets)
-  const noUploadedDatasets = R.isEmpty(datasetDirectories)
+  const noMergedProjects = R.isEmpty(mergedProjectIDs)
+  const noUploadedDatasets = R.isEmpty(uploadedDatasetIDs)
   const disabled = R.any(RA.isTrue, [
     loading,
     noDetails,
-    R.and(noExistingDatasets, noUploadedDatasets)
+    R.and(noMergedProjects, noUploadedDatasets)
   ])
   return (
     <Segment basic>
@@ -114,10 +111,10 @@ const CreateProjectButton = withRedux(({
 
       <Message>
       {
-        noExistingDatasets ?
+        noMergedProjects ?
           'You did not select any projects to merge'
         :
-          `${R.length(existingDatasets)} Project${R.equals(1, R.length(existingDatasets)) ? '' : 's'} Selected ${R.equals(1, R.length(existingDatasets)) ? '' : 'To Merge'}`
+          `${R.length(mergedProjectIDs)} Project${R.equals(1, R.length(mergedProjectIDs)) ? '' : 's'} Selected ${R.equals(1, R.length(mergedProjectIDs)) ? '' : 'To Merge'}`
       }
       </Message>
 
@@ -126,7 +123,7 @@ const CreateProjectButton = withRedux(({
         noUploadedDatasets ?
           'You did not upload any single-cell sample datasets'
         :
-          `${R.length(datasetDirectories)} Uploaded Dataset${R.equals(1, R.length(datasetDirectories)) ? '' : 's'}`
+          `${R.length(uploadedDatasetIDs)} Uploaded Dataset${R.equals(1, R.length(uploadedDatasetIDs)) ? '' : 's'}`
       }
       </Message>
 

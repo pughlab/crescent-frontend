@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react';
+import React, {useState, useCallback, useEffect, useReducer} from 'react';
 
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
@@ -18,18 +18,52 @@ import CreateProjectButton from './CreateProjectButton'
 
 import DataForm from './DataForm'
 
-const NewProjectModal = withRedux(({
-  app: {user: {userID}},
-  actions: {
-    setProject
-  },
-
+const NewProjectModal = ({
   refetch
 }) => {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [datasetDirectories, setDatasetDirectories] = useState([])
-  const [existingDatasets, setExistingDatasets] = useState([])
+  const initialNewProjectState = {
+    name: '',
+    description: '',
+    mergedProjectIDs: [],
+    uploadedDatasetIDs: [],
+  }
+  const [newProjectState, newProjectDispatch] = useReducer(
+    (state, action) => {
+      const {type} = action
+      switch (type) {
+        case 'RESET':
+          return initialNewProjectState
+        case 'CHANGE_NAME':
+          return R.evolve({
+            name: R.always(R.prop('name', action))
+          }, state)
+        case 'CHANGE_DESCRIPTION':
+          return R.evolve({
+            description: R.always(R.prop('description', action))
+          }, state)
+        case 'TOGGLE_PROJECT':
+          const {projectID} = action
+          return R.evolve({
+            mergedProjectIDs: R.ifElse(
+              R.includes(projectID),
+              R.without([projectID]),
+              R.append(projectID)
+            )
+          }, state)
+        case 'ADD_DATASET':
+          return R.evolve({
+            uploadedDatasetIDs: R.append(R.prop('datasetID', action))
+          }, state)
+        case 'REMOVE_DATASET':  
+          return R.evolve({
+            uploadedDatasetIDs: R.without(R.prop('datasetID', action))
+          }, state)
+        default: 
+          return state
+      }
+    }, initialNewProjectState
+  )
+  const {name, description} = newProjectState
 
   const [currentContent, setCurrentContent] = useState('details')
   const CONTENTS = [
@@ -43,12 +77,12 @@ const NewProjectModal = withRedux(({
             <Form.Input fluid
               placeholder='Enter a project name'
               value={name}
-              onChange={(e, {value}) => {setName(value)}}
+              onChange={(e, {value}) => newProjectDispatch({type: 'CHANGE_NAME', name: value})}
             />
             <Form.TextArea
               placeholder='Enter a short project description'
               value={description}
-              onChange={(e, {value}) => {setDescription(value)}}
+              onChange={(e, {value}) => newProjectDispatch({type: 'CHANGE_DESCRIPTION', description: value})}
             />
           </Form>
         </Segment>
@@ -62,8 +96,8 @@ const NewProjectModal = withRedux(({
         <Segment basic>
           <DataForm
             {...{
-              existingDatasets, setExistingDatasets,
-              datasetDirectories, setDatasetDirectories
+              newProjectState,
+              newProjectDispatch
             }}
           />
         </Segment>
@@ -77,10 +111,8 @@ const NewProjectModal = withRedux(({
         <Segment basic>
           <CreateProjectButton
             {...{
-              name, setName,
-              description, setDescription,
-              datasetDirectories, setDatasetDirectories,
-              existingDatasets, setExistingDatasets,
+              newProjectState,
+              newProjectDispatch,
 
               refetch
             }}
@@ -89,18 +121,14 @@ const NewProjectModal = withRedux(({
       )
     },
   ]
-  const resetNewProjectModal = () => {
-    setName('')
-    setDescription('')
-    setDatasetDirectories([])
-    setExistingDatasets([])
-    setCurrentContent('details')
-  }
-  
+
   return (
     <Modal
       size='large'
-      onOpen={() => resetNewProjectModal()}
+      onOpen={() => {
+        newProjectDispatch({type: 'RESET'})
+        setCurrentContent('details')
+      }}
       trigger={
         <Button fluid size='large'
           color='black'
@@ -136,6 +164,6 @@ const NewProjectModal = withRedux(({
       </Modal.Content>
     </Modal>
   )
-})
+}
 
 export default NewProjectModal

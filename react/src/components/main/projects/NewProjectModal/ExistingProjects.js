@@ -30,29 +30,25 @@ const ProjectCard = ({
     createdBy: {name: creatorName},
     datasetSize
   },
-  existingDatasets, setExistingDatasets
-}) => {
+  newProjectState, newProjectDispatch
+}) => {  
+  const isSelectedForMerge = R.compose(
+    R.includes(projectID),
+    R.prop('mergedProjectIDs')
+  )(newProjectState)
 
-  const addOrRemoveExistingDatasets = projectID => {
-    if (R.includes(projectID, existingDatasets)) {
-      setExistingDatasets(R.without([projectID], existingDatasets))
-    } else {
-      setExistingDatasets(R.append(projectID, existingDatasets))
-    }
-  }
-  
-  const clicked = R.includes(projectID, existingDatasets)
-
-  console.log(existingDatasets)
   return (
     <Transition visible animation='fade up' duration={1000} unmountOnHide={true} transitionOnMount={true}>
-    <Card link onClick={() => addOrRemoveExistingDatasets(projectID)} color={clicked ? 'blue' : 'grey'}>
+    <Card link
+      color={isSelectedForMerge ? 'blue' : 'grey'}
+      onClick={() => newProjectDispatch({type: 'TOGGLE_PROJECT', projectID})}
+    >
     <Popup
         size='large' wide='very'
         inverted
         trigger={
-          <Button attached='top' color={clicked ? 'blue' : 'grey'}>
-            <Icon name={clicked ? 'folder open' : 'folder outline open'} size='large' />
+          <Button attached='top' color={isSelectedForMerge ? 'blue' : 'grey'}>
+            <Icon name={isSelectedForMerge ? 'folder open' : 'folder outline'} size='large' />
           </Button>
         }
         content={'Click to merge into your project'}
@@ -78,7 +74,7 @@ const ProjectCard = ({
 }
 
 const PublicProjects = ({
-  existingDatasets, setExistingDatasets
+  newProjectState, newProjectDispatch
 }) => {
   // GQL query to find all public projects
   const {loading, data, error} = useQuery(gql`
@@ -116,7 +112,7 @@ const PublicProjects = ({
     <Card.Group itemsPerRow={3}>
     {
       R.addIndex(R.map)(
-        (project, index) => <ProjectCard key={index} {...{project, existingDatasets, setExistingDatasets}} />,
+        (project, index) => <ProjectCard key={index} {...{project, newProjectState, newProjectDispatch}} />,
         curatedProjects
       )
     }
@@ -128,7 +124,7 @@ const UploadedProjects = withRedux(({
   app: {
     user: {userID}
   },
-  existingDatasets, setExistingDatasets
+  newProjectState, newProjectDispatch
 }) => {
   // GQL query to find all projects of which user is a member of
   const {loading, data, error, refetch} = useQuery(gql`
@@ -165,7 +161,7 @@ const UploadedProjects = withRedux(({
     <Card.Group itemsPerRow={3}>
     {
       R.addIndex(R.map)(
-        (project, index) => <ProjectCard key={index} {...{project, existingDatasets, setExistingDatasets}} />,
+        (project, index) => <ProjectCard key={index} {...{project, newProjectState, newProjectDispatch}} />,
         userProjects
       )
     }

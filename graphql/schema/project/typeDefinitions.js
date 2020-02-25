@@ -35,14 +35,15 @@ const typeDefs = gql`
 
     projects(userID: ID): [Project]
   }
-  
-  input DatasetDirectory {
-    directoryName: String!
-    matrix: Upload!
-    features: Upload!
-    barcodes: Upload!
-    metadata: Upload
-  }
+ 
+  #  Make datasets separately for scaling reasons
+  # input DatasetDirectory {
+  #   directoryName: String!
+  #   matrix: Upload!
+  #   features: Upload!
+  #   barcodes: Upload!
+  #   metadata: Upload
+  # }
 
   type Mutation {
     createMergedProject(
@@ -50,7 +51,7 @@ const typeDefs = gql`
       name: String,
       description: String,
       projectIDs: [ID]!
-      datasets: [DatasetDirectory]
+      datasetIDs: [ID]!
     ): Project
 
     createProject(

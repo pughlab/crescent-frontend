@@ -24,8 +24,7 @@ const DataForm = withRedux(({
     setProject
   },
   // Props
-  datasetDirectories, setDatasetDirectories,
-  existingDatasets, setExistingDatasets
+  newProjectState, newProjectDispatch,
 }) => {
 
   const [currentContent, setCurrentContent] = useState('publicProjects')
@@ -35,7 +34,9 @@ const DataForm = withRedux(({
       label: 'Public Projects',
       icon: 'folder open',
       component: (
-        <PublicProjects {...{existingDatasets, setExistingDatasets}} />
+        <PublicProjects
+          {...{newProjectState, newProjectDispatch}}
+        />
       )
     },
     {
@@ -43,7 +44,9 @@ const DataForm = withRedux(({
       label: 'Your Projects',
       icon: 'folder open',
       component: (
-        <UploadedProjects {...{existingDatasets, setExistingDatasets}} />
+        <UploadedProjects
+          {...{newProjectState, newProjectDispatch}}
+        />
       )
     },
     {
@@ -51,7 +54,9 @@ const DataForm = withRedux(({
       label: 'Upload Datasets',
       icon: 'upload',
       component: (
-        <DirectoryUploadSegment {...{datasetDirectories, setDatasetDirectories}} />
+        <DirectoryUploadSegment 
+          {...{newProjectState, newProjectDispatch}}
+        />
       )
     },
     

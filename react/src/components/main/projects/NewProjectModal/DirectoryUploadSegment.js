@@ -18,16 +18,60 @@ import {Form, Card, Header, Menu, Button, Segment, Modal, Label, Divider, Icon, 
 import withRedux from '../../../../redux/hoc'
 
 const DatasetCard = ({
-  dataset,
-  datasetDirectories, setDatasetDirectories
+  datasetID,
+  newProjectDispatch
 }) => {
-  // Get directory name from matrix file
-  const {directoryName, matrix, features, barcodes, metadata} = dataset
+  // Mutation to delete uploaded dataset
+  const [deleteDataset, {}] = useMutation(gql`
+    mutation DeleteDataset(
+      $datasetID: ID!
+    ) {
+      deleteDataset(
+        datasetID: $datasetID
+      ) {
+        datasetID
+      }
+    }
+  `, {
+    variables: {datasetID},
+    onCompleted: ({deleteDataset}) => {
+      if (RA.isNotNil(deleteDataset)) {
+        const {datasetID} = deleteDataset
+        newProjectDispatch({type: 'REMOVE_DATASET', datasetID})
+      }
+    }
+  })
 
-  const hasMetadata = RA.isNotNil(metadata)
+  return (
+    <Card>
+      <Card.Content>
+        <Card.Header as={Header} sub content={datasetID} />
+      </Card.Content>
+      <Card.Content>
+        {/* <Label content='Metadata' detail={datasetID ? 'Yes' : 'No'} /> */}
+      </Card.Content>
+      <Card.Content>
+        <Button fluid animated='vertical'
+          size='small'
+          onClick={() => deleteDataset()}
+        >
+          <Button.Content visible>
+            <Icon name='trash' />
+          </Button.Content>
+          <Button.Content hidden>
+            REMOVE
+          </Button.Content>
+        </Button>
+      </Card.Content>
+    </Card>
+  )
+}
 
-  // GQL mutation to create a project
-  const [createDataset, {loading, data, error}] = useMutation(gql`
+const DirectoryUploadSegment = ({
+  newProjectState, newProjectDispatch,
+}) => {
+  // GQL mutation to create a dataset on mount
+  const [createDataset, {}] = useMutation(gql`
     mutation CreateDataset(
       $matrix: Upload!
       $features: Upload!
@@ -44,91 +88,61 @@ const DatasetCard = ({
       }
     }
   `, {
-    variables: {
-      matrix,
-      features,
-      barcodes,
-      metadata,
-    },
     onCompleted: ({createDataset}) => {
-      console.log('created dataset', createDataset)
+      if (RA.isNotNil(createDataset)) {
+        const {datasetID} = createDataset
+        newProjectDispatch({type: 'ADD_DATASET', datasetID})
+      }
     }
   })
-  useEffect(() => {
-    createDataset()
-  }, [])
-
-  return (
-    <Card>
-      <Card.Content>
-        <Card.Header as={Header} sub content={directoryName} />
-      </Card.Content>
-      <Card.Content>
-        <Label content='Metadata' detail={hasMetadata ? 'Yes' : 'No'} />
-      </Card.Content>
-      <Card.Content>
-        <Button fluid animated='vertical'
-          size='small'
-          onClick={() => setDatasetDirectories(R.without([dataset], datasetDirectories))}
-        >
-          <Button.Content visible>
-            <Icon name='trash' />
-          </Button.Content>
-          <Button.Content hidden>
-            REMOVE
-          </Button.Content>
-        </Button>
-      </Card.Content>
-    </Card>
-  )
-}
-
-const DirectoryUploadSegment = ({
-  datasetDirectories, setDatasetDirectories
-}) => {
-  const [datasetDirs, setDatasetDirs] = useState([])
-  const isValidDatasetDir = R.compose(
-    R.all(RA.isNotNil),
-    R.props(['matrix', 'features', 'barcodes'])
-  )
+  // Callback function for drag and drop
   const onDrop = useCallback(acceptedFiles => {
-    console.log(acceptedFiles)
-    // Group flat array of files into first level directory
-    // [] => {directoryName: [File]}
-    const groupByDirectory = R.groupBy(R.compose(
-      R.prop(1),
-      R.split('/'),
-      R.prop('path')
-    ))
-    // Check that directory has expected files
-    // [] => {matrix, barcodes, features, metadata: File}
-    const checkDirectoryForRequiredFiles = R.reduce(
-      (dataset, file) => {
-        const nameEquals = filename => R.compose(R.equals(filename), R.prop('name'))
-        const addToDataset = R.assoc(R.__, R.__, dataset)
-        return R.cond([
-          [nameEquals('matrix.mtx.gz'), addToDataset('matrix')],
-          [nameEquals('barcodes.tsv.gz'), addToDataset('barcodes')],
-          [nameEquals('features.tsv.gz'), addToDataset('features')],
-          [nameEquals('metadata.tsv'), addToDataset('metadata')],
-          [R.T, R.always(dataset)]
-        ])(file)
-      },
-      {matrix: null, features: null, barcodes: null, metadata: null}
-    )
+    if (RA.isNotEmpty(acceptedFiles)) {
+      // Predicate for valid directory upload
+      const isValidDatasetDir = R.compose(
+        R.all(RA.isNotNil),
+        R.props(['matrix', 'features', 'barcodes'])
+      )
+      // Group flat array of files into first level directory
+      // [] => {directoryName: [File]}
+      const groupByDirectory = R.groupBy(R.compose(
+        R.prop(1),
+        R.split('/'),
+        R.prop('path')
+      ))
+      // Check that directory has expected files
+      // [] => {matrix, barcodes, features, metadata: File}
+      const checkDirectoryForRequiredFiles = R.reduce(
+        (dataset, file) => {
+          const nameEquals = filename => R.compose(R.equals(filename), R.prop('name'))
+          const addToDataset = R.assoc(R.__, R.__, dataset)
+          return R.cond([
+            [nameEquals('matrix.mtx.gz'), addToDataset('matrix')],
+            [nameEquals('barcodes.tsv.gz'), addToDataset('barcodes')],
+            [nameEquals('features.tsv.gz'), addToDataset('features')],
+            [nameEquals('metadata.tsv'), addToDataset('metadata')],
+            [R.T, R.always(dataset)]
+          ])(file)
+        },
+        {matrix: null, features: null, barcodes: null, metadata: null}
+      )
 
-    R.compose(
-      setDatasetDirs,
-      R.filter(isValidDatasetDir),
-      R.map(([directoryName, files]) => ({directoryName, ... checkDirectoryForRequiredFiles(files)})),
-      R.toPairs,
-      groupByDirectory
-    )(acceptedFiles)
+      R.compose(
+        // Call GQL mutation for each valid directory dropped
+        R.map(
+          ({directoryName, ...files}) => createDataset({variables: {...files}})
+        ),
+        // Filter objects
+        R.filter(isValidDatasetDir),
+        // Group array of accepted files into objects
+        R.map(
+          ([directoryName, files]) => ({directoryName, ... checkDirectoryForRequiredFiles(files)})
+        ),
+        R.toPairs,
+        groupByDirectory
+      )(acceptedFiles)
+    }
   }, [])
-
-  useEffect(() => {
-    setDatasetDirectories(R.concat(datasetDirs, datasetDirectories))
-  }, [datasetDirs])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
   return (
     <div {...getRootProps()}>
@@ -136,10 +150,16 @@ const DirectoryUploadSegment = ({
       <Header textAlign='center' content='Drag and drop single-cell sample dataset directory' />
       <Card.Group itemsPerRow={4}>
       {
-        R.addIndex(R.map)(
-          (dataset, index) => <DatasetCard {...{dataset, datasetDirectories, setDatasetDirectories}} key={index} />,
-          datasetDirectories
-        )
+
+        R.compose(
+          R.map(
+            datasetID =>
+              <DatasetCard key={datasetID}
+                {...{datasetID, newProjectDispatch}}
+              />
+          ),
+          R.prop('uploadedDatasetIDs')
+        )(newProjectState)
       }
       </Card.Group>
     </Segment>

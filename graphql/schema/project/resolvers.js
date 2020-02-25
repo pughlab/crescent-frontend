@@ -36,7 +36,7 @@ const resolvers = {
         userID,
         name, description,
         projectIDs = [],
-        datasets = []
+        datasetIDs = []
       },
       {
         Datasets,
@@ -45,7 +45,7 @@ const resolvers = {
       }
     ) => {
       try {
-        console.log('datasets', datasets)
+        console.log('datasets', datasetIDs)
         // const putUploadIntoBucket = async (bucketName, objectName, file) => {
         // }
 

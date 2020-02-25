@@ -16,6 +16,10 @@ const typeDefs = gql`
       barcodes: Upload!
       metadata: Upload
     ): Dataset
+
+    deleteDataset(
+      datasetID: ID
+    ): Dataset
   }
 `
 
