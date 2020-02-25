@@ -22,7 +22,7 @@ services:
     command: server /export
 
   server: 
-    image: crescentdev/crescent-conglomerate
+    # image: crescentdev/crescent-conglomerate
     privileged: true
     build: express
     container_name: server
