@@ -12,7 +12,7 @@ const initialState = {
   view: {
     main: 'projects', // 'projects', 'runs', 'vis'
     sidebar: null, // 'pipeline', 'results'
-    isGuest: null, // true, false
+    isGuest: true, // true, false
   },
   toggle: {
     projects: {
