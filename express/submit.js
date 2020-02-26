@@ -35,7 +35,8 @@ const makeCWLJobJSON = async (
     const {barcodesID, featuresID, matrixID} = dataset
 
     // Run files path
-    const runDirFilePath = `/usr/src/app/minio/download/${runID}`
+    // const runDirFilePath = `/usr/src/app/minio/download/${runID}`
+    const runDirFilePath = `/usr/src/app/minio/download/tmprunID`
 
     // Make project directory and put data files there
     await fsp.mkdir(runDirFilePath)
@@ -57,14 +58,16 @@ const makeCWLJobJSON = async (
     return {
       R_script: {
         class: 'File',
-        path: '/usr/src/app/crescent/Runs_Seurat_v3.R'
-
+        // path: '/usr/src/app/crescent/Runs_Seurat_v3.R' //Changed to conform with wes staging
+        path: 'Runs_Seurat_v3.R' 
       },
       sc_input: {
         class: 'Directory',
         // path: `/usr/src/app/minio/download/${projectID}`
-        path: runDirFilePath
-
+        // path: runDirFilePath
+        //  path: `minio/download/${runID}` //THIS IS THE CORRECT ONE
+         path: `minio/download/tmprunID`
+        
       },
       sc_input_type: singleCell, //'MTX', // change to singleCell eventually if supporting seurat v2
       resolution,
@@ -102,14 +105,10 @@ const submitCWL = async (
      cd /usr/src/app/results/${runID} && \
      rm -f frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
-     toil-cwl-runner \
-        --writeLogs \
+     python3 \
+        /usr/src/app/express/python/Test.py \
         /usr/src/app/results/${runID} \
-        --maxLogFileSize \
-        0 \
-        --singularity \
-        /usr/src/app/crescent/seurat-v3.cwl \
-        frontend_seurat_inputs.json \ 
+        /usr/src/app/minio/download/tmprunID \
     `,
       { 
         shell: true
