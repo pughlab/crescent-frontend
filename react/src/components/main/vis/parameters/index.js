@@ -42,6 +42,8 @@ const ParametersComponent = withRedux(
       percentMito,
       resolution,
       principalDimensions,
+      normalizationMethod,
+      returnThreshold,
     } = parameters
     // Disable changing parameters if run is not pending
     // Also disable segment below
@@ -55,14 +57,18 @@ const ParametersComponent = withRedux(
       'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
       'percent_mito': percentMito => mergeAndSetParameters({percentMito}),
       'pca_dimensions': principalDimensions => mergeAndSetParameters({principalDimensions}),
-      'resolution': resolution => mergeAndSetParameters({resolution})
+      'resolution': resolution => mergeAndSetParameters({resolution}),
+      'normalization_method' : normalizationMethod => mergeAndSetParameters({normalizationMethod}),
+      'return_threshold' : returnThreshold => mergeAndSetParameters({returnThreshold})
     }
     const values = {
       'sc_input_type': singleCell,
       'number_genes': numberGenes,
       'percent_mito': percentMito,
       'pca_dimensions': principalDimensions,
-      'resolution': resolution
+      'resolution': resolution,
+      'normalization_method' : normalizationMethod, 
+      'return_threshold' : returnThreshold
     }
 
     const currentUserNotCreator = R.not(R.equals(currentUserID, creatorUserID))

@@ -18,6 +18,8 @@ const makeCWLJobJSON = async (
     percentMito: {min: minPercentMito, max: maxPercentMito},
     resolution,
     principalDimensions,
+    normalizationMethod,
+    returnThreshold,
   },
   runID,
 ) => {
@@ -64,9 +66,11 @@ const makeCWLJobJSON = async (
       },
       sc_input_type: singleCell, //'MTX', // change to singleCell eventually if supporting seurat v2
       resolution,
-      project_id: 'frontend_example_mac_10x_cwl',
+      project_id: 'crescent',
       summary_plots: 'n',
       pca_dimensions: principalDimensions,
+      normalization_method: normalizationMethod,
+      return_threshold: returnThreshold,
       // percent_mito: '0,0.2', // v2: 'Inf,0.05',
       percent_mito: `${minPercentMito},${maxPercentMito}`,
       // number_genes: '50,8000',

@@ -33,7 +33,7 @@ const TOOLS = {
           parameter: 'sc_input_type',
           label: 'Single Cell Input Type',
           prompt: 'Select data type of single cell input',
-          description: 'Input can be either MTX: barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz files or DGE: tab delimited digital gene expression (DGE) file with genes in rows vs. barcodes in columns. Default is MTX.',
+          description: 'Input is in MTX format: barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz. Default is MTX.',
           input: {
             type: 'select',
             defaultValue: 'MTX',
@@ -63,7 +63,7 @@ const TOOLS = {
           parameter: 'percent_mito',
           label: 'Mitochondrial Fraction',
           prompt: 'Specify range of mitochondrial fraction',
-          description: 'The minimum and maximum fraction (between 0 and 1) of mitochondrial gene counts in a cell to be included in normalization and clustering analyses. For example, for whole cell scRNA-seq use 0 to 0.2, or for Nuc-seq use 0 to 0.05.',
+          description: 'The minimum and maximum fraction (between 0 and 1) of mitochondrial gene counts in a cell to be included in normalization and clustering analyses. For example, for whole cell scRNA-seq use 0 to 0.2, or for nuclei-seq use 0 to 0.05.',
           input: {
             type: 'range',
             step: 0.1,
@@ -80,7 +80,21 @@ const TOOLS = {
     {
       label: 'Normalization',
       step: 'normalization',
-      parameters: []
+      parameters: [
+        {
+          step: 'normalization',
+          parameter: 'normalization_method',
+          label: 'Normalization Method',
+          prompt: 'Select normalization method',
+          description: '(1) LogNormalize, (2) SCTransform, or (3) Skip Normalization (Input MTX is already normalized). Default is (2) SCTransform.',
+          input: {
+            type: 'select',
+            defaultValue: '2',
+            options: ['1', '2', '3']
+          },
+          disabled: false
+        }
+      ]
     },
     {
       label: 'Dimension Reduction',
@@ -124,7 +138,22 @@ const TOOLS = {
     {
       label: 'Differential Gene Expression',
       step: 'expression',
-      parameters: []
+      parameters: [
+        {
+          step: 'expression',
+          parameter: 'return_threshold',
+          label: 'Return Threshold',
+          prompt: 'Set return threshold',
+          description: 'For each cluster, only return gene markers that have a p-value less than the specified return threshold. Default is 0.01.',
+          input: {
+            type: 'float',
+            step: 0.01,
+            defaultValue: 0.01,
+            schema: yupRequiredPositiveNumber
+          },
+          disabled: false
+        }
+      ]
     },
   ]
 }

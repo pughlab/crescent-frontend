@@ -27,8 +27,10 @@ const initialState = {
           singleCell: 'MTX',
           numberGenes: {min: 50, max: 8000},
           percentMito: {min: 0, max: 0.2},
-          resolution: 1,
+          resolution: 1.0,
           principalDimensions: 10,
+          normalizationMethod: '2',
+          returnThreshold: 0.01,
         },
         isSubmitted: false
       },
@@ -146,8 +148,10 @@ const GQLReducer = {
               singleCell: 'MTX',
               numberGenes: {min: 50, max: 8000},
               percentMito: {min: 0, max: 0.2},
-              resolution: 1,
+              resolution: 1.0,
               principalDimensions: 10,
+              normalizationMethod: '2',
+              returnThreshold: 0.01,
             }
           : JSON.parse(params)
         ),
@@ -250,7 +254,7 @@ const CWLReducer = {
       const {isSubmitted} = payload
 
       return R.compose(
-        setMainView('runs'),
+        setMainView('projects'),
         R.set(
           R.lensPath(['toggle','vis','pipeline','isSubmitted']),
           isSubmitted
