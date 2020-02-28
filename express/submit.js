@@ -35,8 +35,7 @@ const makeCWLJobJSON = async (
     const {barcodesID, featuresID, matrixID} = dataset
 
     // Run files path
-    // const runDirFilePath = `/usr/src/app/minio/download/${runID}` //This is what should work if there wasn't a character limit
-    const runDirFilePath = `/usr/src/app/minio/download/tmprunID`
+    const runDirFilePath = `/usr/src/app/minio/download/Run${runID}`
 
     // Make project directory and put data files there
     await fsp.mkdir(runDirFilePath)
@@ -65,8 +64,7 @@ const makeCWLJobJSON = async (
         class: 'Directory',
         // path: `/usr/src/app/minio/download/${projectID}`
         // path: runDirFilePath
-        // path: `minio/download/${runID}` //This is what should work if there wasn't a character limit
-         path: `minio/download/tmprunID`
+         path: `minio/download/Run${runID}`
       },
       sc_input_type: singleCell, //'MTX', // change to singleCell eventually if supporting seurat v2
       resolution,
@@ -107,12 +105,12 @@ const submitCWL = async (
      python3 \
         /usr/src/app/express/python/Test.py \
         /usr/src/app/results/${runID} \
-        /usr/src/app/minio/download/tmprunID \
+        /usr/src/app/minio/download/Run${runID} \
     `,
       { 
         shell: true
       }
-  ) // /usr/src/app/minio/download/${runID} as the last line is what should work if there wasn't a character limit
+  )
   run.submittedOn = new Date()
   await run.save()
   cwl.stdout.on( 'data', data => {
