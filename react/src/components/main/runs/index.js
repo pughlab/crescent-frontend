@@ -215,7 +215,7 @@ const RunsCardList = withRedux(({
 
   return (
     <Container>
-      {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
+      {/* PROJECT CREATOR ACTIONS */}
       {
         R.and(isUploadedProject, currentUserIsProjectCreator) && 
           <Button.Group attached='top' widths={3} size='large'>
@@ -224,9 +224,10 @@ const RunsCardList = withRedux(({
             <ArchiveProjectModal />
           </Button.Group>
       }
+      {/* PROJECT ABSTRACT AND DETAILS */}
       <Segment attached>
         <Divider horizontal>
-          <Header content={`${isUploadedProject ? 'User Uploaded' : 'Curated'} Project Details`} />
+          <Header content={'Project Details'} />
         </Divider>
         <Header
           content={projectName}
@@ -253,22 +254,21 @@ const RunsCardList = withRedux(({
           </>
         }
       </Segment>
-
+      {/* LIST OF MERGED PROJECTS  */}
       <MergedProjectsDetails />
-
+      {/* LIST OF UPLOADED DATASETS */}
       <UploadedDatasetsDetails />
-
+      {/* LIST OF RUNS */}
       <Segment attached='bottom'>
         <Divider horizontal>
           <Header content={'Project Runs'} subheader={'Please refresh the page to see latest updates to runs'} />
         </Divider>
+        {/* CREATE NEW RUN BUTTON */}
+        <NewRunModal {...{refetch}} />
         {
           isUploadedProject &&
             <RunsStatusLegend {...{projectRuns, runsBySize, runFilter, setRunFilter}} />
         }
-        <NewRunModal {...{refetch}} />
-        <Divider horizontal />
-        {/* LIST OF EXISTING RUNS FOR PROJECT */}
         {
           R.isEmpty(filteredProjectRuns) ?
               <Segment placeholder>
