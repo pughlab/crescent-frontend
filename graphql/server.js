@@ -16,6 +16,8 @@ const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema]
 
 const minioClient = require('../database/minio-client');
 
+const Minio = require('./minio')
+
 // GQL server requires type definitions and resolvers for those types
 const server = new ApolloServer({
   typeDefs: R.compose(
@@ -36,7 +38,8 @@ const server = new ApolloServer({
       Datasets: Models.Dataset,
 
       // MINIO
-      minioClient
+      Minio,
+      minioClient, //Should be replaced by above
 
     }
   }
