@@ -5,6 +5,7 @@ const typeDefs = gql`
     datasetID: ID
     name: String
     hasMetadata: Boolean
+    size: Int
   }
 
   type Query {

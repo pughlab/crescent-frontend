@@ -4,6 +4,17 @@ const {ApolloError} = require('apollo-server')
 
 const resolvers = {
   Dataset: {
+    size: async ({datasetID}, variables, {Datasets, Minio}) => {
+      try {
+        const bucketContents = await Minio.bucketObjectsList(`dataset-${datasetID}`)
+        return R.compose(
+          R.sum,
+          R.pluck('size')
+        )(bucketContents)
+      } catch(error) {
+        console.log(error)
+      }
+    },
     hasMetadata: async ({datasetID}, variables, {Datasets, minioClient}) => {
       try {
         const objectStat = await minioClient.statObject(`dataset-${datasetID}`, 'metadata.tsv')

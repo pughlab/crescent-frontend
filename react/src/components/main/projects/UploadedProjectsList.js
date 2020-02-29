@@ -57,6 +57,7 @@ const UploadedProjectsList = withRedux(({
         uploadedDatasets {
           datasetID
           name
+          size
         }
 
         datasetSize
