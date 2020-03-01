@@ -58,8 +58,14 @@ const NewRunModal = withRedux(({
       $name: String!,
       $projectID: ID!,
       $userID: ID!
+      $datasetIDs: [ID!]!
     ) {
-      createUnsubmittedRun(name: $name, projectID: $projectID, userID: $userID) {
+      createUnsubmittedRun(
+        name: $name
+        datasetIDs: $datasetIDs
+        projectID: $projectID
+        userID: $userID
+      ) {
         runID
         createdOn
         createdBy {
@@ -72,10 +78,21 @@ const NewRunModal = withRedux(({
 
         submittedOn
         completedOn
+
+        datasets {
+          datasetID
+          name
+          size
+          hasMetadata
+        }
       }
     }
   `, {
-    variables: {name: runName, projectID, userID},
+    variables: {
+      name: runName,
+      datasetIDs: datasetsState,
+      projectID, userID,
+    },
     // Refetch runs on new created
     onCompleted: ({createUnsubmittedRun: newRun}) => {
       refetch()

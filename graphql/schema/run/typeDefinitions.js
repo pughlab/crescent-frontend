@@ -14,6 +14,8 @@ const typeDefs = gql`
 
     submittedOn: Date
     completedOn: Date
+
+    datasets: [Dataset]
   }
   type Query {
     allRuns: [Run]
@@ -28,7 +30,8 @@ const typeDefs = gql`
     createUnsubmittedRun(
       name: String,
       projectID: ID,
-      userID: ID
+      userID: ID,
+      datasetIDs: [ID]
     ): Run
 
     submitRun(

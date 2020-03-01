@@ -20,8 +20,8 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUnsubmittedRun: async (parent, {name, projectID, userID}, {Runs}) => {
-      const run = await Runs.create({name, projectID, createdBy: userID})
+    createUnsubmittedRun: async (parent, {name, projectID, userID, datasetIDs}, {Runs}) => {
+      const run = await Runs.create({name, projectID, createdBy: userID, datasetIDs})
       return run
     },
 
@@ -60,6 +60,14 @@ const resolvers = {
       // Find project that run belongs to
       const project = await Projects.findOne({projectID})
       return project
+    },
+
+    datasets: async({datasetIDs}, variables, {Datasets}) => {
+      return await Datasets.find({
+        datasetID: {
+          $in: datasetIDs
+        }
+      })
     }
   }
 }

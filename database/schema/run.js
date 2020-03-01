@@ -25,6 +25,10 @@ const RunSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: true
   },
+  datasetIDs: {
+    type: [mongoose.Schema.Types.ObjectId],
+    required: true
+  },
 
   status: {
     type: String,
