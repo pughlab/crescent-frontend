@@ -27,6 +27,8 @@ const typeDefs = gql`
     uploadedDatasetIDs: [ID]
     uploadedDatasets: [Dataset]
 
+    allDatasets: [Dataset]
+
     datasetSize: Int
   }
   type Query {

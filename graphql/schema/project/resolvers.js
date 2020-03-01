@@ -1,4 +1,5 @@
 const R = require('ramda')
+const RA = require('ramda-adjunct')
 
 const {
   ApolloError
@@ -201,6 +202,40 @@ const resolvers = {
       try {
         return await Datasets.find({
           datasetID: {$in: uploadedDatasetIDs}
+        })
+      } catch(error) {
+        console.error(error)
+      }
+    },
+
+    allDatasets: async ({uploadedDatasetIDs, mergedProjectIDs}, variables, {Projects, Datasets}) => {
+      try {
+        const getMergedProjects = async projectID => {
+          const {mergedProjectIDs} = await Projects.findOne({projectID})
+          return mergedProjectIDs
+        }
+
+        let datasetIDs = uploadedDatasetIDs
+        if (RA.isNotEmpty(mergedProjectIDs)) {
+          do {
+            const projectID = mergedProjectIDs.pop()
+            const {
+              mergedProjectIDs: childrenProjectIDs,
+              uploadedDatasetIDs: childrenDatasetIDs
+            } = await Projects.findOne({projectID}) 
+            console.log(projectID, childrenProjectIDs, childrenDatasetIDs)
+            if (RA.isNotEmpty(childrenDatasetIDs)) {
+              datasetIDs.push(...childrenDatasetIDs)
+            }
+            if (RA.isNotEmpty(childrenProjectIDs)) {
+              mergedProjectIDs.push(...childrenProjectIDs)
+            }
+          } while (RA.isNotEmpty(mergedProjectIDs))
+        }
+        return await Datasets.find({
+          datasetID: {
+            $in: datasetIDs
+          }
         })
       } catch(error) {
         console.error(error)

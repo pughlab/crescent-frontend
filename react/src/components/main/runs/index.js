@@ -15,7 +15,7 @@ import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../utils'
 
 import RunCard from './RunCard'
-import NewRunModal from './NewRunModal'
+import NewRunModal from './NewRunModal/index'
 
 import ArchiveProjectModal from '../projects/ArchiveProjectModal'
 import ShareProjectModal from '../projects/ShareProjectModal'
@@ -116,7 +116,8 @@ const RunsCardList = withRedux(({
       externalUrls,
       createdOn: projectCreatedOn,
       createdBy: {name: creatorName, userID: creatorUserID},
-      mergedProjects
+      mergedProjects,
+      uploadedDatasets
     },
     view: {
       isGuest
@@ -254,10 +255,24 @@ const RunsCardList = withRedux(({
           </>
         }
       </Segment>
-      {/* LIST OF MERGED PROJECTS  */}
-      <MergedProjectsDetails />
-      {/* LIST OF UPLOADED DATASETS */}
-      <UploadedDatasetsDetails />
+      {
+        R.and(R.isEmpty(uploadedDatasets), RA.isNotEmpty(mergedProjects)) ?
+          // {/* LIST OF MERGED PROJECTS  */}
+          <MergedProjectsDetails />
+        : R.and(R.isEmpty(mergedProjects), RA.isNotEmpty(uploadedDatasets)) ?
+          // {/* LIST OF UPLOADED DATASETS */}
+          <UploadedDatasetsDetails />
+        :
+          <Segment attached as={Grid} columns={2}>
+            <Grid.Column>  
+              <MergedProjectsDetails />
+            </Grid.Column>
+            <Grid.Column>
+              <UploadedDatasetsDetails />
+            </Grid.Column>
+          </Segment>
+
+      }
       {/* LIST OF RUNS */}
       <Segment attached='bottom'>
         <Divider horizontal>

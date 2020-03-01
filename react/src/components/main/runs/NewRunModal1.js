@@ -14,7 +14,7 @@ import {queryIsNotNil} from '../../../utils'
 const NewRunModal = withRedux(({
   app: {
     user: {userID},
-    project: {projectID, mergedProjects}
+    project: {projectID, mergedProjects, uploadedDatasets}
   },
   actions: {setRun},
   refetch
@@ -23,7 +23,11 @@ const NewRunModal = withRedux(({
 
   const [runName, setRunName] = useState('')
   const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
-    mutation CreateUnsubmittedRun($name: String!, $projectID: ID!, $userID: ID!) {
+    mutation CreateUnsubmittedRun(
+      $name: String!,
+      $projectID: ID!,
+      $userID: ID!
+    ) {
       createUnsubmittedRun(name: $name, projectID: $projectID, userID: $userID) {
         runID
         createdOn
