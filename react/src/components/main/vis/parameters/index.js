@@ -3,10 +3,12 @@ import React, {useState} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Icon, Message} from 'semantic-ui-react'
+import {Divider, Menu, Segment, List, Label, Grid, Dropdown, Header, Icon, Message} from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
+
+import QualityControlParametersComponent from './QualityControl'
 import TOOLS from './TOOLS'
 import {FloatParameterInput, IntegerParameterInput, RangeParameterInput, SelectParameterInput} from './ParameterInputs'
 
@@ -20,7 +22,9 @@ const ParametersComponent = withRedux(
         createdBy: {
           userID: creatorUserID
         },
-        status: runStatus
+        status: runStatus,
+
+        datasets
       },
       toggle: {
         vis: {
@@ -36,6 +40,8 @@ const ParametersComponent = withRedux(
       setParameters
     }
   }) => {
+    const [currentDataset, setCurrentDataset] = useState(null)
+
     const {
       singleCell,
       numberGenes,
@@ -93,6 +99,12 @@ const ParametersComponent = withRedux(
             }
           </Header>
         </Segment>
+      )
+    }
+
+    if (R.equals('quality', activePipelineStep)) {
+      return (
+        <QualityControlParametersComponent />
       )
     }
 

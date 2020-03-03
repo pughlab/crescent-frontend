@@ -179,7 +179,7 @@ const RangeParameterInput = ({
             placeholder={defaultMin}
             label={`Min ${label}`}
             value={min}
-            onChange={(e, {value: newMin}) => setValue({min: newMin, max})}
+            onChange={(e, {value: newMin}) => setValue({min: Number(newMin), max})}
           />
           <Form.Input disabled={disabled}
             error={warning}
@@ -188,7 +188,7 @@ const RangeParameterInput = ({
             placeholder={defaultMax}
             label={`Max ${label}`}
             value={max}
-            onChange={(e, {value: newMax}) => setValue({min, max: newMax})}
+            onChange={(e, {value: newMax}) => setValue({min, max: Number(newMax)})}
           />
         </Form.Group>
         <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} />

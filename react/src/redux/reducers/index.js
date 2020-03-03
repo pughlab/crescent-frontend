@@ -24,6 +24,15 @@ const initialState = {
       pipeline: {
         activeStep: null,
         parameters: {
+          // multiple quality control,
+          datasetsQualityControl: {
+            // id : {
+            //   singleCell: 'MTX',
+            //   numberGenes: {min: 50, max: 8000},
+            //   percentMito: {min: 0, max: 0.2},
+            // }
+          },
+
           singleCell: 'MTX',
           numberGenes: {min: 50, max: 8000},
           percentMito: {min: 0, max: 0.2},
@@ -114,6 +123,7 @@ const GQLReducer = {
         setRunFromGQL(null),
         setProjectFromGQL(null),
         setUserFromGQL(user)
+
       )(state)
     },
 
@@ -130,7 +140,7 @@ const GQLReducer = {
   'SET_RUN':
     (state, payload) => {
       const {run} = payload
-      const {params} = run
+      const {params, datasets} = run
       // Only used for disabling parameters and submit after initial submit
       const resetIsSubmitted = R.set(
         R.lensPath(['toggle','vis','pipeline','isSubmitted']),
@@ -147,10 +157,19 @@ const GQLReducer = {
         setParameters(
           R.isNil(params) ?
             {
-              singleCell: 'MTX',
-              numberGenes: {min: 50, max: 8000},
-              percentMito: {min: 0, max: 0.2},
-              // percentRibo: {min: 0, max: 0.75},
+              datasetsQualityControl: R.reduce(
+                (datasetsQualityControl, {datasetID}) => ({
+                  ...datasetsQualityControl,
+                  [datasetID]: {
+                    singleCell: 'MTX',
+                    numberGenes: {min: 50, max: 8000},
+                    percentMito: {min: 0, max: 0.2},
+                    // percentRibo: {min: 0, max: 0.75},
+                  }
+                }),
+                {},
+                datasets
+              ),
               resolution: 1.0,
               principalDimensions: 10,
               normalizationMethod: '2',
@@ -237,8 +256,10 @@ const CWLReducer = {
   'SET_PARAMETERS':
     (state, payload) => {
       const {parameters} = payload
+      const oldParameters = R.path(['toggle', 'vis', 'pipeline', 'parameters'], state)
+      const newParameters = R.mergeRight(oldParameters, parameters)
       return R.compose(
-        setParameters(parameters)
+        setParameters(newParameters)
       )(state)
     },
   'SET_IS_SUBMITTED':

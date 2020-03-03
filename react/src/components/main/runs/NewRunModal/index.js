@@ -82,8 +82,6 @@ const NewRunModal = withRedux(({
         datasets {
           datasetID
           name
-          size
-          hasMetadata
         }
       }
     }

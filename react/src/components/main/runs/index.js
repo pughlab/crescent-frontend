@@ -139,6 +139,13 @@ const RunsCardList = withRedux(({
 
         submittedOn
         completedOn
+
+        datasets {
+          datasetID
+          name
+          size
+          hasMetadata
+        }
       }
     }
   `, {
