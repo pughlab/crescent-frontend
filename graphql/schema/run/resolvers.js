@@ -20,24 +20,42 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUnsubmittedRun: async (parent, {name, projectID, userID, datasetIDs}, {Runs}) => {
+    createUnsubmittedRun: async (parent, {name, projectID, userID, datasetIDs}, {Runs, Minio}) => {
       const run = await Runs.create({name, projectID, createdBy: userID, datasetIDs})
+      const {runID} = run
+      await Minio.client.makeBucket(`run-${runID}`)
       return run
     },
 
+    // Determine how many datasets this run uses and submit
+    // appropriate CWL job to Express (should be replaced by WES)
     submitRun: async (parent, {runID, params}, {Runs}) => {
-      const run = await Runs.findOne({runID})
-      const {name} = run
-      console.log('Submitting run', runID, params)
-      const submit = await axios.post(
-        `/express/runs/submit`,
-        {},
-        {params: {name, params, runID}}
-      )
-      run.params = params
-      run.status = 'submitted'
-      await run.save()
-      return run
+      try {
+        const run = await Runs.findOne({runID})
+        const {name, datasetIDs} = run
+        console.log('Submitting run', runID, params, datasetIDs)
+        const lengthIsOne = R.compose(R.equals(1), R.length)
+        if (lengthIsOne(datasetIDs)) {
+          await axios.post(
+            `/express/runs/submit`,
+            {},
+            {params: {name, params, runID}}
+          )
+        } else {
+          await axios.post(
+            `/express/runs/submitMerged`,
+            {},
+            // DatasetIDs can be parsed from the params object quality control field
+            {params: {name, params, runID}}
+          )
+        }
+        run.params = params
+        // run.status = 'submitted'
+        await run.save()
+        return run
+      } catch(error) {
+        console.log(error)
+      }
     },
 
     deleteRun: async(parent, {runID}, {Runs}) => {

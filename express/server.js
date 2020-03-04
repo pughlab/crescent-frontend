@@ -1,5 +1,7 @@
 require('dotenv').config();
 const submitCWL = require('./submit')
+const submitMergedCWL = require('./submitMerged')
+
 
 const fs = require('fs')
 const R = require('ramda')
@@ -48,6 +50,22 @@ router.post(
     res.sendStatus(200)
   }
 );
+
+// API endpoint called by GQL to submit a job
+router.post(
+  '/runs/submitMerged',
+  async (req, res) => {
+    const {
+      query: {name, params, runID}
+    } = req
+    console.log(params, runID, name)
+    // // Parse and pass as object of parameters
+    // const kwargs = JSON.parse(params)
+    submitMergedCWL(JSON.parse(params), runID)
+    res.sendStatus(200)
+  }
+);
+
 
 // API endpoint for temporary uploading files
 router.put(

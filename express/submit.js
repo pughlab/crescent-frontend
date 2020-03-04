@@ -13,10 +13,7 @@ const minioClient = require('../database/minio-client');
 // Make object to write as CWL job JSON file
 const makeCWLJobJSON = async (
   {
-    singleCell,
-    numberGenes: {min: minNumberGenes, max: maxNumberGenes},
-    percentMito: {min: minPercentMito, max: maxPercentMito},
-    // percentRibo: {min: minPercentRibo, max: maxPercentRibo},
+    datasetsQualityControl,
     resolution,
     principalDimensions,
     normalizationMethod,
@@ -26,6 +23,15 @@ const makeCWLJobJSON = async (
   runID,
 ) => {
   try {
+    const {
+      singleCell,
+      numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+      percentMito: {min: minPercentMito, max: maxPercentMito},
+    } = R.compose(
+      R.head,
+      R.values
+    )(datasetsQualityControl)
+
     // Put files from project's dataset into system
     const run = await Run.findOne({runID})
     const {projectID} = run
