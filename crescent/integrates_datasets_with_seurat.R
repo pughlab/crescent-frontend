@@ -231,6 +231,10 @@ option_list <- list(
               help="Indicates if this script is running inside a virtual machine container, such that outfiles are written directly into the 'HOME' . Type 'y/Y' or 'n/N'.
                 Note, if using 'y/Y' this supersedes option -o
                 Default = 'N'"),
+  
+  make_option(c("-x", "--minio_path"), default="NA",
+              help="add text
+                Default = 'NA'"),
   #
   make_option(c("-v", "--seurat_version"), default="1",
               help="Indicates the sub-version of Seurat to use:
@@ -260,6 +264,7 @@ DiffGeneExprComparisons <- opt$diff_gene_expr_comparisons
 NumbCores               <- opt$number_cores
 SaveRObject             <- opt$save_r_object
 RunsCwl                 <- opt$run_cwl
+MinioPath               <- opt$minio_path   
 SeuratVersion           <- as.numeric(opt$seurat_version)
 MaxGlobalVariables      <- as.numeric(opt$max_global_variables)
 
@@ -411,9 +416,13 @@ for (param in ListMandatory) {
 ####################################
 writeLines("\n*** Load --inputs_list ***\n")
 
-InputsList<-gsub("^~/",paste(c(UserHomeDirectory,"/"), sep = "", collapse = ""), InputsList)
-InputsTable<-read.table(InputsList, header = F, row.names = 1, stringsAsFactors = F)
-colnames(InputsTable)<-c("PathToDataset","DatasetType","DatasetFormat","MitoFrac","RiboFrac","NGenes","NReads")
+if (regexpr("^N$", RunsCwl, ignore.case = T)[1] == 1) {
+  InputsList<-gsub("^~/",paste(c(UserHomeDirectory,"/"), sep = "", collapse = ""), InputsList)
+}
+InputsTable<-read.csv(InputsList, header = T, row.names = 1, stringsAsFactors = F)
+# colnames(InputsTable)<-c("PathToDataset","DatasetType","DatasetFormat","MitoFrac","RiboFrac","NGenes","NReads")
+colnames(InputsTable)<-c("PathToDataset","DatasetType","DatasetFormat", "MinMitoFrac", "MaxMitoFrac", "MinRiboFrac", "MaxRiboFrac", "MinNGenes", "MaxNGenes", "MinNReads", "MaxNReads")
+
 
 ####################################
 ### Load scRNA-seq data
@@ -441,31 +450,44 @@ for (dataset in rownames(InputsTable)) {
   print(NumberOfDatasets)
   Dataset.SO <-paste(dataset, ".so",    sep = "", collapse = "")
   
-  PathToDataset <- InputsTable[dataset,"PathToDataset"]
+  PathToDataset <- paste0(MinioPath,(InputsTable[dataset,"PathToDataset"]))
   DatasetType   <- InputsTable[dataset,"DatasetType"]
   DatasetFormat <- InputsTable[dataset,"DatasetFormat"]
-  ListMitoFrac  <- InputsTable[dataset,"MitoFrac"]
-  ListRiboFrac  <- InputsTable[dataset,"RiboFrac"]
-  ListNGenes    <- InputsTable[dataset,"NGenes"]
-  ListNReads    <- InputsTable[dataset,"NReads"]
+
   
-  PathToDataset <- gsub("^~/",paste(c(UserHomeDirectory,"/"), sep = "", collapse = ""), PathToDataset)
+  if (regexpr("^N$", RunsCwl, ignore.case = T)[1] == 1) {
+    PathToDataset <- gsub("^~/",paste(c(UserHomeDirectory,"/"), sep = "", collapse = ""), PathToDataset)
+  }
+  # #
+  # ListMitoFrac = unlist(strsplit(ListMitoFrac,  ","))
+  # MinMitoFrac  = as.numeric(ListMitoFrac[1])
+  # MaxMitoFrac  = as.numeric(ListMitoFrac[2])
+  # #
+  # ListRiboFrac = unlist(strsplit(ListRiboFrac,  ","))
+  # MinRiboFrac  = as.numeric(ListRiboFrac[1])
+  # MaxRiboFrac  = as.numeric(ListRiboFrac[2])
+  # #
+  # ListNGenes = unlist(strsplit(ListNGenes, ","))
+  # MinNGenes  = as.numeric(ListNGenes[1])
+  # MaxNGenes  = as.numeric(ListNGenes[2])
+  # #
+  # ListNReads = unlist(strsplit(ListNReads, ","))
+  # MinNReads  = as.numeric(ListNReads[1])
+  # MaxNReads  = as.numeric(ListNReads[2])
+
   #
-  ListMitoFrac = unlist(strsplit(ListMitoFrac,  ","))
-  MinMitoFrac  = as.numeric(ListMitoFrac[1])
-  MaxMitoFrac  = as.numeric(ListMitoFrac[2])
+  MinMitoFrac  = as.numeric(InputsTable[dataset,"MinMitoFrac"])
+  MaxMitoFrac  = as.numeric(InputsTable[dataset,"MaxMitoFrac"])
   #
-  ListRiboFrac = unlist(strsplit(ListRiboFrac,  ","))
-  MinRiboFrac  = as.numeric(ListRiboFrac[1])
-  MaxRiboFrac  = as.numeric(ListRiboFrac[2])
+  MinRiboFrac  = as.numeric(InputsTable[dataset,"MinRiboFrac"])
+  MaxRiboFrac  = as.numeric(InputsTable[dataset,"MaxRiboFrac"])
   #
-  ListNGenes = unlist(strsplit(ListNGenes, ","))
-  MinNGenes  = as.numeric(ListNGenes[1])
-  MaxNGenes  = as.numeric(ListNGenes[2])
+  MinNGenes  = as.numeric(InputsTable[dataset,"MinNGenes"])
+  MaxNGenes  = as.numeric(InputsTable[dataset,"MaxNGenes"])
   #
-  ListNReads = unlist(strsplit(ListNReads, ","))
-  MinNReads  = as.numeric(ListNReads[1])
-  MaxNReads  = as.numeric(ListNReads[2])
+  MinNReads  = as.numeric(InputsTable[dataset,"MinNReads"])
+  MaxNReads  = as.numeric(InputsTable[dataset,"MaxNReads"])
+  
   
   list_DatasetToType[[dataset]]      <- DatasetType
   list_DatasetToFormat[[dataset]]    <- DatasetFormat
