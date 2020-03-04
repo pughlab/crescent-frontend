@@ -34,7 +34,7 @@ const initialState = {
           },
 
           singleCell: 'MTX',
-          numberGenes: {min: 50, max: 8000},
+          //numberGenes: {min: 50, max: 8000},
           percentMito: {min: 0, max: 0.2},
           // percentRibo: {min: 0, max: 0.75},
           resolution: 1.0,
@@ -162,7 +162,7 @@ const GQLReducer = {
                   ...datasetsQualityControl,
                   [datasetID]: {
                     singleCell: 'MTX',
-                    numberGenes: {min: 50, max: 8000},
+                    //numberGenes: {min: 50, max: 8000},
                     percentMito: {min: 0, max: 0.2},
                     // percentRibo: {min: 0, max: 0.75},
                   }

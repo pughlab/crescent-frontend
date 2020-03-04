@@ -44,13 +44,17 @@ const makeCWLJobJSON = async (
 
       R.map(
         ({datasetID, name}) => ({
-          dataset_path: `/usr/src/app/minio/upload/dataset-${datasetID.toString()}`,
           name,
+          dataset_path: `/dataset-${datasetID.toString()}`,
+          experiment_type: 'type',
           // add experiment_type here etc
           ... R.prop(datasetID, datasetsQualityControl),
-
-          //
-          // dummyProperty: someValue
+          ribo_min: '0',
+          ribo_max: '0.75',
+          ngenes_min: '50',
+          ngenes_max: '8000',
+          nreads_min: '1',
+          nreads_max: '80000',
         })
       )
     )(
@@ -91,8 +95,7 @@ const makeCWLJobJSON = async (
     return {
       R_script: {
         class: 'File',
-        path: '/usr/src/app/crescent/Runs_Seurat_v3.R'
-
+        path: '/usr/src/app/crescent/integrates_datasets_with_seurat.R'
       },
 
       // DONT NEED FOR MERGED
@@ -106,12 +109,20 @@ const makeCWLJobJSON = async (
       // percent_mito: `${minPercentMito},${maxPercentMito}`,
       // number_genes: `${minNumberGenes},${maxNumberGenes}`
 
+      sc_input: {
+        class: 'File',
+        path: `/usr/src/app/minio/upload/run-${runID}/datasets.csv`
+      },
       resolution,
       project_id: 'crescent',
-      summary_plots: 'n',
+      // summary_plots: 'n',
       pca_dimensions: principalDimensions,
-      normalization_method: normalizationMethod,
+      // normalization_method: normalizationMethod,
       return_threshold: returnThreshold,
+      minio_path: {
+        class: 'Directory',
+        path: '/usr/src/app/minio/upload'
+      },
     }
   } catch(error) {
     console.error('Make job json error', error)
@@ -127,42 +138,42 @@ const submitMergedCWL = async (
   const run = await Run.findOne({runID})
   const jobJSON = await makeCWLJobJSON(runID)
   // const jobJSON = await makeCWLJobJSON(kwargs, runID)
-  // console.log(jobJSON)
-  // const cwl = spawn(
-  //   `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
-  //    mkdir /usr/src/app/results/${runID} && \
-  //    cd /usr/src/app/results/${runID} && \
-  //    rm -f frontend_seurat_inputs.json && \
-  //    echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
-  //    toil-cwl-runner \
-  //       --writeLogs \
-  //       /usr/src/app/results/${runID} \
-  //       --maxLogFileSize \
-  //       0 \
-  //       --singularity \
-  //       /usr/src/app/crescent/seurat-v3.cwl \
-  //       frontend_seurat_inputs.json \ 
-  //   `,
-  //     { 
-  //       shell: true
-  //     }
-  // )
-  // run.submittedOn = new Date()
-  // await run.save()
-  // cwl.stdout.on( 'data', data => {
-  //     console.log( `stdout: ${data}` )
-  //     // console.log(data)
-  // })
-  // cwl.stderr.on( 'data', data => {
-  //     console.log( `stderr: ${data}` )
-  // })
-  // cwl.on( 'close', code => {
-  //     console.log( `child process exited with code ${code}`)
-  //     const isErrorCode = R.compose(R.not, R.equals(0))
-  //     run.status = isErrorCode(code) ? 'failed' : 'completed'
-  //     run.completedOn = new Date()
-  //     run.save()
-  // })
+  console.log(jobJSON)
+  const cwl = spawn(
+    `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
+     mkdir /usr/src/app/results/${runID} && \
+     cd /usr/src/app/results/${runID} && \
+     rm -f frontend_seurat_inputs.json && \
+     echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
+     toil-cwl-runner \
+        --writeLogs \
+        /usr/src/app/results/${runID} \
+        --maxLogFileSize \
+        0 \
+        --singularity \
+        /usr/src/app/crescent/integrate-seurat-v3.cwl \
+        frontend_seurat_inputs.json \ 
+    `,
+      { 
+        shell: true
+      }
+  )
+  run.submittedOn = new Date()
+  await run.save()
+  cwl.stdout.on( 'data', data => {
+      console.log( `stdout: ${data}` )
+      // console.log(data)
+  })
+  cwl.stderr.on( 'data', data => {
+      console.log( `stderr: ${data}` )
+  })
+  cwl.on( 'close', code => {
+      console.log( `child process exited with code ${code}`)
+      const isErrorCode = R.compose(R.not, R.equals(0))
+      run.status = isErrorCode(code) ? 'failed' : 'completed'
+      run.completedOn = new Date()
+      run.save()
+  })
 }
 
 module.exports = submitMergedCWL

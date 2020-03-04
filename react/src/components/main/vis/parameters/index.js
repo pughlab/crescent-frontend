@@ -62,7 +62,7 @@ const ParametersComponent = withRedux(
     // TODO: redux action to set parameter key
     const valueSetters = {
       'sc_input_type': singleCell => mergeAndSetParameters({singleCell}),
-      'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
+      //'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
       'percent_mito': percentMito => mergeAndSetParameters({percentMito}),
       // 'percent_ribo': percentRibo => mergeAndSetParameters({percentRibo}),
       'pca_dimensions': principalDimensions => mergeAndSetParameters({principalDimensions}),
@@ -73,7 +73,7 @@ const ParametersComponent = withRedux(
     }
     const values = {
       'sc_input_type': singleCell,
-      'number_genes': numberGenes,
+      //'number_genes': numberGenes,
       'percent_mito': percentMito,
       // 'percent_ribo': percentRibo,
       'pca_dimensions': principalDimensions,

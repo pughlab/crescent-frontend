@@ -194,7 +194,7 @@ const QualityControlParametersComponent = withRedux(
 
     const valueSetters = {
       'sc_input_type': singleCell => mergeAndSetParameters({singleCell}),
-      'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
+      //'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
       'percent_mito': percentMito => mergeAndSetParameters({percentMito}),
     }
 
@@ -230,7 +230,7 @@ const QualityControlParametersComponent = withRedux(
                           R.prop(parameterName),
                           ({singleCell, numberGenes, percentMito}) => ({
                             'sc_input_type': singleCell,
-                            'number_genes': numberGenes,
+                            //'number_genes': numberGenes,
                             'percent_mito': percentMito,
                           }),
                           R.prop(currentDataset)
