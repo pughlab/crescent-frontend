@@ -71,8 +71,9 @@ const QualityControlTemplateDownloadUploadSegment = withRedux(
         papaparse.parse(acceptedFiles[0], {
           complete: json => {
             const {data, errors, meta} = json
-            const headers = R.head(data)
-            const body = R.tail(data)
+            const [headers, ...body] = data
+            // const headers = R.head(data)
+            // const body = R.tail(data)
             const headerLens = R.map(R.compose(R.lensPath, R.split('.')), headers)
             const newDatasetsQualityControl = R.reduce(
               (rowsObject, row) => {
@@ -101,24 +102,26 @@ const QualityControlTemplateDownloadUploadSegment = withRedux(
     const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
     return (
-      <Segment textAlign='center'>
         <Popup
           wide='very'
           trigger={
             <Step.Group fluid widths={2} size='mini'>
               {/* Download button */}
               <Step as='a'
-                icon='download'
                 disabled={R.isNil(templateDownloadLink)}
                 as='a'
                 download='test.csv'
                 href={templateDownloadLink}
-              />
+              >
+                <Icon name='download' />
+                Download
+              </Step>
               
               {/* Upload button */}
               <Step as='a' {...getRootProps()}>
                 <input {...getInputProps()} />
                 <Icon name='upload' />
+                Upload
               </Step>
               
             </Step.Group>
@@ -142,8 +145,6 @@ const QualityControlTemplateDownloadUploadSegment = withRedux(
             </List>
           </Popup.Content>
         </Popup>
-
-      </Segment>
     )
   }
 )
@@ -274,9 +275,8 @@ const QualityControlParametersComponent = withRedux(
               <Header textAlign='center' sub size='large'>
                 {`Dataset QC`}
               </Header>
+              <QualityControlTemplateDownloadUploadSegment />
             </Segment>
-
-            <QualityControlTemplateDownloadUploadSegment />
 
             <Segment>
               <List selection celled size='large'>
