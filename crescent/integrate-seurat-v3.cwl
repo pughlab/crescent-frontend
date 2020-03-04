@@ -81,11 +81,17 @@ inputs:
       position: 11
       prefix: -w
 
+  minio_path:
+    type: Directory
+    inputBinding:
+      position: 12
+      prefix: -x
+
   outs_dir:
     type: string
     default: N
     inputBinding:
-      position: 12
+      position: 13
       prefix: -o 
 
 outputs:
