@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: /usr/src/app/crescent-seurat.simg
+    dockerImageId: /root/singimg/crescent-v3.simg
 
 baseCommand: [Rscript]
 
