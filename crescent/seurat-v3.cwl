@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: /root/singimg/crescent-v3.simg
+    dockerImageId: pipeline-image
 
 baseCommand: [Rscript]
 
