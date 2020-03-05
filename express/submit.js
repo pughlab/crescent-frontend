@@ -103,7 +103,7 @@ const submitCWL = async (
      rm -f frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
      python3 \
-        /usr/src/app/express/python/Test.py \
+        /usr/src/app/express/python/WesCall.py \
         /usr/src/app/results/${runID} \
         /usr/src/app/minio/download/Run-${runID} \
     `,
