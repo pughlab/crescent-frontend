@@ -206,6 +206,12 @@ router.get(
           res.send(result)
         })
         break;
+      case 'categorical_groups':
+        python_process = call_python('categorical_groups.py', {runID});
+        python_process.then((result) => {
+          res.send(result)
+        })
+        break;
       default:
         res.status(404).send("ERROR: invalid metadata endpoint")
     }

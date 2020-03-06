@@ -79,6 +79,7 @@ const VisualizationMenu = withRedux(
 
   // format a list for a dropdown
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
+  
   return (
     <Form>
       <Divider horizontal content='Colour By' />

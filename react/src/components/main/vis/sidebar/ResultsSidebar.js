@@ -8,7 +8,6 @@ import withRedux from '../../../../redux/hoc'
 import VisualizationMenu from '../results/VisualizationMenu';
 import QualityControlMenu from '../results/QualityControlMenu'
 
-
 const ResultsSidebar = withRedux(
   ({
     app: {

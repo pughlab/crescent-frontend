@@ -43,7 +43,8 @@ export default connect(
         fetchTopExpressed: runID => dispatch(Actions.thunks.fetchTopExpressed(runID)),
         fetchQC: runID => dispatch(Actions.thunks.fetchQC(runID)),
         fetchAvailableQC: runID => dispatch(Actions.thunks.fetchAvailableQC(runID)),
-        fetchMetrics: runID => dispatch(Actions.thunks.fetchMetrics(runID))
+        fetchMetrics: runID => dispatch(Actions.thunks.fetchMetrics(runID)),
+        getCategoricalGroups: runID => dispatch(Actions.thunks.getCategoricalGroups(runID)),
       }
     }
   })

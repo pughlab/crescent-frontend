@@ -141,6 +141,17 @@ const initializeResults = runID => (dispatch, getState) => {
   )    
 }
 
+// some plots can only display categorical labels
+// this is a way to ensure that the numeric ones aren't shown
+const getCategoricalGroups = runID => (dispatch, getState) => {
+  fetchEndpoint(`/express/metadata/categorical_groups/${runID}`).then((result) => {
+    dispatch({
+      type: 'SET_AVAILABLE_GROUPS',
+      payload: {groups: result}
+    });
+  });
+}
+
 const changeSelectedFeature = feature => (dispatch, getState) => {
   if (R.isEmpty(feature)){
     feature = null;
@@ -162,7 +173,8 @@ export default {
   fetchTopExpressed,
   fetchQC,
   fetchAvailableQC,
-  fetchMetrics
+  fetchMetrics,
+  getCategoricalGroups
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING
