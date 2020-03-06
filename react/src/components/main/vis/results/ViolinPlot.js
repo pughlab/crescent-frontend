@@ -11,18 +11,26 @@ import * as RA from 'ramda-adjunct'
 const ViolinPlot = withRedux(
   ({
   app: {
+    run: { runID },
     toggle: {
       vis: {results: {selectedFeature, selectedGroup}}
     }
   },
   actions: {
     thunks: {
-      fetchViolin
+      fetchViolin,
+      getCategoricalGroups,
+      resetGroups
     }
   }
 }) => {
   // use local state for data since too big for redux store
   const [violinData, setViolinData] = useState( [] )
+
+  useEffect(() => {
+    getCategoricalGroups(runID)
+    return () => resetGroups(runID);
+  },[])
 
   // Only refetch data if both group and feature are selected for violin
   useEffect(() => {
