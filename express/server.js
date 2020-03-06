@@ -207,9 +207,9 @@ router.get(
         })
         break;
       case 'categorical_groups':
-        python_process = call_python('categorical_groups.py', {runID});
-        python_process.then((result) => {
-          res.send(result)
+        Run.findOne({'runID': runID}, 'projectID').exec((err, {projectID}) => {
+          python_process = call_python('categorical_groups.py', {runID, projectID});
+          python_process.then((result) => {res.send(result)})
         })
         break;
       default:
