@@ -54,5 +54,6 @@ services:
       - --opt=runner=${WES_CWL_RUNNER}
       - --opt=extra=--singularity
       - --opt=extra=--writeLogs=/
+      - --opt=extra=--writeLogsFromAllJobs
       - --opt=extra=--maxLogFileSize=0 
 
