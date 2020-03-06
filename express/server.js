@@ -249,8 +249,10 @@ router.get(
     const {
       params: {group, feature, runID}
     } = req;
-    python_process = call_python('violin.py', {group, feature, runID})
-    python_process.then((result) => {res.send(result);})
+    Run.findOne({'runID': runID}, 'projectID').exec((err, {projectID}) => {
+      python_process = call_python('violin.py', {group, feature, runID, projectID})
+      python_process.then((result) => {res.send(result);})
+    })
   }
 );
 

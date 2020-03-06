@@ -153,7 +153,7 @@ def label_barcodes(barcode_coords, group, runID, projectID):
 		groups_path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
 		metadata_path = "../../minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional
 		if not os.path.isfile(groups_path):
-			helper.return_error("group label file not found ("+path+")")
+			helper.return_error("group label file not found ("+groups_path+")")
 	
 	# store the file(s) in 2d lists
 	groups_tsv = [line.rstrip('\n').split('\t') for line in open(groups_path)]
@@ -165,7 +165,6 @@ def label_barcodes(barcode_coords, group, runID, projectID):
 	elif group in metadata_tsv[0]:
 		# it's defined in the metadata, need to merge with groups_tsv
 		label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv, metadata_tsv)
-		pass
 	else:
 		helper.return_error(group + " is not an available group in groups.tsv or metadata.tsv")
 
