@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: pipeline-image
+    dockerPull: crescentdev/crescent-v3:latest
 
 baseCommand: [Rscript]
 

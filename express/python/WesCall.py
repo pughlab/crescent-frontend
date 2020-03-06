@@ -19,6 +19,6 @@ if inFile.mode == "r":
 
 # make request to wes
 clientObject = util.WESClient(
-    {'auth': '', 'proto': 'http', 'host': "wes-server:8080"})
+    {'auth': '', 'proto': 'http', 'host': "wes-server:8081"})
 req = clientObject.run(
     pathToCWL + "seurat-v3.cwl", job, [pathToCWL + "Runs_Seurat_v3.R", pathToInputFiles + "barcodes.tsv.gz", pathToInputFiles + "features.tsv.gz", pathToInputFiles + "matrix.mtx.gz"])

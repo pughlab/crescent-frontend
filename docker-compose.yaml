@@ -46,10 +46,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - /var/lib/docker/volumes:/var/lib/docker/volumes:rw
     ports:
-      - "${WES_PORT}:8080"
+      - "${WES_PORT}:8081"
     entrypoint: ["wes-server"]
     command:
-      - --port=8080
+      - --port=8081
       - --backend=${WES_BACKEND}
       - --opt=runner=${WES_CWL_RUNNER}
       - --opt=extra=--writeLogs=/
