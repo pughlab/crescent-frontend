@@ -1,12 +1,12 @@
 #!/usr/bin/env Rscript
 
 withCallingHandlers(
-    install.packages('BiocManager', dependencies=TRUE),
+    install.packages('BiocManager'),
     warning = stop
 )
 setRepositories(ind = 1:2)
 withCallingHandlers(
-    install.packages(c('Seurat','fmsb','optparse','staplr','devtools'), dependencies=TRUE),
+    install.packages(c('Seurat','fmsb','optparse','staplr','devtools')),
     warning = stop
 )
 withCallingHandlers(
