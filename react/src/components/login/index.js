@@ -13,7 +13,7 @@ const LandingPageComponent = withRedux(
       view: {isGuest},
     },
   }) => {
-    const [showLogin, setShowLogin] = useState(false)
+    const [showLogin, setShowLogin] = useState(true)
     return (
       showLogin ?
         <LoginForm {...{setShowLogin}} />
