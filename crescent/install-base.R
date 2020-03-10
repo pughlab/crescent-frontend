@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 withCallingHandlers(
-    install.packages('Bioconductor', dependencies=TRUE),
+    install.packages('BiocManager', dependencies=TRUE),
     warning = stop
 )
 setRepositories(ind = 1:2)
