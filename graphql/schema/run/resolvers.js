@@ -34,6 +34,9 @@ const resolvers = {
         const run = await Runs.findOne({runID})
         const {name, datasetIDs} = run
         console.log('Submitting run', runID, params, datasetIDs)
+        run.params = params
+        // run.status = 'submitted'
+        await run.save()
         const lengthIsOne = R.compose(R.equals(1), R.length)
         if (lengthIsOne(datasetIDs)) {
           await axios.post(
@@ -49,9 +52,6 @@ const resolvers = {
             {params: {name, params, runID}}
           )
         }
-        run.params = params
-        // run.status = 'submitted'
-        await run.save()
         return run
       } catch(error) {
         console.log(error)

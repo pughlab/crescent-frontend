@@ -61,7 +61,7 @@ router.post(
     console.log(params, runID, name)
     // // Parse and pass as object of parameters
     // const kwargs = JSON.parse(params)
-    submitMergedCWL(JSON.parse(params), runID)
+    submitMergedCWL(runID)
     res.sendStatus(200)
   }
 );

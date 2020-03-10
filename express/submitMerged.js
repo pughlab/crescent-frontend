@@ -14,64 +14,78 @@ const jsonexport = require('jsonexport')
 
 // Make object to write as CWL job JSON file
 const makeCWLJobJSON = async (
-  {
-    // singleCell,
-    // numberGenes: {min: minNumberGenes, max: maxNumberGenes},
-    // percentMito: {min: minPercentMito, max: maxPercentMito},
-    datasetsQualityControl,
-    resolution,
-    principalDimensions,
-    normalizationMethod,
-    returnThreshold,
-  },
+  // {
+  //   // singleCell,
+  //   // numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+  //   // percentMito: {min: minPercentMito, max: maxPercentMito},
+  //   datasetsQualityControl,
+  //   resolution,
+  //   principalDimensions,
+  //   normalizationMethod,
+  //   returnThreshold,
+  // },
   runID,
 ) => {
   try {
     // Put files from project's dataset into system
-    const run = await Run.findOne({runID})
-
+    const {params, datasetIDs} = await Run.findOne({runID})
+    const {
+      // singleCell,
+      // numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+      // percentMito: {min: minPercentMito, max: maxPercentMito},
+      datasetsQualityControl,
+      resolution,
+      principalDimensions,
+      normalizationMethod,
+      returnThreshold,
+    } = params
+    // Make datasets csv
     const datasets = R.compose(
+
       R.map(
         ({datasetID, name}) => ({
           dataset_path: `/usr/src/app/minio/upload/dataset-${datasetID.toString()}`,
           name,
           // add experiment_type here etc
-          ... R.prop(datasetID, datasetsQualityControl)
+          ... R.prop(datasetID, datasetsQualityControl),
+
+          //
+          // dummyProperty: someValue
         })
       )
     )(
-      await Dataset.find({
-        datasetID: {
-          $in: R.keys(datasetsQualityControl)
-        }
-      })
+      await Dataset.find({datasetID: {$in: datasetIDs}})
     )
-    console.log(datasets)
 
-    // Need to turn this object into csv with headers for 'sc_input' cwl param
+    // Need to turn this array of objects into csv with headers for 'sc_input' cwl param
     // [name, dataset_path, experiment_type, sc_input_type,  ...qc_params]
     // Write datasets.csv for quality control and sc_input
-    await new Promise(
-      (resolve, reject) => jsonexport(
-        datasets,
-        (err, csv) => {
-          if (err) {
-            reject(err)
-            return console.log('Dataset quality control submit error', err)
-          } else {
-            minioClient.putObject(`run-${runID}`, 'datasets.csv', csv, 
-              (err, etag) => {
-                if (err) {
-                  console.log('dataset quality control minio error', err)
-                } else {
-                  resolve()
+    try {
+      await new Promise(
+        (resolve, reject) => jsonexport(
+          datasets,
+          (err, csv) => {
+            if (err) {
+              reject(err)
+              return console.log('Dataset quality control submit error', err)
+            } else {
+              // Put into Minio
+              minioClient.putObject(`run-${runID}`, 'datasets.csv', csv, 
+                (err, etag) => {
+                  if (err) {
+                    console.log('dataset quality control minio error', err)
+                  } else {
+                    resolve()
+                  }
                 }
-              }
-            )
+              )
+            }
           }
-        }
-      )
-    )
+        )
+      )  
+    } catch(error) {
+      console.log('Error putting datasets.csv into bucket')
+    }
 
     // pipeline JSON config
     return {
@@ -108,12 +122,10 @@ const makeCWLJobJSON = async (
 // GETTING SINGULARITY IMAGE ERROR
 
 const submitMergedCWL = async (
-  // kwargs,
-  params,
   runID
 ) => {
   const run = await Run.findOne({runID})
-  const jobJSON = await makeCWLJobJSON(params, runID)
+  const jobJSON = await makeCWLJobJSON(runID)
   // const jobJSON = await makeCWLJobJSON(kwargs, runID)
   // console.log(jobJSON)
   // const cwl = spawn(
