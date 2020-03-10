@@ -10,6 +10,6 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    devtools::install_github(c('hhoeflin/hdf5r', 'mojaveazure/loomR@develop'),
+    devtools::install_github(c('hhoeflin/hdf5r', 'mojaveazure/loomR@develop')),
     warning = stop
 )
