@@ -58,21 +58,20 @@ const ProjectSchema = new mongoose.Schema({
   uploadedDatasetIDs: {
     type: [mongoose.Schema.Types.ObjectId],
     default: []
+  },
+
+  // Ontology tagging
+  cancerTag: {
+    type: Boolean,
+    default: true
+  },
+  oncotreeReference: {
+    type: String,
+    required: true
   }
 
 
 
-  // // Can be a 1:N project to project mapping
-  // children: {
-  //   type: [mongoose.Schema.Types.ObjectId],
-  //   default: []
-  // },
-  // or...
-  // Can be a 1:1 project that encapsulates a dataset
-  // datasetID: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   required: true
-  // },
 })
 
 module.exports = ProjectSchema

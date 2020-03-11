@@ -55,6 +55,12 @@ const PublicProjectsList = withRedux(() => {
         }
 
         datasetSize
+
+        cancerTag
+        oncotreeTissue {
+          name
+          code
+        }
       }
     }
   `, {

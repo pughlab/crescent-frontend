@@ -11,8 +11,9 @@ const UserSchema = require('./schema/user')
 const ProjectSchema = require('./schema/project')
 const RunSchema = require('./schema/run')
 const DatasetSchema = require('./schema/dataset')
+const OncotreeSchema = require('./schema/oncotree')
 
-const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema]
+const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema, OncotreeSchema]
 
 const minioClient = require('../database/minio-client');
 

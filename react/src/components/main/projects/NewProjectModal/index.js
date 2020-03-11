@@ -17,6 +17,7 @@ import withRedux from '../../../../redux/hoc'
 import CreateProjectButton from './CreateProjectButton'
 
 import DataForm from './DataForm'
+import DetailsForm from './DetailsForm'
 
 const NewProjectModal = ({
   refetch
@@ -24,6 +25,8 @@ const NewProjectModal = ({
   const initialNewProjectState = {
     name: '',
     description: '',
+    oncotreeReference: null,
+    cancerTag: true,
     mergedProjectIDs: [],
     uploadedDatasetIDs: [],
   }
@@ -40,6 +43,14 @@ const NewProjectModal = ({
         case 'CHANGE_DESCRIPTION':
           return R.evolve({
             description: R.always(R.prop('description', action))
+          }, state)
+        case 'CHANGE_ONCOTREE_REFERENCE':
+          return R.evolve({
+            oncotreeReference: R.always(R.prop('oncotreeReference', action))
+          }, state)
+        case 'TOGGLE_CANCER_TAG':
+          return R.evolve({
+            cancerTag: R.not
           }, state)
         case 'TOGGLE_PROJECT':
           const {projectID} = action
@@ -63,7 +74,6 @@ const NewProjectModal = ({
       }
     }, initialNewProjectState
   )
-  const {name, description} = newProjectState
 
   const [currentContent, setCurrentContent] = useState('details')
   const CONTENTS = [
@@ -73,18 +83,12 @@ const NewProjectModal = ({
       icon: 'info',
       component: (
         <Segment basic>
-          <Form>
-            <Form.Input fluid
-              placeholder='Enter a project name'
-              value={name}
-              onChange={(e, {value}) => newProjectDispatch({type: 'CHANGE_NAME', name: value})}
-            />
-            <Form.TextArea
-              placeholder='Enter a short project description'
-              value={description}
-              onChange={(e, {value}) => newProjectDispatch({type: 'CHANGE_DESCRIPTION', description: value})}
-            />
-          </Form>
+          <DetailsForm
+            {...{
+              newProjectState,
+              newProjectDispatch
+            }}
+          />
         </Segment>
       )
     },

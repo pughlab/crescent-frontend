@@ -36,9 +36,12 @@ const ProjectCard = withRedux(({
     datasetSize,
 
     mergedProjects,
-    uploadedDatasets
-  } = project
+    uploadedDatasets,
 
+    cancerTag,
+    oncotreeTissue: {name: oncotreeTissueName}
+  } = project
+  console.log(project)
 
 
   return (
@@ -54,30 +57,9 @@ const ProjectCard = withRedux(({
               </Button>
             }
             content={
-                <Segment.Group>
-                  <Segment>
-                    {description}
-                  </Segment>
-                  <Segment>
-                    <Label.Group>
-                      <Label content={<Icon style={{margin: 0}} name='user' />} detail={creatorName} />
-                      <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
-                      {/* <Label content={<Icon style={{margin: 0}} name='certificate' />} detail={'1000000'} /> */}
-                      {/* <Label content={<Icon style={{margin: 0}} name='save' />} detail={filesize(datasetSize)} /> */}
-                      {/* <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='cancer' />
-                      <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='mouse' /> */}
-
-                      {
-                        RA.isNotEmpty(mergedProjects) &&
-                        <Label content={<Icon style={{margin: 0}} name='folder open' />} detail={R.length(mergedProjects)} />
-                      }
-                      {
-                        RA.isNotEmpty(uploadedDatasets) &&
-                        <Label content={<Icon style={{margin: 0}} name='upload' />} detail={R.length(uploadedDatasets)} />
-                      }
-                    </Label.Group>
-                  </Segment>
-                </Segment.Group>
+              <Segment>
+                {description}
+              </Segment>
             }
           />
         <Card.Content>
@@ -89,13 +71,36 @@ const ProjectCard = withRedux(({
             </Header>
           </Card.Header>
         </Card.Content>
+        <Card.Content>
+          <Label.Group size='small'>
+            <Label content={<Icon style={{margin: 0}} name='user' />} detail={creatorName} />
+            <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
+            {/* <Label content={<Icon style={{margin: 0}} name='certificate' />} detail={'1000000'} /> */}
+            {/* <Label content={<Icon style={{margin: 0}} name='save' />} detail={filesize(datasetSize)} /> */}
+            {/* <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='cancer' />
+            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='mouse' /> */}
+
+            {
+              RA.isNotEmpty(mergedProjects) &&
+              <Label content={<Icon style={{margin: 0}} name='folder open' />} detail={R.length(mergedProjects)} />
+            }
+            {
+              RA.isNotEmpty(uploadedDatasets) &&
+              <Label content={<Icon style={{margin: 0}} name='upload' />} detail={R.length(uploadedDatasets)} />
+            }
+          </Label.Group>
+          <Label.Group size='small' color='blue'>
+            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail={cancerTag ? 'Cancer' : 'Non-cancer'} />
+            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail={oncotreeTissueName} />
+          </Label.Group>
+        </Card.Content>
         {
           R.ifElse(
             R.isEmpty,
             R.always(null),
             runs => (
               <Card.Content>
-                <Label.Group size='medium'>
+                <Label.Group size='small'>
                 {
                   R.compose(
                     R.flatten,

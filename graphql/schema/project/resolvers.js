@@ -1,6 +1,8 @@
 const R = require('ramda')
 const RA = require('ramda-adjunct')
 
+const axios = require('axios')
+
 const {
   ApolloError
 } = require('apollo-server')
@@ -37,7 +39,8 @@ const resolvers = {
         userID,
         name, description,
         projectIDs = [],
-        datasetIDs = []
+        datasetIDs = [],
+        oncotreeReference, cancerTag
       },
       {
         Datasets,
@@ -50,7 +53,8 @@ const resolvers = {
           name, description,
           createdBy: userID,
           mergedProjectIDs: projectIDs,
-          uploadedDatasetIDs: datasetIDs
+          uploadedDatasetIDs: datasetIDs,
+          oncotreeReference, cancerTag
         })
         return project
       } catch(error) {
@@ -239,6 +243,20 @@ const resolvers = {
         })
       } catch(error) {
         console.error(error)
+      }
+    },
+
+    oncotreeTissue: async ({oncotreeReference}, variables, {}) => {
+      try {
+        const requestURL = `http://oncotree.mskcc.org/api/tumorTypes/search/level/1?version=oncotree_latest_stable&exactMatch=true`
+        const {data: tissues} = await axios.get(requestURL)
+        console.log(tissues)
+        return R.find(
+          R.propEq('code', oncotreeReference),
+          tissues
+        )
+      } catch(error) {
+        console.log(error)
       }
     }
   }

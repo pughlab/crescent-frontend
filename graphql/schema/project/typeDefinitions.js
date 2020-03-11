@@ -30,6 +30,11 @@ const typeDefs = gql`
     allDatasets: [Dataset]
 
     datasetSize: Int
+
+    cancerTag: Boolean
+    oncotreeReference: OncotreeCode
+    oncotreeTissue: OncotreeTissue
+
   }
   type Query {
     project(projectID: ID): Project
@@ -50,11 +55,13 @@ const typeDefs = gql`
 
   type Mutation {
     createMergedProject(
-      userID: ID,
-      name: String,
-      description: String,
+      userID: ID
+      name: String
+      description: String
       projectIDs: [ID]!
       datasetIDs: [ID]!
+      cancerTag: Boolean
+      oncotreeReference: OncotreeCode
     ): Project
 
     createProject(

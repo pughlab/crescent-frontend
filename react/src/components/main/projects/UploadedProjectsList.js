@@ -61,6 +61,12 @@ const UploadedProjectsList = withRedux(({
         }
 
         datasetSize
+
+        cancerTag
+        oncotreeTissue {
+          name
+          code
+        }
       }
     }
   `, {
