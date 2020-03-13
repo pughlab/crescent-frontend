@@ -6,7 +6,11 @@ withCallingHandlers(
 )
 setRepositories(ind = 1:2)
 withCallingHandlers(
-    install.packages(c('Seurat','fmsb','optparse','staplr','devtools')),
+    install.packages(c('fmsb','optparse','staplr','devtools')),
+    warning = stop
+)
+withCallingHandlers(
+    devtools::install_version('ggplot2', version = '3.1.1'),
     warning = stop
 )
 withCallingHandlers(
