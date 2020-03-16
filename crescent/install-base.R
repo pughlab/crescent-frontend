@@ -10,7 +10,7 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    devtools::install_version('ggplot2', version = '3.1.1'),
+    devtools::install_version('Seurat', version = '3.1.1'),
     warning = stop
 )
 withCallingHandlers(
