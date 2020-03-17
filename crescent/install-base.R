@@ -10,7 +10,11 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    devtools::install_version('Seurat', version = '3.1.1'),
+    devtools::install_version("SDMTools", version = "1.1-221.2", repos = "http://cran.us.r-project.org"),
+    warning = stop
+)
+withCallingHandlers(
+    devtools::install_github("satijalab/seurat@v3.1.1"),
     warning = stop
 )
 withCallingHandlers(

@@ -1,4 +1,4 @@
-FROM r-base:latest
+FROM r-base:3.6.1
 
 RUN apt-get update && \
     apt-get install -y libcurl4-openssl-dev libhdf5-dev libssl-dev libxml2-dev \
