@@ -18,14 +18,6 @@ if inFile.mode == "r":
 clientObject = util.WESClient(
     {'auth': '', 'proto': 'http', 'host': "wes-server:8081"})
 
-# use seurat-v3.cwl
-# req = clientObject.run(
-#     pathToCWL + "seurat-v3.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToInputFiles + "barcodes.tsv.gz", pathToInputFiles + "features.tsv.gz", pathToInputFiles + "matrix.mtx.gz"])
-
-# use test.cwl
-# req = clientObject.run(
-#     pathToCWL + "test.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToInputFiles + "barcodes.tsv.gz", pathToInputFiles + "features.tsv.gz", pathToInputFiles + "matrix.mtx.gz"])
-
-# use seurat-test.cwl
+# use seurat-workflow.cwl
 req = clientObject.run(
-    pathToCWL + "seurat-test.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToInputFiles + "barcodes.tsv.gz", pathToInputFiles + "features.tsv.gz", pathToInputFiles + "matrix.mtx.gz"])
+    pathToCWL + "seurat-workflow.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToInputFiles + "barcodes.tsv.gz", pathToInputFiles + "features.tsv.gz", pathToInputFiles + "matrix.mtx.gz", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])

@@ -81,7 +81,12 @@ const makeCWLJobJSON = async (
       percent_mito: `${minPercentMito},${maxPercentMito}`,
       // percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
       // number_genes: '50,8000',
-      number_genes: `${minNumberGenes},${maxNumberGenes}`
+      number_genes: `${minNumberGenes},${maxNumberGenes}`,
+      destinationPath: `minio/project-${projectID}/runs/${runID}`,
+      access_key: `crescent-access`,
+      secret_key: `crescent-secret`,
+      minio_domain: `host.docker.internal`,
+      minio_port: `9000`
     }
   } catch(error) {
     console.error('Make job json error', error)

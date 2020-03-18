@@ -10,8 +10,6 @@ baseCommand: cp
 inputs:
   - id: SEURAT
     type: Directory
-    inputBinding:
-      position: 1
   - id: destinationPath
     type: string
   - id: access
@@ -22,9 +20,21 @@ inputs:
     type: string
   - id: port
     type: string
-outputs: []
+outputs:
+  SEURAT_dir:
+    type: string
+    outputBinding:
+      outputEval: $(inputs.SEURAT.location)
 arguments:
+  - position: 1
+    prefix: ''
+    separate: false
+    valueFrom: --recursive
   - position: 2
     prefix: ''
     separate: false
-    valueFrom: $(inputs.DestinationPath)/$(inputs.SEURAT.nameroot)
+    valueFrom: $(inputs.SEURAT)
+  - position: 3
+    prefix: ''
+    separate: false
+    valueFrom: $(inputs.destinationPath)/

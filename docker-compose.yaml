@@ -53,8 +53,10 @@ services:
       - --port=8081
       - --backend=${WES_BACKEND}
       - --opt=runner=${WES_CWL_RUNNER}
+      - --opt=extra=--cleanWorkDir=never
       - --opt=extra=--writeLogs=/
       - --opt=extra=--writeLogsFromAllJobs
       - --opt=extra=--maxLogFileSize=0 
       - --opt=extra=--writeLogsFromAllJobs
+      - --opt=extra=--realTimeLogging
 
