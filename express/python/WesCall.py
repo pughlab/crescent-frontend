@@ -14,6 +14,9 @@ inFile = open(pathToJob + "frontend_seurat_inputs.json", "r")
 if inFile.mode == "r":
     job = inFile.read()
 
+# Job creation needs to occur here instead of in submit.js for when we move from express to flask
+
+
 # make request to wes
 clientObject = util.WESClient(
     {'auth': '', 'proto': 'http', 'host': "wes-server:8081"})

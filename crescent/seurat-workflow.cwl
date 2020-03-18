@@ -151,7 +151,7 @@ steps:
     run: ./upload.cwl
   - id: clean
     in:
-      - id: SEURAT2
+      - id: SEURAT
         source: upload/SEURAT_dir
     out: []
     run: ./clean.cwl
