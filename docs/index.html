@@ -116,14 +116,22 @@
 		    <div class="container">
 				<article class="docs-article" id="section-1">
 				    <header class="docs-header">
-					    <h1 class="docs-heading">Introduction</h1>
-					    <section class="docs-intro">
-							<p>CReSCENT, CanceR Single Cell ExpressioN Toolkit (https://crescent.cloud), is an intuitive and scalable web portal incorporating a containerized pipeline execution engine for standardized analysis of single-cell RNA sequencing (scRNA-seq) data. While scRNA-seq data for cancer specimens is easily generated, subsequent analysis requires high-performance computing infrastructure and user expertise to tailor interpretation for cancer. CReSCENT is populated with multiple public datasets and preconfigured pipelines that are accessible to computational biology non-experts, and user-editable to allow for optimization, comparison, and reanalysis on the fly.</p>
-						</section><!--//docs-intro-->
-				    </header>
-				     <section class="docs-section" id="item-1-1">
-						<h2 class="section-heading">Overview</h2>
+						<!-- <h1 class="docs-heading">CReSCENT: <br/>CanceR Single Cell ExpressioN Toolkit</h1> -->
+						<h1 class="docs-heading">Introduction</h1>
+					</header>
+					<section class="docs-section" id='item-1-1'>
+						<h2 class="section-heading">About us</h2>
+						<p><b>CReSCENT</b>, <b>C</b>ance<b>R</b> <b>S</b>ingle <b>C</b>ell <b>E</b>xpressio<b>N</b> <b>T</b>oolkit <a  class="link" href="https://crescent.cloud/" target="_blank"><i class="fas fa-external-link-alt"></i> (https://crescent.cloud)</a>, is an intuitive and scalable web portal incorporating a containerized pipeline execution engine for standardized analysis of single-cell RNA sequencing (scRNA-seq) data. While scRNA-seq data for cancer specimens is easily generated, subsequent analysis requires high-performance computing infrastructure and user expertise to tailor interpretation for cancer. CReSCENT is populated with multiple public datasets and preconfigured pipelines that are accessible to computational biology non-experts, and user-editable to allow for optimization, comparison, and reanalysis on the fly.</p>
+						<p>CReSCENT is supported and funded by Genome Canada, Medicine by Design, Princess Margaret Cancer Centre, the University Health Network, and the Hospital for Sick Children.</p>
+					</section><!--//docs-intro-->
+					<section class="docs-section" id="item-1-2">
+						<h2 class="section-heading">Contact us</h2>
+						<p>We'd like to hear from you! Please feel free to reach the CReSCENT team to report bugs, suggest features, etc. Email us at <a href="mailto:crescent@uhnresearch.ca">crescent@uhnresearch.ca</a> or submit an issue to our <a href="https://github.com/pughlab/crescent-frontend/issues" target="_blank">Github</a>.</p>
+					</section><!--//section-->
+				     <section class="docs-section" id="item-1-3">
+						<h2 class="section-heading">Portal overview</h2>
 						<img class="img-fluid" src="assets/images/intro_3_main_pages.jpg">
+						<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>The three main pages within CReSCENT: 1) Projects/home, 2) Project runs, 3) Visualizations.</figcaption>
 						<p><br/>The CReSCENT interface is represented by three main pages: projects, runs, and visualizations. The projects page is the homepage and here you can upload your own data or explore public cancer datasets curated by the CReSCENT team. Once a project is selected, the runs page shows all the runs/jobs that have been submitted. Run statuses are displayed by the run card colour (e.g. green means completed, yellow means in progress, etc.). The runs page also houses functional buttons for sharing the current project with other CReSCENT users as well as uploading metadata to the project. Once a run is selected, the visualizations page displays the available visualizations including quality control plots and explorable gene expression through t-SNE, UMAP, and violin plots. Actions within these three pages will be detailed throughout the documentation.</p>
 					</section><!--//section-->
 			    </article><!--//docs-article-->
@@ -133,17 +141,67 @@
 				    <header class="docs-header">
 					    <h1 class="docs-heading">Creating a project</h1>
 					    <section class="docs-intro">
-						    <p>Section intro goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque finibus condimentum nisl id vulputate. Praesent aliquet varius eros interdum suscipit. Donec eu purus sed nibh convallis bibendum quis vitae turpis. Duis vestibulum diam lorem, vitae dapibus nibh facilisis a. Fusce in malesuada odio.</p>
+							<p>CReSCENT is organized into projects and each project features a single, scRNA-seq dataset. Projects exist within the portal as public or uploaded (private). Public projects are curated by the CReSCENT team and results within these projects can be explored. In addition to exploring these public projects, your own scRNA-seq data can be uploaded and processed. </p>
 						</section><!--//docs-intro-->
 				    </header>
 				     <section class="docs-section" id="item-2-1">
-						<h2 class="section-heading">Section Item 2.1</h2>
-						<p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+						<h2 class="section-heading">Uploading scRNA-seq data</h2>
+						<p>Single cell RNA-seq data is uploaded upon the creation of a new project. A raw or normalized count matrix can be easily uploaded to the portal in MTX format. File formats are further described below. </p>
+						<!-- <h5>Upload example</h5> -->
+						<figure class="figure docs-figure py-3">
+							<a href="assets/images/create_project.gif" data-title="Uploading scRNA-seq data" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/create_project.gif" alt="" style="width: 600px;"></a>
+							<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Quick walkthrough of how to upload your own scRNA-seq data and create a project in CReSCENT.</figcaption>
+						</figure>					
+						<h3>File formats</h3>
+						<p>skhjdkskjs</p>
+						<div class="callout-block callout-block-warning">
+                            <div class="content">
+                                <h4 class="callout-title">
+	                                <span class="callout-icon-holder mr-1">
+		                                <i class="fas fa-bullhorn"></i>
+		                            </span><!--//icon-holder-->
+	                                Warning
+	                            </h4>
+								<p>Personal/protected health information (PHI) is prohibited from upload. Do not include patient names, dates of birth, MRNs and other patient identifiers in your uploads. Examples of PHI can be found <a href="https://privacyruleandresearch.nih.gov/pr_08.asp" target="_blank">here</a>. Only de-identified data is accepted in CReSCENT! </p>
+							</div><!--//content-->
+                        </div><!--//callout-block-->
+
 					</section><!--//section-->
 					
 					<section class="docs-section" id="item-2-2">
-						<h2 class="section-heading">Section Item 2.2</h2>
-						<p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
+						<h2 class="section-heading">Uploading cell metadata</h2>
+	
+						<p>Following project creation, cell metadata can be uploaded if available. Cell metadata will be used to visualize and colour cells as well as provide further insight into gene expression exploration in the visualizations page. </p>
+						<!-- <h5>Upload example</h5> -->
+						<figure class="figure docs-figure py-3">
+							<a href="assets/images/upload_metadata.gif" data-title="Uploading cell metadata" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/upload_metadata.gif" alt="" style="width: 600px;"></a>
+							<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Quick walkthrough of how to upload cell metadata for a project.</figcaption>
+						</figure>
+				
+						<h3>File formats</h3>
+						<p>shjjshs</p>
+						<div class="callout-block callout-block-info">
+                            <div class="content">
+                                <h4 class="callout-title">
+	                                <span class="callout-icon-holder mr-1">
+		                                <i class="fas fa-info-circle"></i>
+		                            </span><!--//icon-holder-->
+	                                Note
+	                            </h4>
+								<p>This is an optional upload! Some examples include orthogonal assays, sample annotations, cell annotations, etc.</p>
+							</div><!--//content-->
+						</div><!--//callout-block-->
+						<div class="callout-block callout-block-warning">
+                            <div class="content">
+                                <h4 class="callout-title">
+	                                <span class="callout-icon-holder mr-1">
+		                                <i class="fas fa-bullhorn"></i>
+		                            </span><!--//icon-holder-->
+	                                Warning
+	                            </h4>
+								<p>Personal/protected health information (PHI) is prohibited from upload. Do not include patient names, dates of birth, MRNs and other patient identifiers in your uploads. Examples of PHI can be found <a href="https://privacyruleandresearch.nih.gov/pr_08.asp" target="_blank">here</a>. Only de-identified data is accepted in CReSCENT! </p>
+							</div><!--//content-->
+                        </div><!--//callout-block-->
 					</section><!--//section-->
 					
 					<section class="docs-section" id="item-2-3">
@@ -411,7 +469,7 @@
 						<p>Vivamus efficitur fringilla ullamcorper. Cras condimentum condimentum mauris, vitae facilisis leo. Aliquam sagittis purus nisi, at commodo augue convallis id. Sed interdum turpis quis felis bibendum imperdiet. Mauris pellentesque urna eu leo gravida iaculis. In fringilla odio in felis ultricies porttitor. Donec at purus libero. Vestibulum libero orci, commodo nec arcu sit amet, commodo sollicitudin est. Vestibulum ultricies malesuada tempor.</p>
 						<h5>Image Lightbox Example:</h5>
 						<figure class="figure docs-figure py-3">
-						    <a href="assets/images/features/appify-theme-projects-overview-lg.jpg" data-title="Image Lightbox Example" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/features/appify-add-members.gif" alt="" style="width: 600px;"></a>
+						    <a href="assets/images/create_project.gif" data-title="Image Lightbox Example" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/create_project.gif" alt="" style="width: 600px;"></a>
 						    <figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Credit: the above screencast is taken from <a  class="theme-link" href="https://themes.3rdwavemedia.com/bootstrap-templates/product/appify-bootstrap-4-admin-template-for-app-developers/" target="_blank"><i class="fas fa-external-link-alt"></i>Appify theme</a>.</figcaption>
 						</figure>
 						
