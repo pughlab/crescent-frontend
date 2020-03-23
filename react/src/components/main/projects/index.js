@@ -22,7 +22,6 @@ const ProjectsCardList = withRedux(({
 }) => {
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
-    <>
     <Container>
       <Divider horizontal
         content={
@@ -33,10 +32,9 @@ const ProjectsCardList = withRedux(({
           />
         }
       />
-
       {/* Only show public projects if guest */}
-      <Button.Group size='mini' fluid
-        widths={isGuest ? 1 : 2}
+      <Button.Group fluid
+        widths={2}
       >
         <Button color='black'
           onClick={() => setActiveProjectKind('published')}
@@ -48,19 +46,16 @@ const ProjectsCardList = withRedux(({
             content='Public Data' subheader='Published/example datasets accepted by CReSCENT'
           />
         </Button>
-        {
-          R.not(isGuest) &&
-            <Button color='black'
-              onClick={() => setActiveProjectKind('uploaded')}
-              active={isActiveProjectKind('uploaded')} 
-              basic={R.not(isActiveProjectKind('uploaded'))}
-            >
-              <Header
-                inverted={isActiveProjectKind('uploaded')}
-                content='Uploaded Data' subheader='Upload your own scRNA-seq data'
-              />
-            </Button>
-        }
+        <Button color='black'
+          onClick={() => setActiveProjectKind('uploaded')}
+          active={isActiveProjectKind('uploaded')} 
+          basic={R.not(isActiveProjectKind('uploaded'))}
+        >
+          <Header
+            inverted={isActiveProjectKind('uploaded')}
+            content='Uploaded Data' subheader='Upload your own scRNA-seq data'
+          />
+        </Button>
       </Button.Group>
       <Divider hidden horizontal />
       {
@@ -69,7 +64,6 @@ const ProjectsCardList = withRedux(({
         : null
       }
     </Container>
-    </>
   )
 })
 
