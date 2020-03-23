@@ -1,9 +1,5 @@
 import reduxThunks from './thunks'
 
-const logout = () => ({
-  type: 'LOGOUT'
-})
-
 const setUser = ({user}) => ({
   type: 'SET_USER',
   payload: {
@@ -31,13 +27,7 @@ const setRun = ({run}) => ({
     run
   }
 })
-// TODO: main view toggles should be consolidate
-const toggleInfo = () => ({
-  type: 'TOGGLE_INFO'
-})
-const toggleLogin = () => ({
-  type: 'TOGGLE_LOGIN'
-})
+
 // If null then don't change activeKind
 const toggleProjects = ({kind = null}) => ({
   type: 'TOGGLE_PROJECTS',
@@ -123,13 +113,10 @@ const toggle = {
 }
 
 export default {
-  logout,
   setProject,
   setRun,
   setUser,
   setGuestUser,
-  toggleInfo,
-  toggleLogin,
   toggleProjects,
   toggleRuns,
   toggleSidebar,

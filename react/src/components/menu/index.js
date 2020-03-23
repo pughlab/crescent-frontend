@@ -10,14 +10,8 @@ import withRedux from '../../redux/hoc'
 import Logo from '../landing/logo.jpg'
 
 import Marquee from 'react-marquee'
-
-const CrescentIcon = () => (
-  <Icon.Group style={{marginTop: -3}} >
-    <Icon name='cloud' size='big'  />
-    <Icon name='moon' size='small' inverted style={{marginTop: 2, marginLeft: -2}} />
-  </Icon.Group>
-)
-
+import InfoModal from '../info/InfoModal'
+import LoginModal from '../login/LoginModal'
 
 const MenuComponent = withRedux(({
   app: {
@@ -27,11 +21,8 @@ const MenuComponent = withRedux(({
     view: {main, isGuest}
   },
   actions: {
-    // logout,
-    toggleInfo,
     toggleProjects,
     toggleRuns,
-    toggleLogin
   }
 }) => {
   const isMainView = R.equals(main)
@@ -128,30 +119,8 @@ const MenuComponent = withRedux(({
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
-          <Popup inverted size='large'
-            trigger={
-              <Button color='grey' inverted basic icon size='large'
-                onClick={() => toggleInfo()}
-              >
-                <Icon color='black' size='big' name='info circle' />
-              </Button>
-            }
-            content={
-              'Info/Help'
-            }
-          />
-          <Popup inverted size='large'
-            trigger={
-              <Button basic inverted icon color='grey' size='large'
-                onClick={() => toggleLogin()}
-              >
-                <Icon color='black' size='big' name={'user circle'} />
-              </Button>
-            }
-            content={
-              'Log in/out'
-            }
-          />
+          <InfoModal />
+          <LoginModal />
         </Button.Group>
       </Grid.Column>
     </Segment>
