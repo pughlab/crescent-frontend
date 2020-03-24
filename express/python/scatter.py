@@ -120,7 +120,7 @@ def label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv
 				add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells)
 		# remaining keys in the dictionary weren't defined in metadata file
 		for barcode in all_barcodes.keys():
-			label = 'NA'
+			label = 'unlabelled'
 			add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells)
 	elif group_type == 'numeric':
 		# colour by gradient, grab all data and sort it
