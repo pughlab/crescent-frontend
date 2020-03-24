@@ -139,7 +139,40 @@
 							<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Quick walkthrough of how to upload your own scRNA-seq data and create a project in CReSCENT.</figcaption>
 						</figure>					
 						<h3>File formats</h3>
-						<p>skhjdkskjs</p>
+						<p>CReSCENT currently accepts scRNA-seq data in the <a href="https://math.nist.gov/MatrixMarket/formats.html" target="_blank">Matrix Market (MTX) format</a> as input. Compared to gene-by-barcode text files, the MTX format requires less storage space for sparse matrices where many elements are zeros. The three files used as input are the MTX (matrix.mtx.gz) and its barcode and gene/feature indices (barcodes.tsv.gz and features.mtx.gz). These files are a typical output from a <a href="https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/output/matrices" target="_blank">10X Cell Ranger</a> run.</p>
+						<h5>Gene-by-Barcode Matrix:</h5>
+						<div class="table-responsive my-4">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th scope="col"></th>
+										<th scope="col">BARCODE1</th>
+										<th scope="col">BARCODE2</th>
+										<th scope="col">BARCODE3</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<th scope="row">GENE1</th>
+										<td>0</td>
+										<td>1</td>
+										<td>0</td>
+									</tr>
+									<tr>
+										<th scope="row">GENE2</th>
+										<td>2</td>
+										<td>1</td>
+										<td>7</td>
+									</tr>
+									<tr>
+										<th scope="row">GENE3</th>
+										<td>1</td>
+										<td>4</td>
+										<td>0</td>
+									</tr>
+								</tbody>
+							</table>
+						</div><!--//table-responsive-->
 						<div class="callout-block callout-block-info">
                             <div class="content">
                                 <h4 class="callout-title">
@@ -148,7 +181,7 @@
 		                            </span><!--//icon-holder-->
 	                                Note
 	                            </h4>
-								<p>Example data from 10X Genomics is available! The scRNA-seq dataset has PBMCs with approximately 1000 cells. It can be downloaded from our portal when creating a project or click <a href="https://crescent.cloud/express/download/5e5818142f7290004cab4868" target="_blank">here</a> to download! </p>
+								<p>One-line-command script to convert gene-by-barcode text files to MTX files can be found <a href="https://github.com/pughlab/crescent/blob/master/bin/development/obtains_mtx_files_from_gene_x_barcode_matrix.R" target="_blank">here</a>. Example data from 10X Genomics is also available! The scRNA-seq dataset has PBMCs with approximately 1000 cells. It can be downloaded from our portal when creating a project or click <a href="https://crescent.cloud/express/download/5e5818142f7290004cab4868" target="_blank">here</a> to download! </p>
 							</div><!--//content-->
 						</div><!--//callout-block-->
 						<div class="callout-block callout-block-warning">
@@ -176,7 +209,46 @@
 						</figure>
 				
 						<h3>File formats</h3>
-						<p>shjjshs</p>
+						<p>CReSCENT currently accepts cell metadata in a tab-separated file (tsv). We have adopted the <a href="https://github.com/broadinstitute/single_cell_portal/wiki/Metadata-File" target="_blank">Broad standard</a> for cell metadata. This tsv has cell barcodes in the first column and customized metadata labels in the subsequent columns. These labels can be categorized as "group" for categorical variables, like cell types, and "numeric" for continuous values, like orthogonal assay measurements. The double header is necessary to display the proper visualization with "NAME" and "TYPE" being mandatory. </p>
+						<h5>Cell Metadata:</h5>
+						<div class="table-responsive my-4">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th scope="col">NAME</th>
+										<th scope="col">Cell Type</th>
+										<th scope="col">Cell Phase</th>
+										<th scope="col">Mitochondrial Fraction</th>
+									</tr>
+									<tr>
+										<th scope="col">TYPE</th>
+										<th scope="col">group</th>
+										<th scope="col">group</th>
+										<th scope="col">numeric</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<th scope="row">BARCODE1</th>
+										<td>Endothelial cell</td>
+										<td>G1</td>
+										<td>0.174</td>
+									</tr>
+									<tr>
+										<th scope="row">BARCODE2</th>
+										<td>Fibroblast</td>
+										<td>S</td>
+										<td>0.054</td>
+									</tr>
+									<tr>
+										<th scope="row">BARCODE3</th>
+										<td>Cardiac muscle cell</td>
+										<td>G2</td>
+										<td>0.199</td>
+									</tr>
+								</tbody>
+							</table>
+						</div><!--//table-responsive-->
 						<div class="callout-block callout-block-info">
                             <div class="content">
                                 <h4 class="callout-title">
