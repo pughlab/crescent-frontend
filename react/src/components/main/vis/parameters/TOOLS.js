@@ -22,6 +22,8 @@ const yupRequiredPositiveNumber = yup.number()
 .required()
 .positive()
 
+const yupRequiredIntegerNumber = yup.number().required().integer()
+
 const TOOLS = {
   SEURAT: [
     {
@@ -52,8 +54,8 @@ const TOOLS = {
             step: 1,
             defaultValue: {min: 50, max: 8000},
             schema: yup.object().shape({
-              min: yupRequiredNaturalNumber.lessThan(yup.ref('max'), 'Minimum must be less than maximum'),
-              max: yupRequiredNaturalNumber.moreThan(yup.ref('min'), 'Maximum must be more than minimum')
+              min: yupRequiredIntegerNumber.lessThan(yup.ref('max'), 'Minimum must be less than maximum'),
+              max: yupRequiredIntegerNumber.moreThan(yup.ref('min'), 'Maximum must be more than minimum')
             })
           },
           disabled: false
@@ -69,8 +71,8 @@ const TOOLS = {
             step: 0.1,
             defaultValue: {min: 0, max: 0.2},
             schema: yup.object().shape({
-              min: yup.number().required().min(0).lessThan(yup.ref('max'), 'Minimum must be less than maximum'),
-              max: yup.number().required().max(1).moreThan(yup.ref('min'), 'Maximum must be more than minimum')
+              min: yup.number().required().lessThan(yup.ref('max'), 'Minimum must be less than maximum'),
+              max: yup.number().required().moreThan(yup.ref('min'), 'Maximum must be more than minimum')
             })
           },
           disabled: false
