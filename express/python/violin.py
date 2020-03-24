@@ -30,10 +30,17 @@ def label_with_groups(plotly_obj, expression_values, group, labels_tsv):
 	# label each barcode with its chosen group
 	label_idx = labels_tsv[0].index(str(group))
 	group_type = labels_tsv[1][label_idx]
+	all_barcodes = {key: True for key in expression_values.keys()}
 	if group_type == 'group':
 		for row in labels_tsv[2:]:
 			barcode = str(row[0])
-			label = str(row[label_idx])
+			if all_barcodes.pop(barcode, None):
+				# only add barcodes that exist in expressions dictionary
+				label = str(row[label_idx])
+				add_barcode(plotly_obj, label, barcode, expression_values)
+		# now add the remaining barcodes without a label
+		for barcode in all_barcodes.keys():
+			label = 'unlabeled'
 			add_barcode(plotly_obj, label, barcode, expression_values)
 	elif group_type == 'numeric':
 		# can't do this for violins
