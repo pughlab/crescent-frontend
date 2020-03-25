@@ -104,7 +104,7 @@ def get_qc_data(runID, qc_type):
 
 	if qc_type == 'Before_After_Filtering':
 		traces = before_after_plots(dir_path)
-	elif qc_type in ['Number_of_Genes','Number_of_Reads','Mitochondrial_Genes_Fraction','Ribosomal_Protein_Genes_Fraction']:
+	elif qc_type in ['Number_of_Genes','Number_of_Reads','Mitochondrial_Genes_Percentage','Ribosomal_Protein_Genes_Percentage']:
 		traces = scatter_qc_plots(dir_path, runID, qc_type)
 	else:
 		helper.return_error(str(qc_type)+ " is not a valid option")

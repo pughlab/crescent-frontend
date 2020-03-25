@@ -98,7 +98,7 @@ const QCPlot = withRedux(
               {
                 "x": 0.63,
                 "y": 1,
-                "text": "Mitochondrial Genes Fraction",
+                "text": "Percentage of Mitochondrial Genes",
                 "xref": "paper",
                 "yref": "paper",
                 "xanchor": "center",
@@ -108,7 +108,7 @@ const QCPlot = withRedux(
               {
                 "x": 0.89,
                 "y": 1,
-                "text": "Ribosomal Protein Genes Fraction",
+                "text": "Percentage of Ribosomal Protein Genes",
                 "xref": "paper",
                 "yref": "paper",
                 "xanchor": "center",

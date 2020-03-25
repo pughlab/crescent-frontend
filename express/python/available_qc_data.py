@@ -23,15 +23,15 @@ dropdown_plots = {
 		"text": 'Number of Reads',
 		"value": 'Number_of_Reads'
 	},
-	"Mitochondrial_Genes_Fraction": {
-		"key": 'Mitochondrial_Genes_Fraction',
-		"text": 'Fraction of Mitochondrial Genes',
-		"value": 'Mitochondrial_Genes_Fraction'
+	"Mitochondrial_Genes_Percentage": {
+		"key": 'Mitochondrial_Genes_Percentage',
+		"text": 'Mitochondrial Genes Percentage',
+		"value": 'Mitochondrial_Genes_Percentage'
 	},
-	"Ribosomal_Protein_Genes_Fraction": {
-		"key": 'Ribosomal_Protein_Genes_Fraction',
-		"text": 'Fraction of Ribosomal Genes',
-		"value": 'Ribosomal_Protein_Genes_Fraction'
+	"Ribosomal_Protein_Genes_Percentage": {
+		"key": 'Ribosomal_Protein_Genes_Percentage',
+		"text": 'Ribosomal Protein Genes Percentage',
+		"value": 'Ribosomal_Protein_Genes_Percentage'
 	}
 }
 
