@@ -56,11 +56,9 @@ def scatter_qc_plots(dir_path, runID, qc_type):
 	num_cells = helper.get_cellcount(runID)
 	qc_file = os.path.join(dir_path,'qc_data.tsv')
 	if not os.path.isfile(qc_file):
-		print(qc_file)
 		helper.return_error("qc_data.tsv file not found")
 	qc_data = [line.rstrip('\n').split('\t') for line in open(qc_file)]
 	if qc_type in qc_data[0]:
-		# do the thing
 		label_with_groups(traces, barcode_coords, num_cells, qc_type, qc_data)
 	else:
 		helper.return_error("selected QC data not found in file")
