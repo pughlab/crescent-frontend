@@ -69,10 +69,10 @@ const QCPlot = withRedux(
               range: [0, R.isNil(qcData[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcData[2]['y'])))+1]
             },
             yaxis3: {
-              range: [0,1.1]
+              range: [0, R.isNil(qcData[4]) ? 101: Math.round(Math.max(...R.map(parseInt, qcData[4]['y'])))+1]
             },
             yaxis4: {
-              range: [0,1.1]
+              range: [0, R.isNil(qcData[6]) ? 101: Math.round(Math.max(...R.map(parseInt, qcData[6]['y'])))+1]
             },
             annotations: [
               {
