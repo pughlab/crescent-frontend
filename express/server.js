@@ -206,6 +206,12 @@ router.get(
           res.send(result)
         })
         break;
+      case 'categorical_groups':
+        Run.findOne({'runID': runID}, 'projectID').exec((err, {projectID}) => {
+          python_process = call_python('categorical_groups.py', {runID, projectID});
+          python_process.then((result) => {res.send(result)})
+        })
+        break;
       default:
         res.status(404).send("ERROR: invalid metadata endpoint")
     }
@@ -249,8 +255,10 @@ router.get(
     const {
       params: {group, feature, runID}
     } = req;
-    python_process = call_python('violin.py', {group, feature, runID})
-    python_process.then((result) => {res.send(result);})
+    Run.findOne({'runID': runID}, 'projectID').exec((err, {projectID}) => {
+      python_process = call_python('violin.py', {group, feature, runID, projectID})
+      python_process.then((result) => {res.send(result);})
+    })
   }
 );
 

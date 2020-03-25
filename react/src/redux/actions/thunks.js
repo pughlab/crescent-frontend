@@ -141,7 +141,41 @@ const initializeResults = runID => (dispatch, getState) => {
   )    
 }
 
-const changeSelectedFeature = feature => (dispatch, getState) => {
+// some plots can only display categorical labels
+// this is a way to ensure that the numeric ones aren't shown
+const getCategoricalGroups = runID => (dispatch, getState) => {
+  fetchEndpoint(`/express/metadata/categorical_groups/${runID}`).then((result) => {
+    dispatch({
+      type: 'SET_AVAILABLE_GROUPS',
+      payload: result
+    })
+  })
+}
+
+const resetGroups = runID => (dispatch, getState) => {
+  fetchEndpoint(`/express/metadata/groups/${runID}`).then((result) => {
+    dispatch({
+      type: 'SET_AVAILABLE_GROUPS',
+      payload: result
+    })
+  })
+}
+
+  /*
+    fetch(`/express/metadata/categorical_groups/${runID}`).then((result) => {
+    console.log(result)
+  })
+   /*
+  return fetchEndpoint(`/express/metadata/categorical_groups/${runID}`).then((result) => {
+    console.log(result)
+    dispatch({
+      type: 'SET_AVAILABLE_GROUPS',
+      payload: {groups: result}
+    });
+  });
+    */
+
+  const changeSelectedFeature = feature => (dispatch, getState) => {
   if (R.isEmpty(feature)){
     feature = null;
   }
@@ -162,7 +196,9 @@ export default {
   fetchTopExpressed,
   fetchQC,
   fetchAvailableQC,
-  fetchMetrics
+  fetchMetrics,
+  getCategoricalGroups,
+  resetGroups
 }
 
 /* KEEPING THIS HERE FOR REFERENCE IF DECIDE TO TOGGLE LOADING

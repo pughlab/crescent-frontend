@@ -14,21 +14,41 @@ fileName = "normalized_counts.loom"
 
 colour_counter = 0
 
-def add_barcode(plotly_obj, barcode, label, opacities):
-	""" add a new barcode to the plotly object and add its label group if it doesn't exist yet """
+def add_barcode(plotly_obj, label, barcode, expression_values):
+	""" add the barcode+expression to an exisiting group or make a new one in the plotly object """
 	for group in plotly_obj:
 		if group['name'] == label:
-			group['text'].append(barcode)
-			group['marker']['opacity'].append(opacities[barcode])
+			group['x'].append(label)
+			group['y'].append(expression_values[barcode])
 			return
-	
-	# label not seen yet
-	plotly_obj.append({
-			"name": label,
-			"text": [barcode],
-			"marker": {'opacity': [opacities[barcode]]}
-	})
+
+	# label not seen yet, create new group
+	plotly_obj.append(new_violin_group(label, expression_values[barcode]))
 	return
+
+def label_with_groups(plotly_obj, expression_values, group, labels_tsv):
+	# label each barcode with its chosen group
+	label_idx = labels_tsv[0].index(str(group))
+	group_type = labels_tsv[1][label_idx]
+	all_barcodes = {key: True for key in expression_values.keys()}
+	if group_type == 'group':
+		for row in labels_tsv[2:]:
+			barcode = str(row[0])
+			if all_barcodes.pop(barcode, None):
+				# only add barcodes that exist in expressions dictionary
+				label = str(row[label_idx])
+				add_barcode(plotly_obj, label, barcode, expression_values)
+		# now add the remaining barcodes without a label
+		for barcode in all_barcodes.keys():
+			label = 'unlabeled'
+			add_barcode(plotly_obj, label, barcode, expression_values)
+	elif group_type == 'numeric':
+		# can't do this for violins
+		helper.return_error(group + " is numeric data, not viewable in violin plots")
+	else:
+		helper.return_error(group + " does not have a valid data type (must be 'group')")
+
+	return plotly_obj
 
 def sort_barcodes(opacities, group, runID):
 	""" given the opacities for the barcodes, sorts them into the specified groups and returns a plotly object """
@@ -85,21 +105,7 @@ def get_expression(feature, runID):
 
 	helper.return_error("Feature Not Found")
 
-def add_barcode(plotly_obj, barcode, label, opacities):
-	""" add a new barcode to the plotly object and add its label group if it doesn't exist yet """
-	for group in plotly_obj:
-		if group['name'] == label:
-			group['text'].append(barcode)
-			group['marker']['opacity'].append(opacities[barcode])
-			return
-	
-	# label not seen yet
-	plotly_obj.append({
-			"name": label,
-			"text": [barcode],
-			"marker": {'opacity': [opacities[barcode]]}
-	})
-	return
+
 
 def new_violin_group(label, y_coord):
 	""" creates a new violin group for the plot """
@@ -120,41 +126,33 @@ def new_violin_group(label, y_coord):
 	colour_counter += 1
 	return violin_group
 
-def add_barcode(plotly_obj, label, barcode, expression_values):
-	""" add the barcode+expression to an exisiting group or make a new one in the plotly object """
-	for group in plotly_obj:
-		if group['name'] == label:
-			group['x'].append(label)
-			group['y'].append(expression_values[barcode])
-			return
-
-	# label not seen yet, create new group
-	plotly_obj.append(new_violin_group(label, expression_values[barcode]))
-	return
-
-def categorize_barcodes(group, expression_values, runID):
+def categorize_barcodes(group, expression_values, runID, projectID):
 	""" for every group, make a new plotly object and put the barcodes into it """
-	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID)
-	if not os.path.isfile(path):
+	groups_path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+	metadata_path = "/usr/src/app/minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional, user-defined
+	if not os.path.isfile(groups_path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
-		if not os.path.isfile(path):
-			helper.return_error("group label file not found ("+path+")")
+		groups_path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		metadata_path = "../../minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional
+		if not os.path.isfile(groups_path):
+			helper.return_error("group label file not found ("+groups_path+")")
+
+	# store the file(s) in 2d lists
+	groups_tsv = [line.rstrip('\n').split('\t') for line in open(groups_path)]
+	metadata_tsv = [line.rstrip('\n').split('\t') for line in open(metadata_path)] if os.path.isfile(metadata_path) else []
+
 	plotly_obj = []
-	with open(path) as group_definitions:
-		reader = csv.reader(group_definitions, delimiter="\t")
-		available_groups = next(reader)[1:]
-		group_types = next(reader)[1:]
-		try:
-			label_idx = available_groups.index(str(group)) + 1
-		except ValueError as e:
-			helper.return_error(group + " is not an available group")
-		for row in reader:
-			barcode = str(row[0])
-			label = str(row[label_idx])
-			add_barcode(plotly_obj, label, barcode, expression_values)
+	if group in groups_tsv[0]:
+		# groups tsv definition supercedes metadata
+		label_with_groups(plotly_obj, expression_values, group, groups_tsv)
+	elif group in metadata_tsv[0]:
+		# it's defined in the metadata
+		label_with_groups(plotly_obj, expression_values, group, metadata_tsv)
+	else:
+		helper.return_error(group + " is not an available group in groups.tsv or metadata.tsv")
 
 	return plotly_obj
+
 
 def calculate_bandwidths(plotly_obj):
 	""" all expression values now recorded, calculate bandwidths and display violins with null bandwidths as boxplots """
@@ -173,21 +171,21 @@ def calculate_bandwidths(plotly_obj):
 
 	return
 
-def get_violin_data(group, feature, runID):
+def get_violin_data(group, feature, runID, projectID):
 	""" given a grouping for the cells and a feature of interest, returns the plotly violin object """	
 	expression_values = get_expression(feature, runID)
-	plotly_obj = categorize_barcodes(group, expression_values, runID)
+	plotly_obj = categorize_barcodes(group, expression_values, runID, projectID)
 	calculate_bandwidths(plotly_obj)
 	return plotly_obj
 
 def main():
 	try:
 		params = json.loads(sys.argv[1]) # parse json inputs
-		group, feature, runID = params['group'], params['feature'], params['runID']
+		group, feature, runID, projectID = params['group'], params['feature'], params['runID'], params['projectID']
 	except Exception as e:
 		helper.return_error("unable to read arguments: "+str(e))
 
-	result = get_violin_data(group, feature, runID)
+	result = get_violin_data(group, feature, runID, projectID)
 	helper.sort_traces(result)
 	print(json.dumps(result))
 	sys.stdout.flush()
