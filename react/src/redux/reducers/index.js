@@ -337,6 +337,13 @@ const VisualizationReducer = {
       value
     )(state)
   },
+  'SET_AVAILABLE_GROUPS': (state, payload) => {
+    const {groups} = payload
+    return R.set(
+      R.lensPath(['toggle','vis','results','availableGroups']),
+      groups
+    )(state)
+  },
   'CLEAR_RESULTS': (state, payload) => {
     return R.compose(
       R.set(

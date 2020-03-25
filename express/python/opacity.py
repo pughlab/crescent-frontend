@@ -98,9 +98,16 @@ def sort_barcodes(opacities, group, runID, projectID):
 		label_idx = metadata_tsv[0].index(str(group))
 		group_type = metadata_tsv[1][label_idx]
 		if group_type == 'group':
+			all_barcodes = {key: True for key in opacities}
 			for row in metadata_tsv[2:]:
 				barcode = str(row[0])
-				label = str(row[label_idx])
+				if all_barcodes.pop(barcode, None):
+					# exists in all barcodes, ok to add (skipped otherwise)
+					label = str(row[label_idx])
+					add_barcode(plotly_obj, barcode, label, opacities)
+			# add remaining barcodes that weren't defined in the metadata file
+			for barcode in all_barcodes.keys():
+				label = 'unlabelled'
 				add_barcode(plotly_obj, barcode, label, opacities)
 		elif group_type == 'numeric':
 			# colour by gradient
@@ -115,26 +122,9 @@ def sort_barcodes(opacities, group, runID, projectID):
 			add_barcodes(plotly_obj, barcode_values, group, opacities)
 		else:
 			helper.return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
-
-
 		pass
 	else:
 		helper.return_error(group + " is not an available group in groups.tsv or metadata.tsv")
-
-	"""
-	
-	with open(path) as group_definitions:
-		reader = csv.reader(group_definitions, delimiter="\t")
-		available_groups = next(reader)[1:]
-		try:
-			label_idx = available_groups.index(str(group)) + 1
-		except ValueError as e:
-			helper.return_error(group + " is not an available group")		
-		for row in reader:
-			barcode = str(row[0])
-			label = str(row[label_idx])
-			add_barcode(plotly_obj, barcode, label, opacities)
-	"""
 
 	return plotly_obj
 
