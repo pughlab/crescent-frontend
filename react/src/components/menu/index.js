@@ -7,7 +7,7 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../redux/hoc'
 
-import Logo from '../landing/logo.jpg'
+import Logo from '../login/logo.jpg'
 
 import Marquee from 'react-marquee'
 import InfoModal from '../info/InfoModal'

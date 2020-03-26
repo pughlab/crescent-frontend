@@ -9,7 +9,7 @@ import {Segment, Modal, Button, Image, Header} from 'semantic-ui-react'
 import MenuComponent from './components/menu'
 import MainComponent from './components/main'
 
-import Logo from './components/landing/logo.jpg'
+import Logo from './components/login/logo.jpg'
 
 import withRedux from './redux/hoc'
 
