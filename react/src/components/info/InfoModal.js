@@ -37,16 +37,12 @@ const InfoModal = ({
       <Modal.Content>
           <Segment>
             <Header content='Help'/>
-            A quick walkthrough of accessing and exploring public datasets can be found on <a href='https://youtu.be/KK4Xc6SBSSY' target='_blank' rel="noopener noreferrer">Youtube.</a> 
-            <Embed
-              id='7a23FASMn6I'
-              source='youtube'
-            />
+            CReSCENT Documentation (User Manual) is now available on our <a href='https://pughlab.github.io/crescent-frontend/' target='_blank' rel="noopener noreferrer">Github Pages</a>. A quick walkthrough of accessing and exploring public datasets can be found on <a href='https://youtu.be/KK4Xc6SBSSY' target='_blank' rel="noopener noreferrer">Youtube</a>. 
           </Segment>
 
           <Segment>
             <Header content='Contact Us'/>
-            To reach the crescent.cloud portal-dev team and to report bugs or request features, please use the template forms found on our <a href='https://github.com/pughlab/crescent/issues' target='_blank'>Github</a> or email us at <a href='mailto:crescent@uhnresearch.ca'>crescent@uhnresearch.ca</a>.
+            To reach the crescent.cloud portal-dev team and to report bugs or request features, please submit an issue to our <a href='https://github.com/pughlab/crescent-frontend/issues' target='_blank'>Github</a> or email us at <a href='mailto:crescent@uhnresearch.ca'>crescent@uhnresearch.ca</a>.
           </Segment>
 
           <Segment>
