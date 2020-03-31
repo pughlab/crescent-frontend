@@ -166,8 +166,8 @@ const RegisterForm = withRedux(
                     <Form size='large' onSubmit={handleSubmit}>
                       <Message 
                         size='huge'
-                        header={'Registering is totally voluntary.'}
-                        content={'Registered users may upload their own data for analysis. Public users can still submit runs on existing public projects.'}
+                        header={'Registering with email is optional.'}
+                        content={'Please register if you would like your data and results to be saved beyond the session.'}
                       />
 
                       <Form.Group widths={2}>
