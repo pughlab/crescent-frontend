@@ -203,7 +203,7 @@ const RunsCardList = withRedux(({
       }
       <Segment attached='bottom'>
         <Divider horizontal>
-          <Header content={'Project Runs'} />
+          <Header content={'Project Runs'} subheader={'Please refresh the page to see latest updates to runs'} />
         </Divider>
         {
           isUploadedProject &&
