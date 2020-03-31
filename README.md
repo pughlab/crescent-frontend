@@ -55,6 +55,10 @@ docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d
 # or npm start 
 ```
 
-## Tutorials 
-- Short video: https://www.youtube.com/watch?v=7a23FASMn6I
-- Extended documentation: https://pughlab.github.io/crescent-frontend/
+## Bugs and Feature Requests
+Please use these templates to: <br />
+[report bugs](https://github.com/pughlab/crescent-frontend/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) <br />
+[request features](https://github.com/pughlab/crescent-frontend/blob/master/.github/ISSUE_TEMPLATE/feature_request.md)
+
+## General inquires
+<crescent@uhnresearch.ca>
