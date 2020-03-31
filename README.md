@@ -1,4 +1,4 @@
-# CReSCENT: CanceR Single Cell Expression Toolkit
+# CReSCENT: CanceR Single Cell Expression Toolkit (Web application)
 
 ## Prerequisites
 - Git (to clone this repo)
@@ -54,3 +54,7 @@ cd ..
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d 
 # or npm start 
 ```
+
+## Tutorials 
+- Short video: https://www.youtube.com/watch?v=7a23FASMn6I
+- Extended documentation: https://pughlab.github.io/crescent-frontend/
