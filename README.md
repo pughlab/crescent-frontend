@@ -54,11 +54,3 @@ cd ..
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d 
 # or npm start 
 ```
-
-## Bugs and Feature Requests
-Please use these templates to: <br />
-[report bugs](https://github.com/pughlab/crescent-frontend/blob/master/.github/ISSUE_TEMPLATE/bug_report.md) <br />
-[request features](https://github.com/pughlab/crescent-frontend/blob/master/.github/ISSUE_TEMPLATE/feature_request.md)
-
-## General inquires
-<crescent@uhnresearch.ca>
