@@ -35,6 +35,9 @@ const RegisterForm = withRedux(
     actions: {
       setUser
     },
+
+    // Props
+    setOpen,
     setShowLogin
   }) => {
     const [showTerms, setShowTerms] = useState(false)
@@ -61,16 +64,14 @@ const RegisterForm = withRedux(
       onCompleted: ({createUser}) => {
         if (RA.isNotNil(createUser)) {
           setUser(createUser)
+          setOpen(false)
         } else {
           setShowErrorModal(true)
         }
       }
     })
     return (
-      <Grid centered textAlign='center' verticalAlign='middle'
-        columns={1}
-      >
-        <Grid.Column>
+
           <Formik
             intialValues={{
               firstName: '', lastName: '',
@@ -100,7 +101,7 @@ const RegisterForm = withRedux(
                 )(errors)
               )
               return (
-                <Container text>
+                <>
                 {/* ERROR MODAL */}
                 <Modal open={showErrorModal} size='small' basic dimmer='inverted'>
                   <Modal.Content>
@@ -229,7 +230,7 @@ const RegisterForm = withRedux(
                       </Form.Group>
   
                       <Form.Button
-                        fluid color='grey' size='large'
+                        fluid color='grey' size='massive'
                         type='submit'
                         disabled={
                           R.any(RA.isTrue, [
@@ -260,12 +261,10 @@ const RegisterForm = withRedux(
                     </Button>
                   </Segment>
                 </Segment.Group>
-                </Container>
+                </>
               )
             }}
           />
-        </Grid.Column>
-      </Grid>
     )
   }
 )

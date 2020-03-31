@@ -10,7 +10,7 @@ const initialState = {
   run: null,
   // View management
   view: {
-    main: 'projects', // 'login', 'projects', 'runs', 'vis'
+    main: 'projects', // 'projects', 'runs', 'vis'
     sidebar: null, // 'pipeline', 'results'
     isGuest: null, // true, false
   },
@@ -74,7 +74,7 @@ const createReducer = (initialState, handlers) => {
 }
 
 const LoginReducer = {
-  'LOGOUT': R.always(initialState),
+  // 'LOGOUT': R.always(initialState),
 }
 
 const GQLReducer = {
@@ -167,18 +167,6 @@ const GQLReducer = {
 const MainViewReducer = {
     // App can either be selecting projects and selecting/inspecting runs
     // Inspecting a run requires sidebar to be showing
-  'TOGGLE_INFO': 
-    (state, payload) => {
-      return R.compose(
-        setMainView('info')
-      )(state)
-    },
-  'TOGGLE_LOGIN':
-    (state, payload) => {
-      return R.compose(
-        setMainView('login')
-      )(state)
-    },
   'TOGGLE_PROJECTS':
     (state, payload) => {
       const {kind} = payload

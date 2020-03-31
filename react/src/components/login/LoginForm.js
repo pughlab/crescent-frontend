@@ -30,6 +30,9 @@ const LoginForm = withRedux(({
   actions: {
     setUser
   },
+
+  // Props
+  setOpen,
   setShowLogin, //For toggling to registration
 }) => {
   const [showErrorModal, setShowErrorModal] = useState(false)
@@ -47,15 +50,14 @@ const LoginForm = withRedux(({
     onCompleted: ({authenticateUser}) => {
       if (RA.isNotNil(authenticateUser)) {
         setUser(authenticateUser)
+        setOpen(false)
       } else {
         setShowErrorModal(true)
       }
     }
   })
   return (
-    <>
-    <Grid textAlign='center' centered verticalAlign='middle' columns={1}>
-      <Grid.Column>
+
       <Formik
         initialValues={{ email: '', password: '' }}
         // Call GQL mutation on form submit
@@ -80,7 +82,7 @@ const LoginForm = withRedux(({
             )(errors)
           )
           return (
-            <Container text>
+            <>
             <Modal open={showErrorModal} size='small' basic dimmer='inverted'>
               <Modal.Content>
                 <Card fluid>
@@ -101,7 +103,9 @@ const LoginForm = withRedux(({
             </Modal>
             <Segment.Group>
               <Segment>
-                
+                <Image centered size='small' src={Logo}/>
+              </Segment>
+              <Segment>
                 <Form onSubmit={handleSubmit}>
                   <Form.Input
                     fluid icon='user' iconPosition='left'
@@ -122,7 +126,7 @@ const LoginForm = withRedux(({
                   />
 
                   <Form.Button
-                    fluid color='grey' size='large'
+                    fluid color='grey' size='massive'
                     disabled={
                       R.any(RA.isTrue, [
                         R.any(isError, ['email', 'password']),
@@ -145,13 +149,10 @@ const LoginForm = withRedux(({
                 </Button>
               </Segment>
             </Segment.Group>
-            </Container>
+            </>
           )
         }}
       />
-      </Grid.Column>
-    </Grid>
-    </>
   )
 })
 

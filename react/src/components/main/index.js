@@ -11,9 +11,6 @@ import withRedux from '../../redux/hoc'
 
 import ProjectsCardList from './projects'
 import RunsCardList from './runs'
-import LandingPageComponent from '../landing'
-import PortalInfo from './info'
-
 import VisComponent from './vis'
 
 import { useMutation } from '@apollo/react-hooks'
@@ -53,12 +50,6 @@ const MainComponent = withRedux(
       <Segment basic attached='bottom' style={{minHeight: 'calc(100vh - 5rem - 2px)', marginTop: 0,  backgroundImage: `url(${memphisMini})`}}>
       {
         R.cond([
-          [R.equals('info'), R.always(
-            <PortalInfo />
-          )],
-          [R.equals('login'), R.always(
-            <LandingPageComponent />
-          )],  
           [R.equals('projects'), R.always(
             <Grid.Column width={16} style={{height: '100%'}}>
               <ProjectsCardList />
