@@ -85,6 +85,7 @@
 ### `packageVersion("Seurat")`
 ### ### should return:
 ### [1] ‘3.0.3.9023’
+
 suppressPackageStartupMessages(library(Seurat))       # (CRAN) to run QC, differential gene expression and clustering analyses
 suppressPackageStartupMessages(library(dplyr))        # (CRAN) needed by Seurat for data manupulation
 suppressPackageStartupMessages(library(optparse))     # (CRAN) to handle one-line-commands
@@ -94,6 +95,7 @@ suppressPackageStartupMessages(library(ggplot2))      # (CRAN) to generate QC vi
 suppressPackageStartupMessages(library(cowplot))      # (CRAN) to arrange QC violin plots and top legend
 suppressPackageStartupMessages(library(future))       # (CRAN) to run parallel processes
 suppressPackageStartupMessages(library(staplr))       # (CRAN) to merge pdf files. Note it needs pdftk available. If not available use `SummaryPlots <- "N"`
+suppressPackageStartupMessages(library(loomR))        # (GitHub mojaveazure/loomR) needed for fron-end display of data. Only needed if using `-w Y`
 ####################################
 
 ####################################
@@ -154,9 +156,9 @@ option_list <- list(
   #
   make_option(c("-b", "--normalize_and_scale_sample"), default="2",
               help="Indicates one of three options:
-                '1' --input contains raw counts (e.g. from cellranger) and this script should use Seurat's NormalizeData() function
-                '2' --input contains raw counts (e.g. from cellranger) and this script should use Seurat's SCTransform() function
-                '3' --input contains pre-normalized counts (e.g. transcripts per million counts [TPMs]) and the normalization step should be skipped
+                a) Type '1' if --input contains raw counts (e.g. from cellranger) and this script should use Seurat's NormalizeData() function
+                b) Type '2' if --input contains raw counts (e.g. from cellranger) and this script should use Seurat's SCTransform() function
+                c) Type '3' if --input contains pre-normalized counts (e.g. transcripts per million counts [TPMs]) and the normalization step should be skipped
                 Default = '2'"),
   #
   make_option(c("-r", "--resolution"), default="1",
@@ -191,6 +193,10 @@ option_list <- list(
                 use the number of PC's where the elbow shows a plateau along the y-axes low numbers
                 Default = '10'"),
   #
+  make_option(c("-f", "--apply_cell_filters"), default="Y",
+              help="Indicates if parameters `-m, -q, -n, -v` should be applied. Type 'y/Y' or 'n/N')
+                Default = 'Y'"),
+  #
   make_option(c("-m", "--percent_mito"), default="0,0.05",
               help="<comma> delimited min,max fraction of gene counts of mitochondrial origin a cell to be included in normalization and clustering analyses
                 For example, for whole cell scRNA-seq use '0,0.2', or for Nuc-seq use '0,0.05'
@@ -214,9 +220,12 @@ option_list <- list(
               help="For each cluster only return markers that have a p-value < return_thresh
                 Default = '0.01'"),
   #
-  make_option(c("-u", "--number_cores"), default="MAX",
-              help="Indicate the number of cores to use for parellelization (e.g. '4') or type 'MAX' to determine and use all available cores in the system
-                Default = 'MAX'"),
+  make_option(c("-u", "--number_cores"), default="AUTO",
+              help="Indicates one of three options:
+                a) Type the number of cores to use for parellelization (e.g. '4')
+                b) Type 'AUTO' to detect the number of cells in the sample and assign a pre-established number of cores based on that
+                c) Type 'MAX' to determine and use all available cores in the system
+                Default = 'AUTO'"),
   #
   make_option(c("-s", "--save_r_object"), default="N",
               help="Indicates if a R object with the data and analyzes from the run should be saved
@@ -226,7 +235,13 @@ option_list <- list(
   make_option(c("-w", "--run_cwl"), default="N",
               help="Indicates if this script is running inside a virtual machine container, such that outfiles are written directly into the 'HOME' . Type 'y/Y' or 'n/N'.
                 Note, if using 'y/Y' this supersedes option -o
-                Default = 'N'")
+                Default = 'N'"),
+  #
+  make_option(c("-a", "--max_global_variables"), default="AUTO",
+              help="Indicates one of two options:
+                a) Type the maximum allowed total size (in bytes) of global variables identified for library(future) (e.g. '4000')
+                b) Type 'AUTO' to detect the number of cells in the sample and assign a pre-established size of global variables
+                Default = 'AUTO'")
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -241,6 +256,7 @@ PrefixOutfiles          <- opt$prefix_outfiles
 InfileColourDimRedPlots <- opt$infile_colour_dim_red_plots
 ListGenes               <- opt$list_genes
 PcaDimsUse              <- c(1:as.numeric(opt$pca_dimensions))
+ApplyCellFilters        <- opt$apply_cell_filters
 ListPMito               <- opt$percent_mito
 ListNGenes              <- opt$n_genes
 ListPRibo               <- opt$percent_ribo
@@ -249,6 +265,7 @@ ThreshReturn            <- as.numeric(opt$return_threshold)
 NumbCores               <- opt$number_cores
 SaveRObject             <- opt$save_r_object
 RunsCwl                 <- opt$run_cwl
+MaxGlobalVariables      <- opt$max_global_variables
 
 ####################################
 ### Define outdirs and CWL parameters
@@ -291,26 +308,6 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
 }
 
 ####################################
-### Define number of cores and RAM for parallelization
-####################################
-
-if (regexpr("^MAX$", NumbCores, ignore.case = T)[1] == 1) {
-  NumbCoresToUse <- availableCores()[[1]]
-}else if (is.numeric(NumbCores) == T) {
-  NumbCoresToUse <- as.numeric(NumbCores)
-}else{
-  stop(paste("Unexpected format for --number_cores: ", NumbCores, "\n\nFor help type:\n\nRscript Runs_Seurat_v3.R -h\n\n", sep=""))
-}
-
-cat("Using ", NumbCoresToUse, "cores")
-
-plan(strategy = "multicore", workers = NumbCoresToUse)
-
-### To avoid a memmory error with getGlobalsAndPackages() while using ScaleData()
-### allocate 4Gb of RAM (4000*1024^2), use:
-options(future.globals.maxSize = 4000 * 1024^2)
-
-####################################
 ### Define default parameters
 ####################################
 ### Some of these default parameters are provided by Seurat developers,
@@ -340,18 +337,28 @@ DefaultParameters <- list(
   
   ### Parameters for QC plots
   CellPropertiesToQC = c("nFeature_RNA", "nCount_RNA", "mito.fraction", "ribo.fraction"),
-
+  
   ### Parameters for Seurat filters
   MinCells = 3,
   MinReads = MinReads,
-  MaxGenes = MaxGenes,
-  MinGenes = MinGenes,
   MaxReads = MaxReads,
+  MinGenes = MinGenes,
+  MaxGenes = MaxGenes,
   MinPMito = MinPMito,
   MaxPMito = MaxPMito,
   MinPRibo = MinPRibo,
   MaxPRibo = MaxPRibo,
-  
+
+  ### Parameters to assign number of cores
+  NumbCoresSmall = 4,
+  NumbCoresMedOrLarge = 10,
+  MaxNumbCellsSmallForNumbCores = 30000,
+
+  ### Parameters to assign size of global variables
+  NumbGlobVarsSmall = 4000,
+  NumbGlobVarsMedOrLarge = 16000,
+  MaxNumbCellsSmallForGlobVars = 30000,
+
   ### Parameters for Seurat normalization
   ScaleFactor = 1000000, ### Using 1000000 to set scale.factor as counts per million (CPM)
   NormalizationMethod = "LogNormalize",
@@ -451,7 +458,70 @@ dim(input.matrix)
 
 StopWatchEnd$LoadScRNAseqData  <- Sys.time()
 
+####################################
+### Define number of cores for parallelization
+### Note: this must run after loading scRNA-seq data to get the number of barcodes (if using `-u AUTO`)
+####################################
+writeLines("\n*** Define number of cores for parallelization ***\n")
 
+NumbCoresAvailable <- as.numeric(availableCores()[[1]]) ## Number of cores available in the system
+NumberOfBarcodes <- ncol(input.matrix)
+
+### Get number of cores requested
+if (regexpr("^AUTO$", NumbCores, ignore.case = T)[1] == 1) {
+    if (NumberOfBarcodes <= DefaultParameters$MaxNumbCellsSmallForNumbCores) {
+      NumbCoresRequested <-DefaultParameters$NumbCoresSmall
+    }else if (NumbCoresAvailable < DefaultParameters$NumbCoresMedOrLarge) {
+      NumbCoresRequested <-DefaultParameters$NumbCoresMedOrLarge
+    }
+}else if (regexpr("^MAX$", NumbCores, ignore.case = T)[1] == 1) {
+  NumbCoresRequested <- NumbCoresAvailable
+}else if (regexpr("^[0-9]+$", NumbCores, ignore.case = T)[1] == 1) {
+  NumbCoresRequested <- as.numeric(NumbCores)
+}else{
+  stop(paste("Unexpected format for --number_cores: ", NumbCores, "\n\nFor help type:\n\nRscript Runs_Seurat_v3.R -h\n\n", sep=""))
+}
+
+### Check if number of cores requested is not larger than number of cores available
+if (NumbCoresAvailable < NumbCoresRequested) {
+  print(paste("WARNING: Parameter `-u` requested ", NumbCoresRequested, " cores to process ", NumberOfBarcodes, " cells. But only ", NumbCoresAvailable, " cores are available and they will be used instead"))
+  NumbCoresToUse <- NumbCoresAvailable
+}else{
+  NumbCoresToUse <- NumbCoresRequested
+}
+
+writeLines(paste("\nUsing ", NumbCoresToUse, " cores\n", sep = "", collapse = ""))
+
+####################################
+### Define library(future) strategy for parallelization
+### Note: this must run after:
+###       a) loading scRNA-seq data to get the number of barcodes (if using `-a AUTO`)
+###       b) defining `NumbCoresToUse`
+####################################
+writeLines("\n*** Define library(future) strategy for parallelization ***\n")
+
+NumberOfBarcodes <- ncol(input.matrix)
+
+if (regexpr("^AUTO$", MaxGlobalVariables, ignore.case = T)[1] == 1) {
+  if (NumberOfBarcodes <= DefaultParameters$MaxNumbCellsSmallForGlobVars) {
+    MaxGlobalVariablesToUse <- DefaultParameters$NumbGlobVarsSmall
+  }else{
+    MaxGlobalVariablesToUse <- DefaultParameters$NumbGlobVarsMedOrLarge
+  }
+}else if (regexpr("^[0-9]+$", MaxGlobalVariables, ignore.case = T)[1] == 1) {
+  MaxGlobalVariablesToUse <- as.numeric(MaxGlobalVariables)
+}else{
+  stop(paste("Unexpected format for --number_cores: ", NumbCores, "\n\nFor help type:\n\nRscript Runs_Seurat_v3.R -h\n\n", sep=""))
+}
+
+### To avoid a memmory error with getGlobalsAndPackages() while using ScaleData()
+### allocate 4Gb of RAM (4000*1024^2), use:
+
+writeLines(paste("\nUsing ", MaxGlobalVariablesToUse, " global variables\n", sep = "", collapse = ""))
+
+options(future.globals.maxSize = MaxGlobalVariablesToUse * 1024^2)
+
+plan(strategy = "multicore", workers = NumbCoresToUse)
 
 ####################################
 ### Create a Seurat object
@@ -459,8 +529,6 @@ StopWatchEnd$LoadScRNAseqData  <- Sys.time()
 writeLines("\n*** Create a Seurat object ***\n")
 
 StopWatchStart$CreateSeuratObject  <- Sys.time()
-
-seurat.object.u   <- CreateSeuratObject(counts = input.matrix, project = PrefixOutfiles)
 
 seurat.object.u  <- CreateSeuratObject(counts = input.matrix, min.cells = DefaultParameters$MinCells, min.features = DefaultParameters$MinGenes, project = PrefixOutfiles)
 nCellsInOriginalMatrix<-length(seurat.object.u@meta.data$orig.ident)
@@ -508,48 +576,90 @@ if (length(ribo.features)[[1]] > 0) {
 StopWatchEnd$GetRiboGenes  <- Sys.time()
 
 ####################################
-### Filter cells based gene counts, number of reads, ribosomal and mitochondrial representation
+### Filter cells based gene counts, number of reads, ribosomal and mitochondrial representation (if applicable)
 ####################################
-writeLines("\n*** Filter cells based gene counts, number of reads, ribosomal and mitochondrial representation ***\n")
 
-StopWatchStart$FilterCells  <- Sys.time()
+if (regexpr("^Y$", ApplyCellFilters, ignore.case = T)[1] == 1) {
 
-if (length(mito.features)[[1]] > 0) {
-  seurat.object.f<-subset(x = seurat.object.u, subset = 
-                            nFeature_RNA >= DefaultParameters$MinGenes
-                          & nFeature_RNA <= DefaultParameters$MaxGenes 
-                          & nCount_RNA   >= DefaultParameters$MinReads
-                          & nCount_RNA   <= DefaultParameters$MaxReads 
-                          & mito.fraction >= DefaultParameters$MinPMito
-                          & mito.fraction <= DefaultParameters$MaxPMito
-                          & ribo.fraction >= DefaultParameters$MinPRibo
-                          & ribo.fraction <= DefaultParameters$MaxPRibo)
-
-  ### Get list of barcodes excluded by nFeature_RNA, nCount_RNA, mito.fraction or ribo.fraction
-  BarcodesExcludedByNFeature <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = nFeature_RNA >= DefaultParameters$MinGenes & nFeature_RNA <= DefaultParameters$MaxGenes)))
-  BarcodesExcludedByNReads   <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = nCount_RNA   >= DefaultParameters$MinReads & nCount_RNA   <= DefaultParameters$MaxReads)))
-  BarcodesExcludedByMito     <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = mito.fraction >= DefaultParameters$MinPMito & mito.fraction <= DefaultParameters$MaxPMito)))
-  BarcodesExcludedByRibo     <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = ribo.fraction >= DefaultParameters$MinPRibo & ribo.fraction <= DefaultParameters$MaxPRibo)))
-
-}else{
-  seurat.object.f<-subset(x = seurat.object.u, subset = 
-                            nFeature_RNA >= DefaultParameters$MinGenes
-                          & nFeature_RNA <= DefaultParameters$MaxGenes 
-                          & nCount_RNA   >= DefaultParameters$MinReads
-                          & nCount_RNA   <= DefaultParameters$MaxReads 
-                          & ribo.fraction >= DefaultParameters$MinPRibo
-                          & ribo.fraction <= DefaultParameters$MaxPRibo)
+  writeLines("\n*** Filter cells based gene counts, number of reads, ribosomal and mitochondrial representation ***\n")
   
-  ### Get list of barcodes excluded by nFeature_RNA, nCount_RNA or ribo.fraction
-  BarcodesExcludedByNFeature <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = nFeature_RNA >= DefaultParameters$MinGenes & nFeature_RNA <= DefaultParameters$MaxGenes)))
-  BarcodesExcludedByNReads   <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = nCount_RNA   >= DefaultParameters$MinReads & nCount_RNA   <= DefaultParameters$MaxReads)))
-  BarcodesExcludedByMito     <- 0
-  BarcodesExcludedByRibo     <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = ribo.fraction >= DefaultParameters$MinPRibo & ribo.fraction <= DefaultParameters$MaxPRibo)))
+  StopWatchStart$FilterCells  <- Sys.time()
+
+  if (length(mito.features)[[1]] > 0) {
+    seurat.object.f<-subset(x = seurat.object.u, subset = 
+                              nFeature_RNA >= DefaultParameters$MinGenes
+                            & nFeature_RNA <= DefaultParameters$MaxGenes 
+                            & nCount_RNA   >= DefaultParameters$MinReads
+                            & nCount_RNA   <= DefaultParameters$MaxReads 
+                            & mito.fraction >= DefaultParameters$MinPMito
+                            & mito.fraction <= DefaultParameters$MaxPMito
+                            & ribo.fraction >= DefaultParameters$MinPRibo
+                            & ribo.fraction <= DefaultParameters$MaxPRibo)
+    
+    ### Get list of barcodes excluded by nFeature_RNA, nCount_RNA, mito.fraction or ribo.fraction
+    BarcodesExcludedByNFeature <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = nFeature_RNA >= DefaultParameters$MinGenes & nFeature_RNA <= DefaultParameters$MaxGenes)))
+    BarcodesExcludedByNReads   <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = nCount_RNA   >= DefaultParameters$MinReads & nCount_RNA   <= DefaultParameters$MaxReads)))
+    BarcodesExcludedByMito     <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = mito.fraction >= DefaultParameters$MinPMito & mito.fraction <= DefaultParameters$MaxPMito)))
+    BarcodesExcludedByRibo     <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = ribo.fraction >= DefaultParameters$MinPRibo & ribo.fraction <= DefaultParameters$MaxPRibo)))
+    
+  }else{
+    seurat.object.f<-subset(x = seurat.object.u, subset = 
+                              nFeature_RNA >= DefaultParameters$MinGenes
+                            & nFeature_RNA <= DefaultParameters$MaxGenes 
+                            & nCount_RNA   >= DefaultParameters$MinReads
+                            & nCount_RNA   <= DefaultParameters$MaxReads 
+                            & ribo.fraction >= DefaultParameters$MinPRibo
+                            & ribo.fraction <= DefaultParameters$MaxPRibo)
+    
+    ### Get list of barcodes excluded by nFeature_RNA, nCount_RNA or ribo.fraction
+    BarcodesExcludedByNFeature <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = nFeature_RNA >= DefaultParameters$MinGenes & nFeature_RNA <= DefaultParameters$MaxGenes)))
+    BarcodesExcludedByNReads   <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = nCount_RNA   >= DefaultParameters$MinReads & nCount_RNA   <= DefaultParameters$MaxReads)))
+    BarcodesExcludedByMito     <- ""
+    BarcodesExcludedByRibo     <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = ribo.fraction >= DefaultParameters$MinPRibo & ribo.fraction <= DefaultParameters$MaxPRibo)))
+  }
+
+  NumberOfBarcodesExcludedByNFeature <- length(BarcodesExcludedByNFeature)
+  NumberOfBarcodesExcludedByNReads   <- length(BarcodesExcludedByNReads)
+  NumberOfBarcodesExcludedByMito     <- length(BarcodesExcludedByMito)
+  NumberOfBarcodesExcludedByRibo     <- length(BarcodesExcludedByRibo)
+  
+}else{
+  writeLines("\n*** QC EDA violin plots ***\n")
+  
+  seurat.object.f <- seurat.object.u
+  
+  BarcodesExcludedByNFeature <- ""
+  BarcodesExcludedByNReads   <- ""
+  BarcodesExcludedByMito     <- ""
+  BarcodesExcludedByRibo     <- ""
+  
+  NumberOfBarcodesExcludedByNFeature <- 0
+  NumberOfBarcodesExcludedByNReads   <- 0
+  NumberOfBarcodesExcludedByMito     <- 0
+  NumberOfBarcodesExcludedByRibo     <- 0
+  
+  MinGenes <- "NA"
+  MaxGenes <- "NA"
+  MinReads <- "NA"
+  MaxReads <- "NA"
+  MinPMito <- "NA"
+  MaxPMito <- "NA"
+  MinPRibo <- "NA"
+  MaxPRibo <- "NA"
+  ListNGenes <- c(MinGenes, MaxGenes)
+  ListNReads <- c(MinReads, MaxReads)
+  ListPMito  <- c(MinPMito, MaxPMito)
+  ListPRibo  <- c(MinPRibo, MaxPRibo)
+  DefaultParameters$MinGenes <- MinGenes
+  DefaultParameters$MaxGenes <- MaxGenes
+  DefaultParameters$MinReads <- MinReads
+  DefaultParameters$MaxReads <- MaxReads
+  DefaultParameters$MinPMito <- MinPMito
+  DefaultParameters$MaxPMito <- MaxPMito
+  DefaultParameters$MinPRibo <- MinPRibo
+  DefaultParameters$MaxPRibo <- MaxPRibo
+
 }
-NumberOfBarcodesExcludedByNFeature <- length(BarcodesExcludedByNFeature)
-NumberOfBarcodesExcludedByNReads   <- length(BarcodesExcludedByNReads)
-NumberOfBarcodesExcludedByMito     <- length(BarcodesExcludedByMito)
-NumberOfBarcodesExcludedByRibo     <- length(BarcodesExcludedByRibo)
 
 StopWatchEnd$FilterCells  <- Sys.time()
 
@@ -584,13 +694,13 @@ QCStats$filtered$mean$ribo.fraction<-round(mean(seurat.object.u@meta.data[,"ribo
 QCStats$filtered$median$ribo.fraction<-round(median(seurat.object.u@meta.data[,"ribo.fraction"]),3)
 
 ### Get unfiltered data QC statistics
-nFeature_RNA.u.df  <-data.frame(Expression_level = seurat.object.u@meta.data$nFeature_RNA, nGenes = 1)
-nCount_RNA.u.df    <-data.frame(Expression_level = seurat.object.u@meta.data$nCount_RNA,   nCount_RNA = 1)
+nFeature_RNA.u.df   <-data.frame(Expression_level = seurat.object.u@meta.data$nFeature_RNA, nGenes = 1)
+nCount_RNA.u.df     <-data.frame(Expression_level = seurat.object.u@meta.data$nCount_RNA,   nCount_RNA = 1)
 mito.fraction.u.df  <-data.frame(Expression_level = seurat.object.u@meta.data$mito.fraction, mito.fraction = 1)
 ribo.fraction.u.df  <-data.frame(Expression_level = seurat.object.u@meta.data$ribo.fraction, ribo.fraction = 1)
 #
-nFeature_RNAStats.u<-paste(c(" mean = ", QCStats$unfiltered$mean$nFeature_RNA,"\n", "median = ", QCStats$unfiltered$median$nFeature_RNA), sep = "", collapse="")
-nCount_RNAStats.u  <-paste(c(" mean = ", QCStats$unfiltered$mean$nCount_RNA,  "\n", "median = ", QCStats$unfiltered$median$nCount_RNA),   sep = "", collapse="")
+nFeature_RNAStats.u <-paste(c(" mean = ", QCStats$unfiltered$mean$nFeature_RNA,"\n", "median = ",  QCStats$unfiltered$median$nFeature_RNA),  sep = "", collapse="")
+nCount_RNAStats.u   <-paste(c(" mean = ", QCStats$unfiltered$mean$nCount_RNA,  "\n", "median = ",  QCStats$unfiltered$median$nCount_RNA),    sep = "", collapse="")
 mito.fraction.u     <-paste(c(" mean = ", QCStats$unfiltered$mean$mito.fraction,"\n", "median = ", QCStats$unfiltered$median$mito.fraction), sep = "", collapse="")
 ribo.fraction.u     <-paste(c(" mean = ", QCStats$unfiltered$mean$ribo.fraction,"\n", "median = ", QCStats$unfiltered$median$ribo.fraction), sep = "", collapse="")
 
@@ -794,7 +904,7 @@ StopWatchEnd$WriteOutQCData  <- Sys.time()
 if (regexpr("^NA$", InfileRemoveBarcodes , ignore.case = T)[1] == 1) {
   
   writeLines("\n*** Ignoring option -j ***\n")
-
+  
 }else{
   
   StopWatchStart$RemoveBarcodes <- Sys.time()
@@ -809,7 +919,7 @@ if (regexpr("^NA$", InfileRemoveBarcodes , ignore.case = T)[1] == 1) {
   seurat.object.subset  <- subset(seurat.object.full, cells = colnames(seurat.object.full[,AllBarcodesToRemove.tab[,"Barcode"]]))
   print(paste(paste("Before:", ncol(seurat.object.full), sep = "", collapse =""), paste("After:", ncol(seurat.object.subset), sep = "", collapse =""), sep = "  ", collapse = "\n"))
   seurat.object.f       <- seurat.object.subset
-
+  
   StopWatchEnd$RemoveBarcodes <- Sys.time()
   
 }
@@ -823,6 +933,7 @@ rm(seurat.object.u)
 rm(UnfilteredData.df)
 rm(seurat.object.full)
 rm(seurat.object.subset)
+
 
 ####################################
 ### Normalize data (if applicable)
@@ -838,15 +949,15 @@ if (NormalizeAndScale == 1) {
   StopWatchEnd$NormalizeData  <- Sys.time()
   
 }else if (NormalizeAndScale == 2) {
-    
-    writeLines("\n*** Normalize data using SCTransform() ***\n")
-    
-    StopWatchStart$SCTransform  <- Sys.time()
-    
-    seurat.object.f <- SCTransform(object = seurat.object.f, verbose = T)
-    
-    StopWatchEnd$SCTransform  <- Sys.time()
-    
+  
+  writeLines("\n*** Normalize data using SCTransform() ***\n")
+  
+  StopWatchStart$SCTransform  <- Sys.time()
+  
+  seurat.object.f <- SCTransform(object = seurat.object.f, verbose = T)
+  
+  StopWatchEnd$SCTransform  <- Sys.time()
+  
 }else if (NormalizeAndScale == 3) {
   
   writeLines("\n*** Data assumed to be already normalized ***\n")
@@ -855,22 +966,26 @@ if (NormalizeAndScale == 1) {
   stop(paste("Unexpected option -b", NormalizeAndScale, ". Only options '1', '2', or '3' are allowed. \n\nFor help type:\n\nRscript Runs_Seurat_Clustering.R -h\n\n", sep=""))
 }
 
+####################################
+### Outputting normalized count matrix as loom
+####################################
+
 if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-  suppressPackageStartupMessages(library(loomR)) 
-  
-  # output the normalized count matrix for violin plots
+
+  # output the normalized count matrix & features for front-end gene expression visualizations
   writeLines("\n*** Outputting normalized count matrix as loom ***\n")
   
   normalized_count_matrix <- as.matrix(seurat.object.f@assays[["RNA"]]@data)
   
+  # all genes/features in matrix
   features_tsv <- as.data.frame(rownames(normalized_count_matrix))
   write.table(features_tsv, file=paste(Tempdir,"/","raw/","features.tsv", sep=""), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
-  
+
+  # generating loom file of normalized count matrix
   loom_file <- paste(Tempdir,"/","normalized/","normalized_counts.loom", sep="")
   create(loom_file, normalized_count_matrix)
   
 }
-
 
 ####################################
 ### Detect, save list and plot variable genes
@@ -981,17 +1096,17 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   colnames(metadata_tsv_string_TYPE) <- c("NAME", paste("Seurat_Clusters_Resolution", Resolution, sep = "", collapse = ""))
   OutfileClusters<-paste(Tempdir,"/","groups.tsv", sep="")
   write.table(data.frame(metadata_tsv_string_TYPE),file = OutfileClusters, row.names = F, col.names = T, sep="\t", quote = F, append = T)
-
- } else {
-  CellNames<-rownames(seurat.object.f@meta.data)
-  Headers<-paste("Cell_barcode", paste("seurat_cluster_resolution", Resolution, sep = "", collapse = "") ,sep="\t")
-  clusters_data<-paste(CellNames, ClusterIdent, sep="\t")
-  OutfileClusters<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_CellClusters.tsv", sep="")
-  write.table(Headers,file = OutfileClusters, row.names = F, col.names = F, sep="\t", quote = F)
-  write.table(data.frame(clusters_data),file = OutfileClusters, row.names = F, col.names = F, sep="\t", quote = F, append = T)
-  OutfileNumbClusters<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_NumbCellClusters", ".tsv", sep="")
-  write(x=NumberOfClusters,file = OutfileNumbClusters)
+  
 }
+
+CellNames<-rownames(seurat.object.f@meta.data)
+Headers<-paste("Cell_barcode", paste("seurat_cluster_resolution", Resolution, sep = "", collapse = "") ,sep="\t")
+clusters_data<-paste(CellNames, ClusterIdent, sep="\t")
+OutfileClusters<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_CellClusters.tsv", sep="")
+write.table(Headers,file = OutfileClusters, row.names = F, col.names = F, sep="\t", quote = F)
+write.table(data.frame(clusters_data),file = OutfileClusters, row.names = F, col.names = F, sep="\t", quote = F, append = T)
+OutfileNumbClusters<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_NumbCellClusters", ".tsv", sep="")
+write(x=NumberOfClusters,file = OutfileNumbClusters)
 
 StopWatchEnd$CellClusterTables  <- Sys.time()
 
@@ -1021,7 +1136,7 @@ for (dim_red_method in names(DimensionReductionMethods)) {
   ### Run non-linear dimensional reductions
   ####################################
   writeLines(paste("\n*** Run ", DimensionReductionMethods[[dim_red_method]][["name"]], " ***\n", sep = "", collapse = ""))
-
+  
   StopWatchStart$DimensionReduction$dim_red_method  <- Sys.time()
   
   ### NOTES:
@@ -1036,15 +1151,15 @@ for (dim_red_method in names(DimensionReductionMethods)) {
   }else{
     seurat.object.f <- DimensionReductionMethods[[dim_red_method]][["run"]](object = seurat.object.f, dims = PcaDimsUse)
   }
-
+  
   StopWatchEnd$DimensionReduction$dim_red_method  <- Sys.time()
-
+  
   StopWatchStart$DimensionReductionPlot$dim_red_method  <- Sys.time()
   
   pdf(file=paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_", DimensionReductionMethods[[dim_red_method]][["name"]], "Plot.pdf", sep="", collapse = ""))
   print(DimPlot(object = seurat.object.f, reduction = dim_red_method, group.by = 'ident', label = T, label.size=10))
   dev.off()
-
+  
   StopWatchEnd$DimensionReductionPlot$dim_red_method  <- Sys.time()
   
   ####################################
@@ -1053,17 +1168,19 @@ for (dim_red_method in names(DimensionReductionMethods)) {
   writeLines(paste("\n*** Write out ", DimensionReductionMethods[[dim_red_method]][["name"]], " coordinates ***\n", sep = "", collapse = ""))
   
   StopWatchStart$DimensionReductionWriteCoords$dim_red_method  <- Sys.time()
+
+  Headers<-paste("Barcode",paste(colnames(seurat.object.f@reductions[[dim_red_method]]@cell.embeddings),sep="",collapse="\t"),sep="\t",collapse = "\t")
   
   if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-    OutfileCoordinates<-paste(Tempdir,"/","coordinates/",DimensionReductionMethods[[dim_red_method]][["name"]], "Coordinates.tsv", sep="", collapse = "")
-  } else {
-    OutfileCoordinates<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_", DimensionReductionMethods[[dim_red_method]][["name"]], "Coordinates.tsv", sep="", collapse = "")
+    OutfileCoordinatesCWL<-paste(Tempdir,"/","coordinates/",DimensionReductionMethods[[dim_red_method]][["name"]], "Coordinates.tsv", sep="", collapse = "")
+    write.table(Headers,file = OutfileCoordinatesCWL, row.names = F, col.names = F, sep="\t", quote = F)
+    write.table(seurat.object.f@reductions[[dim_red_method]]@cell.embeddings, file = OutfileCoordinatesCWL,  row.names = T, col.names = F, sep="\t", quote = F, append = T)
   }
-  
-  Headers<-paste("Barcode",paste(colnames(seurat.object.f@reductions[[dim_red_method]]@cell.embeddings),sep="",collapse="\t"),sep="\t",collapse = "\t")
+
+  OutfileCoordinates<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_", DimensionReductionMethods[[dim_red_method]][["name"]], "Coordinates.tsv", sep="", collapse = "")
   write.table(Headers,file = OutfileCoordinates, row.names = F, col.names = F, sep="\t", quote = F)
   write.table(seurat.object.f@reductions[[dim_red_method]]@cell.embeddings, file = OutfileCoordinates,  row.names = T, col.names = F, sep="\t", quote = F, append = T)
-
+  
   StopWatchEnd$DimensionReductionWriteCoords$dim_red_method  <- Sys.time()
   
   ####################################
@@ -1077,14 +1194,14 @@ for (dim_red_method in names(DimensionReductionMethods)) {
   pdf(file=paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_", DimensionReductionMethods[[dim_red_method]][["name"]], "Plot_QC.pdf", sep=""), width = DefaultParameters$BaseSizeSinglePlotPdf * 1.5, height = DefaultParameters$BaseSizeSinglePlotPdf * 1.5)
   print(FeaturePlot(object = seurat.object.f, label = T, order = T, features = CellPropertiesToColour, cols = c("lightgrey", "blue"), reduction = dim_red_method, ncol = 2, pt.size = 1.5))
   dev.off()
-
+  
   StopWatchEnd$QCDimRedPlots$dim_red_method  <- Sys.time()
   
   ####################################
   ### Colour dimension reduction plots by -infile_colour_dim_red_plots
   ####################################
   writeLines(paste("\n*** Colour ", DimensionReductionMethods[[dim_red_method]][["name"]], " plot by -infile_colour_dim_red_plots ***\n", sep = "", collapse = ""))
-
+  
   if (regexpr("^NA$", InfileColourDimRedPlots, ignore.case = T)[1] == 1) {
     print("No extra barcode-attributes will be used for dimension reduction plots")
   }else{
@@ -1109,7 +1226,7 @@ for (dim_red_method in names(DimensionReductionMethods)) {
       print(DimPlot(object = seurat.object.f, reduction = dim_red_method, group.by = property, combine = T, legend = "none") + ggtitle(property))
     }
     dev.off()
-
+    
     StopWatchEnd$DimRedPlotsColuredByOptC$dim_red_method  <- Sys.time()
     
   }
@@ -1123,9 +1240,9 @@ for (dim_red_method in names(DimensionReductionMethods)) {
   if (regexpr("^NA$", ListGenes, ignore.case = T)[1] == 1) {
     print("No selected genes for dimension reduction plots")
   }else{
-
+    
     StopWatchStart$DimRedPlotsColuredByGenes$dim_red_method  <- Sys.time()
-
+    
     ListOfGenesForDimRedPlots<-unlist(strsplit(ListGenes, ","))
     if (length(ListOfGenesForDimRedPlots) <= 4) {
       pdfWidth  <- (length(ListOfGenesForDimRedPlots) * DefaultParameters$BaseSizeMultiplePlotPdfWidth)
@@ -1136,13 +1253,13 @@ for (dim_red_method in names(DimensionReductionMethods)) {
       pdfHeight <- (as.integer(length(ListOfGenesForDimRedPlots) / 4) + 1) * DefaultParameters$BaseSizeMultiplePlotPdfHeight
       nColFeaturePlot <- 4
     }
-    
+
     pdf(file=paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_", DimensionReductionMethods[[dim_red_method]][["name"]], "Plot_SelectedGenes.pdf", sep=""), width=pdfWidth, height=pdfHeight)
     print(FeaturePlot(object = seurat.object.f, ncol = nColFeaturePlot, features = c(ListOfGenesForDimRedPlots), cols = c("lightgrey", "blue"), reduction = dim_red_method, order = T))
     dev.off()
-
+    
     StopWatchEnd$DimRedPlotsColuredByGenes$dim_red_method  <- Sys.time()
-
+    
   }
 }
 
@@ -1396,5 +1513,5 @@ writeLines(paste("END - All done!!! See:\n", OutfileCPUusage, "\nfor computing t
 quit()
 
 ###############################################################
-### PUGHLAB/CRESCENT/RUNS_SEURAT_V3 GITHUB VERSION d6c6d72 ###
+### PUGHLAB/CRESCENT/RUNS_SEURAT_V3 GITHUB VERSION b39bf6e ###
 ##############################################################
