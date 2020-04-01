@@ -28,7 +28,7 @@ const ProjectsCardList = withRedux(({
           <Header
             size='large'
             content={'PROJECTS'}
-            subheader={'Select a public project (below) or sign in (top right) to upload data'}
+            subheader={'Select a public project or upload data to begin'}
           />
         }
       />
