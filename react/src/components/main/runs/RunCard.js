@@ -117,12 +117,14 @@ const RunCard = withRedux(({
                   // percentRibo: {min: minPercentRibo, max: maxPercentRibo},
                   resolution,
                   principalDimensions,
+                  normalizationMethod,
                 }) => (
                   <Label.Group>
                     <Label content='Single Cell Input Type' detail={singleCell} />
                     <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
                     <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
                     {/* <Label content='Ribosomal Protein Genes Fraction' detail={`Min = ${minPercentRibo} | Max = ${maxPercentRibo}`} /> */}
+                    <Label content='Normalization Method' detail={normalizationMethod} />
                     <Label content='Clustering Resolution' detail={resolution} />
                     <Label content='PCA Dimensions' detail={principalDimensions} />
                   </Label.Group>
