@@ -74,42 +74,61 @@ inputs:
       position: 11
       prefix: -b
 
+  apply_cell_filters:
+    type: string
+    default: Y
+    inputBinding:
+      position: 12
+      prefix: -f
+
   percent_mito:
     type: string?
     inputBinding:
-      position: 12
+      position: 13
       prefix: -m
+
+  percent_ribo:
+    type: string?
+    inputBinding:
+      position: 14
+      prefix: -q
 
   number_genes:
     type: string?
     inputBinding:
-      position: 13
+      position: 15
       prefix: -n
+
+  number_reads:
+    type: string?
+    inputBinding:
+      position: 16
+      prefix: -v
 
   return_threshold:
     type: float?
     inputBinding:
-      position: 14
+      position: 17
       prefix: -e
 
   number_cores:
     type: string?
     inputBinding:
-      position: 15
+      position: 18
       prefix: -u
 
   runs_cwl:
     type: string
     default: Y
     inputBinding:
-      position: 16
+      position: 19
       prefix: -w
 
   outs_dir:
     type: string
     default: N
     inputBinding:
-      position: 17
+      position: 20
       prefix: -o 
 
 outputs:

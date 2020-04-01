@@ -27,9 +27,11 @@ const initialState = {
           singleCell: 'MTX',
           numberGenes: {min: 50, max: 8000},
           percentMito: {min: 0, max: 0.2},
+          // percentRibo: {min: 0, max: 0.75},
           resolution: 1.0,
           principalDimensions: 10,
           normalizationMethod: '2',
+          applyCellFilters: 'Y',
           returnThreshold: 0.01,
         },
         isSubmitted: false
@@ -148,9 +150,11 @@ const GQLReducer = {
               singleCell: 'MTX',
               numberGenes: {min: 50, max: 8000},
               percentMito: {min: 0, max: 0.2},
+              // percentRibo: {min: 0, max: 0.75},
               resolution: 1.0,
               principalDimensions: 10,
               normalizationMethod: '2',
+              applyCellFilters: 'Y',
               returnThreshold: 0.01,
             }
           : JSON.parse(params)
