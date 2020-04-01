@@ -49,9 +49,9 @@ const TOOLS = {
         {
           step: 'quality',
           parameter: 'apply_cell_filters',
-          label: 'Apply Cell Filters',
+          label: 'Apply QC Filters',
           prompt: 'Indicate whether you would like to apply QC filters or skip',
-          description: 'Indicates if QC filters (number of genes, number of reads, mitochondrial fraction, ribosomal protein gene fraction) should be applied. Select yes i.e. "Y" or no i.e. "N". Default is "Y".',
+          description: 'Indicates if QC filters (number of genes, number of reads, mitochondrial fraction, ribosomal protein gene fraction) should be applied. Default is "Yes".',
           input: {
             type: 'select',
             defaultValue: 'Y',
