@@ -37,7 +37,7 @@ const InfoModal = ({
       <Modal.Content>
           <Segment>
             <Header content='Help'/>
-            CReSCENT Documentation (User Manual) is now available on our <a href='https://pughlab.github.io/crescent-frontend/' target='_blank' rel="noopener noreferrer">Github Pages</a>. A quick walkthrough of accessing and exploring public datasets can be found on <a href='https://youtu.be/KK4Xc6SBSSY' target='_blank' rel="noopener noreferrer">Youtube</a>. 
+            CReSCENT Documentation (User Manual) is now available on our <a href='https://pughlab.github.io/crescent-frontend/' target='_blank' rel="noopener noreferrer">Github Pages</a>. A quick walkthrough of accessing and exploring public datasets can be found on <a href='https://youtu.be/7a23FASMn6I' target='_blank' rel="noopener noreferrer">Youtube</a>. 
           </Segment>
 
           <Segment>
