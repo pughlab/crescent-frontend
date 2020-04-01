@@ -16,9 +16,11 @@ const makeCWLJobJSON = async (
     singleCell,
     numberGenes: {min: minNumberGenes, max: maxNumberGenes},
     percentMito: {min: minPercentMito, max: maxPercentMito},
+    // percentRibo: {min: minPercentRibo, max: maxPercentRibo},
     resolution,
     principalDimensions,
     normalizationMethod,
+    applyCellFilters,
     returnThreshold,
   },
   runID,
@@ -71,8 +73,10 @@ const makeCWLJobJSON = async (
       pca_dimensions: principalDimensions,
       normalization_method: normalizationMethod,
       return_threshold: returnThreshold,
+      apply_cell_filters: applyCellFilters,
       // percent_mito: '0,0.2', // v2: 'Inf,0.05',
       percent_mito: `${minPercentMito},${maxPercentMito}`,
+      // percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
       // number_genes: '50,8000',
       number_genes: `${minNumberGenes},${maxNumberGenes}`
     }

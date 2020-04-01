@@ -114,6 +114,7 @@ const RunCard = withRedux(({
                   singleCell,
                   numberGenes: {min: minNumberGenes, max: maxNumberGenes},
                   percentMito: {min: minPercentMito, max: maxPercentMito},
+                  // percentRibo: {min: minPercentRibo, max: maxPercentRibo},
                   resolution,
                   principalDimensions,
                 }) => (
@@ -121,6 +122,7 @@ const RunCard = withRedux(({
                     <Label content='Single Cell Input Type' detail={singleCell} />
                     <Label content='Number of Genes' detail={`Min = ${minNumberGenes} | Max = ${maxNumberGenes}`} />
                     <Label content='Mitochondrial Fraction' detail={`Min = ${minPercentMito} | Max = ${maxPercentMito}`} />
+                    {/* <Label content='Ribosomal Protein Genes Fraction' detail={`Min = ${minPercentRibo} | Max = ${maxPercentRibo}`} /> */}
                     <Label content='Clustering Resolution' detail={resolution} />
                     <Label content='PCA Dimensions' detail={principalDimensions} />
                   </Label.Group>

@@ -210,10 +210,10 @@ const SelectParameterInput = ({
     input: {defaultValue, options},
     disabled,
   } = parameter
-  const dropdownOptions = R.map(
-    option => ({key: option, value: option, text: option}),
-    options
-  )
+  // const dropdownOptions = R.map(
+  //   option => ({key: option, value: option, text: option}),
+  //   options
+  // )
   return (
     <ParameterInputMessage {...{parameter}}>
       <Form>
@@ -222,7 +222,7 @@ const SelectParameterInput = ({
           search
           placeholder={defaultValue}
           disabled={disabled}
-          options={dropdownOptions}
+          options={options}
           label={label}
           value={value}
           onChange={(e, {value}) => setValue(value)}

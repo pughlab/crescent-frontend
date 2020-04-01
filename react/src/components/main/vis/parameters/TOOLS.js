@@ -39,24 +39,26 @@ const TOOLS = {
           input: {
             type: 'select',
             defaultValue: 'MTX',
-            options: ['MTX', 'DGE']
+            options: [
+              {key: 'mtx', value: 'MTX', text: 'MTX'},
+              {key: 'dge', value: 'DGE', text: 'DGE'},
+            ]
           },
           disabled: true
         },
         {
           step: 'quality',
-          parameter: 'number_genes',
-          label: 'Number of Genes',
-          prompt: 'Specify range for number of genes',
-          description: 'The minimum and maximum number of unique gene counts in a cell to be included in normalization and clustering analyses. Default is 50 to 8000.',
+          parameter: 'apply_cell_filters',
+          label: 'Apply Cell Filters',
+          prompt: 'Indicate whether you would like to apply QC filters or skip',
+          description: 'Indicates if QC filters (number of genes, number of reads, mitochondrial fraction, ribosomal protein gene fraction) should be applied. Select yes i.e. "Y" or no i.e. "N". Default is "Y".',
           input: {
-            type: 'range',
-            step: 1,
-            defaultValue: {min: 50, max: 8000},
-            schema: yup.object().shape({
-              min: yupRequiredIntegerNumber.lessThan(yup.ref('max'), 'Minimum must be less than maximum'),
-              max: yupRequiredIntegerNumber.moreThan(yup.ref('min'), 'Maximum must be more than minimum')
-            })
+            type: 'select',
+            defaultValue: 'Y',
+            options: [
+              {key: 'yes', value: 'Y', text: 'Yes'},
+              {key: 'no', value: 'N', text: 'No'},
+            ]
           },
           disabled: false
         },
@@ -76,7 +78,58 @@ const TOOLS = {
             })
           },
           disabled: false
-        }
+        },
+        // {
+        //   step: 'quality',
+        //   parameter: 'percent_ribo',
+        //   label: 'Ribosomal Protein Genes Fraction',
+        //   prompt: 'Specify range of ribosomal protein genes fraction',
+        //   description: 'The minimum and maximum fraction (between 0 and 1) of ribosomal protein gene counts in a cell to be included in normalization and clustering analyses.',
+        //   input: {
+        //     type: 'range',
+        //     step: 0.05,
+        //     defaultValue: {min: 0, max: 0.75},
+        //     schema: yup.object().shape({
+        //       min: yup.number().required().lessThan(yup.ref('max'), 'Minimum must be less than maximum'),
+        //       max: yup.number().required().moreThan(yup.ref('min'), 'Maximum must be more than minimum')
+        //     })
+        //   },
+        //   disabled: false
+        // },
+        {
+          step: 'quality',
+          parameter: 'number_genes',
+          label: 'Number of Genes',
+          prompt: 'Specify range for number of genes',
+          description: 'The minimum and maximum number of unique gene counts in a cell to be included in normalization and clustering analyses. Default is 50 to 8000.',
+          input: {
+            type: 'range',
+            step: 1,
+            defaultValue: {min: 50, max: 8000},
+            schema: yup.object().shape({
+              min: yupRequiredIntegerNumber.lessThan(yup.ref('max'), 'Minimum must be less than maximum'),
+              max: yupRequiredIntegerNumber.moreThan(yup.ref('min'), 'Maximum must be more than minimum')
+            })
+          },
+          disabled: false
+        },
+        // {
+        //   step: 'quality',
+        //   parameter: 'number_reads',
+        //   label: 'Number of Reads',
+        //   prompt: 'Specify range for number of reads',
+        //   description: 'The minimum and maximum number of unique gene counts in a cell to be included in normalization and clustering analyses. Default is 50 to 8000.',
+        //   input: {
+        //     type: 'range',
+        //     step: 1,
+        //     defaultValue: {min: 50, max: 8000},
+        //     schema: yup.object().shape({
+        //       min: yupRequiredIntegerNumber.lessThan(yup.ref('max'), 'Minimum must be less than maximum'),
+        //       max: yupRequiredIntegerNumber.moreThan(yup.ref('min'), 'Maximum must be more than minimum')
+        //     })
+        //   },
+        //   disabled: false
+        // }
       ]
     },
     {
@@ -88,11 +141,15 @@ const TOOLS = {
           parameter: 'normalization_method',
           label: 'Normalization Method',
           prompt: 'Select normalization method',
-          description: '(1) LogNormalize, (2) SCTransform, or (3) Skip Normalization (Input MTX is already normalized). Default is (2) SCTransform.',
+          description: 'LogNormalize, SCTransform, or Skip Normalization (Input MTX is already normalized). Default is (2) SCTransform.',
           input: {
             type: 'select',
             defaultValue: '2',
-            options: ['1', '2', '3']
+            options: [
+              {key: 'log_normalize', value: '1', text: 'LogNormalize'},
+              {key: 'sc_transform', value: '2', text: 'SCTransform'},
+              {key: 'skip_normalization', value: '3', text: 'Skip (input already normalized)'},
+            ]
           },
           disabled: false
         }
