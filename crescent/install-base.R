@@ -1,12 +1,12 @@
 #!/usr/bin/env Rscript
 
 withCallingHandlers(
-    install.packages('BiocManager'),
+    install.packages('BiocManager',repos='https://cloud.r-project.org/'),
     warning = stop
 )
 setRepositories(ind = 1:2)
 withCallingHandlers(
-    install.packages(c('fmsb','optparse','staplr','devtools')),
+    install.packages(c('fmsb','optparse','staplr','devtools'),repos='https://cloud.r-project.org/'),
     warning = stop
 )
 withCallingHandlers(
