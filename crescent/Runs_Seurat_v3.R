@@ -200,12 +200,12 @@ option_list <- list(
   make_option(c("-m", "--percent_mito"), default="0,0.05",
               help="<comma> delimited min,max fraction of gene counts of mitochondrial origin a cell to be included in normalization and clustering analyses
                 For example, for whole cell scRNA-seq use '0,0.2', or for Nuc-seq use '0,0.05'
-                For negative values (e.g. if using TPM in log scale refer negative values with an 'n', like this 'n1,0.5')
+                For negative values (e.g. if using TPM in log scale refer negative values with a double backslash '\\', like this '\\-1,0.5')
                 Default = '0,0.05'"),
   #
   make_option(c("-q", "--percent_ribo"), default="0,0.75",
               help="<comma> delimited min,max fraction of gene counts of ribosomal proteins to be included in normalization and clustering analyses
-                For negative values (e.g. if using TPM in log scale refer negative values with an 'n', like this 'n1,0.5')
+                For negative values (e.g. if using TPM in log scale refer negative values with a double backslash '\\', like this '\\-1,0.5')
                 Default = '0,0.75'"),
   #
   make_option(c("-n", "--n_genes"), default="50,8000",
@@ -313,9 +313,12 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
 ### Some of these default parameters are provided by Seurat developers,
 ### others are tailored according to clusters/t-SNE granularity
 
-### To be able to take negative values for ListPMito entered using optparse (e.g. -m m1,1 means mito.percentage from -1 to 1)
-ListPMito <- gsub("m","-",ListPMito, ignore.case = T)
-ListPRibo <- gsub("m","-",ListPRibo, ignore.case = T)
+### To be able to take negative values for from cell filtering parameters
+### entered using optparse (e.g. -m \\-1,1 means mito.percentage from -1 to 1)
+ListNReads <- gsub("\\\\","", ListNReads, ignore.case = T)
+ListNGenes <- gsub("\\\\","", ListNGenes, ignore.case = T)
+ListPMito  <- gsub("\\\\","", ListPMito, ignore.case = T)
+ListPRibo  <- gsub("\\\\","", ListPRibo, ignore.case = T)
 
 ListNGenes = unlist(strsplit(ListNGenes, ","))
 MinGenes   = as.numeric(ListNGenes[1])
@@ -348,17 +351,17 @@ DefaultParameters <- list(
   MaxPMito = MaxPMito,
   MinPRibo = MinPRibo,
   MaxPRibo = MaxPRibo,
-
+  
   ### Parameters to assign number of cores
   NumbCoresSmall = 4,
   NumbCoresMedOrLarge = 10,
   MaxNumbCellsSmallForNumbCores = 30000,
-
+  
   ### Parameters to assign size of global variables
   NumbGlobVarsSmall = 4000,
   NumbGlobVarsMedOrLarge = 16000,
   MaxNumbCellsSmallForGlobVars = 30000,
-
+  
   ### Parameters for Seurat normalization
   ScaleFactor = 1000000, ### Using 1000000 to set scale.factor as counts per million (CPM)
   NormalizationMethod = "LogNormalize",
@@ -469,11 +472,11 @@ NumberOfBarcodes <- ncol(input.matrix)
 
 ### Get number of cores requested
 if (regexpr("^AUTO$", NumbCores, ignore.case = T)[1] == 1) {
-    if (NumberOfBarcodes <= DefaultParameters$MaxNumbCellsSmallForNumbCores) {
-      NumbCoresRequested <-DefaultParameters$NumbCoresSmall
-    }else if (NumbCoresAvailable < DefaultParameters$NumbCoresMedOrLarge) {
-      NumbCoresRequested <-DefaultParameters$NumbCoresMedOrLarge
-    }
+  if (NumberOfBarcodes <= DefaultParameters$MaxNumbCellsSmallForNumbCores) {
+    NumbCoresRequested <-DefaultParameters$NumbCoresSmall
+  }else if (NumbCoresAvailable < DefaultParameters$NumbCoresMedOrLarge) {
+    NumbCoresRequested <-DefaultParameters$NumbCoresMedOrLarge
+  }
 }else if (regexpr("^MAX$", NumbCores, ignore.case = T)[1] == 1) {
   NumbCoresRequested <- NumbCoresAvailable
 }else if (regexpr("^[0-9]+$", NumbCores, ignore.case = T)[1] == 1) {
@@ -580,11 +583,11 @@ StopWatchEnd$GetRiboGenes  <- Sys.time()
 ####################################
 
 if (regexpr("^Y$", ApplyCellFilters, ignore.case = T)[1] == 1) {
-
+  
   writeLines("\n*** Filter cells based gene counts, number of reads, ribosomal and mitochondrial representation ***\n")
   
   StopWatchStart$FilterCells  <- Sys.time()
-
+  
   if (length(mito.features)[[1]] > 0) {
     seurat.object.f<-subset(x = seurat.object.u, subset = 
                               nFeature_RNA >= DefaultParameters$MinGenes
@@ -617,14 +620,14 @@ if (regexpr("^Y$", ApplyCellFilters, ignore.case = T)[1] == 1) {
     BarcodesExcludedByMito     <- ""
     BarcodesExcludedByRibo     <- setdiff(colnames(seurat.object.u), colnames(subset(x = seurat.object.u, subset = ribo.fraction >= DefaultParameters$MinPRibo & ribo.fraction <= DefaultParameters$MaxPRibo)))
   }
-
+  
   NumberOfBarcodesExcludedByNFeature <- length(BarcodesExcludedByNFeature)
   NumberOfBarcodesExcludedByNReads   <- length(BarcodesExcludedByNReads)
   NumberOfBarcodesExcludedByMito     <- length(BarcodesExcludedByMito)
   NumberOfBarcodesExcludedByRibo     <- length(BarcodesExcludedByRibo)
   
 }else{
-  writeLines("\n*** QC EDA violin plots ***\n")
+  writeLines("\n*** Not applying cell filters ***\n")
   
   seurat.object.f <- seurat.object.u
   
@@ -658,7 +661,7 @@ if (regexpr("^Y$", ApplyCellFilters, ignore.case = T)[1] == 1) {
   DefaultParameters$MaxPMito <- MaxPMito
   DefaultParameters$MinPRibo <- MinPRibo
   DefaultParameters$MaxPRibo <- MaxPRibo
-
+  
 }
 
 StopWatchEnd$FilterCells  <- Sys.time()
@@ -798,13 +801,13 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   interactive_qc_plot_f$Ribosomal_Protein_Genes_Percentage <- interactive_qc_plot_f$Ribosomal_Protein_Genes_Percentage * 100
   colnames(interactive_qc_plot_f) <- c("Barcodes","Number of Genes","Number of Reads","Mitochondrial Genes Percentage","Ribosomal Protein Genes Percentage")
   write.table(interactive_qc_plot_f, paste(Tempdir,"/","qc/","AfterFiltering.tsv",sep=""),row.names = F,sep="\t",quote = F)
-
+  
   qc_tsv <- data.frame(NAME = row.names(seurat.object.f@meta.data), Number_of_Genes = seurat.object.f@meta.data$nFeature_RNA, Number_of_Reads = seurat.object.f@meta.data$nCount_RNA, Mitochondrial_Genes_Percentage = seurat.object.f@meta.data$mito.fraction, Ribosomal_Protein_Genes_Percentage = seurat.object.f@meta.data$ribo.fraction)
   qc_tsv$Mitochondrial_Genes_Percentage <- qc_tsv$Mitochondrial_Genes_Percentage * 100
   qc_tsv$Ribosomal_Protein_Genes_Percentage <- qc_tsv$Ribosomal_Protein_Genes_Percentage * 100
   qc_tsv_string <- sapply(qc_tsv, as.character)
   qc_tsv_string_TYPE <- rbind(data.frame(NAME = "TYPE", Number_of_Genes = "numeric", Number_of_Reads = "numeric", Mitochondrial_Genes_Percentage = "numeric", Ribosomal_Protein_Genes_Percentage = "numeric"), qc_tsv_string)
-
+  
   qc_outfile <-paste(Tempdir,"/","qc/","qc_data.tsv", sep="")
   write.table(data.frame(qc_tsv_string_TYPE),file = qc_outfile, row.names = F, col.names = T, sep="\t", quote = F, append = T)
 } 
@@ -971,7 +974,7 @@ if (NormalizeAndScale == 1) {
 ####################################
 
 if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-
+  
   # output the normalized count matrix & features for front-end gene expression visualizations
   writeLines("\n*** Outputting normalized count matrix as loom ***\n")
   
@@ -980,7 +983,7 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   # all genes/features in matrix
   features_tsv <- as.data.frame(rownames(normalized_count_matrix))
   write.table(features_tsv, file=paste(Tempdir,"/","raw/","features.tsv", sep=""), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
-
+  
   # generating loom file of normalized count matrix
   loom_file <- paste(Tempdir,"/","normalized/","normalized_counts.loom", sep="")
   create(loom_file, normalized_count_matrix)
@@ -1130,6 +1133,8 @@ StopWatchEnd$AverageGeneExpression  <- Sys.time()
 ####################################
 writeLines("\n*** Run and plot dimension reductions ***\n")
 
+names(DimensionReductionMethods) <- c("umap", "tsne")
+
 for (dim_red_method in names(DimensionReductionMethods)) {
   
   ####################################
@@ -1144,11 +1149,15 @@ for (dim_red_method in names(DimensionReductionMethods)) {
   ### `Error in .check_tsne_params(nrow(X), dims = dims, perplexity = perplexity,  : 
   ### perplexity is too large for the number of samples`
   ### User can try tunning down the default RunTSNE(..., perplexity=30) to say 5 or 10
+  ###
+  ### Also using RunTSNE(..., check_duplicates = F) to skip cases where cells happen to have the same values after PCA reduction
   
   if (("tsne" %in% dim_red_method) & (length(colnames(seurat.object.f)) < DefaultParameters$MinNumberOfCellsToReducePerplexity)) {
     writeLines(paste("\n*** Using reduced perplexity = ", DefaultParameters$ReducedPerplexity, " because found ",  length(colnames(seurat.object.f)), " cells", " ***\n", sep = "", collapse = ""))
-    seurat.object.f <- DimensionReductionMethods[[dim_red_method]][["run"]](object = seurat.object.f, dims = PcaDimsUse, perplexity = DefaultParameters$ReducedPerplexity)
-  }else{
+    seurat.object.f <- DimensionReductionMethods[[dim_red_method]][["run"]](object = seurat.object.f, dims = PcaDimsUse, perplexity = DefaultParameters$ReducedPerplexity, check_duplicates = F)
+  }else if ("tsne" %in% dim_red_method) {
+    seurat.object.f <- DimensionReductionMethods[[dim_red_method]][["run"]](object = seurat.object.f, dims = PcaDimsUse, check_duplicates = F)
+  }else if ("umap" %in% dim_red_method) {
     seurat.object.f <- DimensionReductionMethods[[dim_red_method]][["run"]](object = seurat.object.f, dims = PcaDimsUse)
   }
   
@@ -1168,7 +1177,7 @@ for (dim_red_method in names(DimensionReductionMethods)) {
   writeLines(paste("\n*** Write out ", DimensionReductionMethods[[dim_red_method]][["name"]], " coordinates ***\n", sep = "", collapse = ""))
   
   StopWatchStart$DimensionReductionWriteCoords$dim_red_method  <- Sys.time()
-
+  
   Headers<-paste("Barcode",paste(colnames(seurat.object.f@reductions[[dim_red_method]]@cell.embeddings),sep="",collapse="\t"),sep="\t",collapse = "\t")
   
   if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
@@ -1176,7 +1185,7 @@ for (dim_red_method in names(DimensionReductionMethods)) {
     write.table(Headers,file = OutfileCoordinatesCWL, row.names = F, col.names = F, sep="\t", quote = F)
     write.table(seurat.object.f@reductions[[dim_red_method]]@cell.embeddings, file = OutfileCoordinatesCWL,  row.names = T, col.names = F, sep="\t", quote = F, append = T)
   }
-
+  
   OutfileCoordinates<-paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_", DimensionReductionMethods[[dim_red_method]][["name"]], "Coordinates.tsv", sep="", collapse = "")
   write.table(Headers,file = OutfileCoordinates, row.names = F, col.names = F, sep="\t", quote = F)
   write.table(seurat.object.f@reductions[[dim_red_method]]@cell.embeddings, file = OutfileCoordinates,  row.names = T, col.names = F, sep="\t", quote = F, append = T)
@@ -1253,7 +1262,7 @@ for (dim_red_method in names(DimensionReductionMethods)) {
       pdfHeight <- (as.integer(length(ListOfGenesForDimRedPlots) / 4) + 1) * DefaultParameters$BaseSizeMultiplePlotPdfHeight
       nColFeaturePlot <- 4
     }
-
+    
     pdf(file=paste(Tempdir,"/",PrefixOutfiles,".", ProgramOutdir, "_", DimensionReductionMethods[[dim_red_method]][["name"]], "Plot_SelectedGenes.pdf", sep=""), width=pdfWidth, height=pdfHeight)
     print(FeaturePlot(object = seurat.object.f, ncol = nColFeaturePlot, features = c(ListOfGenesForDimRedPlots), cols = c("lightgrey", "blue"), reduction = dim_red_method, order = T))
     dev.off()
@@ -1513,5 +1522,5 @@ writeLines(paste("END - All done!!! See:\n", OutfileCPUusage, "\nfor computing t
 quit()
 
 ###############################################################
-### PUGHLAB/CRESCENT/RUNS_SEURAT_V3 GITHUB VERSION b39bf6e ###
+### PUGHLAB/CRESCENT/RUNS_SEURAT_V3 GITHUB VERSION 8baf1c0 ###
 ##############################################################
