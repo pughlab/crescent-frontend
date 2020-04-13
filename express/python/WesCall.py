@@ -23,4 +23,4 @@ clientObject = util.WESClient(
 
 # use seurat-workflow.cwl
 req = clientObject.run(
-    pathToCWL + "seurat-workflow.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToInputFiles + "barcodes.tsv.gz", pathToInputFiles + "features.tsv.gz", pathToInputFiles + "matrix.mtx.gz", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
+    pathToCWL + "seurat-workflow.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])

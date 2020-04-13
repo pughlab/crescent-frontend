@@ -59,12 +59,12 @@ const makeCWLJobJSON = async (
         class: 'File',
         path: 'Script/Runs_Seurat_v3.R' 
       },
-      sc_input: {
-        class: 'Directory',
-        // path: `/usr/src/app/minio/download/${projectID}`
-        // path: runDirFilePath
-         path: `minio/download/${runID}`
-      },
+      // sc_input: {
+      //   class: 'Directory',
+      //   // path: `/usr/src/app/minio/download/${projectID}`
+      //   // path: runDirFilePath
+      //    path: `minio/download/${runID}`
+      // },
       R_dir: {
         class: 'Directory',
         path: 'Script'
@@ -82,6 +82,7 @@ const makeCWLJobJSON = async (
       // percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
       // number_genes: '50,8000',
       number_genes: `${minNumberGenes},${maxNumberGenes}`,
+      minioInputPath: `minio/project-${projectID}/inputs/`,
       destinationPath: `minio/project-${projectID}/runs/${runID}`,
       access_key: `crescent-access`,
       secret_key: `crescent-secret`,

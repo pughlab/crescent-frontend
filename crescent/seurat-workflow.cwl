@@ -8,9 +8,6 @@ inputs:
   - id: R_dir
     type: Directory
 
-  - id: sc_input
-    type: Directory
-
   - id: sc_input_type
     type: string
 
@@ -55,6 +52,9 @@ inputs:
     type: string
     default: N
 
+  - id: minioInputPath
+    type: string
+
   - id: destinationPath
     type: string
 
@@ -72,6 +72,25 @@ inputs:
 
 outputs: []
 steps:
+  - id: extract
+    in:
+      - id: minioInputPath
+        source: minioInputPath
+
+      - id: access
+        source: access_key
+
+      - id: secret
+        source: secret_key
+        
+      - id: domain
+        source: minio_domain
+
+      - id: port
+        source: minio_port
+    out:
+      - id: input_dir
+    run: ./extract.cwl
   - id: seurat-v3
     in:
       - id: R_script
@@ -81,7 +100,7 @@ steps:
         source: R_dir
 
       - id: sc_input
-        source: sc_input
+        source: extract/input_dir
 
       - id: sc_input_type
         source: sc_input_type
