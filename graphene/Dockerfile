@@ -4,6 +4,6 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 # FROM tiangolo/uvicorn-gunicorn-fastapi:python3.6
 
-ADD requirements.txt /app/requirements.txt
+ADD ./src/requirements.txt /app/requirements.txt
 WORKDIR /app
 RUN pip install -r requirements.txt
