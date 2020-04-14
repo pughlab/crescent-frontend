@@ -38,6 +38,28 @@ services:
       - minio 
       - mongo
 
+  graphene-server: 
+    image: crescentdev/graphene-server
+    privileged: true
+    build: graphene
+    container_name: graphene
+    expose:
+      - ${GRAPHENE_PORT}
+    ports:
+      - "${GRAPHENE_PORT}:${GRAPHENE_PORT}"
+    environment:
+      - MINIO_HOST_PORT=${MINIO_HOST_PORT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    volumes:
+      - ./graphene/src:/app/src
+      - ./minio:/app/minio
+    working_dir: /app/src
+    depends_on:
+      - minio 
+      - mongo      
+    command: uvicorn main:app --host 0.0.0.0 --port ${GRAPHENE_PORT} --reload
+
   wes-server:
     image: candig/wes-server:${WES_VERSION}
     container_name: wes-server
