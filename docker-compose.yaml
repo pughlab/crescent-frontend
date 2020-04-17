@@ -39,7 +39,7 @@ services:
       - mongo
 
   graphene-server: 
-    image: crescentdev/graphene-server
+    # image: crescentdev/graphene-server
     privileged: true
     build: graphene
     container_name: graphene
@@ -51,6 +51,7 @@ services:
       - MINIO_HOST_PORT=${MINIO_HOST_PORT}
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MONGO_URL=${MONGO_URL}
     volumes:
       - ./graphene/src:/app/src
       - ./minio:/app/minio
@@ -60,25 +61,25 @@ services:
       - mongo      
     command: uvicorn main:app --host 0.0.0.0 --port ${GRAPHENE_PORT} --reload
 
-  wes-server:
-    image: candig/wes-server:${WES_VERSION}
-    container_name: wes-server
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:rw
-      - /var/lib/docker/volumes:/var/lib/docker/volumes:rw
-      - /tmp:/tmp:rw
-      - /var/lib/toil:/var/lib/toil:rw
-    ports:
-      - "${WES_PORT}:8081"
-    entrypoint: ["wes-server"]
-    command:
-      - --port=8081
-      - --backend=${WES_BACKEND}
-      - --opt=runner=${WES_CWL_RUNNER}
-      - --opt=extra=--cleanWorkDir=never
-      - --opt=extra=--writeLogs=/
-      - --opt=extra=--writeLogsFromAllJobs
-      - --opt=extra=--maxLogFileSize=0 
-      - --opt=extra=--writeLogsFromAllJobs
-      - --opt=extra=--realTimeLogging
+  # wes-server:
+  #   image: candig/wes-server:${WES_VERSION}
+  #   container_name: wes-server
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock:rw
+  #     - /var/lib/docker/volumes:/var/lib/docker/volumes:rw
+  #     - /tmp:/tmp:rw
+  #     - /var/lib/toil:/var/lib/toil:rw
+  #   ports:
+  #     - "${WES_PORT}:8081"
+  #   entrypoint: ["wes-server"]
+  #   command:
+  #     - --port=8081
+  #     - --backend=${WES_BACKEND}
+  #     - --opt=runner=${WES_CWL_RUNNER}
+  #     - --opt=extra=--cleanWorkDir=never
+  #     - --opt=extra=--writeLogs=/
+  #     - --opt=extra=--writeLogsFromAllJobs
+  #     - --opt=extra=--maxLogFileSize=0 
+  #     - --opt=extra=--writeLogsFromAllJobs
+  #     - --opt=extra=--realTimeLogging
 
