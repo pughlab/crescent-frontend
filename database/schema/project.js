@@ -17,6 +17,10 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  externalUrls: {
+    type: [mongoose.Schema.Types.Mixed],
+    default: []
+  },
   createdOn: {
     type: Date,
     default: Date.now
