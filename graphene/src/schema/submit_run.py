@@ -9,13 +9,15 @@ class SubmitRun(Mutation):
   # Subclass for describing what arguments mutation takes
   class Arguments:
     run_id = ID()
-    # WES ID
+
+  # WES ID
   Output = ID
+
   # Resolver function with arguments
   def mutate(root, info, run_id):
     try:
-      print('some run')
+      # Submit wes run and update using pymongo here
       print(db.runs.find_one())
-      return 'awdaw'
+      return 'wes ID here until we have gql federation'
     except:
       print('submit run error')

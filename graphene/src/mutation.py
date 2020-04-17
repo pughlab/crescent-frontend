@@ -13,7 +13,7 @@ class Mutation(ObjectType):
     return {'bucket_name': bucket_name}
 
   submit_run = SubmitRun.Field()
-  def resolve_submit_run(parent, info, run_id):
-    return 'adawd'
+  # def resolve_submit_run(parent, info, run_id):
+  #   return run_id
 
 
