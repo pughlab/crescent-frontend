@@ -111,6 +111,7 @@ const RunsCardList = withRedux(({
       name: projectName,
       kind: projectKind,
       description,
+      externalUrls,
       createdOn: projectCreatedOn,
       createdBy: {name: creatorName, userID: creatorUserID}
     },
@@ -191,6 +192,20 @@ const RunsCardList = withRedux(({
         />
         <Divider horizontal />
         {description}
+        {
+          RA.isNotEmpty(externalUrls) && 
+          <>
+          <Divider horizontal />
+          <Label.Group>
+            {
+              R.map(
+                ({label, link}) => <Label key={label} as='a' href={link} target="_blank" content={label}/>,
+                externalUrls
+              )
+            }
+          </Label.Group>
+          </>
+        }
       </Segment>
       {/* ADD USERS TO PROJECT OR ARCHIVE PROJECT ONLY IF NOT PUBLIC PROJECT*/}
       {
