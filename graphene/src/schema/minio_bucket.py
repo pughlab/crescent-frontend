@@ -5,6 +5,11 @@ from minio import Minio
 from minio.error import ResponseError
 from minio_client.client import minio_client
 
+import sys
+import json
+from wes_client import util
+from wes_client.util import modify_jsonyaml_paths
+
 class MinioObject(ObjectType):
   # TODO: figure out bidirectional relation between types
   # bucket = Field(MinioBucket)
@@ -35,6 +40,15 @@ class MinioBucket(ObjectType):
     try:
       objects = minio_client.list_objects(parent['bucket_name'])
       # Types matter so map values onto dict
+
+      # Test WES Call
+      job = {"message":"Hello World!"}
+      job = json.dumps(job)
+      # make request to wes
+      clientObject = util.WESClient(
+          {'auth': '', 'proto': 'http', 'host': "wes-server:8081"})
+      req = clientObject.run(
+          "/app/src/schema/tool.cwl", job, [])
       return map(
         lambda obj: {
           'bucket_name': obj.bucket_name,

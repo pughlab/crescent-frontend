@@ -6,4 +6,6 @@ ENV LANG=C.UTF-8
 
 ADD ./src/requirements.txt /app/requirements.txt
 WORKDIR /app
+RUN pip install werkzeug==0.16.1
+RUN pip install wes-service
 RUN pip install -r requirements.txt
