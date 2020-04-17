@@ -28,6 +28,10 @@ const PublicProjectsList = withRedux(() => {
         name
         kind
         description
+        externalUrls {
+          label
+          link
+        }
         createdOn
         createdBy {
           name
