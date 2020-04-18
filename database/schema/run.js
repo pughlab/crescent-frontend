@@ -32,6 +32,11 @@ const RunSchema = new mongoose.Schema({
     default: 'pending'
   },
 
+  downloadable: {
+    type: Boolean,
+    default: true
+  },
+
   submittedOn: {
     type: Date,
     default: null
