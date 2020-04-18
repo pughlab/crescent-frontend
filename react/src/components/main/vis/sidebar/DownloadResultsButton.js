@@ -2,8 +2,13 @@ import React from 'react'
 import {Button} from 'semantic-ui-react'
 
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
+
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+import {queryIsNotNil} from '../../../../utils'
 
 const DownloadResultsButton = withRedux(
   ({
@@ -14,6 +19,24 @@ const DownloadResultsButton = withRedux(
       }
     }
   }) => {
+    const {data, loading, error, refetch} = useQuery(gql`
+      query Run($runID: ID) {
+        run(runID: $runID) {
+          downloadable
+        }
+      }
+    `, {
+      fetchPolicy: 'cache-and-network',
+      variables: {runID},
+    })
+
+    const download_true = R.ifElse(
+      queryIsNotNil('run'),
+      R.prop('run'),
+      R.always([])
+    )(data)
+    // console.log(data)
+    
     return (
       <Button fluid color='violet'
         content={R.prop(runStatus, {
@@ -24,6 +47,9 @@ const DownloadResultsButton = withRedux(
         })}
         disabled={
           R.either(R.equals('pending'), R.equals('submitted'))(runStatus)
+        }
+        disabled={
+          RA.isFalse(download_true.downloadable)
         }
         download
         target='_blank'
