@@ -10,6 +10,7 @@ const typeDefs = gql`
     projectID: ID
     project: Project
     status: String
+    downloadable: Boolean
 
     submittedOn: Date
     completedOn: Date
