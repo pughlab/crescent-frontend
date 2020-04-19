@@ -30,11 +30,12 @@ const DownloadResultsButton = withRedux(
       variables: {runID},
     })
 
-    const download_true = R.ifElse(
+    const {downloadable} = R.ifElse(
       queryIsNotNil('run'),
       R.prop('run'),
-      R.always([])
+      R.always({downloadable: false})
     )(data)
+    
     // console.log(data)
     
     return (
@@ -46,10 +47,7 @@ const DownloadResultsButton = withRedux(
           failed: 'DOWNLOAD RUN LOGS'
         })}
         disabled={
-          R.either(R.equals('pending'), R.equals('submitted'))(runStatus)
-        }
-        disabled={
-          RA.isFalse(download_true.downloadable)
+          R.or(R.either(R.equals('pending'), R.equals('submitted'))(runStatus)),(RA.isFalse(downloadable))
         }
         download
         target='_blank'
