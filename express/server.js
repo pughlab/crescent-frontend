@@ -144,15 +144,19 @@ router.get(
   '/download/:runID',
   async (req, res) => {
     const runID = req.params.runID
-    const {name: runName, projectID} = await Run.findOne({runID})
+    const {name: runName, projectID, downloadable} = await Run.findOne({runID})
+
     const {name: projectName} = await Project.findOne({projectID})
     const input = `/usr/src/app/results/${runID}`;
     const output = `${input}.zip`;
-    try {
-      await zipThread(input, output);
-      res.download(output, `${projectName}_${runName}.zip`);
-    } catch(err) {
-      res.sendStatus(500);
+
+    if (downloadable){
+      try {
+        await zipThread(input, output);
+        res.download(output, `${projectName}_${runName}.zip`);
+      } catch(err) {
+        res.sendStatus(500);
+      }
     }
   }
 );
