@@ -48,8 +48,8 @@ class SubmitRun(Mutation):
           "number_genes": "50,8000", # should come from input
           "minioInputPath": "minio/samples/", # should come from input
           "destinationPath": "minio/samples/runs/5e947ad79846b0010c6fad78", # should come from input
-          "access_key": "crescent-access", # should come from env vars
-          "secret_key": "crescent-secret", # should come from env vars
+          "access_key": environ["MINIO_ACCESS_KEY"], # should come from env vars
+          "secret_key": environ["MINIO_SECRET_KEY"], # should come from env vars
           "minio_domain": "host.docker.internal",
           "minio_port": "9000"
       }
