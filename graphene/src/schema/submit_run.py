@@ -23,8 +23,9 @@ class SubmitRun(Mutation):
   def mutate(root, info, run_id):
     try:
       # Submit wes run and update using pymongo here
-      print(db.runs.find_one())
-      
+      #run = db.runs.find_one({'status': "completed"})
+      run = db.runs.find_one({'runID':run_id})
+      param = json.loads(run['params'])
       # Get input paths
       pathToCWL = "/app/crescent/"
       pathToScript = "/app/crescent/Script/"
@@ -39,25 +40,26 @@ class SubmitRun(Mutation):
               "class": "Directory",
               "path": "Script"
           },
-          "sc_input_type": "MTX", # should come from input
+          "sc_input_type": param['singleCell'],
           "resolution": 1,
           "project_id": "frontend_example_mac_10x_cwl",
           "summary_plots": "n",
-          "pca_dimensions": 10, # should come from input
-          "percent_mito": "0,0.2", # should come from input
-          "number_genes": "50,8000", # should come from input
-          "minioInputPath": "minio/samples/", # should come from input
-          "destinationPath": "minio/samples/runs/5e947ad79846b0010c6fad78", # should come from input
-          "access_key": environ["MINIO_ACCESS_KEY"], # should come from env vars
-          "secret_key": environ["MINIO_SECRET_KEY"], # should come from env vars
+          "pca_dimensions": param['principalDimensions'],
+          "percent_mito": str(param['percentMito']['min']) + "," + str(param['percentMito']['max']),
+          "number_genes": str(param['numberGenes']['min']) + "," + str(param['numberGenes']['max']),
+          "minioInputPath": "minio/samples/dataset-" + str(run['runID']) + "/", # should come from input
+          "destinationPath": "minio/samples/runs/" + str(run['runID']), # should come from input
+          "access_key": environ["MINIO_ACCESS_KEY"],
+          "secret_key": environ["MINIO_SECRET_KEY"],
           "minio_domain": "host.docker.internal",
           "minio_port": "9000"
       }
       job = json.dumps(job)
+      print(job)
 
       # make request to wes
       clientObject = util.WESClient(
-          {'auth': '', 'proto': 'http', 'host': "wes-server:8081"}) 
+          {'auth': '', 'proto': 'http', 'host': "wes-server:8081"}) # should come from env var
       
       # use seurat-workflow.cwl
       # All workflow related files must be passed as attachments here, excluding files in minio
@@ -67,4 +69,5 @@ class SubmitRun(Mutation):
 
       return req
     except:
-      print('submit run error')
+      e = sys.exc_info()[0]
+      print(format(e))
