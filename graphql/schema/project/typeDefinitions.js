@@ -2,11 +2,16 @@ const { gql } = require('apollo-server')
 
 const typeDefs = gql`
   scalar Date
+  type Url {
+    label: String
+    link: String
+  }
   type Project {
     projectID: ID
     kind: String #'uploaded', 'curated'
     name: String
     description: String
+    externalUrls: [Url]
     sharedWith: [User]
     createdBy: User
     createdOn: Date
@@ -53,6 +58,13 @@ const typeDefs = gql`
     # Archive project by setting archive property to a current date
     archiveProject(
       projectID: ID
+    ): Project
+
+    # Add external links to project
+    addExternalUrl(
+      projectID: ID
+      label: String
+      link: String
     ): Project
   }
 `

@@ -121,6 +121,14 @@ const resolvers = {
       project.archived = new Date()
       await project.save()
       return project
+    },
+
+    addExternalUrl: async (parent, {projectID, label, link}, {Projects}) => {
+      const project = await Projects.findOne({projectID})
+      const existingUrls = project.externalUrls  
+      project.externalUrls = R.append({label, link}, existingUrls)
+      await project.save()
+      return project
     }
   },
   // Subfield resolvers
