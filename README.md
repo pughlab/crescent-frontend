@@ -1,4 +1,6 @@
-# CReSCENT: CanceR Single Cell Expression Toolkit (Web application)
+# CReSCENT: CanceR Single Cell Expression Toolkit (Web application) - Developer Documentation
+For user manual please go to CReSCENT Docs: https://pughlab.github.io/crescent-frontend/
+
 
 ## Prerequisites
 - Git (to clone this repo)
