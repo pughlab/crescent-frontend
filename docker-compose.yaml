@@ -52,6 +52,7 @@ services:
       - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MONGO_URL=${MONGO_URL}
+      - WES_PORT=${WES_PORT}
     volumes:
       - ./graphene/src:/app/src
       - ./minio:/app/minio

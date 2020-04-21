@@ -23,8 +23,10 @@ class SubmitRun(Mutation):
   def mutate(root, info, run_id):
     try:
       # Submit wes run and update using pymongo here
-      #run = db.runs.find_one({'status': "completed"})
-      run = db.runs.find_one({'runID':run_id})
+      # Use the following line if you want to test with graphql playground
+      run = db.runs.find_one({'status': "completed"})
+      # run = db.runs.find_one({'runID':run_id})
+      
       param = json.loads(run['params'])
       # Get input paths
       pathToCWL = "/app/crescent/"
@@ -59,7 +61,7 @@ class SubmitRun(Mutation):
 
       # make request to wes
       clientObject = util.WESClient(
-          {'auth': '', 'proto': 'http', 'host': "wes-server:8081"}) # should come from env var
+          {'auth': '', 'proto': 'http', 'host': "wes-server:" + environ['WES_PORT']}) # should come from env var
       
       # use seurat-workflow.cwl
       # All workflow related files must be passed as attachments here, excluding files in minio
