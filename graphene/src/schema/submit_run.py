@@ -24,9 +24,9 @@ class SubmitRun(Mutation):
     try:
       # Submit wes run and update using pymongo here
       # Use the following line if you want to test with graphql playground
-      run = db.runs.find_one({'status': "completed"})
-      # run = db.runs.find_one({'runID':run_id})
-      
+      # run = db.runs.find_one({'status': "completed"})
+      run = db.runs.find_one({'runID':run_id})
+
       param = json.loads(run['params'])
       # Get input paths
       pathToCWL = "/app/crescent/"
@@ -57,7 +57,6 @@ class SubmitRun(Mutation):
           "minio_port": "9000"
       }
       job = json.dumps(job)
-      print(job)
 
       # make request to wes
       clientObject = util.WESClient(
@@ -68,8 +67,10 @@ class SubmitRun(Mutation):
       # To generalize to pipeline builder take all the arguments as inputs into the resolver, ie the cwl workflow, the job, and the attachments
       req = clientObject.run(
           pathToCWL + "seurat-workflow.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
-
+      # Use the following line if you want to test with graphql playground
+      # db.runs.find_one_and_update({'status': "completed"},{'$set': {'wesID': req}})
+      db.runs.find_one_and_update({'runID': run_id},{'$set': {'wesID': req}})
       return req
     except:
-      e = sys.exc_info()[0]
+      e = sys.exc_info()[1]
       print(format(e))

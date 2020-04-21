@@ -37,6 +37,10 @@ const RunSchema = new mongoose.Schema({
     default: true
   },
 
+  wesID: {
+    type: String,
+    default: null
+  },
   submittedOn: {
     type: Date,
     default: null
