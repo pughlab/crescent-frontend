@@ -50,7 +50,7 @@ const QCPlot = withRedux(
       // Plot data
       R.equals('Before_After_Filtering', selectedQC) ?
         <>
-        <Header textAlign='center' content={R.isNil(selectedQC) ? '' : selectedQC.replace(/_/g," ")} />
+        <Header textAlign='center' content={R.isNil(selectedQC) ? '' : "Metrics Before and After QC"} />
         <Plot
           config={{showTips: false}}
           data={qcData}
