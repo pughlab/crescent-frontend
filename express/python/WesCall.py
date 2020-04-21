@@ -38,8 +38,7 @@ if inFile.mode == "r":
 #     "minio_domain": "host.docker.internal",
 #     "minio_port": "9000"
 # }
-
-job = json.dumps(job)
+# job = json.dumps(job)
 
 # make request to wes
 clientObject = util.WESClient(
