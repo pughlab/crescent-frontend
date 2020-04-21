@@ -166,20 +166,50 @@ const RunsCardList = withRedux(({
   const isUploadedProject = R.equals('uploaded', projectKind)
   const currentUserIsProjectCreator = R.equals(creatorUserID, currentUserID)
 
+  // const filteredProjectRuns = R.compose(
+  //   R.reject(
+  //     R.compose(
+  //       R.and(R.not(isUploadedProject)),
+  //       R.propEq('status', 'pending')
+  //     )
+  //   ),
+  //   R.filter(
+  //     R.compose(
+  //       R.or(R.equals('all', runFilter)),
+  //       R.propEq('status', runFilter)
+  //     )
+  //   )
+  // )(projectRuns)
+
+
+  // filteredProjectRuns comments
+  // if isUploadedProject, filter by status  
+  // else if currentUserIsProjectCreator, hide public pending runs 
+  // else hide public pending runs and only show currentUserID and creatorUserID public runs
+
   const filteredProjectRuns = R.compose(
-    R.reject(
-      R.compose(
-        R.and(R.not(isUploadedProject)),
-        R.propEq('status', 'pending')
-      )
-    ),
-    R.filter(
+    isUploadedProject ? R.filter(
       R.compose(
         R.or(R.equals('all', runFilter)),
         R.propEq('status', runFilter)
       )
     )
+    :
+    currentUserIsProjectCreator ? R.reject(
+      R.propEq('status', 'pending')
+    )
+    : R.reject(R.anyPass([
+        R.propEq('status', 'pending'),
+        R.compose(
+            R.not,
+            R.either(
+                R.pathEq(['createdBy', 'userID'], currentUserID),
+                R.pathEq(['createdBy', 'userID'], creatorUserID)
+            )
+        )
+    ]))
   )(projectRuns)
+
   return (
     <Container>
       <Segment attached='top'>
