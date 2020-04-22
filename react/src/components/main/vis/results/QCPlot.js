@@ -121,7 +121,7 @@ const QCPlot = withRedux(
         </>
       :
       <>
-        <Header textAlign='center' content={R.isNil(selectedQC) ? '' : selectedQC.replace(/_/g," ")} />
+        <Header textAlign='center' content={R.isNil(selectedQC) ? '' : (selectedQC.replace(/_/g," ")+" UMAP")} />
         <Plot
           config={{showTips: false}}
           data={qcData}
