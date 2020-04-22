@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition} from 'semantic-ui-react'
+import {Container, Card, Divider, Button, Header, Icon, Popup, Modal, Dropdown, Label, Segment, Grid, Step, Transition} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -226,14 +226,18 @@ const RunsCardList = withRedux(({
           RA.isNotEmpty(externalUrls) && 
           <>
           <Divider horizontal />
-          <Label.Group>
-            {
-              R.map(
-                ({label, link}) => <Label key={label} as='a' href={link} target="_blank" content={label}/>,
-                externalUrls
-              )
+          {
+            R.map(
+              ({label, link, type}) => (
+                <Popup key={label}
+                  inverted
+                  trigger={<Label as='a' href={link} icon={type} target="_blank" content={label}/>}
+                  content={link}
+                />
+              ),
+              externalUrls
+            )
             }
-          </Label.Group>
           </>
         }
       </Segment>
