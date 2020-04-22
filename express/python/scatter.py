@@ -7,22 +7,31 @@ import csv
 
 import helper
 
+colour_dict = {}
+
 def add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells):
 	""" add a new barcode to the plotly object and add its label group if it doesn't exist yet """
+	global colour_dict
+
 	for group in plotly_obj:
 		if group['name'] == label:
 			group['text'].append(barcode)
 			group['x'].append(barcode_coords[barcode][0])
 			group['y'].append(barcode_coords[barcode][1])
+			group['marker']['color'].append(colour_dict[label])
 			return
 
 	# group not seen yet
+	colour_dict[label] = helper.COLOURS[len(colour_dict.keys())%len(helper.COLOURS)]
 	template_obj = {
 		"name": label,
 		"mode": "markers",
 		"text": [barcode],
 		"x": [barcode_coords[barcode][0]],
-		"y": [barcode_coords[barcode][1]]
+		"y": [barcode_coords[barcode][1]],
+		"marker": {
+			'color': [colour_dict[label]],
+		},
 	}
 	if num_cells > 20000:
 		# add different rendering to improve speeds
