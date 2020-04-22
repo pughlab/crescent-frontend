@@ -31,6 +31,7 @@ const PublicProjectsList = withRedux(() => {
         externalUrls {
           label
           link
+          type
         }
         createdOn
         createdBy {
