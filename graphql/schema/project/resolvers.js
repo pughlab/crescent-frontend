@@ -123,10 +123,10 @@ const resolvers = {
       return project
     },
 
-    addExternalUrl: async (parent, {projectID, label, link}, {Projects}) => {
+    addExternalUrl: async (parent, {projectID, label, link, type}, {Projects}) => {
       const project = await Projects.findOne({projectID})
       const existingUrls = project.externalUrls  
-      project.externalUrls = R.append({label, link}, existingUrls)
+      project.externalUrls = R.append({label, link, type}, existingUrls)
       await project.save()
       return project
     }
