@@ -102,6 +102,7 @@ const NewProjectModal = withRedux(({
         externalUrls {
           label
           link
+          type
         }
         createdOn
         createdBy {
