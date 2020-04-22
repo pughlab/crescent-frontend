@@ -36,6 +36,7 @@ const UploadedProjectsList = withRedux(({
         externalUrls {
           label
           link
+          type
         }
         createdOn
         createdBy {
