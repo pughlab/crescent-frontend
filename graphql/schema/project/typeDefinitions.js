@@ -5,6 +5,7 @@ const typeDefs = gql`
   type Url {
     label: String
     link: String
+    type: String
   }
   type Project {
     projectID: ID
@@ -65,6 +66,7 @@ const typeDefs = gql`
       projectID: ID
       label: String
       link: String
+      type: String
     ): Project
   }
 `
