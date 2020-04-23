@@ -26,12 +26,16 @@ class SubmitRun(Mutation):
       # Use the following line if you want to test with graphql playground
       # run = db.runs.find_one({'status': "completed"})
       run = db.runs.find_one({'runID':run_id})
+      
+      # Uncomment when this resolver is connected to the frontend
+      # Each run should only result in one submission, so this perserves idempotency
+      # if run['wesID'] is not None:
+      #   return "A workflow has already been submitted for this run"
 
       param = json.loads(run['params'])
       # Get input paths
       pathToCWL = "/app/crescent/"
       pathToScript = "/app/crescent/Script/"
-      
       # Job creation
       job = {
           "R_script": {
@@ -68,9 +72,9 @@ class SubmitRun(Mutation):
       req = clientObject.run(
           pathToCWL + "seurat-workflow.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
       # Use the following line if you want to test with graphql playground
-      # db.runs.find_one_and_update({'status': "completed"},{'$set': {'wesID': req}})
-      db.runs.find_one_and_update({'runID': run_id},{'$set': {'wesID': req}})
-      return req
+      # db.runs.find_one_and_update({'status': "completed"},{'$set': {'wesID': req["run_id"]}})
+      db.runs.find_one_and_update({'runID': run_id},{'$set': {'wesID': req["run_id"]}})
+      return req["run_id"]
     except:
       e = sys.exc_info()[1]
       print(format(e))
