@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Transition, Message, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
+import { Segment, Button, Transition, Message, Step, Menu, Header, Accordion, Popup, Dropdown } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -32,6 +32,7 @@ const PipelineRunStatusMessage = withRedux(
     const currentUserNotCreator = R.not(R.equals(currentUserID, creatorUserID))
     const statusColor = R.prop(status, {pending: 'orange', submitted: 'yellow', completed: 'green', failed: 'red'})
     return (
+      <>
       <Message
         color={currentUserNotCreator ? 'red' : statusColor}
       >
@@ -57,17 +58,32 @@ const PipelineRunStatusMessage = withRedux(
         </Message.Header>
 
       </Message>
+      <Popup content='https://git.io/JfkB9'
+        inverted
+        position='top left'
+        trigger={<Button fluid size='medium' textAlign='center' icon='github' content='R Script (8baf1c051a)' as='a' href='https://git.io/JfkB9' target="_blank"/>
+        }
+      />
+      </>
     )
   }
 )
 
 const PiplinePublicRunMessage = () => {
   return (
+    <>
     <Message
       color='grey'
     >
       <Message.Header as={Header} textAlign='center' content='Public Run' />
     </Message>
+    <Popup content='https://git.io/JfkB9'
+        inverted
+        position='top left'
+        trigger={<Button fluid size='medium' textAlign='center' icon='github' content='R Script (8baf1c051a)' as='a' href='https://git.io/JfkB9' target="_blank"/>
+        }
+      />
+    </>
   )
 }
 
@@ -103,7 +119,7 @@ const SidebarComponent = withRedux(
 
           {
             R.equals('curated', projectKind) ? 
-              <PiplinePublicRunMessage />
+            <PiplinePublicRunMessage />
             : R.equals('pipeline', sidebarView) && <PipelineRunStatusMessage />
           }
         </Segment>
