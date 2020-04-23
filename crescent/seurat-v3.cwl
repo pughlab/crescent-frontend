@@ -140,4 +140,4 @@ outputs:
 
 arguments:
   - position: 0
-    valueFrom: $(inputs.R_dir.dirname)/Script/Runs_Seurat_v3.R
+    valueFrom: $(inputs.R_dir.dirname)/Script/$(inputs.R_script)
