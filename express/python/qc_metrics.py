@@ -31,7 +31,7 @@ def get_qc_metrics(runID):
 	
 	# now add the qc metadata
 	metrics.append({"qc_steps": []})
-	details_path = os.path.join(dir_path, "crescent.SEURAT_FilterDetails.tsv")
+	details_path = os.path.join(dir_path, "qc_metrics.tsv")
 	if os.path.isfile(details_path):
 		with open(details_path) as f:
 			# grab first line
@@ -42,7 +42,7 @@ def get_qc_metrics(runID):
 					"filtertype": row[0],
 					"min": row[1],
 					"max": row[2],
-					"num_removed": row[7]
+					"num_removed": row[3]
 				}
 				metrics[1]["qc_steps"].append(details)
 
