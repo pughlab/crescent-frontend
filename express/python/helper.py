@@ -5,6 +5,7 @@ import os
 import json
 from operator import itemgetter
 
+# plotly defaults
 COLOURS = [
   '#1f77b4',  # muted blue
   '#ff7f0e',  # safety orange
@@ -16,6 +17,30 @@ COLOURS = [
   '#7f7f7f',  # middle gray
   '#bcbd22',  # curry yellow-green
   '#17becf'   # blue-teal
+]
+
+# Kelly's 22 colours of maximum contrast (1965), excluding black and white
+COLOURS = [
+	'#0067A5', # blue
+	'#F38400', # orange
+	'#008856', # green
+	'#BE0032', # red
+	'#875692', # purple
+	'#882D17', # reddish brown
+	'#E68FAC', # purplish pink
+	'#848482', # grey
+	'#F3C300', # yellow
+	'#A1CAF1', # light blue
+	'#C2B280', # tan
+	'#F99379', # yellowish pink
+	'#604E97', # violet
+	'#F6A600', # orange yellow
+	'#B3446C', # purplish red
+	'#DCD300', # greenish yellow
+	'#8DB600', # yellow green
+	'#654522', # yellowish brown
+	'#E25822', # reddish orange 
+	'#2B3D26' # olive green
 ]
 
 def get_cellcount(runID):

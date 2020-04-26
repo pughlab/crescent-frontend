@@ -11,19 +11,27 @@ import helper
 
 fileName = "normalized_counts.loom"
 
+colour_dict = {}
+
 def add_barcode(plotly_obj, barcode, label, opacities):
 	""" add a new barcode to the plotly object and add its label group if it doesn't exist yet """
+	global colour_dict
 	for group in plotly_obj:
 		if group['name'] == label:
 			group['text'].append(barcode)
 			group['marker']['opacity'].append(opacities[barcode])
+			group['marker']['color'].append(colour_dict[label])
 			return
 	
 	# label not seen yet
+	colour_dict[label] = helper.COLOURS[len(colour_dict.keys())%len(helper.COLOURS)]
 	plotly_obj.append({
 			"name": label,
 			"text": [barcode],
-			"marker": {'opacity': [opacities[barcode]]}
+			"marker": {
+				'opacity': [opacities[barcode]],
+				'color': [colour_dict[label]]
+			}
 	})
 
 	return
