@@ -98,6 +98,7 @@ const submitCWL = async (
   const cwl = spawn(
     `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
      mkdir /usr/src/app/results/${runID} && \
+     cp /usr/src/app/crescent/*.R /usr/src/app/results/${runID} && \
      cd /usr/src/app/results/${runID} && \
      rm -f frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
