@@ -20,27 +20,47 @@ COLOURS = [
 ]
 
 # Kelly's 22 colours of maximum contrast (1965), excluding black and white
+# added plotly colours to kelly's 22 colours i.e. 17 unique colours
 COLOURS = [
-	'#0067A5', # blue
-	'#F38400', # orange
-	'#008856', # green
-	'#BE0032', # red
-	'#875692', # purple
-	'#882D17', # reddish brown
-	'#E68FAC', # purplish pink
-	'#848482', # grey
-	'#F3C300', # yellow
-	'#A1CAF1', # light blue
+	# '#0067A5', # blue
+	# '#F38400', # orange
+	# '#008856', # green
+	# '#BE0032', # red
+	# '#875692', # purple
+	# '#882D17', # reddish brown
+	# '#E68FAC', # purplish pink
+	# '#848482', # grey
+	# '#F3C300', # yellow
+	# '#A1CAF1', # light blue
+	# '#C2B280', # tan
+	# '#F99379', # yellowish pink
+	# '#604E97', # violet
+	# '#F6A600', # orange yellow
+	# '#B3446C', # purplish red
+	# '#DCD300', # greenish yellow
+	# '#8DB600', # yellow green
+	# '#654522', # yellowish brown
+	# '#E25822', # reddish orange 
+	# '#2B3D26' # olive green
+  	'#1f77b4',  # muted blue
+  	'#ff7f0e',  # safety orange
+	'#8c564b',  # chestnut brown
+	'#848482',  # grey
+	'#9467bd',  # muted purple
+	'#2ca02c',  # cooked asparagus green
+	'#E68FAC',  # purplish pink
+  	'#d62728',  # brick red
+	'#F3C300',  # yellow
+  	'#17becf',  # blue-teal
+	'#DCD300',  # greenish yellow
+	'#F99379',  # yellowish pink
+	'#604E97',  # violet
+	'#B3446C',  # purplish red
 	'#C2B280', # tan
-	'#F99379', # yellowish pink
-	'#604E97', # violet
-	'#F6A600', # orange yellow
-	'#B3446C', # purplish red
-	'#DCD300', # greenish yellow
-	'#8DB600', # yellow green
-	'#654522', # yellowish brown
-	'#E25822', # reddish orange 
-	'#2B3D26' # olive green
+	'#8DB600',  # yellow green
+	'#654522',  # yellowish brown
+	# '#E25822',  # reddish orange 
+	'#2B3D26'  # olive green
 ]
 
 def get_cellcount(runID):
