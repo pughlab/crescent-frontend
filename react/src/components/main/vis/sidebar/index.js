@@ -58,10 +58,10 @@ const PipelineRunStatusMessage = withRedux(
         </Message.Header>
 
       </Message>
-      <Popup content='https://git.io/JfqTn'
+      <Popup content='https://git.io/JfqMo'
         inverted
         position='top left'
-        trigger={<Button fluid size='medium' textAlign='center' icon='github' content='R Script (2837896d6c)' as='a' href='https://git.io/JfqTn' target="_blank"/>
+        trigger={<Button fluid size='medium' textAlign='center' icon='github' content='R Script (916d802d0b)' as='a' href='https://git.io/JfqMo' target="_blank"/>
         }
       />
       </>
@@ -77,10 +77,10 @@ const PiplinePublicRunMessage = () => {
     >
       <Message.Header as={Header} textAlign='center' content='Public Run' />
     </Message>
-    <Popup content='https://git.io/JfqTn'
+    <Popup content='https://git.io/JfqMo'
         inverted
         position='top left'
-        trigger={<Button fluid size='medium' textAlign='center' icon='github' content='R Script (2837896d6c)' as='a' href='https://git.io/JfqTn' target="_blank"/>
+        trigger={<Button fluid size='medium' textAlign='center' icon='github' content='R Script (916d802d0b)' as='a' href='https://git.io/JfqMo' target="_blank"/>
         }
       />
     </>
