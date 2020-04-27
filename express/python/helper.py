@@ -44,19 +44,19 @@ COLOURS = [
 	# '#2B3D26' # olive green
   	'#1f77b4',  # muted blue
   	'#ff7f0e',  # safety orange
+	'#2ca02c',  # cooked asparagus green
+	'#d62728',  # brick red
+	'#9467bd',  # muted purple
+	'#17becf',  # blue-teal
+	'#E68FAC',  # purplish pink
+	'#F3C300',  # yellow
 	'#8c564b',  # chestnut brown
 	'#848482',  # grey
-	'#9467bd',  # muted purple
-	'#2ca02c',  # cooked asparagus green
-	'#E68FAC',  # purplish pink
-  	'#d62728',  # brick red
-	'#F3C300',  # yellow
-  	'#17becf',  # blue-teal
 	'#DCD300',  # greenish yellow
 	'#F99379',  # yellowish pink
 	'#604E97',  # violet
 	'#B3446C',  # purplish red
-	'#C2B280', # tan
+	'#C2B280',  # tan
 	'#8DB600',  # yellow green
 	'#654522',  # yellowish brown
 	# '#E25822',  # reddish orange 
