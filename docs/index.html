@@ -83,7 +83,8 @@
 				    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-1">Quality control</a></li>
 				    <li class="nav-item"><a class="nav-link scrollto" href="#item-4-2">Gene expression</a></li>
 				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-5"><span class="theme-icon-holder mr-2"><i class="fas fa-arrow-down"></i></span>Downloading results</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#item-5-1">Failed run logs</a></li>
+					<li class="nav-item"><a class="nav-link scrollto" href="#item-5-1">Run logs</a></li>
+					<li class="nav-item"><a class="nav-link scrollto" href="#item-5-2">Failed run logs</a></li>
 				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-6"><span class="theme-icon-holder mr-2"><i class="fas fa-user-plus"></i></span>Sharing a project</a></li>
 				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-7"><span class="theme-icon-holder mr-2"><i class="fas fa-trash"></i></span>Deleting projects and runs</a></li>
 				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-8"><span class="theme-icon-holder mr-2"><i class="fas fa-book-open"></i></span>Resources</a></li>
@@ -133,10 +134,10 @@
 							<a href="assets/images/create_project.gif" data-title="Uploading scRNA-seq data" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/create_project.gif" alt="" style="width: 800px;"></a>
 							<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Quick walkthrough of how to upload your own scRNA-seq data and create a project in CReSCENT.</figcaption>
 						</figure>		
-						<h3>File sizes</h3>
+						<h3>Counts file sizes</h3>
 						<p>Currently, the maximum file size that CReSCENT accepts is 200MB, which roughly corresponds to 100,000 cells from the 10X Cell Ranger count pipeline in the <a href="https://math.nist.gov/MatrixMarket/formats.html" target="_blank" rel="noopener noreferrer">Matrix Market (MTX) format</a> (described below). If your data comes from a different platform or is pre-normalized and contains decimals, you can considerably reduce its size by rounding RNA measurement values to 3 or 4 decimals.</p>
 						</br>
-						<h3>File formats</h3>
+						<h3>Counts file formats</h3>
 						<p>CReSCENT currently accepts scRNA-seq data in the <a href="https://math.nist.gov/MatrixMarket/formats.html" target="_blank" rel="noopener noreferrer">MTX format</a> as input. Converted from gene-by-barcode text files (table below), the MTX format requires less storage space for sparse matrices where many elements are zeros. The three files used as input are the MTX (matrix.mtx.gz) and its barcode and gene/feature indices (barcodes.tsv.gz and features.mtx.gz, respectively). These files are one of the outputs from a <a href="https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/output/matrices" target="_blank" rel="noopener noreferrer">10X Cell Ranger</a> count run.</p>
 						<h5>Gene-by-Barcode Matrix:</h5>
 						<div class="table-responsive my-4">
@@ -171,6 +172,9 @@
 								</tbody>
 							</table>
 						</div><!--//table-responsive-->
+						<h3>Counts (raw) vs. pre-normalized data</h3>
+						<p>CReSCENT is currently optimized to process raw counts from the 10X Cell Ranger count software. However, pre-normalized counts from other methods can be processed as long as they are provided in log scale, no negative values are included, and the QC filters are pre-computed (i.e. the Quality Control 'Apply QC Filters' parameter, found in the 'Pipeline' tab of the Visualizations page, should be set to 'No').</p>
+					    </br>
 						<div class="callout-block callout-block-info">
                             <div class="content">
                                 <h4 class="callout-title">
@@ -205,7 +209,7 @@
 							<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Quick walkthrough of how to upload cell metadata for a project.</figcaption>
 						</figure>
 				
-						<h3>File format</h3>
+						<h3>Metadata file format</h3>
 						<p>CReSCENT currently accepts cell metadata in a tab-separated file (tsv). We have adopted the <a href="https://github.com/broadinstitute/single_cell_portal/wiki/Metadata-File" target="_blank" rel="noopener noreferrer">Broad standard</a> for cell metadata. This tsv has cell barcodes in the first column and customized metadata labels in the subsequent columns (see table below). These labels can be categorized as "group" for categorical variables, like cell types, and "numeric" for continuous values, like orthogonal assay measurements. The double header is necessary to display the proper visualization with "NAME" and "TYPE" being mandatory. </p>
 						<h5>Cell Metadata:</h5>
 						<div class="table-responsive my-4">
@@ -402,8 +406,28 @@
 								</div><!--//content-->
 							</div><!--//callout-block-->
 						</section><!--//docs-intro-->
-				    </header>
-				     <section class="docs-section" id="item-5-1">
+					</header>
+					<section class="docs-section" id="item-5-1">
+						<h2 class="section-heading">Run logs</h2>
+						<p>The following run log files are provided within the <code>SEURAT/LOG_FILES</code> folder found in the download from CReSCENT:</p>
+						<ul>
+						    <li>UsedOptions.txt with the commands used for the one-line-command application.</li>
+						    <li>RSessionInfo.txt with the list of R and R library versions used in the run.</li>
+							<li>CPUusage.txt with the computing time used for each step of the run and the total time, also indicates the number of CPU cores used.</li>
+						</ul>
+						<div class="callout-block callout-block-info">
+							<div class="content">
+								<h4 class="callout-title">
+									<span class="callout-icon-holder mr-1">
+										<i class="fas fa-info-circle"></i>
+									</span><!--//icon-holder-->
+									Note
+								</h4>
+								<p>A link to the current version of the Rscript can be found in the Visualizations page under the 'Pipeline' tab. You can also find a copy of the one-line-command Rscript used in your run within your downloaded zip in the main directory.</p>
+							</div><!--//content-->
+						</div><!--//callout-block-->
+					</section><!--//section-->
+				     <section class="docs-section" id="item-5-2">
 						<h2 class="section-heading">Failed run logs</h2>
 						<p>Downloading failed run logs can help you pinpoint where and why your pipeline has failed. After selecting a failed run, clicking the 'DOWNLOAD RESULTS' button in the 'Results' tab of the Visualizations page will give you a zipped folder of your run's failed run logs. In addition, the pipeline can still be reviewed in the 'Pipeline' tab of the Visualizations page to investigate any errors in parameter configuration. </p>
 						<figure class="figure docs-figure py-3">
