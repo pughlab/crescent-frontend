@@ -67,11 +67,11 @@ def sort_barcodes(opacities, group, runID, projectID):
 	""" given the opacities for the barcodes, sorts them into the specified groups and returns a plotly object """
 	plotly_obj = []
 	
-	groups_path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+	groups_path = "/usr/src/app/results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 	metadata_path = "/usr/src/app/minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional, user-defined
 	if not os.path.isfile(groups_path):
 		# try command-line path
-		groups_path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		groups_path = "../../results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 		if not os.path.isfile(groups_path):
 			helper.return_error("group label file not found ("+groups_path+")")
 			metadata_path = "../../minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional
@@ -146,10 +146,10 @@ def calculate_opacities(feature_row):
 
 def get_opacities(feature, runID):
 	""" parses the normalized count matrix to get an expression value for each barcode """
-	path = "/usr/src/app/results/{runID}/SEURAT/normalized/{fileName}".format(runID=runID, fileName=fileName) 
+	path = "/usr/src/app/results/{runID}/SEURAT/frontend_normalized/{fileName}".format(runID=runID, fileName=fileName) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/normalized/{fileName}".format(runID=runID, fileName=fileName) 
+		path = "../../results/{runID}/SEURAT/frontend_normalized/{fileName}".format(runID=runID, fileName=fileName) 
 		if not os.path.isfile(path):
 			helper.return_error("normalized count matrix not found ("+path+")")
 

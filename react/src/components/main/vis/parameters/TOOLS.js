@@ -35,7 +35,7 @@ const TOOLS = {
           parameter: 'sc_input_type',
           label: 'Single Cell Input Type',
           prompt: 'Select data type of single cell input',
-          description: 'Input is in MTX format: barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz. Default is MTX.',
+          description: 'Input is in MTX format: barcodes.tsv.gz, features.tsv.gz and matrix.mtx.gz. Default is "MTX".',
           input: {
             type: 'select',
             defaultValue: 'MTX',
@@ -141,14 +141,14 @@ const TOOLS = {
           parameter: 'normalization_method',
           label: 'Normalization Method',
           prompt: 'Select normalization method',
-          description: 'LogNormalize, SCTransform, or Skip Normalization (Input MTX is already normalized). Default is (2) SCTransform.',
+          description: '"LogNormalize", "SCTransform", or "Skip Normalization" (Input MTX is already normalized). If "Skip Normalization" is used, data should be in log scale, low quality cells should already be removed, and option "No" should be selected in the Quality Control "Apply QC Filters" parameter. Default is "SCTransform". ',
           input: {
             type: 'select',
             defaultValue: '2',
             options: [
               {key: 'log_normalize', value: '1', text: 'LogNormalize'},
               {key: 'sc_transform', value: '2', text: 'SCTransform'},
-              {key: 'skip_normalization', value: '3', text: 'Skip (input already normalized)'},
+              {key: 'skip_normalization', value: '3', text: 'Skip Normalization (input already normalized)'},
             ]
           },
           disabled: false

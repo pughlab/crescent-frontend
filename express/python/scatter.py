@@ -161,11 +161,11 @@ def label_barcodes(barcode_coords, group, runID, projectID):
 	""" given the coordinates for the barcodes, sorts them into the specified groups and returns a plotly object """
 	plotly_obj = []	
 	num_cells = helper.get_cellcount(runID)
-	groups_path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+	groups_path = "/usr/src/app/results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 	metadata_path = "/usr/src/app/minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional, user-defined
 	if not os.path.isfile(groups_path):
 		# try command-line path
-		groups_path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		groups_path = "../../results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 		metadata_path = "../../minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional
 		if not os.path.isfile(groups_path):
 			helper.return_error("group label file not found ("+groups_path+")")
@@ -189,10 +189,10 @@ def get_coordinates(vis, runID):
 	""" given a visualization type and runID, gets the coordinates for each barcode and returns in dict """
 	barcode_coords = {}
 	
-	path = "/usr/src/app/results/{runID}/SEURAT/coordinates/{vis}Coordinates.tsv".format(runID=runID, vis=vis.upper())
+	path = "/usr/src/app/results/{runID}/SEURAT/frontend_coordinates/{vis}Coordinates.tsv".format(runID=runID, vis=vis.upper())
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/coordinates/{vis}Coordinates.tsv".format(runID=runID, vis=vis.upper())
+		path = "../../results/{runID}/SEURAT/frontend_coordinates/{vis}Coordinates.tsv".format(runID=runID, vis=vis.upper())
 		if not os.path.isfile(path):
 			helper.return_error("specified visualization coordinate file not found")	
 	

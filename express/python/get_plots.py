@@ -16,10 +16,10 @@ DESC = {
 
 def has_qc(runID):
 	""" check for the existence of qc data """
-	folder_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
+	folder_path = "/usr/src/app/results/{runID}/SEURAT/frontend_qc".format(runID=runID)
 	if not os.path.isdir(folder_path):
 		# try command-line path
-		folder_path = "../../results/{runID}/SEURAT/qc".format(runID=runID)
+		folder_path = "../../results/{runID}/SEURAT/frontend_qc".format(runID=runID)
 		if not os.path.isdir(folder_path):
 			return False
 	return True
@@ -33,10 +33,10 @@ def find_plot_files(runID):
 		available_plots['qc'] = DESC['QC']
 	
 	# check if the scatterplot coordinates are available
-	folder_path = "/usr/src/app/results/{runID}/SEURAT/coordinates".format(runID=runID)
+	folder_path = "/usr/src/app/results/{runID}/SEURAT/frontend_coordinates".format(runID=runID)
 	if not os.path.isdir(folder_path):
 		# try command-line path
-		folder_path = "../../results/{runID}/SEURAT/coordinates".format(runID=runID)
+		folder_path = "../../results/{runID}/SEURAT/frontend_coordinates".format(runID=runID)
 		if not os.path.isdir(folder_path):
 			helper.return_error("coordinates folder not found ("+folder_path+")")	
 	for filename in os.listdir(folder_path):

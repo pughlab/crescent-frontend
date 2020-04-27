@@ -103,13 +103,13 @@ const QualityControlMenu = withRedux(
               basic
               size={'tiny'}
               style={{margin: '0.25rem'}}
-              content={`Min: `+min}
+              content={`Filter Min: `+min}
               />
               <Button
               basic
               size={'tiny'}
               style={{margin: '0.25rem'}}
-              content={`Max: `+max}
+              content={`Filter Max: `+max}
               />
               <Button
               basic

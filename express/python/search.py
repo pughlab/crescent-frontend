@@ -44,10 +44,10 @@ def sort_barcodes(opacities, group, runID):
 	""" given the opacities for the barcodes, sorts them into the specified groups and returns a plotly object """
 	plotly_obj = []
 	
-	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID) 
+	path = "/usr/src/app/results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		path = "../../results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
 			helper.return_error("group label file not found ("+path+")")	
 	
@@ -67,10 +67,10 @@ def sort_barcodes(opacities, group, runID):
 
 def get_expression(feature, runID):
 	""" parses the normalized count matrix to get an expression value for each barcode """
-	path = "/usr/src/app/results/{runID}/SEURAT/normalized/normalized_count_matrix.tsv".format(runID=runID) 
+	path = "/usr/src/app/results/{runID}/SEURAT/frontend_normalized/normalized_count_matrix.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/normalized/normalized_count_matrix.tsv".format(runID=runID) 
+		path = "../../results/{runID}/SEURAT/frontend_normalized/normalized_count_matrix.tsv".format(runID=runID) 
 		if not os.path.isfile(path):
 			helper.return_error("normalized count matrix not found ("+path+")")	
 
@@ -134,10 +134,10 @@ def add_barcode(plotly_obj, label, barcode, expression_values):
 
 def categorize_barcodes(group, expression_values, runID):
 	""" for every group, make a new plotly object and put the barcodes into it """
-	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID) 
+	path = "/usr/src/app/results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		path = "../../results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
 			helper.return_error("group label file not found ("+path+")")	
 	plotly_obj = []
