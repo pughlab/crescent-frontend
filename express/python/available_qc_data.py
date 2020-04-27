@@ -10,27 +10,27 @@ import helper
 dropdown_plots = {
 	"Before_After_Filtering": {
 		"key": 'Before_After_Filtering',
-		"text": 'Metrics Before and After QC',
+		"text": 'Metrics Before and After QC (Violins)',
 		"value": 'Before_After_Filtering'
 	},
 	"Number_of_Genes": {
 		"key": 'Number_of_Genes',
-		"text": 'Number of Genes UMAP',
+		"text": 'Number of Genes (UMAP)',
 		"value": 'Number_of_Genes'
 	},
 	"Number_of_Reads": {
 		"key": 'Number_of_Reads',
-		"text": 'Number of Reads UMAP',
+		"text": 'Number of Reads (UMAP)',
 		"value": 'Number_of_Reads'
 	},
 	"Mitochondrial_Genes_Percentage": {
 		"key": 'Mitochondrial_Genes_Percentage',
-		"text": 'Mitochondrial Genes Percentage UMAP',
+		"text": 'Mitochondrial Genes Percentage (UMAP)',
 		"value": 'Mitochondrial_Genes_Percentage'
 	},
 	"Ribosomal_Protein_Genes_Percentage": {
 		"key": 'Ribosomal_Protein_Genes_Percentage',
-		"text": 'Ribosomal Protein Genes Percentage UMAP',
+		"text": 'Ribosomal Protein Genes Percentage (UMAP)',
 		"value": 'Ribosomal_Protein_Genes_Percentage'
 	}
 }
