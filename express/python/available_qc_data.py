@@ -37,10 +37,10 @@ dropdown_plots = {
 
 def get_available_qc_data(runID):
 	# check directory existence
-	dir_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
+	dir_path = "/usr/src/app/results/{runID}/SEURAT/frontend_qc".format(runID=runID)
 	if not os.path.isdir(dir_path):
 		# try command-line path
-		dir_path = "../../results/{runID}/SEURAT/qc".format(runID=runID)
+		dir_path = "../../results/{runID}/SEURAT/frontend_qc".format(runID=runID)
 		if not os.path.isdir(dir_path):
 			helper.return_error("QC results folder not found: "+str(dir_path))
 

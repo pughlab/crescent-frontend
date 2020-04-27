@@ -9,11 +9,11 @@ import helper
 
 def read_groups_file(runID, projectID):
 	""" given a runID, fetches the available groups to label cell barcodes by """
-	groups_path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID) # default from pipeline
+	groups_path = "/usr/src/app/results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID) # default from pipeline
 	metadata_path = "/usr/src/app/minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional, user-defined
 	if not os.path.isfile(groups_path):
 		# try command-line paths
-		groups_path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		groups_path = "../../results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 		metadata_path = "../../minio/upload/project-{projectID}/metadata.tsv".format(projectID=projectID) # optional
 		if not os.path.isfile(groups_path):
 			helper.return_error("group label file not found ("+path+")")	

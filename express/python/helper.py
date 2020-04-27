@@ -45,10 +45,10 @@ COLOURS = [
 
 def get_cellcount(runID):
 	""" given a runID, return the number of cells in the data """
-	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID) 
+	path = "/usr/src/app/results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		path = "../../results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
 			return_error("group label file not found ("+path+")")	
 	

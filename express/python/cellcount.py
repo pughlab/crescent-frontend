@@ -7,10 +7,10 @@ import json
 def read_cellcount(runID):
 	""" count the lines of the barcode groups file to determine the cellcount """
 	
-	path = "/usr/src/app/results/{runID}/SEURAT/groups.tsv".format(runID=runID) 
+	path = "/usr/src/app/results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID) 
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/groups.tsv".format(runID=runID)
+		path = "../../results/{runID}/SEURAT/frontend_groups/groups.tsv".format(runID=runID)
 		if not os.path.isfile(path):
 			helper.return_error("group label file not found ("+path+")")	
 	

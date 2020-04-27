@@ -11,9 +11,9 @@ def get_qc_metrics(runID):
 	""" given a runID, return the cells before and after filtering as well as data about the qc steps"""
 
 	metrics = [{"cellcounts": {}}]
-	dir_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
+	dir_path = "/usr/src/app/results/{runID}/SEURAT/frontend_qc".format(runID=runID)
 	if not os.path.isdir(dir_path):
-		dir_path = "/usr/src/app/results/{runID}/SEURAT/qc".format(runID=runID)
+		dir_path = "/usr/src/app/results/{runID}/SEURAT/frontend_qc".format(runID=runID)
 		if not os.path.isdir(dir_path):
 			return_error("QC results folder not found")
 
