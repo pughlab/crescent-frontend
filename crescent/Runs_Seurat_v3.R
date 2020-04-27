@@ -536,6 +536,8 @@ if (regexpr("^AUTO$", NumbCores, ignore.case = T)[1] == 1) {
   if (NumberOfBarcodes <= DefaultParameters$MaxNumbCellsSmallForNumbCores) {
     NumbCoresRequested <-DefaultParameters$NumbCoresSmall
   }else if (NumbCoresAvailable < DefaultParameters$NumbCoresMedOrLarge) {
+    NumbCoresRequested <- NumbCoresAvailable
+  }else{
     NumbCoresRequested <-DefaultParameters$NumbCoresMedOrLarge
   }
 }else if (regexpr("^MAX$", NumbCores, ignore.case = T)[1] == 1) {
@@ -1548,5 +1550,5 @@ writeLines(paste("END - All done!!! See:\n", OutfileCPUusage, "\nfor computing t
 quit()
 
 #################################################################
-### PUGHLAB/CRESCENT/RUNS_SEURAT_V3 GITHUB VERSION 2837896d6c ###
+### PUGHLAB/CRESCENT/RUNS_SEURAT_V3 GITHUB VERSION 916d802d0b ###
 #################################################################
