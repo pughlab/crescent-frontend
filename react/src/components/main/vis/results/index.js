@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react'
+import React from 'react'
 
 import * as R from 'ramda'
 
-import {Segment, Header, Icon} from 'semantic-ui-react'
+import { Segment, Header, Icon } from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
@@ -10,8 +10,7 @@ import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
 import QCPlot from './QCPlot'
 
-
-import {ClimbingBoxLoader} from 'react-spinners'
+import { ClimbingBoxLoader } from 'react-spinners'
 
 const ResultsComponent = withRedux(
   ({

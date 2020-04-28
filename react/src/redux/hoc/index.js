@@ -1,8 +1,5 @@
 import { connect } from 'react-redux'
 
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
-
 import Actions from '../actions'
 
 export default connect(

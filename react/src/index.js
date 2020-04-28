@@ -15,7 +15,6 @@ import rootReducer from './redux/reducers'
 import { persistStore, persistReducer } from 'redux-persist'
 import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { PersistGate } from 'redux-persist/integration/react'
-require('dotenv').config()
 
 const persistConfig = {
   key: 'root',

@@ -1,12 +1,12 @@
-import React, {useState} from 'react'
-import { Button, Form, Grid, Header, Image, Modal, Segment, Card, Divider, Container } from 'semantic-ui-react'
+import React, { useState } from 'react'
+import { Button, Form, Image, Modal, Segment, Card } from 'semantic-ui-react'
 
 import Logo from './logo.jpg'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 
-import {Formik} from 'formik'
+import { Formik } from 'formik'
 import * as Yup from 'yup'
 
 import * as R from 'ramda'
@@ -24,20 +24,16 @@ const LoginValidationSchema = Yup.object().shape({
 })
 
 const LoginForm = withRedux(({
-  app: {
-    user
-  },
   actions: {
     setUser
   },
-
   // Props
   setOpen,
   setShowLogin, //For toggling to registration
 }) => {
   const [showErrorModal, setShowErrorModal] = useState(false)
   // GraphQL mutation hook to call mutation and use result
-  const [authenticateUser, {loading, data, error}] = useMutation(gql`
+  const [authenticateUser] = useMutation(gql`
     mutation AuthenticateUser($email: Email!, $password: String!) {
       authenticateUser(email: $email, password: $password) {
         userID

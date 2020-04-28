@@ -1,4 +1,4 @@
-const R = require('ramda')
+import * as R from 'ramda'
 
 const checkResponse = (resp) => {
   if(!resp.ok){throw Error(resp.statusText);}
@@ -56,7 +56,7 @@ const fetchScatter = () => (dispatch, getState) => {
   const {
     app: {
       run: {runID},
-      toggle: {vis: {results: {activeResult, selectedGroup, selectedFeature}}}
+      toggle: {vis: {results: { activeResult, selectedGroup }}}
     }
   } = getState()
   return fetchEndpoint(`/express/scatter/${activeResult}/${selectedGroup}/${runID}`)

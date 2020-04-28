@@ -1,18 +1,16 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React from 'react';
 
-import { Segment, Button, Transition, Divider, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
+import { Button } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 
-import {useMutation, useQuery} from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 
-import {queryIsNotNil} from '../../../../utils'
-
-
+import { queryIsNotNil } from '../../../../utils'
 
 const SubmitRunButton = withRedux(
   ({
@@ -40,7 +38,7 @@ const SubmitRunButton = withRedux(
       setIsSubmitted
     }
   }) => {
-    const [submitRun, {loading: loadingSubmitRun, data: dataSubmitRun, error}] = useMutation(gql`
+    const [submitRun, { loading: loadingSubmitRun, data: dataSubmitRun }] = useMutation(gql`
       mutation SubmitRun($runID: ID, $params: String) {
         submitRun(runID: $runID, params: $params) {
           runID

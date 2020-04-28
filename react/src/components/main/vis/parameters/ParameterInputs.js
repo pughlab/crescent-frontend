@@ -1,8 +1,7 @@
-import React, {useState, useEffect} from 'react'
-import { Button, Segment, Form, Message, Divider, Label, Input, Icon } from 'semantic-ui-react';
+import React, { useState, useEffect } from 'react'
+import { Button, Segment, Form, Message, Divider, Label, Icon } from 'semantic-ui-react';
 
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 // TODO: use formik with yup once pipeline gets more advanced and we have more parameter types
 
@@ -64,24 +63,18 @@ const FloatParameterInput = ({
 }) => {
   const {
     label,
-    prompt,
-    description,
     input: {defaultValue, schema, step},
     disabled,
   } = parameter
   const [warning, setWarning] = useState(false)
-  useEffect(
-    () => {
+  useEffect(() => {
       schema.isValid(value).then(
         valid => {
           setWarning(R.not(valid))
           console.log('valid float parameter', valid, value, parseFloat(value))
         }
       )
-    }, [
-      value
-    ]
-  )
+  }, [value])
   return (
     <ParameterInputMessage {...{parameter}}>
       <Form>
@@ -107,8 +100,6 @@ const IntegerParameterInput = ({
 }) => {
   const {
     label,
-    prompt,
-    description,
     input: {defaultValue, schema},
     disabled,
   } = parameter
@@ -148,8 +139,6 @@ const RangeParameterInput = ({
 }) => {
   const {
     label,
-    prompt,
-    description,
     input: {defaultValue, schema, step},
     disabled,
   } = parameter
@@ -205,8 +194,6 @@ const SelectParameterInput = ({
 }) => {
   const {
     label,
-    prompt,
-    description,
     input: {defaultValue, options},
     disabled,
   } = parameter

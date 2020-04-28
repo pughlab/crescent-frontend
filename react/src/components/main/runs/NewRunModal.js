@@ -1,15 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 
-import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup} from 'semantic-ui-react'
-
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
+import { Header, Form, Button, Modal, Icon } from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import {queryIsNotNil} from '../../../utils'
 
 const NewRunModal = withRedux(({
   app: {
@@ -20,7 +16,7 @@ const NewRunModal = withRedux(({
   refetch
 }) => {
   const [runName, setRunName] = useState('')
-  const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
+  const [createUnsubmittedRun] = useMutation(gql`
     mutation CreateUnsubmittedRun($name: String!, $projectID: ID!, $userID: ID!) {
       createUnsubmittedRun(name: $name, projectID: $projectID, userID: $userID) {
         runID

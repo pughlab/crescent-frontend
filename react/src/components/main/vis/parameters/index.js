@@ -1,14 +1,14 @@
-import React, {useState} from 'react'
+import React from 'react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Transition, Menu, Segment, Button, Label, Divider, Dropdown, Header, Icon, Message} from 'semantic-ui-react'
+import { Segment, Header, Icon } from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
 import TOOLS from './TOOLS'
-import {FloatParameterInput, IntegerParameterInput, RangeParameterInput, SelectParameterInput} from './ParameterInputs'
+import { FloatParameterInput, IntegerParameterInput, RangeParameterInput, SelectParameterInput } from './ParameterInputs'
 
 const ParametersComponent = withRedux(
   ({
@@ -108,7 +108,7 @@ const ParametersComponent = withRedux(
           R.compose(
             R.addIndex(R.map)(
               (parameter, index) => {
-                const {parameter: parameterName, input: {type}, disabled} = parameter
+                const { parameter: parameterName, input: {type} } = parameter
                 const setValue = R.prop(parameterName, valueSetters)
                 const value = R.prop(parameterName, values)
                 return R.cond([

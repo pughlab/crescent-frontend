@@ -1,18 +1,12 @@
+import React from 'react';
 
-
-
-import React, {useState, useEffect} from 'react';
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
-import moment from 'moment'
 
-import {queryIsNotNil} from '../../../utils'
+import { queryIsNotNil } from '../../../utils'
 
-
-import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup, Segment} from 'semantic-ui-react'
+import { Card, Header, Icon, Segment } from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -26,7 +20,7 @@ const UploadedProjectsList = withRedux(({
   },
 }) => {
   // GQL query to find all projects of which user is a member of
-  const {loading, data, error, refetch} = useQuery(gql`
+  const { data, refetch } = useQuery(gql`
     query UserProjects($userID: ID) {
       projects(userID: $userID) {
         projectID

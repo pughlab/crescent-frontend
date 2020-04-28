@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 // Reducer
 const initialState = {

@@ -1,18 +1,14 @@
+import React, { useState } from 'react';
 
-
-
-import React, {useState, useEffect} from 'react';
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import moment from 'moment'
 
-import {queryIsNotNil} from '../../../utils'
+import { queryIsNotNil } from '../../../utils'
 
 
-import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
+import {Form, Header, Button, Modal, Icon } from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -78,7 +74,7 @@ const NewProjectModal = withRedux(({
   const [uploadedGenesFile, setUploadedGenesFile] = useState(null)    
   const [uploadedMatrixFile, setUploadedMatrixFile] = useState(null)
   // GQL mutation to create a project
-  const [createProject, {loading, data, error}] = useMutation(gql`
+  const [createProject, { data }] = useMutation(gql`
     mutation CreateProject(
       $userID: ID!,
       $name: String!,

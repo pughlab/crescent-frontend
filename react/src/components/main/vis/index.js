@@ -1,8 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useEffect } from 'react';
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
-import { Segment, Transition, Grid, Image, Message, Header, Label } from 'semantic-ui-react'
+import { Segment, Transition, Grid } from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -10,17 +9,10 @@ import SidebarComponent from './sidebar'
 import ParametersComponent from './parameters'
 import ResultsComponent from './results'
 
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
-
 const VisComponent = withRedux(
   ({
     app: {
-      run: {
-        runID
-      },
-      view: {main: mainView, sidebar: sidebarView},
+      view: { sidebar: sidebarView },
       toggle: {
         vis: {
           pipeline: {
@@ -30,28 +22,13 @@ const VisComponent = withRedux(
       }
     },
   }) => {
-    // In case we want to delete unsubmitted runs
-    const [deleteRun, {data, loading, error}] = useMutation(gql`
-      mutation DeleteRun($runID: ID!) {
-        deleteRun(runID: $runID) {
-          runID
-        }
-      }
-    `, {
-      variables: {runID},
-      onCompleted: data => {
-        // refetch()
-      }
-    })
     useEffect(() => () => {
       if (R.not(isSubmitted)) {
         console.log('run is not submitted')
-        // deleteRun()
       } else {
         console.log('run is submitted')
       }
     }, [])
-
 
     return (
       <>

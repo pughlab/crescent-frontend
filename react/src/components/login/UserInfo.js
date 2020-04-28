@@ -1,10 +1,7 @@
-import React, {useEffect} from 'react'
-import { Button, Form, Grid, Header, Image, Message, Segment, Card, Divider, Container } from 'semantic-ui-react'
+import React from 'react'
+import { Button, Header, Image, Segment } from 'semantic-ui-react'
 
 import Logo from './logo.jpg'
-
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../redux/hoc'
 
@@ -24,7 +21,7 @@ const UserInfo = withRedux(({
   // Props
   setOpen
 }) => {
-  const [createGuestUser, {loading, data, error}] = useMutation(gql`
+  const [createGuestUser] = useMutation(gql`
     mutation CreateGuestUser {
       createGuestUser {
         userID

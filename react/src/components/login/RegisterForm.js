@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
-import { Button, Form, Grid, Container, Image, Modal, Segment, Card, Icon, Divider, Header, Message } from 'semantic-ui-react'
+import { Button, Form, Image, Modal, Segment, Card, Icon, Header, Message } from 'semantic-ui-react'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 
-import {Formik} from 'formik'
+import { Formik } from 'formik'
 import * as Yup from 'yup'
 
 import * as R from 'ramda'
@@ -42,7 +42,7 @@ const RegisterForm = withRedux(
   }) => {
     const [showTerms, setShowTerms] = useState(false)
     const [showErrorModal, setShowErrorModal] = useState(false)
-    const [createUser, {loading, data, error}] = useMutation(gql`
+    const [createUser] = useMutation(gql`
       mutation CreateUser(
         $firstName: String!,
         $lastName: String!,

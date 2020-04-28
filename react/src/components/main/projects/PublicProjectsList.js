@@ -1,18 +1,12 @@
+import React from 'react';
 
-
-
-import React, {useState, useEffect} from 'react';
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
-import moment from 'moment'
 
-import {queryIsNotNil} from '../../../utils'
+import { queryIsNotNil } from '../../../utils'
 
-
-import {Form, Card, Segment, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup} from 'semantic-ui-react'
+import { Card, Segment } from 'semantic-ui-react'
 
 import withRedux from '../../../redux/hoc'
 
@@ -21,7 +15,7 @@ import ProjectCard from './ProjectCard'
 
 const PublicProjectsList = withRedux(() => {
   // GQL query to find all public projects
-  const {loading, data, error} = useQuery(gql`
+  const { data } = useQuery(gql`
     query {
       curatedProjects {
         projectID

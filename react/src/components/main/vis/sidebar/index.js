@@ -1,9 +1,8 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React from 'react';
 
-import { Segment, Button, Transition, Message, Step, Menu, Header, Accordion, Popup, Dropdown } from 'semantic-ui-react'
+import { Segment, Button, Message, Header, Popup } from 'semantic-ui-react'
 
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 
@@ -13,7 +12,6 @@ import PipelineSidebar from './PipelineSidebar'
 import SubmitRunButton from './SubmitRunButton'
 import DownloadResultsButton from './DownloadResultsButton'
 import RefreshRunButton from './RefreshRunButton'
-
 
 const PipelineRunStatusMessage = withRedux(
   ({

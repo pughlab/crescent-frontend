@@ -1,8 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useEffect } from 'react';
 
 import { Segment, Button, Icon, Step, Header } from 'semantic-ui-react'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 import VisualizationMenu from '../results/VisualizationMenu';

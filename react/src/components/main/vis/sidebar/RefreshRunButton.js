@@ -1,14 +1,11 @@
-import React, {useEffect} from 'react'
-import {Button} from 'semantic-ui-react'
-
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
+import React, { useEffect } from 'react'
+import { Button } from 'semantic-ui-react'
 
 import withRedux from '../../../../redux/hoc'
 
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import {queryIsNotNil} from '../../../../utils'
+import { queryIsNotNil } from '../../../../utils'
 
 const RefreshRunButton = withRedux(
   ({
@@ -20,7 +17,7 @@ const RefreshRunButton = withRedux(
     },
     actions: {setRun}
   }) => {
-    const {data, loading, error, refetch} = useQuery(gql`
+    const { data, loading, refetch } = useQuery(gql`
       query Run($runID: ID) {
         run(runID: $runID) {
           runID

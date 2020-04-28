@@ -1,7 +1,6 @@
-import React, {useState, useEffect } from 'react'
-import Plot from 'react-plotly.js'
+import React, { useState, useEffect } from 'react'
 import withRedux from '../../../../redux/hoc'
-import { Button, Form, Dropdown, Segment, Popup, Label, Icon, Header, Grid, Divider } from 'semantic-ui-react'
+import { Button, Dropdown, Segment, Label, Divider } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -24,8 +23,7 @@ const QualityControlMenu = withRedux(
 }) => {
 
   const [AvailableQCPlots, setAvailableQCPlots] = useState([])
-  var [qcMetrics, setMetrics] = useState([])
-
+  const [qcMetrics, setMetrics] = useState([])
 
   useEffect(() => {
     fetchAvailableQC(runID).then((data) => {

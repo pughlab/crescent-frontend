@@ -1,8 +1,8 @@
-import React, {useState, useEffect, useCallback } from 'react'
+import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Loader, Container, Header, Segment, Dimmer} from 'semantic-ui-react'
-import {ClimbingBoxLoader} from 'react-spinners'
+import { Header, Dimmer} from 'semantic-ui-react'
+import { ClimbingBoxLoader } from 'react-spinners'
 import * as R from 'ramda'
 
 const ScatterPlot = withRedux(

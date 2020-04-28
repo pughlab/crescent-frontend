@@ -1,17 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 
-import {Embed, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, Image, Popup, Message} from 'semantic-ui-react'
-
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
+import { Header, Segment, Button, Grid, Modal, Icon, Image, Popup } from 'semantic-ui-react'
 
 import UHN from './UHN.png'
 import SK from './SK.png'
 import GC from './GC.jpeg'
 import MBD from './MBD.jpg'
 
-const InfoModal = ({
-}) => {
+const InfoModal = () => {
   const [open, setOpen] = useState(false)
   return (
     <>
@@ -42,7 +38,7 @@ const InfoModal = ({
 
           <Segment>
             <Header content='Contact Us'/>
-            To reach the crescent.cloud portal-dev team and to report bugs or request features, please submit an issue to our <a href='https://github.com/pughlab/crescent-frontend/issues' target='_blank'>Github</a> or email us at <a href='mailto:crescent@uhnresearch.ca'>crescent@uhnresearch.ca</a>.
+            To reach the crescent.cloud portal-dev team and to report bugs or request features, please submit an issue to our <a href='https://github.com/pughlab/crescent-frontend/issues' target='_blank' rel="noopener noreferrer">Github</a> or email us at <a href='mailto:crescent@uhnresearch.ca'>crescent@uhnresearch.ca</a>.
           </Segment>
 
           <Segment>

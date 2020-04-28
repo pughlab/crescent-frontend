@@ -1,7 +1,6 @@
-import React, {useState, useEffect } from 'react'
-import Plot from 'react-plotly.js'
+import React, { useState } from 'react'
 import withRedux from '../../../../redux/hoc'
-import { Button, Form, Divider, Segment, Popup, Label, Icon, Header, Grid } from 'semantic-ui-react'
+import { Button, Form, Divider, Segment, Popup, Label } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'

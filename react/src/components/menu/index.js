@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 
-import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, Image, Popup, Message} from 'semantic-ui-react'
+import { Header, Segment, Button, Grid, Icon, Image, Popup } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -9,7 +9,6 @@ import withRedux from '../../redux/hoc'
 
 import Logo from '../login/logo.jpg'
 
-import Marquee from 'react-marquee'
 import InfoModal from '../info/InfoModal'
 import LoginModal from '../login/LoginModal'
 

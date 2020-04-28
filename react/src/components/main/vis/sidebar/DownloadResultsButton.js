@@ -1,5 +1,5 @@
 import React from 'react'
-import {Button} from 'semantic-ui-react'
+import { Button } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -8,7 +8,7 @@ import withRedux from '../../../../redux/hoc'
 
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import {queryIsNotNil} from '../../../../utils'
+import { queryIsNotNil } from '../../../../utils'
 
 const DownloadResultsButton = withRedux(
   ({
@@ -19,7 +19,7 @@ const DownloadResultsButton = withRedux(
       }
     }
   }) => {
-    const {data, loading, error, refetch} = useQuery(gql`
+    const { data } = useQuery(gql`
       query Run($runID: ID) {
         run(runID: $runID) {
           downloadable

@@ -1,20 +1,17 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 
-import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup} from 'semantic-ui-react'
+import { Transition, Segment, Card, Header, Button, Modal, Label, Divider, Icon } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import * as R_ from 'ramda-extension'
 
 import withRedux from '../../../redux/hoc'
 
 import Marquee from 'react-marquee'
 import moment from 'moment'
 
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import {queryIsNotNil} from '../../../utils'
-
 
 const RunCard = withRedux(({
   app: {
@@ -34,9 +31,9 @@ const RunCard = withRedux(({
   const {
     runID, name, params,
     createdBy: {userID: runCreatorUserID, name: creatorName},
-    status, createdOn, submittedOn, completedOn
+    status, submittedOn, completedOn
   } = run
-  const [deleteRun, {data, loading, error}] = useMutation(gql`
+  const [deleteRun] = useMutation(gql`
     mutation DeleteRun($runID: ID!) {
       deleteRun(runID: $runID) {
         runID

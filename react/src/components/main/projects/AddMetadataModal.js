@@ -1,15 +1,11 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Input} from 'semantic-ui-react'
+import { Button, Header, Icon, Modal, Segment } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../redux/hoc'
-
-import { useQuery, useMutation } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
-import {queryIsNotNil} from '../../../utils'
 
 const UploadButton = ({
   label,   

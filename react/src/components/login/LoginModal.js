@@ -1,17 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
-import {Embed, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, Image, Popup, Message} from 'semantic-ui-react'
+import { Button, Modal, Icon, Popup } from 'semantic-ui-react'
 
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 import UserInfo from './UserInfo'
 
 import withRedux from '../../redux/hoc'
-
-
 
 const LoginModal = withRedux(({
   app: {

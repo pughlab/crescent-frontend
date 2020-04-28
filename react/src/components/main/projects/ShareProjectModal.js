@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState } from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Input} from 'semantic-ui-react'
+import { Divider, Button, Header, Icon, Modal, Label, Segment, Grid, Input } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -9,13 +9,10 @@ import withRedux from '../../../redux/hoc'
 
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import {queryIsNotNil} from '../../../utils'
+import { queryIsNotNil } from '../../../utils'
 
 const ShareProjectModal = withRedux(({
   app: {
-    user: {
-      userID
-    },
     project: {
       projectID,
       name: projectName
@@ -27,7 +24,7 @@ const ShareProjectModal = withRedux(({
   const [emailError, setEmailError] = useState(false)
 
   // Project users
-  const {loading: loadingProjectUsers, data: dataProjectUsers, error: errorProjectUsers, refetch: refetchProjectUsers} = useQuery(gql`
+  const {loading: loadingProjectUsers, data: dataProjectUsers, refetch: refetchProjectUsers} = useQuery(gql`
     query ProjectUsers($projectID: ID) {
       project(projectID: $projectID) {
         createdBy {
@@ -50,7 +47,7 @@ const ShareProjectModal = withRedux(({
   )(dataProjectUsers)
 
   // Share and unshare project GQL mutations
-  const [unshareProjectByUserID, {error: unshareProjectByUserIDError}] = useMutation(gql`
+  const [unshareProjectByUserID] = useMutation(gql`
     mutation UnshareProjectByUserID($projectID: ID, $userID: ID) {
       unshareProjectByUserID(projectID: $projectID, userID: $userID) {
         projectID
@@ -61,12 +58,12 @@ const ShareProjectModal = withRedux(({
     }
   `, {
     variables: {projectID},
-    onCompleted: ({unshareProjectByUserID}) => {
+    onCompleted: () => {
       setEmailToShare('')
       refetchProjectUsers()
     }
   })
-  const [shareProjectByEmail, {error: shareProjectByEmailError}] = useMutation(gql`
+  const [shareProjectByEmail] = useMutation(gql`
     mutation ShareProjectByEmail($projectID: ID, $email: Email) {
       shareProjectByEmail(projectID: $projectID, email: $email) {
         projectID

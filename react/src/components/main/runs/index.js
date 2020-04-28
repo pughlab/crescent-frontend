@@ -1,6 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Popup, Modal, Dropdown, Label, Segment, Grid, Step, Transition} from 'semantic-ui-react'
+import { Container, Card, Divider, Button, Header, Icon, Popup, Label, Segment, Step } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -12,7 +12,7 @@ import withRedux from '../../../redux/hoc'
 
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import {queryIsNotNil} from '../../../utils'
+import { queryIsNotNil } from '../../../utils'
 
 import RunCard from './RunCard'
 import NewRunModal from './NewRunModal'
@@ -20,7 +20,6 @@ import NewRunModal from './NewRunModal'
 import ArchiveProjectModal from '../projects/ArchiveProjectModal'
 import ShareProjectModal from '../projects/ShareProjectModal'
 import AddMetadataModal from '../projects/AddMetadataModal'
-
 
 const RunsStatusLegend = ({
   projectRuns,
@@ -114,13 +113,10 @@ const RunsCardList = withRedux(({
       externalUrls,
       createdOn: projectCreatedOn,
       createdBy: {name: creatorName, userID: creatorUserID}
-    },
-    view: {
-      isGuest
     }
   },
 }) => {
-  const {loading, data, error, refetch} = useQuery(gql`
+  const { data, refetch } = useQuery(gql`
     query ProjectRuns($projectID: ID) {
       runs(projectID: $projectID) {
         runID

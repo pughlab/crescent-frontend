@@ -1,11 +1,10 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useEffect } from 'react';
 
-import { Segment, Button, Grid, Image, Step, Header, Label } from 'semantic-ui-react'
+import { Segment, Grid } from 'semantic-ui-react'
 
 import memphisMini from '../../memphis-mini.png'
 
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../redux/hoc'
 
@@ -26,7 +25,7 @@ const MainComponent = withRedux(
       setGuestUser,
     },
   }) => {
-    const [createGuestUser, {loading, data, error}] = useMutation(gql`
+    const [createGuestUser] = useMutation(gql`
       mutation CreateGuestUser {
         createGuestUser {
           userID
