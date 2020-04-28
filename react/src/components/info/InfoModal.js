@@ -52,7 +52,7 @@ const InfoModal = ({
 
           <Segment>
             <Header content='Privacy and Security Policy'/>
-            Please review our Privacy and Security Policy and details on how to make your CReSCENT project public on the <a href='https://pughlab.github.io/crescent-frontend/#section-8' target='_blank' rel="noopener noreferrer">CReSCENT Documentation</a>.
+            Please review our <b>Privacy and Security Policy</b> and details on how to make your CReSCENT project public on the <a href='https://pughlab.github.io/crescent-frontend/#section-8' target='_blank' rel="noopener noreferrer">CReSCENT Docs</a>.
           </Segment>
 
           <Segment>
