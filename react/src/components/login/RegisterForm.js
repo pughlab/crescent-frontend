@@ -167,7 +167,7 @@ const RegisterForm = withRedux(
                       <Message 
                         size='huge'
                         header={'Registering with email is optional.'}
-                        content={'Please register if you would like your data and results to be saved beyond the session.'}
+                        content={'Please register if you would like your data and results to be saved beyond the session. A link to our Privacy and Security Policy is available in the Info/Help tab above.'}
                       />
 
                       <Form.Group widths={2}>
