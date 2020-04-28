@@ -2,7 +2,6 @@ import React from 'react';
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import * as R_ from 'ramda-extension'
 import moment from 'moment'
 
 import filesize from 'filesize'
@@ -78,21 +77,10 @@ const ProjectCard = withRedux(({
                 failed: 'red'
               })
               return (
-                <Popup key={status} size='large'
-                  wide='very'
+                <Popup key={status} size='large' wide='very'
                   trigger={
-                    <Button
-                      animated='vertical'
-                      color={statusColor}
-                    >
-                      <Button.Content visible
-                        content={
-                          R_.joinWithSpace([
-                            R.length(runs),
-                            R.toUpper(status),
-                          ])
-                        }
-                      />
+                    <Button animated='vertical' color={statusColor}>
+                      <Button.Content visible content={runs.length + ' ' + status.toUpperCase()} />
                       <Button.Content hidden
                         content={
                           <Icon

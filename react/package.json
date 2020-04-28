@@ -12,7 +12,6 @@
     "plotly.js": "^1.53.0",
     "ramda": "^0.26.1",
     "ramda-adjunct": "^2.26.0",
-    "ramda-extension": "^0.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-marquee": "^1.0.0",
