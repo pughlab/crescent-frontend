@@ -164,11 +164,14 @@ const RegisterForm = withRedux(
                 <Segment.Group>
                   <Segment>
                     <Form size='large' onSubmit={handleSubmit}>
-                      <Message 
-                        size='huge'
-                        header={'Registering with email is optional.'}
-                        content={'Please register if you would like your data and results to be saved beyond the session. A link to our Privacy and Security Policy is available in the Info/Help tab above.'}
-                      />
+                      <Message size='huge'>
+                        <Message.Content>
+                          <Header>
+                            <b>Registering with email is optional.</b>
+                          </Header>
+                          Please register if you would like your data and results to be saved beyond the session. You can review our <b>Privacy and Security Policy</b> on the <a href='https://pughlab.github.io/crescent-frontend/#section-8' target='_blank' rel="noopener noreferrer">CReSCENT Docs</a>.
+                        </Message.Content>
+                      </Message>
 
                       <Form.Group widths={2}>
                         <Form.Input
