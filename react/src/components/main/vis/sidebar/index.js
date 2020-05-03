@@ -61,7 +61,7 @@ const PipelineRunStatusMessage = withRedux(
       <Popup content='https://git.io/JfqMo'
         inverted
         position='top left'
-        trigger={<Button fluid size='medium' textAlign='center' icon='github' content='R Script (916d802d0b)' as='a' href='https://git.io/JfqMo' target="_blank"/>
+        trigger={<Button fluid size='medium' icon='github' content='R Script (916d802d0b)' as='a' href='https://git.io/JfqMo' target="_blank"/>
         }
       />
       </>
