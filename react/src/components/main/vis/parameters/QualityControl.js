@@ -194,12 +194,14 @@ const QualityControlParametersComponent = withRedux(
 
     const valueSetters = {
       'sc_input_type': singleCell => mergeAndSetParameters({singleCell}),
-      //'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
+      'number_genes': numberGenes => mergeAndSetParameters({numberGenes}),
       'percent_mito': percentMito => mergeAndSetParameters({percentMito}),
     }
 
     const currentUserNotCreator = R.not(R.equals(currentUserID, creatorUserID))
     const runNotPending = R.compose(R.not, R.equals('pending'))(runStatus)
+
+    console.log(datasetsQualityControl)
     return (
       <Grid>
         <Grid.Column width={10}>
@@ -230,7 +232,7 @@ const QualityControlParametersComponent = withRedux(
                           R.prop(parameterName),
                           ({singleCell, numberGenes, percentMito}) => ({
                             'sc_input_type': singleCell,
-                            //'number_genes': numberGenes,
+                            'number_genes': numberGenes,
                             'percent_mito': percentMito,
                           }),
                           R.prop(currentDataset)
