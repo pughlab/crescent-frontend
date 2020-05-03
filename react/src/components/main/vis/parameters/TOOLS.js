@@ -46,22 +46,22 @@ const TOOLS = {
           },
           disabled: true
         },
-        {
-          step: 'quality',
-          parameter: 'apply_cell_filters',
-          label: 'Apply QC Filters',
-          prompt: 'Indicate whether you would like to apply QC filters or skip',
-          description: 'Indicates if QC filters (number of genes, number of reads, mitochondrial fraction, ribosomal protein gene fraction) should be applied. Default is "Yes".',
-          input: {
-            type: 'select',
-            defaultValue: 'Y',
-            options: [
-              {key: 'yes', value: 'Y', text: 'Yes'},
-              {key: 'no', value: 'N', text: 'No'},
-            ]
-          },
-          disabled: false
-        },
+        // {
+        //   step: 'quality',
+        //   parameter: 'apply_cell_filters',
+        //   label: 'Apply QC Filters',
+        //   prompt: 'Indicate whether you would like to apply QC filters or skip',
+        //   description: 'Indicates if QC filters (number of genes, number of reads, mitochondrial fraction, ribosomal protein gene fraction) should be applied. Default is "Yes".',
+        //   input: {
+        //     type: 'select',
+        //     defaultValue: 'Y',
+        //     options: [
+        //       {key: 'yes', value: 'Y', text: 'Yes'},
+        //       {key: 'no', value: 'N', text: 'No'},
+        //     ]
+        //   },
+        //   disabled: false
+        // },
         {
           step: 'quality',
           parameter: 'percent_mito',
