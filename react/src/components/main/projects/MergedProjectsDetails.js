@@ -40,6 +40,12 @@ const ViewProjectModal = withRedux(({
           status
         }
 
+        externalUrls {
+          link
+          label
+          type
+        }
+
         mergedProjects {
           projectID
           name
