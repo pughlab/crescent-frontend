@@ -29,6 +29,7 @@ export default createReducer(
         view: R.always('projects')
       })(state)
     },
+
     'context/goHome': (state, payload) => {
       console.log('gohome', state)
       return R.evolve({
@@ -37,6 +38,7 @@ export default createReducer(
         view: R.always('projects')
       })(state)
     },
+    
     'context/goBack': (state, payload) => {
       const {view: currentView} = state
       const view = R.compose(
