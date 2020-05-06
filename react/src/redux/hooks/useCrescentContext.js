@@ -13,29 +13,5 @@ export default function useCrescentContext() {
   // Get context object from redux store
   const contextSelector = createSelector(R.prop('context'), R.identity)
   const context = useSelector(contextSelector)
-  const {userID} = context
-  // GraphQL
-  const [createGuestUser, {loading, data, error}] = useMutation(gql`
-    mutation CreateGuestUser {
-      createGuestUser {
-        userID
-        email
-        name
-      }
-    }
-  `, {
-    onCompleted: ({createGuestUser: user}) => {
-      console.log(user)
-      dispatch(setUser({user}))
-    }
-  })
-  // If no userID then create guest user
-  useEffect(() => {
-    if (R.isNil(userID)) {
-      createGuestUser()
-    }
-    return () => {}
-  }, [userID])
-  console.log(context)
   return context
 }

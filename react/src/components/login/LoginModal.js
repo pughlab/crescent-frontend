@@ -11,8 +11,6 @@ import UserInfo from './UserInfo'
 
 import {useCrescentContext} from '../../redux/hooks'
 import {useUserQuery} from '../../apollo/hooks'
-import { useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
 
 
 const LoginModal = ({
@@ -27,7 +25,6 @@ const LoginModal = ({
   }, [open])
 
   const user = useUserQuery(userID)
-  console.log(user)
   return (
     <>
     <Popup inverted size='large'

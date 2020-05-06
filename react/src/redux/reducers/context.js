@@ -23,7 +23,10 @@ export default createReducer(
       )(user)
       return R.evolve({
         userID,
-        isGuest
+        isGuest,
+        projectID: R.always(null),
+        runID: R.always(null),
+        view: R.always('projects')
       })(state)
     },
     'context/goHome': (state, payload) => {

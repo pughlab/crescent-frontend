@@ -6,45 +6,39 @@ import Logo from './logo.jpg'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import withRedux from '../../redux/hoc'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 
+import {setUser} from '../../redux/actions/context'
+
+import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../redux/hooks'
 import {useUserQuery} from '../../apollo/hooks'
 
 
-const UserInfo = withRedux(({
-  // app: {
-  //   user: {
-  //     name, email
-  //   }
-  // },
-  // actions: {
-  //   setGuestUser
-  // },
-
-  // Props
+const UserInfo = ({
   setOpen
 }) => {
+  const dispatch = useDispatch()
   const context = useCrescentContext() 
   const {userID} = context
   const user = useUserQuery(userID)
-  // const [createGuestUser, {loading, data, error}] = useMutation(gql`
-  //   mutation CreateGuestUser {
-  //     createGuestUser {
-  //       userID
-  //       email
-  //       name
-  //     }
-  //   }
-  // `, {
-  //   onCompleted: ({createGuestUser}) => {
-  //     setGuestUser(createGuestUser)
-  //     setOpen(false)
-  //   }
-  // })
+  // Create guest user to sign out
+  const [createGuestUser, {loading, data, error}] = useMutation(gql`
+    mutation CreateGuestUser {
+      createGuestUser {
+        userID
+        email
+        name
+      }
+    }
+  `, {
+    onCompleted: ({createGuestUser: user}) => {
+      dispatch(setUser({user}))
+      setOpen(false)
+    }
+  })
   return (
     <Segment.Group>
       <Segment>
@@ -63,11 +57,11 @@ const UserInfo = withRedux(({
         <Button
           fluid color='grey' size='massive'
           content='Logout'
-          // onClick={() => createGuestUser()}
+          onClick={() => createGuestUser()}
         />
       </Segment>
     </Segment.Group>
   )
-})
+}
 
 export default UserInfo

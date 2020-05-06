@@ -12,14 +12,44 @@ import ProjectsCardList from './components/main/projects'
 import RunsCardList from './components/main/runs'
 import ResultsPageComponent from './components/main/results'
 
+import {useMutation} from '@apollo/react-hooks'
+import {gql} from 'apollo-boost'
+
+
+import {setUser} from './redux/actions/context'
 // Hooks
+import {useDispatch} from 'react-redux'
 import {useCrescentContext} from './redux/hooks'
 
 const App = () => {
-  const stickyRef = useRef()
-
   const context = useCrescentContext()
-  const {view} = context
+  const {view, userID} = context
+  const dispatch = useDispatch()
+  
+  const [createGuestUser, {loading, data, error}] = useMutation(gql`
+    mutation CreateGuestUser {
+      createGuestUser {
+        userID
+        email
+        name
+      }
+    }
+  `, {
+    onCompleted: ({createGuestUser: user}) => {
+      console.log(user)
+      dispatch(setUser({user}))
+    }
+  })
+  // If no userID then create guest user
+  useEffect(() => {
+    if (R.isNil(userID)) {
+      console.log('Creating Guest User')
+      createGuestUser()
+    }
+    return () => {}
+  }, [userID])
+
+  const stickyRef = useRef()
   return (
     <div ref={stickyRef} style={{minHeight: '100%'}}>
       <Sticky context={stickyRef}>
