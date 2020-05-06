@@ -17,6 +17,10 @@ const resolvers = {
         }
       }).lean()
       return users
+    },
+    user: async (parent, {userID}, {Users}) => {
+      const user  = await Users.findOne({userID})
+      return user
     }
   },
   Mutation: {
