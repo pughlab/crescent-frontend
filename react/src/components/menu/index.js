@@ -18,10 +18,10 @@ import {useCrescentContext} from '../../redux/hooks'
 const MenuComponent = ({
 
 }) => {
-  // const isMainView = R.equals(main)
+  const dispatch = useDispatch()
   const context = useCrescentContext()
   const {view} = context
-  const dispatch = useDispatch()
+  const isCurrentView = R.equals(view)
   return (
     <Segment attached='top' as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
@@ -37,70 +37,52 @@ const MenuComponent = ({
                 </Icon>
               </Button>
             }
-            content={'Go to Projects'}
+            content={'Go to Projects (Home)'}
             position='bottom center'
           />
 
           {/* Back button even though there's only three pages... */}
           <Popup inverted 
+            disabled={isCurrentView('projects')}
             trigger={
               <Button icon basic inverted color='grey'
-                disabled={R.not(R.equals('projects', view))}
+                disabled={isCurrentView('projects')}
                 onClick={() => {dispatch(goBack())}}
               >
                 <Icon color='black' name='left arrow' size='large' />
               </Button>
             }
             content={
-              'Back'
-              // isMainView('runs') ?
-              //   'Go back to projects'
-              // : isMainView('vis') ?
-              //   'Go back to runs'
-              // : R.isNil(project) ? 'Go back to projects' : 'Go back to runs'
+              isCurrentView('projects') ? 'Back' //Will be disabled anyway
+              : isCurrentView('runs') ?
+                'Go back to projects'
+              : isCurrentView('results') ?
+                'Go back to runs'
+              : 'Back' //Should also never be reached
             }
             position='bottom center'
           />
         </Button.Group>
       </Grid.Column>
       <Grid.Column width={12} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
-        
-        {
-          'header goes here'
-          // isMainView('projects')  ? 
-          //   <Header
-          //     textAlign='center'
-          //     // size='large'
-          //     content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
-          //   />
-          // : isMainView('runs')  ?
-          //   <Header textAlign='center'
-          //     // size='large'
-          //     content={R.prop('name', project)}
-          //   />
-          // : isMainView('login') ?
-          //   <Header textAlign='center'
-          //   >
-          //     {
-          //       RA.isNotNil(user) ? 
-          //         <>
-          //           User
-          //         </>
-          //       :
-          //         <>
-          //           <Icon name='sign in' />
-          //           Log In
-          //         </>
-          //     }
-          //   </Header>
-          // : isMainView('vis') ?
-          //   <Header textAlign='center'
-          //     // size='large'
-          //     content={R.prop('name', project)}
-          //     subheader={R.prop('name', run)}
-          //   />
-          // : <Header textAlign='center' content={'Info'} /> 
-        }
+      {
+        isCurrentView('projects') ?
+          <Header
+            textAlign='center'
+            content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
+          />
+        : isCurrentView('runs') ?
+          <Header
+            textAlign='center'
+            content={'Project name here'}
+          />
+        : isCurrentView('results') ?
+          <Header textAlign='center'
+            content={'Project name here'}
+            subheader={'Run name here'}
+          />
+        : null
+      }
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
