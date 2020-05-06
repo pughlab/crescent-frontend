@@ -2,6 +2,13 @@ import { combineReducers } from 'redux'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
+import createReducer from './createReducer'
+
+import context from './context'
+import projectsPage from './projectsPage'
+import runsPage from './runsPage'
+import resultsPage from './resultsPage'
+
 // Reducer
 const initialState = {
   // Data from GQL
@@ -68,21 +75,6 @@ const setUserFromGQL = R.set(R.lensProp('user'))
 const setProjectFromGQL = R.set(R.lensProp('project'))
 const setRunFromGQL = R.set(R.lensProp('run'))
 
-
-const createReducer = (initialState, handlers) => {
-  return (state = initialState, action) => {
-    const {type: actionType, payload} = action
-    if (R.has(actionType, handlers)) {
-      return R.compose(
-        R.apply(R.__, [state, payload]),
-        R.prop(actionType)
-      )(handlers)
-    }
-    else {
-      return state
-    }
-  }
-}
 
 const LoginReducer = {
   // 'LOGOUT': R.always(initialState),
@@ -395,7 +387,13 @@ const app = createReducer(initialState, {
   ...VisualizationReducer,
 })
 
+
+
 // Combine all reducers for application
 export default combineReducers({
+  context,
+  projectsPage,
+  runsPage,
+  resultsPage,
   app
 })
