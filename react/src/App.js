@@ -59,7 +59,7 @@ const App = () => {
   return (
     <div ref={stickyRef} style={{height: '100%'}}>
       <Sticky context={stickyRef}>
-        {/* <MenuComponent /> */}
+        <MenuComponent />
       </Sticky>
       {
         R.cond([
