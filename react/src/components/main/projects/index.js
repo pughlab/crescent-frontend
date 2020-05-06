@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import * as R_ from 'ramda-extension'
 
 import {Header, Button, Container, Divider, Message} from 'semantic-ui-react'
 

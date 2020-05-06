@@ -4,7 +4,6 @@ import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, 
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import * as R_ from 'ramda-extension'
 
 import withRedux from '../../../redux/hoc'
 
