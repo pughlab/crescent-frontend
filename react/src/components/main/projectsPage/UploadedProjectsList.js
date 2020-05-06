@@ -22,7 +22,7 @@ const UploadedProjectsList = ({
 }) => {
   // GQL query to find all projects of which user is a member of
   const {userID} = useCrescentContext()
-  const {loading, data, error, refetch} = useQuery(gql`
+  const {loading, data, error} = useQuery(gql`
     query UserProjects($userID: ID) {
       projects(userID: $userID) {
         projectID
@@ -76,10 +76,13 @@ const UploadedProjectsList = ({
   )(data)
   return (
     <>
-    <NewProjectModal {...{refetch}} />
+    
+    <NewProjectModal />
+    
     <Divider horizontal />
     {
       R.isEmpty(userProjects) ?
+        <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
         <Segment basic>
           <Segment placeholder>
             <Header icon>
@@ -88,6 +91,7 @@ const UploadedProjectsList = ({
             </Header>
           </Segment>
         </Segment>
+        </Transition>
       :
         <Card.Group itemsPerRow={3}>
         {

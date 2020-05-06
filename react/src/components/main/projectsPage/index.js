@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Header, Button, Container, Divider, Message} from 'semantic-ui-react'
+import {Header, Button, Transition, Divider} from 'semantic-ui-react'
 
 
 import {useDispatch} from 'react-redux'
@@ -20,19 +20,11 @@ const ProjectsPageComponent = ({
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
     <>
-      <Divider horizontal
-        content={
-          <Header
-            size='large'
-            content={'PROJECTS'}
-            subheader={'Select a public project or upload data to begin'}
-          />
-        }
-      />
-      {/* Only show public projects if guest */}
-      <Button.Group fluid
-        widths={2}
-      >
+      <Divider horizontal>
+        <Header size='large' content={'PROJECTS'} subheader={'Select a public project or upload data to begin'} />
+      </Divider>
+
+      <Button.Group fluid widths={2}>
         <Button color='black'
           onClick={() => dispatch(setActiveProjectKind({projectKind: 'public'}))}
           active={isActiveProjectKind('public')} 
@@ -43,6 +35,7 @@ const ProjectsPageComponent = ({
             content='Public' subheader='Published/example datasets accepted by CReSCENT'
           />
         </Button>
+
         <Button color='black'
           onClick={() => dispatch(setActiveProjectKind({projectKind: 'uploaded'}))}
           active={isActiveProjectKind('uploaded')} 
@@ -56,8 +49,11 @@ const ProjectsPageComponent = ({
       </Button.Group>
       <Divider hidden horizontal />
       {
-        isActiveProjectKind('uploaded') ? <UploadedProjectsList />
-        : isActiveProjectKind('public') ? <PublicProjectsList />
+        isActiveProjectKind('uploaded') ?
+          
+          <UploadedProjectsList />
+        : isActiveProjectKind('public') ?
+          <PublicProjectsList />
         : null
       }
     </>

@@ -9,7 +9,7 @@ import moment from 'moment'
 import {queryIsNotNil} from '../../../utils'
 
 
-import {Header, Card, Segment, Icon} from 'semantic-ui-react'
+import {Header, Card, Segment, Icon, Transition} from 'semantic-ui-react'
 
 
 // import ProjectCard from './ProjectCard'
@@ -69,6 +69,7 @@ const PublicProjectsList = () => {
     )(data)
   return (
     R.isEmpty(curatedProjects) ?
+      <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
       <Segment basic>
         <Segment placeholder>
           <Header icon>
@@ -77,6 +78,7 @@ const PublicProjectsList = () => {
           </Header>
         </Segment>
       </Segment>
+      </Transition>
     :
       <Card.Group itemsPerRow={3}>
       {

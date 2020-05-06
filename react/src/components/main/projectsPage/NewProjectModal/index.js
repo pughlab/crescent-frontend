@@ -1,18 +1,9 @@
-import React, {useState, useCallback, useEffect, useReducer} from 'react';
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import React, {useState, useReducer} from 'react';
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import moment from 'moment'
 
-import {queryIsNotNil} from '../../../../utils'
-
-import {useDropzone} from 'react-dropzone'
-
-import {Form, Card, Header, Menu, Button, Segment, Modal, Label, Divider, Icon, Image, Popup, Grid, Step} from 'semantic-ui-react'
-
-import withRedux from '../../../../redux/hoc'
+import {Transition, Header, Button, Segment, Modal, Icon, Step} from 'semantic-ui-react'
 
 import CreateProjectButton from './CreateProjectButton'
 
@@ -20,7 +11,7 @@ import DataForm from './DataForm'
 import DetailsForm from './DetailsForm'
 
 const NewProjectModal = ({
-  refetch
+
 }) => {
   const initialNewProjectState = {
     name: '',
@@ -117,8 +108,6 @@ const NewProjectModal = ({
             {...{
               newProjectState,
               newProjectDispatch,
-
-              refetch
             }}
           />
         </Segment>
@@ -134,13 +123,12 @@ const NewProjectModal = ({
         setCurrentContent('details')
       }}
       trigger={
-        <Button fluid size='large'
-          color='black'
-          animated='vertical'
-        >
-          <Button.Content visible><Icon name='add' size='large'/></Button.Content>
-          <Button.Content hidden content="Upload your own files to create a new project"/>
-        </Button>
+        <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
+          <Button fluid size='large' color='black' animated='vertical'>
+            <Button.Content visible><Icon name='add' size='large'/></Button.Content>
+            <Button.Content hidden content="Upload your own files to create a new project"/>
+          </Button>
+        </Transition>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Project' />

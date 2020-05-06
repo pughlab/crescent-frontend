@@ -14,8 +14,6 @@ import {setProject} from '../../../../redux/actions/context'
 
 const CreateProjectButton = ({
   newProjectState, newProjectDispatch,
-
-  refetch
 }) => {
   const {
     name, description, mergedProjectIDs, uploadedDatasetIDs,
@@ -77,8 +75,6 @@ const CreateProjectButton = ({
     },
     onCompleted: ({createMergedProject: project}) => {
       if (RA.isNotNil(project)) {
-        // // Should call refetch before setting to new project
-        // refetch()
         dispatch(setProject({project}))
       }
     }
