@@ -47,19 +47,6 @@ const MenuComponent = ({
               <Button icon basic inverted color='grey'
                 disabled={R.not(R.equals('projects', view))}
                 onClick={() => {dispatch(goBack())}}
-                // onClick={() => {
-                //   if (isMainView('runs')) {
-                //     toggleProjects()
-                //   } else if (isMainView('vis')) {
-                //     toggleRuns()
-                //   } else if (
-                //     R.any(isMainView, ['login', 'info'])
-                //   ) {
-                //     // Go back to projects for now
-                //     R.isNil(project) ? toggleProjects() : toggleRuns()
-                //   }
-                // }}
-                // disabled={R.or(isMainView('projects'), R.isNil(project))}
               >
                 <Icon color='black' name='left arrow' size='large' />
               </Button>
@@ -118,7 +105,7 @@ const MenuComponent = ({
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
           <InfoModal />
-          {/* <LoginModal /> */}
+          <LoginModal />
         </Button.Group>
       </Grid.Column>
     </Segment>

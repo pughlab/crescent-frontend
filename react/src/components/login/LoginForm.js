@@ -24,11 +24,8 @@ const LoginValidationSchema = Yup.object().shape({
 })
 
 const LoginForm = withRedux(({
-  app: {
-    user
-  },
   actions: {
-    setUser
+    // setUser
   },
 
   // Props
@@ -49,8 +46,8 @@ const LoginForm = withRedux(({
   `, {
     onCompleted: ({authenticateUser}) => {
       if (RA.isNotNil(authenticateUser)) {
-        setUser(authenticateUser)
-        setOpen(false)
+        // setUser(authenticateUser)
+        // setOpen(false)
       } else {
         setShowErrorModal(true)
       }

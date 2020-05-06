@@ -9,22 +9,25 @@ import LoginForm from './LoginForm'
 import RegisterForm from './RegisterForm'
 import UserInfo from './UserInfo'
 
-import withRedux from '../../redux/hoc'
+import {useCrescentContext} from '../../redux/hooks'
+import {useUserQuery} from '../../apollo/hooks'
+import { useQuery } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
 
 
+const LoginModal = ({
 
-const LoginModal = withRedux(({
-  app: {
-    user,
-    view: {isGuest},
-  },
 }) => {
+  const context = useCrescentContext()
+  const {userID, isGuest} = context
   const [open, setOpen] = useState(false)
   const [showLogin, setShowLogin] = useState(true)
-
   useEffect(() => {
     setShowLogin(true)
   }, [open])
+
+  const user = useUserQuery(userID)
+  console.log(user)
   return (
     <>
     <Popup inverted size='large'
@@ -39,13 +42,14 @@ const LoginModal = withRedux(({
     {
       isGuest ?
         'Login'
-      : 
+      : RA.isNotNil(user) ?
         <>
         {`Logged in as `}
         <b>
           {R.prop('name', user)}
         </b>
         </>
+      : null
     }
     </Popup>
     <Modal
@@ -66,6 +70,6 @@ const LoginModal = withRedux(({
     </Modal>
     </>
   )
-})
+}
 
 export default LoginModal
