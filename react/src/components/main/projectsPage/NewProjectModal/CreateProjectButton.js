@@ -1,22 +1,16 @@
-
-
-
-import React, {useState, useCallback, useEffect} from 'react';
+import React from 'react'
 
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import moment from 'moment'
-
-import {queryIsNotNil} from '../../../../utils'
-
-import {useDropzone} from 'react-dropzone'
 
 import {Form, Card, Header, Message, Button, Segment, Modal, Label, Divider, Icon, Image, Popup, Grid, Step} from 'semantic-ui-react'
 
 
+import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
+import {setProject} from '../../../../redux/actions/context'
 
 const CreateProjectButton = ({
   newProjectState, newProjectDispatch,
@@ -27,6 +21,8 @@ const CreateProjectButton = ({
     name, description, mergedProjectIDs, uploadedDatasetIDs,
     oncotreeReference, cancerTag
   } = newProjectState
+
+  const dispatch = useDispatch()
   const {userID} = useCrescentContext()
   // GQL mutation to create a project
   const [createMergedProject, {loading, data, error}] = useMutation(gql`
@@ -79,11 +75,11 @@ const CreateProjectButton = ({
       datasetIDs: uploadedDatasetIDs,
       oncotreeReference, cancerTag
     },
-    onCompleted: ({createMergedProject: newProject}) => {
-      if (RA.isNotNil(newProject)) {
-        // Should call refetch before setting to new project
-        refetch()
-        // setProject(newProject)
+    onCompleted: ({createMergedProject: project}) => {
+      if (RA.isNotNil(project)) {
+        // // Should call refetch before setting to new project
+        // refetch()
+        dispatch(setProject({project}))
       }
     }
   })

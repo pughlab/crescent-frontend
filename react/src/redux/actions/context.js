@@ -6,6 +6,12 @@ const setUser = ({user}) => ({
     user
   }
 })
+const setProject = ({project}) => ({
+  type: 'context/setProject',
+  payload: {
+    project
+  }
+})
 
 const goHome = R.always({
   type: 'context/goHome'
@@ -17,6 +23,7 @@ const goBack = R.always({
 
 export {
   setUser,
+  setProject,
   goHome,
-  goBack
+  goBack,
 }

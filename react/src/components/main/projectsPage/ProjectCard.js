@@ -11,6 +11,9 @@ import {Form, Card, Header, Transition, Button, Container, Segment, Modal, Label
 
 import Marquee from 'react-marquee'
 
+import {useDispatch} from 'react-redux'
+import {setProject} from '../../../redux/actions/context'
+
 const ProjectCard = ({
   // Prop
   project
@@ -22,13 +25,8 @@ const ProjectCard = ({
     createdBy: {name: creatorName},
     createdOn,
 
-    runs,
-    // Has props
-    // {
-    //   runID,
-    //   name,
-    //   status
-    // }
+    runs, // {runID, name, status}
+
     datasetSize,
 
     mergedProjects,
@@ -37,12 +35,13 @@ const ProjectCard = ({
     cancerTag,
     oncotreeTissue: {name: oncotreeTissueName}
   } = project
-  console.log(project)
+
+  const dispatch = useDispatch()
 
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
       <Card link color='grey'
-        // onClick={() => setProject(project)}
+        onClick={() => dispatch(setProject({project}))}
       >
         <Popup
             size='large' wide='very'

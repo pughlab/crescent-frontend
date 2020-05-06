@@ -30,6 +30,15 @@ export default createReducer(
       })(state)
     },
 
+    'context/setProject': (state, payload) => {
+      const {project} = payload
+      const projectID = R.compose(R.always, R.prop('projectID'))(project)
+      return R.evolve({
+        projectID,
+        view: R.always('runs')
+      })(state)
+    },
+
     'context/goHome': (state, payload) => {
       console.log('gohome', state)
       return R.evolve({
