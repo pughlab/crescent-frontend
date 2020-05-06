@@ -395,5 +395,5 @@ export default combineReducers({
   projectsPage,
   runsPage,
   resultsPage,
-  app
+  // app
 })

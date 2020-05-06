@@ -42,7 +42,6 @@ const persistor = persistStore(store)
 //     : process.env.REACT_APP_GRAPHQL_URL_PROD
 // })
 
-
 const link = createUploadLink({uri: process.env.NODE_ENV === 'development'
 ? process.env.REACT_APP_GRAPHQL_URL_DEV
 : process.env.REACT_APP_GRAPHQL_URL_PROD})
@@ -52,6 +51,8 @@ const client = new ApolloClient({
   link
 })
 
+// For dev
+persistor.purge()
 
 ReactDOM.render(
   <ReduxProvider store={store}>

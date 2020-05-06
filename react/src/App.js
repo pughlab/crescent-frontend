@@ -1,61 +1,83 @@
 import './App.css'
 import 'semantic-ui-css/semantic.min.css'
-import React, {useState, useRef} from 'react'
+import memphisMini from './memphis-mini.png'
+
+import React, {useState, useRef, useEffect} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {Segment, Modal, Button, Image, Header, Sticky} from 'semantic-ui-react'
 
 import MenuComponent from './components/menu'
-import MainComponent from './components/main'
+import ProjectsCardList from './components/main/projects'
+import RunsCardList from './components/main/runs'
+import ResultsPageComponent from './components/main/results'
 
-import Logo from './components/login/logo.jpg'
+import {useSelector, useDispatch} from 'react-redux'
 
-import withRedux from './redux/hoc'
+import { useMutation } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+import {createSelector} from 'reselect'
+import {setUser} from './redux/actions/context'
 
-{/* <div ref={this.contextRef}>
-<Sticky context={this.contextRef}>
-  <Menu
-    attached='top'
-    tabular
-    style={{ backgroundColor: '#fff', paddingTop: '1em' }}
-  >
-    <Menu.Item as='a' active name='bio' />
-    <Menu.Item as='a' active={false} name='photos' />
-    <Menu.Menu position='right'>
-      <Menu.Item>
-        <Input
-          transparent
-          icon={{ name: 'search', link: true }}
-          placeholder='Search users...'
-        />
-      </Menu.Item>
-    </Menu.Menu>
-  </Menu>
-</Sticky>
-<Segment attached='bottom'>
-  {_.times(5, (i) => (
-    <Image key={i} src='https://react.semantic-ui.com/images/wireframe/paragraph.png' />
-  ))}
-</Segment>
-</div> */}
 
-const App = withRedux(
-  () => {
+function useCrescentContext() {
+  const dispatch = useDispatch()
+  // Get context object from redux store
+  const contextSelector = createSelector(R.prop('context'), R.identity)
+  const context = useSelector(contextSelector)
+  const {userID} = context
+  // GraphQL
+  const [createGuestUser, {loading, data, error}] = useMutation(gql`
+    mutation CreateGuestUser {
+      createGuestUser {
+        userID
+        email
+        name
+      }
+    }
+  `, {
+    onCompleted: ({createGuestUser: user}) => {
+      console.log(user)
+      dispatch(setUser(user))
+    }
+  })
+  // If no userID then create guest user
+  useEffect(() => {
+    createGuestUser()
+    return () => {}
+  }, [userID])
+  console.log(context)
+  return context
+}
 
-    const contextRef = useRef()
-    return (
-      <div ref={contextRef} style={{height: '100%'}}>
-        <Sticky context={contextRef}>
-        <MenuComponent />
-        </Sticky>
-        <MainComponent />
-      </div>
-      // <Segment style={{padding: 0}}>
-        
-        
-      // </Segment>
-    )
-  }
-)
+const App = () => {
+  const stickyRef = useRef()
+
+  const context = useCrescentContext()
+  const {view} = context
+  return (
+    <div ref={stickyRef} style={{height: '100%'}}>
+      <Sticky context={stickyRef}>
+        {/* <MenuComponent /> */}
+      </Sticky>
+      {
+        R.cond([
+          [R.equals('projects'), R.always(
+            // <ProjectsCardList />
+            'Projects'
+          )],
+          [R.equals('runs'), R.always(
+            // <RunsCardList />
+            'Runs'
+          )],
+          [R.equals('vis'), R.always(
+            // <VisComponent />
+            'vis'
+          )],
+        ])(view)
+      }
+    </div>
+  )
+}
 export default App
