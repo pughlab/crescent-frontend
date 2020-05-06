@@ -1,5 +1,7 @@
 import useCrescentContext from './useCrescentContext'
+import useProjectsPage from './useProjectsPage'
 
 export {
-  useCrescentContext
+  useCrescentContext,
+  useProjectsPage
 }

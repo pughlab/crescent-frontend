@@ -8,6 +8,8 @@ import * as RA from 'ramda-adjunct'
 // React components
 import {Segment, Modal, Button, Image, Header, Sticky} from 'semantic-ui-react'
 import MenuComponent from './components/menu'
+import ProjectsPageComponent from './components/main/projectsPage'
+
 import ProjectsCardList from './components/main/projects'
 import RunsCardList from './components/main/runs'
 import ResultsPageComponent from './components/main/results'
@@ -59,7 +61,7 @@ const App = () => {
         R.cond([
           [R.equals('projects'), R.always(
             // <ProjectsCardList />
-            'Projects'
+            <ProjectsPageComponent />
           )],
           [R.equals('runs'), R.always(
             // <RunsCardList />
