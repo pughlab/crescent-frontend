@@ -26,12 +26,14 @@ export default function useCrescentContext() {
   `, {
     onCompleted: ({createGuestUser: user}) => {
       console.log(user)
-      dispatch(setUser(user))
+      dispatch(setUser({user}))
     }
   })
   // If no userID then create guest user
   useEffect(() => {
-    createGuestUser()
+    if (R.isNil(userID)) {
+      createGuestUser()
+    }
     return () => {}
   }, [userID])
   console.log(context)

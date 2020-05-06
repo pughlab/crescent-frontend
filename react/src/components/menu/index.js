@@ -11,10 +11,17 @@ import Marquee from 'react-marquee'
 import InfoModal from '../info/InfoModal'
 import LoginModal from '../login/LoginModal'
 
+import {useDispatch} from 'react-redux'
+import {goHome, goBack} from '../../redux/actions/context'
+import {useCrescentContext} from '../../redux/hooks'
+
 const MenuComponent = ({
 
 }) => {
   // const isMainView = R.equals(main)
+  const context = useCrescentContext()
+  const {view} = context
+  const dispatch = useDispatch()
   return (
     <Segment attached='top' as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
@@ -22,19 +29,15 @@ const MenuComponent = ({
           {/* Home button even though there's only three pages... */}
           <Popup inverted
             trigger={
-              <Button icon basic inverted color='grey'
-                size='large'
-                // onClick={() => toggleProjects(isGuest ? 'published' : 'uploaded')}
+              <Button icon basic inverted color='grey' size='large'
+                onClick={() => dispatch(goHome())}
               >
                 <Icon size='big'>
                   <Image src={Logo}centered/>
                 </Icon>
               </Button>
             }
-            content={
-              // isMainView('projects') ? 'Go to projects' : 'Go to projects'
-              'Home'
-            }
+            content={'Go to Projects'}
             position='bottom center'
           />
 
@@ -42,6 +45,8 @@ const MenuComponent = ({
           <Popup inverted 
             trigger={
               <Button icon basic inverted color='grey'
+                disabled={R.not(R.equals('projects', view))}
+                onClick={() => {dispatch(goBack())}}
                 // onClick={() => {
                 //   if (isMainView('runs')) {
                 //     toggleProjects()
@@ -55,7 +60,6 @@ const MenuComponent = ({
                 //   }
                 // }}
                 // disabled={R.or(isMainView('projects'), R.isNil(project))}
-                // disabled={isMainView('projects')}
               >
                 <Icon color='black' name='left arrow' size='large' />
               </Button>
