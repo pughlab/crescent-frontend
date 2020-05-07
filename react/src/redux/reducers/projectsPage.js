@@ -12,6 +12,8 @@ export default createReducer(
       return R.evolve({
         activeProjectKind: R.always(projectKind)
       })(state)
-    }
+    },
+
+    'projectsPage/reset': R.always(initialState),
   }
 )

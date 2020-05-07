@@ -7,6 +7,9 @@ const setActiveProjectKind = ({projectKind}) => ({
   }
 })
 
+const resetProjectsPage = R.always({type: 'projectsPage/reset'})
+
 export {
-  setActiveProjectKind
+  setActiveProjectKind,
+  resetProjectsPage
 }

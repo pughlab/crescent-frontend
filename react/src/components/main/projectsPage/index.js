@@ -6,8 +6,8 @@ import {Header, Button, Segment, Divider} from 'semantic-ui-react'
 
 
 import {useDispatch} from 'react-redux'
-import {useProjectsPage} from '../../../redux/hooks'
-import {setActiveProjectKind} from '../../../redux/actions/projectsPage'
+import {useProjectsPage, useCrescentContext} from '../../../redux/hooks'
+import {resetProjectsPage, setActiveProjectKind} from '../../../redux/actions/projectsPage'
 
 import PublicProjectsList from './PublicProjectsList'
 import UploadedProjectsList from './UploadedProjectsList'
@@ -16,6 +16,9 @@ const ProjectsPageComponent = ({
 
 }) => {
   const dispatch = useDispatch()
+  const {userID, projectID} = useCrescentContext()
+  useEffect(() => {dispatch(resetProjectsPage())}, [userID, projectID])
+
   const {activeProjectKind} = useProjectsPage()
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
