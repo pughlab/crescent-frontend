@@ -12,8 +12,6 @@ import {useDispatch} from 'react-redux'
 import {useResultsPage} from '../../../../redux/hooks'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
-
-
 const SidebarComponent = ({
 
 }) => {
@@ -21,7 +19,7 @@ const SidebarComponent = ({
   const {activeSidebarTab} = useResultsPage()
   const isActiveSidebarTab = R.equals(activeSidebarTab)
   return (
-    <Transition visible animation='fade left' duration={1000} unmountOnHide={true} transitionOnMount={true}>
+    
     <Segment basic style={{padding: 0, display: 'flex', flexDirection: 'column'}}>
       <Segment attached='top'>
         {/* {
@@ -65,7 +63,6 @@ const SidebarComponent = ({
       }
       </Segment>
     </Segment>
-    </Transition>
   )
 }
 
