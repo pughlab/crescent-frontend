@@ -3,10 +3,13 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import moment from 'moment'
 
-import RunsStatusLegend from './RunsStatusLegend'
+
 import ArchiveProjectModal from './ArchiveProjectModal'
 import ShareProjectModal from './ShareProjectModal'
 import AddMetadataModal from './AddMetadataModal'
+
+import NewRunModal from './NewRunModal'
+import RunsStatusLegend from './RunsStatusLegend'
 
 import {Segment, Container, Button, Divider, Header, Popup, Label} from 'semantic-ui-react'
 
@@ -86,7 +89,8 @@ const RunsPageComponent = ({
         <Divider horizontal>
           <Header content={'Project Runs'} />
         </Divider>
-
+        {/* CREATE NEW RUN MODAL */}
+        <NewRunModal {...{project}} />
         {/* SHOW RUNS BY STATUS */}
         {isUploadedProject && <RunsStatusLegend />}
         

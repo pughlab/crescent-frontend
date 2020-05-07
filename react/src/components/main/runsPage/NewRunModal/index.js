@@ -1,0 +1,128 @@
+import React, {useState, useReducer} from 'react'
+
+import {Header, Form, Button, Modal, Icon} from 'semantic-ui-react'
+
+import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
+
+import { useMutation } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+
+import DataForm from './DataForm'
+
+import {useDispatch} from 'react-redux'
+import {useCrescentContext} from '../../../../redux/hooks'
+import {setRun} from '../../../../redux/actions/context'
+
+
+// TODO: GQL QUERIES FOR PROJECT DETAILS
+const NewRunModal = ({
+  project
+}) => {
+  const dispatch = useDispatch()
+  const {userID, projectID} = useCrescentContext()
+
+  const [runName, setRunName] = useState('')
+  const [datasetsState, datasetsDispatch] = useReducer(
+    function (state, action) {
+      const {type} = action
+      switch (type) {
+        case 'TOGGLE_DATASET':
+          const {datasetID} = action
+          return R.ifElse(
+            R.includes(datasetID),
+            R.without([datasetID]),
+            R.append(datasetID)
+          )(state)
+          // R.includes(datasetID, state) ?
+          //   R.without([datasetID], state)
+          //   : R.append(datasetID, state)
+        case 'TOGGLE_MANY_DATASETS':
+          const {datasetIDs} = action
+          return R.union(datasetIDs, state)
+        default:
+          return state
+      }
+    },
+    []
+  )
+
+  const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
+    mutation CreateUnsubmittedRun(
+      $name: String!,
+      $projectID: ID!,
+      $userID: ID!
+      $datasetIDs: [ID!]!
+    ) {
+      createUnsubmittedRun(
+        name: $name
+        datasetIDs: $datasetIDs
+        projectID: $projectID
+        userID: $userID
+      ) {
+        runID
+        createdOn
+        createdBy {
+          userID
+          name
+        }
+        name
+        params
+        status
+
+        submittedOn
+        completedOn
+
+        datasets {
+          datasetID
+          name
+        }
+      }
+    }
+  `, {
+    variables: {
+      name: runName,
+      datasetIDs: datasetsState,
+      projectID, userID,
+    },
+    onCompleted: ({createUnsubmittedRun: run}) => {
+      console.log(run)
+      if (RA.isNotNil(run)) {
+        dispatch(setRun({run}))
+      }
+    }
+  })
+  return (
+    <Modal
+      trigger={
+        <Button fluid size='large' color='black' animated='vertical'>
+          <Button.Content visible><Icon size='large' name='add'/></Button.Content>
+          <Button.Content hidden content="Configure a pipeline and submit a run using this project's uploaded data"/>
+        </Button>
+      }
+    >
+      <Modal.Header as={Header} textAlign='center' content='New Run' />
+      <Modal.Content>
+        <Form>
+          <Form.Input fluid
+            placeholder='Enter a Run Name'
+            onChange={(e, {value}) => {setRunName(value)}}
+          />
+
+          <DataForm {...{project, datasetsState, datasetsDispatch}} />
+
+          <Form.Button size='huge' fluid
+            disabled={R.or(
+              R.isEmpty(runName),
+              R.isEmpty(datasetsState)
+            )}
+            content='Create Run'
+            onClick={() => createUnsubmittedRun()}
+          />
+        </Form>
+      </Modal.Content>
+    </Modal>
+  )
+}
+
+export default NewRunModal
