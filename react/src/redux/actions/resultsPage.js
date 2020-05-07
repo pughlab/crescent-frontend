@@ -7,9 +7,18 @@ const setActiveSidebarTab = ({sidebarTab}) => ({
   }
 })
 
+const setActivePipelineStep = ({pipelineStep}) => ({
+  type: 'resultsPage/setActivePipelineStep',
+  payload: {
+    pipelineStep
+  }
+})
+
+
 const resetResultsPage = R.always({type: 'resultsPage/reset'})
 
 export {
   setActiveSidebarTab,
+  setActivePipelineStep,
   resetResultsPage
 }

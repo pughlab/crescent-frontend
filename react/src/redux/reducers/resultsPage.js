@@ -2,7 +2,8 @@ import * as R from 'ramda'
 import createReducer from './createReducer'
 
 const initialState = {
-  activeSidebarTab: 'parameters' // visualizations
+  activeSidebarTab: 'parameters', // visualizations
+  activePipelineStep: null,
 }
 
 export default createReducer(
@@ -14,6 +15,15 @@ export default createReducer(
         activeSidebarTab: R.always(sidebarTab)
       })(state)
     },
+
+    'resultsPage/setActivePipelineStep': (state, payload) => {
+      const {pipelineStep} = payload
+      console.log(pipelineStep)
+      return R.evolve({
+        activePipelineStep: R.always(pipelineStep)
+      })(state)
+    },
+
 
     'resultsPage/reset': R.always(initialState),
   }
