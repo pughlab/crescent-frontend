@@ -12,6 +12,8 @@ export default createReducer(
       return R.evolve({
         activeRunsFilter: R.always(runsFilter)
       })(state)
-    }
+    },
+
+    'runsPage/reset': R.always(initialState),
   }
 )

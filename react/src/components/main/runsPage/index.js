@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import moment from 'moment'
@@ -21,12 +21,17 @@ import {Segment, Container, Button, Divider, Header, Popup, Label, Grid} from 's
 import {useProjectDetailsQuery} from '../../../apollo/hooks'
 import {useCrescentContext} from '../../../redux/hooks'
 
+import {useDispatch} from 'react-redux'
+import {resetRunsPage} from '../../../redux/actions/runsPage'
+
+
 const RunsPageComponent = ({
 
 }) => {
+  const dispatch = useDispatch()
   const {userID: currentUserID, projectID} = useCrescentContext()
+  useEffect(() => {dispatch(resetRunsPage())}, [projectID])
   const project = useProjectDetailsQuery(projectID)
-  console.log(project)
 
   if (R.isNil(project)) {
     return null

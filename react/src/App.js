@@ -22,7 +22,7 @@ import {useCrescentContext} from './redux/hooks'
 
 const App = () => {
   const context = useCrescentContext()
-  const {view, userID} = context
+  const {view, userID, projectID, runID} = context
   const dispatch = useDispatch()
   
   const [createGuestUser, {loading, data, error}] = useMutation(gql`
@@ -58,13 +58,13 @@ const App = () => {
       {
         R.cond([
           [R.equals('projects'), R.always(
-            <ProjectsPageComponent />
+            <ProjectsPageComponent key={userID} />
           )],
           [R.equals('runs'), R.always(
-            <RunsPageComponent />
+            <RunsPageComponent key={projectID} />
           )],
           [R.equals('results'), R.always(
-            <ResultsPageComponent />
+            <ResultsPageComponent key={runID} />
           )],
         ])(view)
       }

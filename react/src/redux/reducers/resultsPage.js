@@ -13,6 +13,8 @@ export default createReducer(
       return R.evolve({
         activeSidebarTab: R.always(sidebarTab)
       })(state)
-    }
+    },
+
+    'resultsPage/reset': R.always(initialState),
   }
 )

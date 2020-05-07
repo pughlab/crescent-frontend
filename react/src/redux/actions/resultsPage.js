@@ -7,6 +7,9 @@ const setActiveSidebarTab = ({sidebarTab}) => ({
   }
 })
 
+const resetResultsPage = R.always({type: 'resultsPage/reset'})
+
 export {
-  setActiveSidebarTab
+  setActiveSidebarTab,
+  resetResultsPage
 }

@@ -7,6 +7,9 @@ const setActiveRunsFilter = ({runsFilter}) => ({
   }
 })
 
+const resetRunsPage = R.always({type: 'runsPage/reset'})
+
 export {
-  setActiveRunsFilter
+  setActiveRunsFilter,
+  resetRunsPage
 }

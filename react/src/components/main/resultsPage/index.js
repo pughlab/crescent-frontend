@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import * as R from 'ramda'
 
 import { Segment, Transition, Grid, Image, Message, Header, Label } from 'semantic-ui-react'
@@ -8,24 +8,30 @@ import ParametersComponent from './parameters'
 import VisualizationsComponent from './visualizations'
 
 import {useResultsPage} from '../../../redux/hooks'
+import {resetResultsPage} from '../../../redux/actions/resultsPage'
+import {useCrescentContext} from '../../../redux/hooks'
+import {useDispatch} from 'react-redux'
 
 const ResultsPageComponent = ({
 
 }) => {
+  const dispatch = useDispatch()
+  const {runID} = useCrescentContext()
+  useEffect(() => {dispatch(resetResultsPage())}, [runID])
   const {activeSidebarTab} = useResultsPage()
   return (
     <Segment basic style={{minHeight: 'calc(100vh - 10rem)'}} as={Grid}>
-        <Grid.Column width={11}>
-        {
-          R.cond([
-            [R.equals('parameters'), R.always(<ParametersComponent />)],
-            [R.equals('visualizations'), R.always(<VisualizationsComponent />)]
-          ])(activeSidebarTab)
-        }
-        </Grid.Column>
-        <Grid.Column width={5}>
-          <SidebarComponent />
-        </Grid.Column>
+      <Grid.Column width={11}>
+      {
+        R.cond([
+          [R.equals('parameters'), R.always(<ParametersComponent />)],
+          [R.equals('visualizations'), R.always(<VisualizationsComponent />)]
+        ])(activeSidebarTab)
+      }
+      </Grid.Column>
+      <Grid.Column width={5}>
+        <SidebarComponent />
+      </Grid.Column>
     </Segment>
   )
 }
