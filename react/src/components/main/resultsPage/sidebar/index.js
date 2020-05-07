@@ -9,15 +9,25 @@ import RefreshRunButton from './RefreshRunButton'
 import DownloadResultsButton from './DownloadResultsButton'
 
 import {useDispatch} from 'react-redux'
-import {useResultsPage} from '../../../../redux/hooks'
+import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
+import {useRunDetailsQuery} from '../../../../apollo/hooks'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
 const SidebarComponent = ({
 
 }) => {
+  const {runID} = useCrescentContext()
+  const run = useRunDetailsQuery(runID)
+
   const dispatch = useDispatch()
   const {activeSidebarTab} = useResultsPage()
   const isActiveSidebarTab = R.equals(activeSidebarTab)
+
+  if (R.isNil(run)) {
+    return null
+  }
+  const {status: runStatus} = run
+  const disableResults = R.equals('pending', runStatus)
   return (
     
     <Segment basic style={{padding: 0, display: 'flex', flexDirection: 'column'}}>
@@ -35,7 +45,8 @@ const SidebarComponent = ({
             active={isActiveSidebarTab('parameters')}
             onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'parameters'}))}
           />
-          <Button compact content='RESULTS' 
+          <Button compact content='RESULTS'
+            disabled={disableResults}
             color={isActiveSidebarTab('visualizations') ? 'violet' : undefined}
             active={isActiveSidebarTab('visualizations')}
             onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'visualizations'}))}
