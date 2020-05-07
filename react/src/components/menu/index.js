@@ -32,6 +32,7 @@ const MenuComponent = ({
           <Popup inverted
             trigger={
               <Button icon basic inverted color='grey' size='large'
+                disabled={isCurrentView('projects')}
                 onClick={() => dispatch(goHome())}
               >
                 <Icon size='big'>
