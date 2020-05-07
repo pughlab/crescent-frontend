@@ -89,6 +89,11 @@ const NewRunModal = ({
       }
     }
   })
+
+  const disabled = R.or(
+    R.isEmpty(runName),
+    R.isEmpty(datasetsState)
+  )
   return (
     <Modal
       trigger={
@@ -109,10 +114,8 @@ const NewRunModal = ({
           <DataForm {...{project, datasetsState, datasetsDispatch}} />
 
           <Form.Button size='huge' fluid
-            disabled={R.or(
-              R.isEmpty(runName),
-              R.isEmpty(datasetsState)
-            )}
+            disabled={disabled}
+            color={disabled ? undefined : 'black'}
             content='Create Run'
             onClick={() => createUnsubmittedRun()}
           />

@@ -125,6 +125,7 @@ const CreateProjectButton = ({
 
       <Button size='huge' fluid
         disabled={disabled}
+        color={disabled ? undefined : 'black'}
         onClick={() => createMergedProject()}
         content='Create Project'
       />
