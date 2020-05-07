@@ -5,7 +5,7 @@ import React, {useState, useRef, useEffect} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 // React components
-import {Sticky} from 'semantic-ui-react'
+import {Sticky, Segment} from 'semantic-ui-react'
 import MenuComponent from './components/menu'
 import ProjectsPageComponent from './components/main/projectsPage'
 import RunsPageComponent from './components/main/runsPage'
@@ -50,10 +50,11 @@ const App = () => {
 
   const stickyRef = useRef()
   return (
-    <div ref={stickyRef} style={{minHeight: '100%'}}>
+    <div ref={stickyRef} style={{minHeight: '100vh'}}>
       <Sticky context={stickyRef}>
         <MenuComponent />
       </Sticky>
+      <Segment basic style={{marginTop: 0, paddingTop: 0}}>
       {
         R.cond([
           [R.equals('projects'), R.always(
@@ -67,6 +68,7 @@ const App = () => {
           )],
         ])(view)
       }
+      </Segment>
     </div>
   )
 }
