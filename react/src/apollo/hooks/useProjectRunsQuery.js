@@ -33,7 +33,6 @@ export default function useProjectRunsQuery(projectID) {
     fetchPolicy: 'network-only',
     variables: {projectID},
     onCompleted: ({runs}) => {
-      console.log('runs', runs)
       setProjectRuns(runs)
     }
   })

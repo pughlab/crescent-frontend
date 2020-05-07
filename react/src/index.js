@@ -52,7 +52,7 @@ const client = new ApolloClient({
 })
 
 // For dev
-persistor.purge()
+// persistor.purge()
 
 ReactDOM.render(
   <ReduxProvider store={store}>

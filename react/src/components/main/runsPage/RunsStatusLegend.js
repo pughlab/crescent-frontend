@@ -13,9 +13,6 @@ import {useDispatch} from 'react-redux'
 import {setActiveRunsFilter} from '../../../redux/actions/runsPage'
 
 const RunsStatusLegend = ({
-  // runsBySize,
-  // runFilter,
-  // setRunFilter
 }) => {
   const dispatch = useDispatch()
   const {activeRunsFilter} = useRunsPage()
@@ -30,7 +27,7 @@ const RunsStatusLegend = ({
   )
   const totalCount = R.length(projectRuns)
 
-  console.log(totalCount)
+  // Should be queried from graphql
   // const totalSize = R.compose(
   //   R.sum,
   //   R.values
