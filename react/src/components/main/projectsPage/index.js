@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Header, Button, Transition, Divider} from 'semantic-ui-react'
+import {Header, Button, Segment, Divider} from 'semantic-ui-react'
 
 
 import {useDispatch} from 'react-redux'
@@ -19,7 +19,7 @@ const ProjectsPageComponent = ({
   const {activeProjectKind} = useProjectsPage()
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
-    <>
+    <Segment basic>
       <Divider horizontal>
         <Header size='large' content={'PROJECTS'} subheader={'Select a public project or upload data to begin'} />
       </Divider>
@@ -56,7 +56,7 @@ const ProjectsPageComponent = ({
           <PublicProjectsList />
         : null
       }
-    </>
+    </Segment>
   )
 }
 
