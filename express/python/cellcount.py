@@ -4,6 +4,8 @@ import sys
 import os
 import json
 
+import helper
+
 def read_cellcount(runID):
 	""" count the lines of the barcode groups file to determine the cellcount """
 	
