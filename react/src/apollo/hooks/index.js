@@ -1,5 +1,7 @@
 import useUserQuery from './useUserQuery'
+import useProjectRunsQuery from './useProjectRunsQuery'
 
 export {
-  useUserQuery
+  useUserQuery,
+  useProjectRunsQuery
 }
