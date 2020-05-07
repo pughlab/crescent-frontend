@@ -18,6 +18,8 @@ import ProjectRunsList from './ProjectRunsList'
 
 import {Segment, Container, Button, Divider, Header, Popup, Label, Grid} from 'semantic-ui-react'
 
+import Fade from 'react-reveal/Fade'
+
 import {useProjectDetailsQuery} from '../../../apollo/hooks'
 import {useCrescentContext} from '../../../redux/hooks'
 
@@ -54,6 +56,7 @@ const RunsPageComponent = ({
   const isUploadedProject = R.equals(projectKind, 'uploaded')
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
   return (
+    <Fade duration={2000}>
     <Segment basic>
     <Container>
       {/* PROJECT CREATOR ACTIONS */}
@@ -131,6 +134,7 @@ const RunsPageComponent = ({
       
     </Container>
     </Segment>
+    </Fade>
   )
 }
 

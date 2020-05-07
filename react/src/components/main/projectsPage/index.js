@@ -4,6 +4,7 @@ import * as RA from 'ramda-adjunct'
 
 import {Header, Button, Segment, Divider} from 'semantic-ui-react'
 
+import Fade from 'react-reveal/Fade'
 
 import {useDispatch} from 'react-redux'
 import {useProjectsPage, useCrescentContext} from '../../../redux/hooks'
@@ -11,6 +12,7 @@ import {resetProjectsPage, setActiveProjectKind} from '../../../redux/actions/pr
 
 import PublicProjectsList from './PublicProjectsList'
 import UploadedProjectsList from './UploadedProjectsList'
+
 
 const ProjectsPageComponent = ({
 
@@ -22,6 +24,7 @@ const ProjectsPageComponent = ({
   const {activeProjectKind} = useProjectsPage()
   const isActiveProjectKind = R.equals(activeProjectKind)
   return (
+    <Fade duration={2000}>
     <Segment basic>
       <Divider horizontal>
         <Header size='large' content={'PROJECTS'} subheader={'Select a public project or upload data to begin'} />
@@ -60,6 +63,7 @@ const ProjectsPageComponent = ({
         : null
       }
     </Segment>
+    </Fade>
   )
 }
 
