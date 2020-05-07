@@ -1,19 +1,15 @@
 import './App.css'
 import 'semantic-ui-css/semantic.min.css'
-import memphisMini from './memphis-mini.png'
 
 import React, {useState, useRef, useEffect} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 // React components
-import {Segment, Modal, Button, Image, Header, Sticky} from 'semantic-ui-react'
+import {Sticky} from 'semantic-ui-react'
 import MenuComponent from './components/menu'
 import ProjectsPageComponent from './components/main/projectsPage'
 import RunsPageComponent from './components/main/runsPage'
-
-import ProjectsCardList from './components/main/projects'
-import RunsCardList from './components/main/runs'
-import ResultsPageComponent from './components/main/results'
+import ResultsPageComponent from './components/main/resultsPage'
 
 import {useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
@@ -66,9 +62,8 @@ const App = () => {
           [R.equals('runs'), R.always(
             <RunsPageComponent />
           )],
-          [R.equals('vis'), R.always(
-            // <VisComponent />
-            'vis'
+          [R.equals('results'), R.always(
+            <ResultsPageComponent />
           )],
         ])(view)
       }
