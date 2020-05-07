@@ -123,12 +123,10 @@ const NewProjectModal = ({
         setCurrentContent('details')
       }}
       trigger={
-        <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
-          <Button fluid size='large' color='black' animated='vertical'>
-            <Button.Content visible><Icon name='add' size='large'/></Button.Content>
-            <Button.Content hidden content="Upload your own files to create a new project"/>
-          </Button>
-        </Transition>
+        <Button fluid size='large' color='black' animated='vertical'>
+          <Button.Content visible><Icon name='add' size='large'/></Button.Content>
+          <Button.Content hidden content="Upload your own files to create a new project"/>
+        </Button>
       }
     >
       <Modal.Header as={Header} textAlign='center' content='New Project' />

@@ -9,14 +9,17 @@ import filesize from 'filesize'
 
 import {useCrescentContext, useRunsPage} from '../../../redux/hooks'
 import {useProjectRunsQuery} from '../../../apollo/hooks'
+import {useDispatch} from 'react-redux'
+import {setActiveRunsFilter} from '../../../redux/actions/runsPage'
 
 const RunsStatusLegend = ({
   // runsBySize,
   // runFilter,
   // setRunFilter
 }) => {
+  const dispatch = useDispatch()
   const {activeRunsFilter} = useRunsPage()
-  console.log(activeRunsFilter)
+
   const {projectID} = useCrescentContext()
   const projectRuns = useProjectRunsQuery(projectID)
 
@@ -40,8 +43,8 @@ const RunsStatusLegend = ({
           R.map(
             ({key, icon, color, title, description}) => (
               <Step key={key}
-                // active={R.equals(key, runFilter)}
-                // onClick={() => setRunFilter(key)}
+                active={R.equals(key, activeRunsFilter)}
+                onClick={() => dispatch(setActiveRunsFilter({runsFilter: key}))}
               >
                 <Icon name={icon} color={color}
                   loading={R.and(R.equals('submitted', key), R.not(R.equals(0, submittedCount)))}

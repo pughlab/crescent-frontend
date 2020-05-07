@@ -1,14 +1,17 @@
+import * as R from 'ramda'
 import createReducer from './createReducer'
 
 const initialState = {
-  activeRunsFilter: 'all'
+  activeRunsFilter: 'all' // pending || submitted || completed || failed
 }
 
 export default createReducer(
   initialState, {
     'runsPage/setActiveRunsFilter': (state, payload) => {
-      
-      return state
+      const {runsFilter} = payload
+      return R.evolve({
+        activeRunsFilter: R.always(runsFilter)
+      })(state)
     }
   }
 )
