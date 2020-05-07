@@ -16,10 +16,40 @@ const ProjectRunsList = () => {
 
   const {activeRunsFilter} = useRunsPage()
 
+  // const filteredProjectRuns = R.compose(
+  //   isUploadedProject ? R.filter(
+  //     R.compose(
+  //       R.or(R.equals('all', runFilter)),
+  //       R.propEq('status', runFilter)
+  //     )
+  //   )
+  //   :
+  //   currentUserIsProjectCreator ? R.reject(
+  //     R.propEq('status', 'pending')
+  //   )
+  //   : R.reject(R.anyPass([
+  //       R.propEq('status', 'pending'),
+  //       R.compose(
+  //           R.not,
+  //           R.either(
+  //               R.pathEq(['createdBy', 'userID'], currentUserID),
+  //               R.pathEq(['createdBy', 'userID'], creatorUserID)
+  //           )
+  //       )
+  //   ]))
+  // )(projectRuns)
 
-  console.log(projectRuns)
+  const filteredProjectRuns = R.compose(
+    R.filter(
+      R.compose(
+        R.or(R.equals('all', activeRunsFilter)),
+        R.propEq('status', activeRunsFilter)
+      )
+    )
+  )(projectRuns)
+
   return (
-    R.isEmpty(projectRuns) ?
+    R.isEmpty(filteredProjectRuns) ?
       <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
       <Segment basic>
         <Segment placeholder>
@@ -37,7 +67,7 @@ const ProjectRunsList = () => {
           (run, index) => (
             <RunCard key={index} {...{run}} />
           ),
-          projectRuns
+          filteredProjectRuns
         )
       }
       </Card.Group>
