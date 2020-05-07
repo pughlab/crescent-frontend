@@ -48,10 +48,9 @@ export default function useProjectDetailsQuery(projectID) {
       }
     }
   `, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
     variables: {projectID},
     onCompleted: ({project}) => {
-      console.log('project', project)
       setProject(project)
     }
   })

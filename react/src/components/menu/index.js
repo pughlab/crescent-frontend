@@ -7,9 +7,11 @@ import * as RA from 'ramda-adjunct'
 
 import Logo from '../login/logo.jpg'
 
-import Marquee from 'react-marquee'
 import InfoModal from '../info/InfoModal'
 import LoginModal from '../login/LoginModal'
+
+import ProjectHeader from './ProjectHeader'
+import RunHeader from './RunHeader'
 
 import {useDispatch} from 'react-redux'
 import {goHome, goBack} from '../../redux/actions/context'
@@ -72,15 +74,9 @@ const MenuComponent = ({
             content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
           />
         : isCurrentView('runs') ?
-          <Header
-            textAlign='center'
-            content={'Project name here'}
-          />
+          <ProjectHeader />
         : isCurrentView('results') ?
-          <Header textAlign='center'
-            content={'Project name here'}
-            subheader={'Run name here'}
-          />
+          <RunHeader />
         : null
       }
       </Grid.Column>

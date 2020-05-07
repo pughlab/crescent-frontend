@@ -6,7 +6,7 @@ export default function useRunDetails(runID) {
   const [run, setRun] = useState(null)
   const {loading, data, error} = useQuery(gql`
     query RunDetails($runID: ID) {
-      run(runID: $projectID) {
+      run(runID: $runID) {
         runID
         createdOn
         createdBy {
@@ -28,6 +28,7 @@ export default function useRunDetails(runID) {
         }
 
         project {
+          name
           createdBy {
             userID
             name
@@ -36,7 +37,7 @@ export default function useRunDetails(runID) {
       }
     }
   `, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: 'cache-and-network',
     variables: {runID},
     onCompleted: ({run}) => {
       setRun(run)
