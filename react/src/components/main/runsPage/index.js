@@ -8,11 +8,15 @@ import ArchiveProjectModal from './ArchiveProjectModal'
 import ShareProjectModal from './ShareProjectModal'
 import AddMetadataModal from './AddMetadataModal'
 
+import MergedProjectsDetails from './MergedProjectsDetails'
+import UploadedDatasetsDetails from './UploadedDatasetsDetails'
+
 import NewRunModal from './NewRunModal'
 import RunsStatusLegend from './RunsStatusLegend'
 import ProjectRunsList from './ProjectRunsList'
 
-import {Segment, Container, Button, Divider, Header, Popup, Label} from 'semantic-ui-react'
+
+import {Segment, Container, Button, Divider, Header, Popup, Label, Grid} from 'semantic-ui-react'
 
 import {useProjectDetailsQuery} from '../../../apollo/hooks'
 import {useCrescentContext} from '../../../redux/hooks'
@@ -37,7 +41,10 @@ const RunsPageComponent = ({
     },
     createdOn: projectCreatedOn,
     description,
-    externalUrls
+    externalUrls,
+
+    uploadedDatasets,
+    mergedProjects
   } = project
   const isUploadedProject = R.equals(projectKind, 'uploaded')
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
@@ -84,6 +91,25 @@ const RunsPageComponent = ({
           </>
         }
       </Segment>
+
+      {
+        R.and(R.isEmpty(uploadedDatasets), RA.isNotEmpty(mergedProjects)) ?
+          // {/* LIST OF MERGED PROJECTS  */}
+          <MergedProjectsDetails />
+        : R.and(R.isEmpty(mergedProjects), RA.isNotEmpty(uploadedDatasets)) ?
+          // {/* LIST OF UPLOADED DATASETS */}
+          <UploadedDatasetsDetails />
+        :
+          <Segment attached as={Grid} columns={2}>
+            <Grid.Column>  
+              <MergedProjectsDetails />
+            </Grid.Column>
+            <Grid.Column>
+              <UploadedDatasetsDetails />
+            </Grid.Column>
+          </Segment>
+      }
+
 
       <Segment attached>
         <Divider horizontal>
