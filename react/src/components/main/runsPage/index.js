@@ -10,6 +10,7 @@ import AddMetadataModal from './AddMetadataModal'
 
 import NewRunModal from './NewRunModal'
 import RunsStatusLegend from './RunsStatusLegend'
+import ProjectRunsList from './ProjectRunsList'
 
 import {Segment, Container, Button, Divider, Header, Popup, Label} from 'semantic-ui-react'
 
@@ -93,6 +94,8 @@ const RunsPageComponent = ({
         {/* SHOW RUNS BY STATUS */}
         {isUploadedProject && <RunsStatusLegend />}
         
+        <ProjectRunsList />
+
       </Segment>
       
     </Container>
