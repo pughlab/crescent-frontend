@@ -53,7 +53,6 @@ const RunsPageComponent = ({
         </Button.Group>
       }
 
-
       {/* PROJECT ABSTRACT AND DETAILS */}
       <Segment attached>
         <Divider horizontal>

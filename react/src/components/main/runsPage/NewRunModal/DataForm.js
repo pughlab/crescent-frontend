@@ -1,13 +1,12 @@
-import React, {useState, useEffect, useReducer} from 'react';
+import React from 'react'
 
-import {Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup, List} from 'semantic-ui-react'
+import {Segment, Header, Button, Label, Divider} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import withRedux from '../../../../redux/hoc'
 
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../../utils'
 
@@ -88,11 +87,6 @@ const ProjectDatasetSelect = ({
 
 
 const DataForm = ({
-  // app: {
-  //   user: {userID},
-  //   project: {projectID, mergedProjects, uploadedDatasets}
-  // },
-
   // Props
   project: {
     mergedProjects,
@@ -101,8 +95,6 @@ const DataForm = ({
 
   datasetsState, datasetsDispatch
 }) => {
-  const {userID} = useCrescentContext() 
-
   const selectedUploadedDatasets = R.intersection(
     R.pluck('datasetID', uploadedDatasets),
     datasetsState

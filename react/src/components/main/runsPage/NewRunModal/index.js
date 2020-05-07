@@ -34,9 +34,6 @@ const NewRunModal = ({
             R.without([datasetID]),
             R.append(datasetID)
           )(state)
-          // R.includes(datasetID, state) ?
-          //   R.without([datasetID], state)
-          //   : R.append(datasetID, state)
         case 'TOGGLE_MANY_DATASETS':
           const {datasetIDs} = action
           return R.union(datasetIDs, state)
