@@ -7,6 +7,21 @@ import * as RA from 'ramda-adjunct'
 import {useCrescentContext} from '../../../../redux/hooks'
 import {useToolParameterQuery, useUpdateRunParameterMutation} from '../../../../apollo/hooks'
 
+// Button to reset whatever input to its default value
+const ResetToDefaultValueButton = ({
+  onClick,
+  disabled
+}) => (
+  R.not(disabled) &&
+  <Form.Button fluid animated='vertical'
+    onClick={() => onClick()}
+  >
+    <Button.Content visible content={disabled ? 'Set to default value' : <Icon name='undo' />} />
+    <Button.Content hidden content={disabled ? 'You can not change this value' : 'Reset to default value?'} />
+  </Form.Button>
+)
+
+
 ////////////////
 // TYPES OF INPUT: float, range, integer, select
 ////////////////
@@ -29,23 +44,17 @@ const IntegerParameterInput = ({
   if (R.isNil(parameterValue)) {
     return null
   }
-  console.log('parameterValue', parameterValue)
 
   return (
     <Form loading={isLoading}>
       <Form.Input type='number' label={label} disabled={disabled}
         // error={warning}
         value={parseInt(parameterValue)}
-        onChange={
-          (e, {value}) => {
-            console.log('changing', value)
-            updateRunParameterValue({
-              variables: {value: parseInt(value)}
-            })
-          }
-        }
+        onChange={(e, {value}) => updateRunParameterValue({variables: {value: parseInt(value)}})}
       />
-      {/* <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} /> */}
+      <ResetToDefaultValueButton {...{disabled}}
+        onClick={() => updateRunParameterValue({variables: {value: parseInt(defaultValue)}})}
+      />
     </Form>
   )
 }
