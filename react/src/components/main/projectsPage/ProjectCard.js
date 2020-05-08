@@ -53,9 +53,9 @@ const ProjectCard = ({
               </Button>
             }
             content={
-              <Segment>
+              <Message>
                 {description}
-              </Segment>
+              </Message>
             }
           />
         <Card.Content>
