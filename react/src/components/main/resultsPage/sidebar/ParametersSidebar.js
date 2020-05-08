@@ -3,13 +3,11 @@ import * as R from 'ramda'
 
 import {Accordion, Dropdown, Icon} from 'semantic-ui-react'
 
-import TOOLS from '../TOOLS'
-
 import Fade from 'react-reveal/Fade'
 
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks'
 
 import {setActivePipelineStep} from '../../../../redux/actions/resultsPage'
 
@@ -52,18 +50,19 @@ const ParameterAccordionItem = ({
 const ParametersSidebar = ({
 
 }) => {
+  const toolSteps = useToolStepsQuery()
+  if (R.isNil(toolSteps)) {
+    return null
+  }
   return (
     <Accordion styled>
     {
-      R.compose(
-        R.addIndex(R.map)(
-          ({step, label}, index) => (
-            <ParameterAccordionItem key={index} {...{step, label}} />
-          )
+      R.map(
+        ({step, label}) => (
+          <ParameterAccordionItem key={step} {...{step, label}} />
         ),
-        R.map(R.pick(['step', 'label'])),
-        R.prop('SEURAT')
-      )(TOOLS)
+        toolSteps
+      )
     }
     </Accordion>
   )
