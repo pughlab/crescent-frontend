@@ -11,6 +11,7 @@ export default function useToolParameterQuery(parameter) {
   const {loading, data, error} = useQuery(gql`
     query ToolParameter($parameter: String) {
       toolParameter(parameter: $parameter) {
+        step
         parameter
         label
         prompt

@@ -37,6 +37,13 @@ const typeDefs = gql`
       datasetIDs: [ID]
     ): Run
 
+    updateRunParameterValue(
+      runID: ID!
+      step: String!,
+      parameter: String!,
+      value: ToolParameterValue!
+    ): Run
+
     submitRun(
       runID: ID,
       params: String

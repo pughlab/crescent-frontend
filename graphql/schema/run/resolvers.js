@@ -16,6 +16,7 @@ const resolvers = {
     },
     run: async (parent, {runID}, {Runs}) => {
       const run = await Runs.findOne({runID})
+      console.log(run)
       return run
     },
   },
@@ -47,6 +48,25 @@ const resolvers = {
         await run.save()
         // Make bucket for run
         await Minio.client.makeBucket(`run-${runID}`)
+        return run
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    updateRunParameterValue: async (
+      parent,
+      {runID, step, parameter, value},
+      {Runs}
+    ) => {
+      try {
+        const run = await Runs.findOne({runID})
+        // For non-QC parameters
+        const {parameters} = run
+        const newParameters = R.assocPath([step, parameter], value, parameters)
+        run.parameters = newParameters
+        await run.save()
+        console.log(run.runID, run.name, run.parameters)
         return run
       } catch (err) {
         console.log(err)

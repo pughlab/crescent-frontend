@@ -10,7 +10,6 @@ export default createReducer(
   initialState, {
     'resultsPage/setActiveSidebarTab': (state, payload) => {
       const {sidebarTab} = payload
-      console.log(sidebarTab)
       return R.evolve({
         activeSidebarTab: R.always(sidebarTab)
       })(state)
@@ -18,7 +17,6 @@ export default createReducer(
 
     'resultsPage/setActivePipelineStep': (state, payload) => {
       const {pipelineStep} = payload
-      console.log(pipelineStep)
       return R.evolve({
         activePipelineStep: R.always(pipelineStep)
       })(state)

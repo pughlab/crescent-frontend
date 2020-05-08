@@ -4,69 +4,68 @@ import { Button, Segment, Form, Message, Divider, Label, Input, Icon } from 'sem
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {useToolParameterQuery} from '../../../../apollo/hooks'
+import {useCrescentContext} from '../../../../redux/hooks'
+import {useToolParameterQuery, useUpdateRunParameterMutation} from '../../../../apollo/hooks'
 
 ////////////////
 // TYPES OF INPUT: float, range, integer, select
 ////////////////
-// const FloatParameterInput = ({
-//   parameter,
-//   // For local state
-//   value,
-//   setValue
-// }) => {
-//   const {
-//     label,
-//     prompt,
-//     description,
-//     input: {defaultValue, schema, step},
-//     disabled,
-//   } = parameter
-//   const [warning, setWarning] = useState(false)
-//   useEffect(
-//     () => {
-//       schema.isValid(value).then(
-//         valid => {
-//           setWarning(R.not(valid))
-//           console.log('valid float parameter', valid, value, parseFloat(value))
-//         }
-//       )
-//     }, [
-//       value
-//     ]
-//   )
-//   return (
-//     <ParameterInputMessage {...{parameter}}>
-//       <Form>
-//         <Form.Input
-//           label={label} value={parseFloat(value)} disabled={disabled}
-//           error={warning}
-//           type='number'
-//           step={step}
-//           placeholder={parseFloat(defaultValue)}
-//           onChange={(e, {value}) => setValue(parseFloat(value))}
-//         />
-//         <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} />
-//       </Form>
-//     </ParameterInputMessage>
-//   )
-// }
+const IntegerParameterInput = ({
+  toolParameter,
+}) => {
+  const {
+    step,
+    parameter,
+    label,
+    disabled,
+    input: {
+      defaultValue
+    }
+  } = toolParameter
+  const {runID} = useCrescentContext()
+  const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter})
+  
 
-
-const ParameterInput = ({parameterCode}) => {
-  const parameter = useToolParameterQuery(parameterCode)
-  if (R.isNil(parameter)) {
+  if (R.isNil(parameterValue)) {
     return null
   }
-  console.log(parameter)
+  console.log('parameterValue', parameterValue)
+
+  return (
+    <Form loading={isLoading}>
+      <Form.Input type='number' label={label} disabled={disabled}
+        // error={warning}
+        value={parseInt(parameterValue)}
+        onChange={
+          (e, {value}) => {
+            console.log('changing', value)
+            updateRunParameterValue({
+              variables: {value: parseInt(value)}
+            })
+          }
+        }
+      />
+      {/* <SetToDefaultValueButton {...{defaultValue, setValue, disabled}} /> */}
+    </Form>
+  )
+}
+
+const ParameterInput = ({parameterCode}) => {
+  const toolParameter = useToolParameterQuery(parameterCode)
+
+  if (R.any(R.isNil, [toolParameter])) {
+    return null
+  }
   const {
     prompt,
+    step,
+    parameter,
     description,
     disabled,
     input: {
       type
     }
-  } = parameter
+  } = toolParameter
   return (
     <Segment basic>
       <Message color='blue'>
@@ -86,8 +85,7 @@ const ParameterInput = ({parameterCode}) => {
                 // <FloatParameterInput {...{parameter, value, setValue}} />
               )],
               [R.equals('integer'), R.always(
-                'integer'
-                // <IntegerParameterInput {...{parameter, value, setValue}} />
+                <IntegerParameterInput {...{toolParameter}} />
               )],
               [R.equals('select'), R.always(
                 'select'

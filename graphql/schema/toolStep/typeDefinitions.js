@@ -2,8 +2,11 @@ const { gql } = require('apollo-server')
 
 const typeDefs = gql`
   scalar ToolParameterInput
+  # Used for updating run parameter values
+  scalar ToolParameterValue
 
   type ToolParameter {
+    step: String
     parameter: String
     label: String
     prompt: String

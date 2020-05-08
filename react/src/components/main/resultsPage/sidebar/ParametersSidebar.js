@@ -24,7 +24,6 @@ const ParameterAccordionItem = ({
   }
 
   const {status: runStatus} = run
-  console.log(step, activePipelineStep)
   const active = R.equals(step, activePipelineStep)
   const runStatusIsPending = R.equals('pending', runStatus)
   return (
