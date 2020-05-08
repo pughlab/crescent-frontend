@@ -1,10 +1,35 @@
-require('dotenv').config();
-const mongooseConnection = require('mongoose').connection;
-require('../database/mongo');
-const apolloServer = require('./server');
+require('dotenv').config()
+const mongooseConnection = require('mongoose').connection
+const {ToolStep} = require('../database/mongo')
+const apolloServer = require('./server')
 
+// For loading seurat tool info into mongo
+const R = require('ramda')
+const TOOLS = require('./TOOLS')
+const seuratToolSteps = R.compose(
+  R.flatten,
+  R.pluck('parameters'),
+  R.prop('SEURAT')
+)(TOOLS)
+
+// Load SEURAT tool steps into database then start GQL server
 mongooseConnection.once('open', () => {
-    apolloServer
-        .listen({ port: process.env.GRAPHQL_PORT })
-        .then(({ url }) => console.log(`🚀  Server ready at ${url}`));
-});
+  const loadSeuratPromise = new Promise((resolve, reject) => {
+    ToolStep.deleteMany({}, (err) => {
+      ToolStep.collection.insertMany(seuratToolSteps, (err, docs) => {
+        if (err) {
+          reject()
+        } else {
+          console.log('Loaded SEURAT tool details')
+          resolve(docs) 
+        }
+      })
+    })
+  })
+
+  loadSeuratPromise.then(
+    () => apolloServer
+      .listen({ port: process.env.GRAPHQL_PORT })
+      .then(({ url }) => console.log(`🚀  Server ready at ${url}`))
+  )
+})

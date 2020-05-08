@@ -20,11 +20,37 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUnsubmittedRun: async (parent, {name, projectID, userID, datasetIDs}, {Runs, Minio}) => {
-      const run = await Runs.create({name, projectID, createdBy: userID, datasetIDs})
-      const {runID} = run
-      await Minio.client.makeBucket(`run-${runID}`)
-      return run
+    createUnsubmittedRun: async (parent, {name, projectID, userID, datasetIDs}, {Runs, Minio, ToolSteps}) => {
+      try {
+        const run = await Runs.create({name, projectID, createdBy: userID, datasetIDs})
+        const {runID} = run
+        // Add default parameters
+        const defaultParameters = R.compose(
+          R.evolve({
+            // Copy default quality control parameters for each dataset
+            quality: R.compose(
+              R.zipObj(datasetIDs),
+              R.repeat(R.__, R.length(datasetIDs))
+            )
+          }),
+          R.map(
+            R.compose(
+              R.mergeAll,
+              R.map(({parameter, input: {defaultValue}}) => ({[parameter]: defaultValue}))
+            )
+          ),
+          R.groupBy(R.prop('step'))
+        )(await ToolSteps.find({}))
+
+        console.log(defaultParameters)
+        run.parameters = defaultParameters
+        await run.save()
+        // Make bucket for run
+        await Minio.client.makeBucket(`run-${runID}`)
+        return run
+      } catch (err) {
+        console.log(err)
+      }
     },
 
     // Determine how many datasets this run uses and submit

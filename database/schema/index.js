@@ -3,5 +3,6 @@ module.exports = {
   RunSchema: require('./run'),
   ProjectSchema: require('./project'),
   DatasetSchema: require('./dataset'),
-  UploadSchema: require('./upload')
+  ToolStepSchema: require('./toolStep')
+  // UploadSchema: require('./upload')
 }

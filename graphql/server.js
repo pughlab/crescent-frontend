@@ -37,6 +37,7 @@ const server = new ApolloServer({
       Projects: Models.Project,
       Runs: Models.Run,
       Datasets: Models.Dataset,
+      ToolSteps: Models.ToolStep,
 
       // MINIO
       Minio,

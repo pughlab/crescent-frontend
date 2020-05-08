@@ -1,12 +1,15 @@
 const { gql } = require('apollo-server')
 
 const typeDefs = gql`
+  scalar RunParameters
+
   type Run {
     runID: ID
     createdOn: Date
     createdBy: User
     name: String
     params: String
+    parameters: RunParameters
     projectID: ID
     project: Project
     status: String

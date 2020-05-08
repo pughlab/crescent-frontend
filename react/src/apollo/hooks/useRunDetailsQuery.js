@@ -15,6 +15,9 @@ export default function useRunDetails(runID) {
         }
         name
         params
+
+        parameters
+
         status
 
         submittedOn
