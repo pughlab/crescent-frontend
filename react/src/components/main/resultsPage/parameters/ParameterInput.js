@@ -28,23 +28,12 @@ const ResetToDefaultValueButton = ({
 const IntegerParameterInput = ({
   toolParameter,
 }) => {
-  const {
-    step,
-    parameter,
-    label,
-    disabled,
-    input: {
-      defaultValue
-    }
-  } = toolParameter
+  const {step, parameter, label, disabled, input: {defaultValue}} = toolParameter
   const {runID} = useCrescentContext()
   const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter})
-  
-
   if (R.isNil(parameterValue)) {
     return null
   }
-
   return (
     <Form loading={isLoading}>
       <Form.Input type='number' label={label} disabled={disabled}
@@ -58,7 +47,97 @@ const IntegerParameterInput = ({
     </Form>
   )
 }
+const FloatParameterInput = ({
+  toolParameter
+}) => {
+  const {step, parameter, label, disabled, input: {defaultValue}} = toolParameter
 
+  const {runID} = useCrescentContext()
+  const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter})
+  if (R.isNil(parameterValue)) {
+    return null
+  }
+  return (
+    <Form loading={isLoading}>
+      <Form.Input type='number' label={label} disabled={disabled}
+        // error={warning}
+        value={parseFloat(parameterValue)}
+        onChange={(e, {value}) => updateRunParameterValue({variables: {value: parseFloat(value)}})}
+      />
+      <ResetToDefaultValueButton {...{disabled}}
+        onClick={() => updateRunParameterValue({variables: {value: parseFloat(defaultValue)}})}
+      />
+    </Form>
+  )
+}
+const RangeParameterInput = ({
+  toolParameter,
+}) => {
+  const {step, parameter, label, disabled, input: {defaultValue}} = toolParameter
+  const {min: defaultMin, max: defaultMax} = defaultValue
+  const {runID} = useCrescentContext()
+  const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter})
+  if (R.isNil(parameterValue)) {
+    return null
+  }
+  const {min, max} = parameterValue
+  return (
+    <Form>
+      <Form.Group widths={2}>
+        <Form.Input disabled={disabled}
+          // error={warning}
+          type='number'
+          step={step}
+          placeholder={defaultMin}
+          label={`Min ${label}`}
+          value={min}
+          onChange={(e, {value: newMin}) => updateRunParameterValue({variables: {value: {min: Number(newMin), max}}})}
+        />
+        <Form.Input disabled={disabled}
+          // error={warning}
+          step={step}
+          type='number'
+          placeholder={defaultMax}
+          label={`Max ${label}`}
+          value={max}
+          onChange={(e, {value: newMax}) => updateRunParameterValue({variables: {value: {min, max: Number(newMax)}}})}
+        />
+      </Form.Group>
+      <ResetToDefaultValueButton {...{disabled}}
+        onClick={() => updateRunParameterValue({variables: {value: defaultValue}})}
+      />
+    </Form>
+  ) 
+}
+const SelectParameterInput = ({
+  toolParameter
+}) => {
+  const {step, parameter, label, disabled, input: {defaultValue, options}} = toolParameter
+
+  const {runID} = useCrescentContext()
+  const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter})
+  if (R.isNil(parameterValue)) {
+    return null
+  }
+  return (
+    <Form loading={isLoading}>
+      <Form.Dropdown selection search
+        placeholder={defaultValue}
+        disabled={disabled}
+        options={options}
+        label={label}
+        value={parameterValue}
+        onChange={(e, {value}) => updateRunParameterValue({variables: {value}})}
+      />
+      <ResetToDefaultValueButton {...{disabled}}
+        onClick={() => updateRunParameterValue({variables: {value: defaultValue}})}
+      />
+    </Form>
+  )
+}
+
+
+// 
 const ParameterInput = ({parameterCode}) => {
   const toolParameter = useToolParameterQuery(parameterCode)
 
@@ -86,19 +165,16 @@ const ParameterInput = ({parameterCode}) => {
           {
             R.cond([
               [R.equals('range'), R.always(
-                'range'
-                // <RangeParameterInput {...{parameter, value, setValue}} />
+                <RangeParameterInput {...{toolParameter}} />
               )],
               [R.equals('float'), R.always(
-                'float'
-                // <FloatParameterInput {...{parameter, value, setValue}} />
+                <FloatParameterInput {...{toolParameter}} />
               )],
               [R.equals('integer'), R.always(
                 <IntegerParameterInput {...{toolParameter}} />
               )],
               [R.equals('select'), R.always(
-                'select'
-                // <SelectParameterInput {...{parameter, value, setValue}} />
+                <SelectParameterInput {...{toolParameter}} />
               )],
             ])(type)
           }
