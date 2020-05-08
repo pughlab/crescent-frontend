@@ -16,6 +16,9 @@ export default function useProjectRunsQuery(projectID) {
         }
         name
         params
+
+        parameters
+        
         status
 
         submittedOn

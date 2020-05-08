@@ -14,6 +14,41 @@ import {useCrescentContext} from '../../../../redux/hooks'
 import {setRun} from '../../../../redux/actions/context'
 import {useRunDetailsQuery} from '../../../../apollo/hooks'
 
+const ParameterPopoverContent = ({
+  parameters
+}) => {
+  const {
+    normalization,
+    reduction,
+    clustering,
+    expression
+  } = parameters
+  const parameterValues = R.compose(
+    // R.flatten,
+    R.unnest,
+    R.values,
+    R.map(R.toPairs)
+  )([normalization, reduction, clustering, expression])
+  console.log(parameterValues)
+  return (
+    <Message>
+      <Message.Content>
+        <Divider horizontal content='Parameters' />
+        <Label.Group>
+        {
+          R.map(
+            ([parameterKey, parameterValue]) => (
+              <Label content={parameterKey} detail={parameterValue} />
+            ),
+            parameterValues
+          )
+        }
+        </Label.Group>
+      </Message.Content>
+    </Message>
+  )
+}
+
 const RunCard = ({
   run
 }) => {
@@ -21,7 +56,8 @@ const RunCard = ({
   const {userID: currentUserID} = useCrescentContext()
 
   const {
-    runID, name, params,
+    runID, name,
+    parameters,
     createdBy: {
       userID: runCreatorUserID,
       name: creatorName
@@ -57,15 +93,7 @@ const RunCard = ({
           </Button>
         }
       >
-        <Message>
-          <Message.Header content='Run Parameters' />
-          {
-            RA.isNotNil(params) ?
-              'Params go here once in database'
-            :
-              <Divider horizontal content='No parameters saved yet' />
-          }
-        </Message>
+        <ParameterPopoverContent {...{parameters}} />
       </Popup>
 
       <Card.Content>
