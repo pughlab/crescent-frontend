@@ -4,9 +4,19 @@ import { gql } from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
-export default function useUpdateRunParameterMutation({runID, step, parameter}) {
+export default function useUpdateRunParameterMutation({
+  runID,
+  step,
+  parameter,
+  datasetID
+}) {
   const [parameterValue, setParameterValue] = useState(null)
-  const parameterValuePath = R.path(['parameters', step, parameter])
+  const parameterValuePath = R.path([
+    'parameters',
+    step,
+    // In case of step being quality control then datasetID is nonnull
+    ... R.isNil(datasetID) ? [parameter] : [datasetID, parameter]
+  ])
   const {loading: loadingQuery, data, error, refetch} = useQuery(gql`
     query RunParameters($runID: ID) {
       run(runID: $runID) {

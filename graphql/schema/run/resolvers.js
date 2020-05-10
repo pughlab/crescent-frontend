@@ -63,7 +63,14 @@ const resolvers = {
         const run = await Runs.findOne({runID})
         // For non-QC parameters
         const {parameters} = run
-        const newParameters = R.assocPath([step, parameter], value, parameters)
+        let newParameters
+        if (R.equals(step, 'quality')) {
+          const {value: newValue, datasetID} = value
+          newParameters = R.assocPath([step, datasetID, parameter], newValue, parameters)
+        } else {
+          newParameters = R.assocPath([step, parameter], value, parameters)
+        }
+        console.log(newParameters)
         run.parameters = newParameters
         await run.save()
         console.log(run.runID, run.name, run.parameters)

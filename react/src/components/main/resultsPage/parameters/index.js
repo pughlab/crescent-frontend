@@ -3,7 +3,8 @@ import * as R from 'ramda'
 
 import {Segment, Transition, Header, Icon} from 'semantic-ui-react'
 
-import ParameterInput from './ParameterInput'
+import PipelineParameter from './PipelineParameter'
+import QualityControlParametersComponent from './QualityControl'
 
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks'
@@ -43,56 +44,21 @@ const ParametersComponent = ({
     )
   }
 
-
   return (
     <Segment style={{height: '100%'}} color='blue'>
     {
-      R.compose(
-        R.map(
-          ({parameter: parameterCode}) => (
-            <ParameterInput key={parameterCode} {...{parameterCode}} />
-          )
-        ),
-        R.prop('parameters'),
-        R.find(R.propEq('step', activePipelineStep))
-      )(toolSteps)
-        // R.compose(
-        //   R.addIndex(R.map)(
-        //     (parameter, index) => {
-        //       const {parameter: parameterName, input: {type, defaultValue}, disabled} = parameter
-        //       const setValue = undefined
-        //       const value = defaultValue
-        //       // const setValue = R.prop(parameterName, valueSetters)
-        //       // const value = R.prop(parameterName, values)
-        //       return R.cond([
-        //         [R.equals('range'), R.always(
-        //           <RangeParameterInput
-        //             {...{parameter, value, setValue}}
-        //           />
-        //         )],
-        //         [R.equals('float'), R.always(
-        //           <FloatParameterInput
-        //             {...{parameter, value, setValue}}
-        //           />
-        //         )],
-        //         [R.equals('integer'), R.always(
-        //           <IntegerParameterInput
-        //             {...{parameter, value, setValue
-        //             }}
-        //           />
-        //         )],
-        //         [R.equals('select'), R.always(
-        //           <SelectParameterInput
-        //             {...{parameter, value, setValue}}
-        //           />
-        //         )],
-        //       ])(type)
-        //     },
-        //   ),
-        //   R.prop('parameters'),
-        //   R.find(R.propEq('step', activePipelineStep)),
-        //   R.prop('SEURAT')
-        // )(TOOLS)
+      R.equals('quality', activePipelineStep) ? 
+        <QualityControlParametersComponent />
+      : 
+        R.compose(
+          R.map(
+            ({parameter: parameterCode}) => (
+              <PipelineParameter key={parameterCode} {...{parameterCode}} />
+            )
+          ),
+          R.prop('parameters'),
+          R.find(R.propEq('step', activePipelineStep))
+        )(toolSteps)
       }
     </Segment>
   )
