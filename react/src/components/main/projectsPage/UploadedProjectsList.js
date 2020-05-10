@@ -6,7 +6,7 @@ import * as RA from 'ramda-adjunct'
 import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup, Segment} from 'semantic-ui-react'
 
 import {useUserProjectsQuery} from '../../../apollo/hooks'
-import {useCrescentContext} from '../../../redux/hooks'
+import {useCrescentContext, useProjectsPage} from '../../../redux/hooks'
 
 import ProjectCard from './ProjectCard'
 import NewProjectModal from './NewProjectModal'
@@ -14,8 +14,12 @@ import NewProjectModal from './NewProjectModal'
 import Fade from 'react-reveal/Fade'
 import {ClimbingBoxLoader} from 'react-spinners'
 
+import Fuse from 'fuse.js'
+
 const UploadedProjectsList = ({
 }) => {
+  const {searchFilter} = useProjectsPage()
+
   // GQL query to find all projects of which user is a member of
   const {userID} = useCrescentContext()
   const userProjects = useUserProjectsQuery(userID)
@@ -33,6 +37,19 @@ const UploadedProjectsList = ({
     )
   }
 
+  // Filtering
+  const filterBySearchText = projects => {
+    if (R.isEmpty(searchFilter)) {
+      return projects
+    } else {
+      const fuse = new Fuse(projects, {keys: ['name', 'description']})
+      return R.pluck('item', fuse.search(searchFilter))
+    }
+  }
+  const filteredProjects = R.compose(
+    filterBySearchText
+  )(userProjects)
+
   return (
     <>
     
@@ -40,7 +57,7 @@ const UploadedProjectsList = ({
     
     <Divider horizontal />
     {
-      R.isEmpty(userProjects) ?
+      R.isEmpty(filteredProjects) ?
         <Fade>
         <Segment basic>
           <Segment placeholder>
@@ -54,12 +71,9 @@ const UploadedProjectsList = ({
       :
         <Card.Group itemsPerRow={3}>
         {
-          R.addIndex(R.map)(
-            (project, index) => (
-              <ProjectCard key={index} {...{project}} />
-            ),
-            userProjects
-          )
+          R.compose(
+            R.addIndex(R.map)((project, index) => <ProjectCard key={index} {...{project}} />)
+          )(filteredProjects)
         }
         </Card.Group>
     }

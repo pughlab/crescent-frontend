@@ -2,7 +2,8 @@ import * as R from 'ramda'
 import createReducer from './createReducer'
 
 const initialState = {
-  activeProjectKind: 'public' // 'uploaded' 
+  activeProjectKind: 'public', // 'uploaded' 
+  searchFilter: ''
 }
 
 export default createReducer(
@@ -11,6 +12,13 @@ export default createReducer(
       const {projectKind} = payload
       return R.evolve({
         activeProjectKind: R.always(projectKind)
+      })(state)
+    },
+
+    'projectsPage/setSearchFilter': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        searchFilter: R.always(value)
       })(state)
     },
 

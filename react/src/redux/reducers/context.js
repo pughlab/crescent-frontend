@@ -11,7 +11,7 @@ const initialState = {
   view: 'projects', // 'runs' || 'results'
 
   // Put any apollo error here to trigger modal
-  error: 'asd'
+  error: null
 }
 
 export default createReducer(

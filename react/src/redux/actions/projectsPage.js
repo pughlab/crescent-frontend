@@ -7,9 +7,17 @@ const setActiveProjectKind = ({projectKind}) => ({
   }
 })
 
+const setSearchFilter = ({value}) => ({
+  type: 'projectsPage/setSearchFilter',
+  payload: {
+    value
+  }
+})
+
 const resetProjectsPage = R.always({type: 'projectsPage/reset'})
 
 export {
   setActiveProjectKind,
+  setSearchFilter,
   resetProjectsPage
 }

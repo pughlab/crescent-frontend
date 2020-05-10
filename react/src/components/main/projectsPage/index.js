@@ -13,6 +13,7 @@ import {resetProjectsPage, setActiveProjectKind} from '../../../redux/actions/pr
 import PublicProjectsList from './PublicProjectsList'
 import UploadedProjectsList from './UploadedProjectsList'
 
+import ProjectSearchInput from './ProjectSearchInput'
 
 const ProjectsPageComponent = ({
 
@@ -30,7 +31,7 @@ const ProjectsPageComponent = ({
         <Header size='large' content={'PROJECTS'} subheader={'Select a public project or upload data to begin'} />
       </Divider>
 
-      <Button.Group fluid widths={2}>
+      <Button.Group fluid widths={2} attached='top'>
         <Button color='black'
           onClick={() => dispatch(setActiveProjectKind({projectKind: 'public'}))}
           active={isActiveProjectKind('public')} 
@@ -53,6 +54,10 @@ const ProjectsPageComponent = ({
           />
         </Button>
       </Button.Group>
+
+      <ProjectSearchInput />
+
+
       <Divider hidden horizontal />
       {
         isActiveProjectKind('uploaded') ?
