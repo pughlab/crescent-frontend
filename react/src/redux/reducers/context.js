@@ -1,5 +1,6 @@
 
 import * as R from 'ramda'
+import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
 
 const initialState = {
@@ -7,7 +8,10 @@ const initialState = {
   isGuest: true,
   projectID: null,
   runID: null,
-  view: 'projects' // 'runs' || 'results'
+  view: 'projects', // 'runs' || 'results'
+
+  // Put any apollo error here to trigger modal
+  error: 'asd'
 }
 
 export default createReducer(
@@ -24,8 +28,8 @@ export default createReducer(
       return R.evolve({
         userID,
         isGuest,
-        projectID: R.always(null),
-        runID: R.always(null),
+        projectID: R_.alwaysNull,
+        runID: R_.alwaysNull,
         view: R.always('projects')
       })(state)
     },
@@ -52,9 +56,10 @@ export default createReducer(
     'context/goHome': (state, payload) => {
       console.log('gohome', state)
       return R.evolve({
-        projectID: R.always(null),
-        runID: R.always(null),
-        view: R.always('projects')
+        projectID: R_.alwaysNull,
+        runID: R_.alwaysNull,
+        view: R.always('projects'),
+        error: R_.alwaysNull
       })(state)
     },
     
@@ -69,9 +74,9 @@ export default createReducer(
         })
       )(currentView)
       // Going back will always unselect run
-      const runID = R.always(null)
+      const runID = R_.alwaysNull
       // Reset project if going back from runs page
-      const projectID = R.equals(currentView, 'runs') ? R.always(null) : R.identity
+      const projectID = R.equals(currentView, 'runs') ? R_.alwaysNull : R.identity
       return R.evolve({
         projectID,
         runID,

@@ -10,6 +10,7 @@ import MenuComponent from './components/menu'
 import ProjectsPageComponent from './components/main/projectsPage'
 import RunsPageComponent from './components/main/runsPage'
 import ResultsPageComponent from './components/main/resultsPage'
+import ErrorComponent from './components/error'
 
 import {useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
@@ -22,10 +23,11 @@ import {useCrescentContext} from './redux/hooks'
 
 const App = () => {
   const context = useCrescentContext()
-  const {view, userID, projectID, runID} = context
+  const {view, userID, projectID, runID, error} = context
   const dispatch = useDispatch()
   
-  const [createGuestUser, {loading, data, error}] = useMutation(gql`
+  // TODO: put into custom hoook
+  const [createGuestUser] = useMutation(gql`
     mutation CreateGuestUser {
       createGuestUser {
         userID
@@ -49,6 +51,13 @@ const App = () => {
   }, [userID])
 
   const stickyRef = useRef()
+
+  if (RA.isNotNil(error)) {
+    return (
+      <ErrorComponent />
+    )
+  }
+
   return (
     <div ref={stickyRef} style={{minHeight: '100vh'}}>
       <Sticky context={stickyRef}>
