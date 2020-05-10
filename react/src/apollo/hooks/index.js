@@ -10,6 +10,8 @@ import useToolParameterQuery from './useToolParameterQuery'
 import useRunDatasetsQuery from './useRunDatasetsQuery'
 
 import useUpdateRunParameterMutation from './useUpdateRunParameterMutation'
+
+import useGraphene from './useGraphene'
 export {
   useUserQuery,
   useUserProjectsQuery,
@@ -22,5 +24,7 @@ export {
   useToolParameterQuery,
   useRunDatasetsQuery,
 
-  useUpdateRunParameterMutation
+  useUpdateRunParameterMutation,
+
+  useGraphene
 }

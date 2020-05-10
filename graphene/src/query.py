@@ -4,8 +4,18 @@ from schema.minio_bucket import MinioBucket
 from schema.loom_file import LoomFile
 from minio_client.client import minio_client
 
+# Test for apollo client in hooks
+class Test(ObjectType):
+  test_field = String()
+  def resolve_test_field(parent, info):
+    return parent['testParentField']
+
 # Define your queries and their resolvers here
 class Query(ObjectType):
+  test = Field(Test)
+  def resolve_test(parent, info):
+    return {'testParentField': 'somefield'}
+
   # Field method specifies return type and arguments
   result = Field(Result, run_ID=ID(required=True))
   # Must have resolve_ prefix
@@ -26,4 +36,5 @@ class Query(ObjectType):
     object_name=String(required=True))
   def resolve_loom_file(parent, info, bucket_name, object_name):
     return {'bucket_name': bucket_name, 'object_name': object_name}
+
 
