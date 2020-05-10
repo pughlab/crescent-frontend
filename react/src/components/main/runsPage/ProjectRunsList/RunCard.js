@@ -29,7 +29,7 @@ const ParameterPopoverContent = ({
     R.values,
     R.map(R.toPairs)
   )([normalization, reduction, clustering, expression])
-  console.log(parameterValues)
+  // console.log(parameterValues)
   return (
     <Message>
       <Message.Content>
@@ -38,7 +38,7 @@ const ParameterPopoverContent = ({
         {
           R.map(
             ([parameterKey, parameterValue]) => (
-              <Label content={parameterKey} detail={parameterValue} />
+              <Label key={parameterKey} content={parameterKey} detail={parameterValue} />
             ),
             parameterValues
           )
