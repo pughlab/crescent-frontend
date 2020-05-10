@@ -1,79 +1,38 @@
 import React, {useState, useEffect} from 'react';
 
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import moment from 'moment'
-
-import {queryIsNotNil} from '../../../utils'
-
 
 import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup, Segment} from 'semantic-ui-react'
 
-// import withRedux from '../../../redux/hoc'
+import {useUserProjectsQuery} from '../../../apollo/hooks'
 import {useCrescentContext} from '../../../redux/hooks'
 
 import ProjectCard from './ProjectCard'
 import NewProjectModal from './NewProjectModal'
 
+import Fade from 'react-reveal/Fade'
+import {ClimbingBoxLoader} from 'react-spinners'
 
 const UploadedProjectsList = ({
 }) => {
   // GQL query to find all projects of which user is a member of
   const {userID} = useCrescentContext()
-  const {loading, data, error} = useQuery(gql`
-    query UserProjects($userID: ID) {
-      projects(userID: $userID) {
-        projectID
-        name
-        kind
-        description
-        externalUrls {
-          label
-          link
-          type
-        }
-        createdOn
-        createdBy {
-          name
-          userID
-        }
-        
-        runs {
-          runID
-          name
-          status
-        }
+  const userProjects = useUserProjectsQuery(userID)
+  if (R.isNil(userProjects)) {
+    return (
+      <Fade>
+      <Segment basic>
+        <Segment placeholder>
+          <Header textAlign='center' icon>
+            <ClimbingBoxLoader />
+          </Header>
+        </Segment>
+      </Segment>
+      </Fade>
+    )
+  }
 
-        mergedProjects {
-          projectID
-          name
-        }
-        uploadedDatasets {
-          datasetID
-          name
-          size
-        }
-
-        datasetSize
-
-        cancerTag
-        oncotreeTissue {
-          name
-          code
-        }
-      }
-    }
-  `, {
-    fetchPolicy: 'network-only',
-    variables: {userID}
-  })
-  const userProjects = R.ifElse(
-    queryIsNotNil('projects'),
-    R.prop('projects'),
-    R.always([])
-  )(data)
   return (
     <>
     
@@ -82,7 +41,7 @@ const UploadedProjectsList = ({
     <Divider horizontal />
     {
       R.isEmpty(userProjects) ?
-        <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
+        <Fade>
         <Segment basic>
           <Segment placeholder>
             <Header icon>
@@ -91,7 +50,7 @@ const UploadedProjectsList = ({
             </Header>
           </Segment>
         </Segment>
-        </Transition>
+        </Fade>
       :
         <Card.Group itemsPerRow={3}>
         {

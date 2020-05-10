@@ -1,4 +1,7 @@
 import useUserQuery from './useUserQuery'
+import useUserProjectsQuery from './useUserProjectsQuery'
+import useCuratedProjectsQuery from './useCuratedProjectsQuery'
+
 import useProjectRunsQuery from './useProjectRunsQuery'
 import useProjectDetailsQuery from './useProjectDetailsQuery'
 import useRunDetailsQuery from './useRunDetailsQuery'
@@ -9,6 +12,9 @@ import useRunDatasetsQuery from './useRunDatasetsQuery'
 import useUpdateRunParameterMutation from './useUpdateRunParameterMutation'
 export {
   useUserQuery,
+  useUserProjectsQuery,
+  useCuratedProjectsQuery,
+
   useProjectRunsQuery,
   useProjectDetailsQuery,
   useRunDetailsQuery,
