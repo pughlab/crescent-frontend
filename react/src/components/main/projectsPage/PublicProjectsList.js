@@ -62,7 +62,7 @@ const PublicProjectsList = () => {
       <Card.Group itemsPerRow={3}>
       {
         R.compose(
-          R.addIndex(R.map)((project, index) => <ProjectCard key={index} {...{project}} />)
+          R.map(({projectID}) => <ProjectCard key={projectID} {...{projectID}} />)
         )(filteredProjects)
       }
       </Card.Group>

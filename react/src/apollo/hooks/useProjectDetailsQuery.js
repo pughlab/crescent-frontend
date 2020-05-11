@@ -38,12 +38,12 @@ export default function useProjectDetailsQuery(projectID) {
           size
         }
 
-        datasetSize
-
-        cancerTag
-        oncotreeTissue {
+        allDatasets {
+          datasetID
           name
-          code
+          size
+          cancerTag
+          oncotreeCode
         }
       }
     }

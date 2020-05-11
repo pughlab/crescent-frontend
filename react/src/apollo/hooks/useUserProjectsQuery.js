@@ -13,43 +13,6 @@ export default function useUserProjectsQuery(userID) {
     query UserProjects($userID: ID) {
       projects(userID: $userID) {
         projectID
-        name
-        kind
-        description
-        externalUrls {
-          label
-          link
-          type
-        }
-        createdOn
-        createdBy {
-          name
-          userID
-        }
-        
-        runs {
-          runID
-          name
-          status
-        }
-
-        mergedProjects {
-          projectID
-          name
-        }
-        uploadedDatasets {
-          datasetID
-          name
-          size
-        }
-
-        datasetSize
-
-        cancerTag
-        oncotreeTissue {
-          name
-          code
-        }
       }
     }
   `, {

@@ -14,7 +14,7 @@ const ProjectSearchInput = ({
   const {searchFilter} = useProjectsPage()
   return (
     <>
-    <Segment attached='bottom'>
+    <Segment attached='bottom' color='black'>
       <Input fluid size='large'
         placeholder='Search project names and descriptions'
         value={searchFilter}

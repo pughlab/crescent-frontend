@@ -13,42 +13,6 @@ export default function useCuratedProjectsQuery() {
     query {
       curatedProjects {
         projectID
-        name
-        kind
-        description
-        externalUrls {
-          label
-          link
-          type
-        }
-        createdOn
-        createdBy {
-          name
-          userID
-        }
-        
-        runs {
-          runID
-          name
-          status
-        }
-
-        mergedProjects {
-          projectID
-          name
-        }
-        uploadedDatasets {
-          datasetID
-          name
-        }
-
-        datasetSize
-
-        cancerTag
-        oncotreeTissue {
-          name
-          code
-        }
       }
     }
   `, {

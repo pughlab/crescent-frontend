@@ -13,13 +13,20 @@ import Marquee from 'react-marquee'
 
 import {useDispatch} from 'react-redux'
 import {setProject} from '../../../redux/actions/context'
+import {useProjectDetailsQuery} from '../../../apollo/hooks'
 
 const ProjectCard = ({
   // Prop
-  project
+  projectID
 }) => {
+  const dispatch = useDispatch()
+  const project = useProjectDetailsQuery(projectID)
+
+  if (R.isNil(project)) {
+    return null
+  }
+
   const {
-    projectID,
     name,
     description,
     createdBy: {name: creatorName},
@@ -27,16 +34,11 @@ const ProjectCard = ({
 
     runs, // {runID, name, status}
 
-    datasetSize,
-
     mergedProjects,
     uploadedDatasets,
 
-    cancerTag,
-    oncotreeTissue: {name: oncotreeTissueName}
+    allDatasets
   } = project
-
-  const dispatch = useDispatch()
 
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
@@ -44,7 +46,7 @@ const ProjectCard = ({
         onClick={() => dispatch(setProject({project}))}
       >
         <Popup
-            size='large' wide='very'
+            size='huge' wide='very'
             trigger={
               <Button attached='top' color='grey' animated='vertical'>
                 <Button.Content>
@@ -53,9 +55,63 @@ const ProjectCard = ({
               </Button>
             }
             content={
-              <Message>
-                {description}
-              </Message>
+              <>
+                <Segment>
+                  {description}
+                </Segment>
+              <Segment.Group>
+                <Segment>
+                  <Label.Group>
+                    <Label>
+                      <Icon name='user' />
+                      {'Created by'}
+                      <Label.Detail content={creatorName} />
+                    </Label>
+                    <Label >
+                      <Icon name='calendar alternate outline' />
+                      {'Created on'}
+                      <Label.Detail content={moment(createdOn).format('D MMMM YYYY')} />
+                    </Label>
+                  </Label.Group>
+                </Segment>
+
+                <Segment>
+                  <Label.Group>
+                    {
+                      RA.isNotEmpty(mergedProjects) &&
+                      <Label>
+                        <Icon name='folder open' />
+                        {'Merged Projects'}
+                        <Label.Detail content={R.length(mergedProjects)} />
+                      </Label>
+                    }
+                    {
+                      RA.isNotEmpty(uploadedDatasets) &&
+                      <Label>
+                        <Icon name='upload' />
+                        {'Uploaded Datasets'}
+                        <Label.Detail content={R.length(uploadedDatasets)} />
+                      </Label>
+                    }
+                  </Label.Group>
+                  <Divider horizontal content='Datasets' />
+                  <Label.Group size='tiny'>
+                  {
+                    R.map(
+                      ({datasetID, name, cancerTag, oncotreeCode}) => (
+                        <Label key={datasetID}>
+                          {name}
+                          {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'Cancer' : 'Non-cancer'} />}
+                          {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+                        </Label>
+                      ),
+                      allDatasets
+                    )
+                  }
+                  </Label.Group>
+                </Segment>
+              </Segment.Group>
+              </>
             }
           />
         <Card.Content>
@@ -67,33 +123,10 @@ const ProjectCard = ({
             </Header>
           </Card.Header>
         </Card.Content>
-        <Card.Content>
-          <Label.Group size='small'>
-            <Label content={<Icon style={{margin: 0}} name='user' />} detail={creatorName} />
-            <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
-            {/* <Label content={<Icon style={{margin: 0}} name='certificate' />} detail={'1000000'} /> */}
-            {/* <Label content={<Icon style={{margin: 0}} name='save' />} detail={filesize(datasetSize)} /> */}
-            {/* <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='cancer' />
-            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail='mouse' /> */}
-
-            {
-              RA.isNotEmpty(mergedProjects) &&
-              <Label content={<Icon style={{margin: 0}} name='folder open' />} detail={R.length(mergedProjects)} />
-            }
-            {
-              RA.isNotEmpty(uploadedDatasets) &&
-              <Label content={<Icon style={{margin: 0}} name='upload' />} detail={R.length(uploadedDatasets)} />
-            }
-          </Label.Group>
-          <Label.Group size='small' color='blue'>
-            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail={cancerTag ? 'Cancer' : 'Non-cancer'} />
-            <Label content={<Icon style={{margin: 0}} name='hashtag' />} detail={oncotreeTissueName} />
-          </Label.Group>
-        </Card.Content>
         {
           R.ifElse(
             R.isEmpty,
-            R.always(null),
+            R_.alwaysNull,
             runs => (
               <Card.Content>
                 <Label.Group size='small'>
