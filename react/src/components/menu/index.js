@@ -45,26 +45,29 @@ const MenuComponent = ({
           />
 
           {/* Back button even though there's only three pages... */}
-          <Popup inverted 
-            disabled={isCurrentView('projects')}
-            trigger={
-              <Button icon basic inverted color='grey'
-                disabled={isCurrentView('projects')}
-                onClick={() => {dispatch(goBack())}}
-              >
-                <Icon color='black' name='left arrow' size='large' />
-              </Button>
-            }
-            content={
-              isCurrentView('projects') ? 'Back' //Will be disabled anyway
-              : isCurrentView('runs') ?
-                'Go back to projects'
-              : isCurrentView('results') ?
-                'Go back to runs'
-              : 'Back' //Should also never be reached
-            }
-            position='bottom center'
-          />
+          {
+            R.not(isCurrentView('projects')) &&
+            <Popup inverted 
+              disabled={isCurrentView('projects')}
+              trigger={
+                <Button icon basic inverted color='grey'
+                  disabled={isCurrentView('projects')}
+                  onClick={() => {dispatch(goBack())}}
+                >
+                  <Icon color='black' name='left arrow' size='large' />
+                </Button>
+              }
+              content={
+                isCurrentView('projects') ? 'Back' //Will be disabled anyway
+                : isCurrentView('runs') ?
+                  'Go back to projects'
+                : isCurrentView('results') ?
+                  'Go back to runs'
+                : 'Back' //Should also never be reached
+              }
+              position='bottom center'
+            />
+          }
         </Button.Group>
       </Grid.Column>
       <Grid.Column width={12} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
