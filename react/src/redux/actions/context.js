@@ -6,10 +6,10 @@ const setUser = ({user}) => ({
     user
   }
 })
-const setProject = ({project}) => ({
+const setProject = ({projectID}) => ({
   type: 'context/setProject',
   payload: {
-    project
+    projectID
   }
 })
 

@@ -43,7 +43,7 @@ const ProjectCard = ({
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
       <Card link color='grey'
-        onClick={() => dispatch(setProject({project}))}
+        onClick={() => dispatch(setProject({projectID}))}
       >
         <Popup
             size='huge' wide='very'

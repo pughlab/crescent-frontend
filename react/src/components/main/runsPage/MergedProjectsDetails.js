@@ -12,12 +12,14 @@ import {setProject} from '../../../redux/actions/context'
 import {useDispatch} from 'react-redux'
 
 const ViewProjectModal = ({
-  // Props
-  name,
   projectID
 }) => {
   const dispatch = useDispatch()
   const project = useProjectDetailsQuery(projectID)
+  if (R.isNil(project)) {
+    return null
+  }
+  const {name, createdBy: {name: creatorName}, description} = project
   return (
     <Modal
       trigger={
@@ -31,29 +33,17 @@ const ViewProjectModal = ({
           <Icon name='folder open' />
           {name}
           <Header.Subheader>
-          {
-            R.ifElse(
-              R.isNil,
-              R.always(null),
-              ({createdBy: {name}}) => <i>{`Created by ${name}`}</i>
-            )(project)
-          }
+            <i>{`Created by ${creatorName}`}</i>
           </Header.Subheader>
           <Header.Subheader>
-          {
-            R.ifElse(
-              R.isNil,
-              R.always(null),
-              R.prop('description')
-            )(project)
-          }
+          {description}
           </Header.Subheader>
         </Header>
         {
           RA.isNotNil(project) &&
           <Button fluid
             content='View this project'
-            onClick={() => dispatch(setProject({project}))}
+            onClick={() => dispatch(setProject({projectID}))}
           />
         }
       </Modal.Content>
@@ -78,8 +68,8 @@ const MergedProjectsDetails = ({
       <Label.Group size='large'>
       {
         R.map(
-          ({name, projectID}) => (
-            <ViewProjectModal key={projectID} {...{name, projectID}} />
+          ({projectID}) => (
+            <ViewProjectModal key={projectID} {...{projectID}} />
           ),
           mergedProjects
         )

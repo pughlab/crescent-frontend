@@ -43,27 +43,6 @@ const CreateProjectButton = ({
         cancerTag: $cancerTag,
       ) {
         projectID
-        name
-        kind
-        description
-        createdOn
-        createdBy {
-          name
-          userID
-        }
-        
-        runs {
-          runID
-          name
-          status
-        }
-
-        mergedProjects {
-          name
-          projectID
-        }
-
-        datasetSize
       }
     }
   `, {
@@ -75,7 +54,8 @@ const CreateProjectButton = ({
     },
     onCompleted: ({createMergedProject: project}) => {
       if (RA.isNotNil(project)) {
-        dispatch(setProject({project}))
+        const {projectID} = project
+        dispatch(setProject({projectID}))
       }
     }
   })
