@@ -14,7 +14,7 @@ const DatasetSchema = new mongoose.Schema({
   // Ontology tagging
   cancerTag: {
     type: Boolean,
-    default: false
+    default: true
   },
   oncotreeCode: {
     type: String,
