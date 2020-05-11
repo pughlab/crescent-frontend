@@ -13,10 +13,10 @@ const setProject = ({projectID}) => ({
   }
 })
 
-const setRun = ({run}) => ({
+const setRun = ({runID}) => ({
   type: 'context/setRun',
   payload: {
-    run
+    runID
   }
 })
 

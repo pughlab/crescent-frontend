@@ -79,7 +79,7 @@ const RunCard = ({
   })
   return (
     <Card color={color}
-      onClick={() => dispatch(setRun({run}))}
+      onClick={() => dispatch(setRun({runID}))}
     >
       <Popup
         size='large' wide='very'

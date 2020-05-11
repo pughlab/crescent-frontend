@@ -43,10 +43,9 @@ export default createReducer(
     },
 
     'context/setRun': (state, payload) => {
-      const {run} = payload
-      const runID = R.compose(R.always, R.prop('runID'))(run)
+      const {runID} = payload
       return R.evolve({
-        runID,
+        runID: R.always(runID),
         view: R.always('results')
       })(state)
     },

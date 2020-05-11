@@ -58,22 +58,6 @@ const NewRunModal = ({
         userID: $userID
       ) {
         runID
-        createdOn
-        createdBy {
-          userID
-          name
-        }
-        name
-        params
-        status
-
-        submittedOn
-        completedOn
-
-        datasets {
-          datasetID
-          name
-        }
       }
     }
   `, {
@@ -85,7 +69,8 @@ const NewRunModal = ({
     onCompleted: ({createUnsubmittedRun: run}) => {
       console.log(run)
       if (RA.isNotNil(run)) {
-        dispatch(setRun({run}))
+        const {runID} = run
+        dispatch(setRun({runID}))
       }
     }
   })
