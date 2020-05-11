@@ -16,8 +16,6 @@ const NewProjectModal = ({
   const initialNewProjectState = {
     name: '',
     description: '',
-    oncotreeReference: null,
-    cancerTag: true,
     mergedProjectIDs: [],
     uploadedDatasetIDs: [],
   }
@@ -34,14 +32,6 @@ const NewProjectModal = ({
         case 'CHANGE_DESCRIPTION':
           return R.evolve({
             description: R.always(R.prop('description', action))
-          }, state)
-        case 'CHANGE_ONCOTREE_REFERENCE':
-          return R.evolve({
-            oncotreeReference: R.always(R.prop('oncotreeReference', action))
-          }, state)
-        case 'TOGGLE_CANCER_TAG':
-          return R.evolve({
-            cancerTag: R.not
           }, state)
         case 'TOGGLE_PROJECT':
           const {projectID} = action

@@ -119,7 +119,7 @@ const RunsPageComponent = ({
       }
 
 
-      <Segment attached>
+      <Segment attached='bottom'>
         <Divider horizontal>
           <Header content={'Project Runs'} />
         </Divider>

@@ -51,7 +51,6 @@ const ViewProjectModal = withRedux(({
           name
         }
 
-        datasetSize
       }
     }
   `, {

@@ -117,6 +117,7 @@ const DirectoryUploadSegment = ({
     }
   })
   // Callback function for drag and drop
+  // TODO: write custom hook add better validation on both front and backend
   const onDrop = useCallback(acceptedFiles => {
     if (RA.isNotEmpty(acceptedFiles)) {
       // Predicate for valid directory upload
@@ -131,6 +132,7 @@ const DirectoryUploadSegment = ({
         R.split('/'),
         R.prop('path')
       ))
+      console.log(groupByDirectory)
       // Check that directory has expected files
       // [] => {matrix, barcodes, features, metadata: File}
       const checkDirectoryForRequiredFiles = R.reduce(

@@ -40,12 +40,10 @@ const resolvers = {
         name, description,
         projectIDs = [],
         datasetIDs = [],
-        oncotreeReference, cancerTag
       },
       {
         Datasets,
         Projects,
-        minioClient 
       }
     ) => {
       try {
@@ -53,8 +51,7 @@ const resolvers = {
           name, description,
           createdBy: userID,
           mergedProjectIDs: projectIDs,
-          uploadedDatasetIDs: datasetIDs,
-          oncotreeReference, cancerTag
+          uploadedDatasetIDs: datasetIDs
         })
         return project
       } catch(error) {
@@ -176,21 +173,6 @@ const resolvers = {
       return await Runs.find({projectID})
     },
 
-    datasetSize: async ({projectID}, variables, {Datasets, minioClient}) => {
-      try {
-        return await new Promise((resolve, reject) => {
-          let size = 0
-          const stream = minioClient.listObjects(`project-${projectID}`)
-          stream.on('data', obj => {size = size + R.prop('size', obj)})
-          stream.on('error', err => { reject(err) } )
-          stream.on('end', () => {resolve(size)})
-        })
-      } catch(error) {
-        // console.error(error)
-      }
-
-    },
-
     mergedProjects: async ({mergedProjectIDs}, variables, {Projects}) => {
       try {
         return await Promise.all(R.map(
@@ -245,20 +227,6 @@ const resolvers = {
         console.error(error)
       }
     },
-
-    oncotreeTissue: async ({oncotreeReference}, variables, {}) => {
-      try {
-        const requestURL = `http://oncotree.mskcc.org/api/tumorTypes/search/level/1?version=oncotree_latest_stable&exactMatch=true`
-        const {data: tissues} = await axios.get(requestURL)
-        // console.log(tissues)
-        return R.find(
-          R.propEq('code', oncotreeReference),
-          tissues
-        )
-      } catch(error) {
-        console.log(error)
-      }
-    }
   }
 }
 

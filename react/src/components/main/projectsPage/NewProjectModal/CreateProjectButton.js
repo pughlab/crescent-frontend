@@ -30,8 +30,6 @@ const CreateProjectButton = ({
       $description: String!,
       $projectIDs: [ID]!,
       $datasetIDs: [ID]!,
-      $oncotreeReference: OncotreeCode!,
-      $cancerTag: Boolean
     ) {
       createMergedProject(
         userID: $userID,
@@ -39,8 +37,6 @@ const CreateProjectButton = ({
         description: $description,
         projectIDs: $projectIDs,
         datasetIDs: $datasetIDs,
-        oncotreeReference: $oncotreeReference,
-        cancerTag: $cancerTag,
       ) {
         projectID
       }
@@ -50,7 +46,6 @@ const CreateProjectButton = ({
       userID, name, description,
       projectIDs: mergedProjectIDs,
       datasetIDs: uploadedDatasetIDs,
-      oncotreeReference, cancerTag
     },
     onCompleted: ({createMergedProject: project}) => {
       if (RA.isNotNil(project)) {

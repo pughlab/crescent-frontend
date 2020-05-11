@@ -36,7 +36,7 @@ const resolvers = {
     }
   },
   Mutation: {
-    // replaceMetadata
+    // TODO: sometimes uploading dataset without metadata fails
     createDataset: async (parent, {name, matrix, features, barcodes, metadata}, {Datasets, minioClient}) => {
       try {
         // Make dataset document and bucket
@@ -56,7 +56,7 @@ const resolvers = {
         console.log('Creating dataset ', datasetID)
         return dataset
       } catch(error) {
-        console.log(error)
+        console.log('createDataset', error)
       }
     },
 

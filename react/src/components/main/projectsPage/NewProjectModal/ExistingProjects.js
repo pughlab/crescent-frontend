@@ -28,7 +28,6 @@ const ProjectCard = ({
     name,
     createdOn,
     createdBy: {name: creatorName},
-    datasetSize
   },
   newProjectState, newProjectDispatch
 }) => {  
@@ -65,7 +64,6 @@ const ProjectCard = ({
         <Label content={<Icon style={{margin: 0}} name='user' />} detail={creatorName} />
         <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
         <Label content={<Icon style={{margin: 0}} name='file archive' />} detail={'#'} />
-        <Label content={<Icon style={{margin: 0}} name='save' />} detail={filesize(datasetSize)} />
       </Label.Group>
     </Card.Content>
     </Card>
@@ -88,7 +86,6 @@ const PublicProjects = ({
           name
           userID
         }
-        datasetSize
       }
     }
   `, {
@@ -135,7 +132,6 @@ const UploadedProjects = ({
           name
           userID
         }
-        datasetSize
       }
     }
   `, {
