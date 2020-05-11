@@ -98,11 +98,12 @@ const ProjectCard = ({
                   <Label.Group size='tiny'>
                   {
                     R.map(
-                      ({datasetID, name, cancerTag, oncotreeCode}) => (
+                      ({datasetID, name, cancerTag, oncotreeCode, hasMetadata}) => (
                         <Label key={datasetID}>
                           {name}
-                          {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'Cancer' : 'Non-cancer'} />}
+                          {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
                           {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+                          <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} />
                         </Label>
                       ),
                       allDatasets

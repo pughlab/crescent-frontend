@@ -19,14 +19,15 @@ const TagOncotreeModal = ({
   }
 
   const {tissue: tissueTypes} = oncotree
-  const {name, cancerTag, oncotreeCode} = dataset
+  const {name, cancerTag, oncotreeCode, hasMetadata} = dataset
   return (
     <Modal
       trigger={
         <Label as={Button}>
           {name}
-          {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'Cancer' : 'Non-cancer'} />}
+          {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
           {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+          <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} />
         </Label>
       }
     >

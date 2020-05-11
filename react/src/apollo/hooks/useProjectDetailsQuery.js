@@ -42,6 +42,7 @@ export default function useProjectDetailsQuery(projectID) {
           datasetID
           name
           size
+          hasMetadata
           cancerTag
           oncotreeCode
         }
