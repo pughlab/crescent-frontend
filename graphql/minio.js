@@ -1,4 +1,6 @@
 const Minio = require('minio');
+const R = require('ramda')
+const RA = require('ramda-adjunct')
 
 const minioClient = new Minio.Client({
   endPoint: 'minio',
@@ -28,4 +30,18 @@ module.exports = {
       console.log(error)
     }
   },
+
+  bucketHasObject: async (bucketName, objectName) => {
+    try {
+      const objectStat = await minioClient.statObject(bucketName, objectName)
+      console.log('objectStat', objectStat)
+      return RA.isNotNil(objectStat)
+    } catch(error) {
+      if (R.propEq('code', 'NotFound', error)) {
+        return false
+      } else {
+        console.log('bucketHasObject', error)
+      }
+    }
+  }
 }

@@ -15,12 +15,11 @@ const resolvers = {
         console.log(error)
       }
     },
-    hasMetadata: async ({datasetID}, variables, {Datasets, minioClient}) => {
+    hasMetadata: async ({datasetID}, variables, {Datasets, Minio}) => {
       try {
-        const objectStat = await minioClient.statObject(`dataset-${datasetID}`, 'metadata.tsv')
-        return RA.isNotNil(objectStat)
+        return Minio.bucketHasObject(`dataset-${datasetID}`, 'metadata.tsv')
       } catch(error) {
-        console.log(error)
+        console.log('hasMetadata', error)
       }
     },
   },
