@@ -54,15 +54,7 @@ const typeDefs = gql`
       projectIDs: [ID]!
       datasetIDs: [ID]!
     ): Project
-
-    createProject(
-      userID: ID,
-      name: String,
-      description: String,
-      barcodesObjectName: ID!,
-      genesObjectName: ID!,
-      matrixObjectName: ID!,
-    ): Project
+    
     
     shareProjectByEmail(
       projectID: ID

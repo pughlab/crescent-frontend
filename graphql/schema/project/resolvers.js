@@ -59,53 +59,6 @@ const resolvers = {
       }
     },
 
-    // Create a project given a userID
-    // TODO: move userID into context
-    createProject: async (
-      parent,
-      {
-        userID,
-        name,
-        description,
-        barcodesObjectName,
-        genesObjectName,
-        matrixObjectName,
-      },
-      {
-        Datasets,
-        Projects,
-        minioClient
-      }
-    ) => {
-      try {
-        const dataset = await Datasets.create({
-          barcodesID: barcodesObjectName,
-          featuresID: genesObjectName,
-          matrixID: matrixObjectName
-        })
-        const {datasetID} = dataset
-        const project = await Projects.create({name, description, createdBy: userID, datasetID})
-        const {projectID} = project
-        await minioClient.makeBucket(`project-${projectID}`)
-        const copyObjectToProjectBucket = async (uploadID) => {
-          // Get object from temporary bucket and put into project bucket
-          const tempObjectStream = await minioClient.getObject('temporary', `${uploadID}`)
-          await minioClient.putObject(`project-${projectID}`, `${uploadID}`, tempObjectStream)
-          // Remove from temporary bucket
-          await minioClient.removeObject('temporary', `${uploadID}`)
-
-        }
-        await copyObjectToProjectBucket(barcodesObjectName)
-        await copyObjectToProjectBucket(genesObjectName)
-        await copyObjectToProjectBucket(matrixObjectName)
-        // Create directory of uploads for project so pipeline can read
-
-        return project
-      } catch(error) {
-        console.error(error)
-      }
-    },
-
     shareProjectByEmail: async (parent, {projectID, email}, {Projects, Users}) => {
       try {
         const project = await Projects.findOne({projectID})
