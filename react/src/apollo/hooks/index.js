@@ -8,10 +8,13 @@ import useRunDetailsQuery from './useRunDetailsQuery'
 import useToolStepsQuery from './useToolStepsQuery'
 import useToolParameterQuery from './useToolParameterQuery'
 import useRunDatasetsQuery from './useRunDatasetsQuery'
+import useOncotreeQuery from './useOncotreeQuery'
 
 import useUpdateRunParameterMutation from './useUpdateRunParameterMutation'
+import useTagDatasetMutation from './useTagDatasetMutation'
 
 import useGraphene from './useGraphene'
+
 export {
   useUserQuery,
   useUserProjectsQuery,
@@ -23,8 +26,10 @@ export {
   useToolStepsQuery,
   useToolParameterQuery,
   useRunDatasetsQuery,
+  useOncotreeQuery,
 
   useUpdateRunParameterMutation,
+  useTagDatasetMutation,
 
   useGraphene
 }

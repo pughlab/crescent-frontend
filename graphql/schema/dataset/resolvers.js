@@ -22,7 +22,7 @@ const resolvers = {
       } catch(error) {
         console.log(error)
       }
-    }
+    },
   },
 
   Query: {
@@ -83,8 +83,20 @@ const resolvers = {
       } catch(error) {
         console.log(error)
       }
+    },
+
+    tagDataset: async (parent, {datasetID, cancerTag, oncotreeCode}, {Datasets}) => {
+      try {
+        const dataset = await Datasets.findOne({datasetID})
+        dataset.cancerTag = cancerTag
+        dataset.oncotreeCode = oncotreeCode
+        await dataset.save()
+        return dataset
+      } catch(error) {
+        console.log(error)
+      }
     }
-  }
+  },
 }
 
 module.exports = resolvers

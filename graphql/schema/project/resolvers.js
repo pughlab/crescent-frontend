@@ -250,7 +250,7 @@ const resolvers = {
       try {
         const requestURL = `http://oncotree.mskcc.org/api/tumorTypes/search/level/1?version=oncotree_latest_stable&exactMatch=true`
         const {data: tissues} = await axios.get(requestURL)
-        console.log(tissues)
+        // console.log(tissues)
         return R.find(
           R.propEq('code', oncotreeReference),
           tissues

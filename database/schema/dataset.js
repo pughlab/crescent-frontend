@@ -9,20 +9,17 @@ const DatasetSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true
+  },
+
+  // Ontology tagging
+  cancerTag: {
+    type: Boolean,
+    default: false
+  },
+  oncotreeCode: {
+    type: String,
+    default: null
   }
-  // // MinIO object names
-  // barcodesID: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   required: true
-  // },
-  // featuresID: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   required: true
-  // },
-  // matrixID: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   required: true
-  // }
 })
 
 module.exports = DatasetSchema
