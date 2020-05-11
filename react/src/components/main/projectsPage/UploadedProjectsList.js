@@ -18,7 +18,7 @@ import Fuse from 'fuse.js'
 
 const UploadedProjectsList = ({
 }) => {
-  const {searchFilter} = useProjectsPage()
+  const {searchFilter, tissueFilter, oncotreeFilter} = useProjectsPage()
 
   // GQL query to find all projects of which user is a member of
   const {userID} = useCrescentContext()
@@ -46,7 +46,26 @@ const UploadedProjectsList = ({
       return R.pluck('item', fuse.search(searchFilter))
     }
   }
+  const projectHasCancerTissueFilter = project => {
+    const {allDatasets} = project
+    const {cancer, nonCancer} = tissueFilter
+    const datasetHasCancerTissueFilter = ({cancerTag}) => R.or(
+      R.and(cancer, cancerTag),
+      R.and(nonCancer, R.not(cancerTag))
+    )
+    return R.any(datasetHasCancerTissueFilter, allDatasets)
+  }
+  const projectHasOncotreeFilter = project => {
+    const {allDatasets} = project
+    const datasetHasOncotreeCode = ({oncotreeCode}) => R.includes(oncotreeCode, oncotreeFilter)
+    return R.or(
+      R.isEmpty(oncotreeFilter),
+      R.any(datasetHasOncotreeCode, allDatasets)
+    )
+  }
   const filteredProjects = R.compose(
+    R.filter(projectHasOncotreeFilter),
+    R.filter(projectHasCancerTissueFilter),
     filterBySearchText
   )(userProjects)
 

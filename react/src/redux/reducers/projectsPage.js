@@ -3,7 +3,12 @@ import createReducer from './createReducer'
 
 const initialState = {
   activeProjectKind: 'public', // 'uploaded' 
-  searchFilter: ''
+  searchFilter: '',
+  tissueFilter: {
+    cancer: true,
+    nonCancer: true
+  },
+  oncotreeFilter: []
 }
 
 export default createReducer(
@@ -19,6 +24,20 @@ export default createReducer(
       const {value} = payload
       return R.evolve({
         searchFilter: R.always(value)
+      })(state)
+    },
+
+    'projectsPage/setTissueFilter': (state, payload) => {
+      const {cancer, nonCancer} = payload
+      return R.evolve({
+        tissueFilter: R.always({cancer, nonCancer})
+      })(state)
+    },
+
+    'projectsPage/setOncotreeFilter': (state, payload) => {
+      const {codes} = payload
+      return R.evolve({
+        oncotreeFilter: R.always(codes)
       })(state)
     },
 

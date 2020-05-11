@@ -13,6 +13,14 @@ export default function useUserProjectsQuery(userID) {
     query UserProjects($userID: ID) {
       projects(userID: $userID) {
         projectID
+        name
+        description
+
+        allDatasets {
+          datasetID
+          cancerTag
+          oncotreeCode
+        }
       }
     }
   `, {

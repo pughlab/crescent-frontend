@@ -14,10 +14,26 @@ const setSearchFilter = ({value}) => ({
   }
 })
 
+const setTissueFilter = ({cancer, nonCancer}) => ({
+  type: 'projectsPage/setTissueFilter',
+  payload: {
+    cancer, nonCancer
+  }
+})
+
+const setOncotreeFilter = ({codes}) => ({
+  type: 'projectsPage/setOncotreeFilter',
+  payload: {
+    codes
+  }
+})
+
 const resetProjectsPage = R.always({type: 'projectsPage/reset'})
 
 export {
   setActiveProjectKind,
   setSearchFilter,
+  setTissueFilter,
+  setOncotreeFilter,
   resetProjectsPage
 }

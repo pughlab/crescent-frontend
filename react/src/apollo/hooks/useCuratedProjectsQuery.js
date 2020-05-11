@@ -13,6 +13,14 @@ export default function useCuratedProjectsQuery() {
     query {
       curatedProjects {
         projectID
+        name
+        description
+
+        allDatasets {
+          datasetID
+          cancerTag
+          oncotreeCode
+        }
       }
     }
   `, {
