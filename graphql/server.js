@@ -16,8 +16,6 @@ const ToolStepSchema = require('./schema/toolStep')
 
 const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema, OncotreeSchema, ToolStepSchema]
 
-const minioClient = require('../database/minio-client');
-
 const Minio = require('./minio')
 
 // GQL server requires type definitions and resolvers for those types
@@ -42,8 +40,6 @@ const server = new ApolloServer({
 
       // MINIO
       Minio,
-      minioClient, //Should be replaced by above
-
     }
   }
 })
