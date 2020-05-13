@@ -15,7 +15,7 @@ def get_qc_metrics(runID):
 	if not os.path.isdir(dir_path):
 		dir_path = "/usr/src/app/results/{runID}/SEURAT/frontend_qc".format(runID=runID)
 		if not os.path.isdir(dir_path):
-			return_error("QC results folder not found")
+			helper.return_error("QC results folder not found")
 
 	qc_files = ['BeforeFiltering.tsv','AfterFiltering.tsv']
 	for qc_file in qc_files:
