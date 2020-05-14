@@ -16,15 +16,68 @@ const resolvers = {
     },
     run: async (parent, {runID}, {Runs}) => {
       const run = await Runs.findOne({runID})
+      console.log(run)
       return run
     },
   },
   Mutation: {
-    createUnsubmittedRun: async (parent, {name, projectID, userID, datasetIDs}, {Runs, Minio}) => {
-      const run = await Runs.create({name, projectID, createdBy: userID, datasetIDs})
-      const {runID} = run
-      await Minio.client.makeBucket(`run-${runID}`)
-      return run
+    createUnsubmittedRun: async (parent, {name, projectID, userID, datasetIDs}, {Runs, Minio, ToolSteps}) => {
+      try {
+        const run = await Runs.create({name, projectID, createdBy: userID, datasetIDs})
+        const {runID} = run
+        // Add default parameters
+        const defaultParameters = R.compose(
+          R.evolve({
+            // Copy default quality control parameters for each dataset
+            quality: R.compose(
+              R.zipObj(datasetIDs),
+              R.repeat(R.__, R.length(datasetIDs))
+            )
+          }),
+          R.map(
+            R.compose(
+              R.mergeAll,
+              R.map(({parameter, input: {defaultValue}}) => ({[parameter]: defaultValue}))
+            )
+          ),
+          R.groupBy(R.prop('step'))
+        )(await ToolSteps.find({}))
+
+        console.log(defaultParameters)
+        run.parameters = defaultParameters
+        await run.save()
+        // Make bucket for run
+        await Minio.client.makeBucket(`run-${runID}`)
+        return run
+      } catch (err) {
+        console.log(err)
+      }
+    },
+
+    updateRunParameterValue: async (
+      parent,
+      {runID, step, parameter, value},
+      {Runs}
+    ) => {
+      try {
+        const run = await Runs.findOne({runID})
+        // For non-QC parameters
+        const {parameters} = run
+        let newParameters
+        if (R.equals(step, 'quality')) {
+          const {value: newValue, datasetID} = value
+          newParameters = R.assocPath([step, datasetID, parameter], newValue, parameters)
+        } else {
+          newParameters = R.assocPath([step, parameter], value, parameters)
+        }
+        console.log(newParameters)
+        run.parameters = newParameters
+        await run.save()
+        console.log(run.runID, run.name, run.parameters)
+        return run
+      } catch (err) {
+        console.log(err)
+      }
     },
 
     // Determine how many datasets this run uses and submit

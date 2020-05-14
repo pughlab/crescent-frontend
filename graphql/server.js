@@ -12,10 +12,9 @@ const ProjectSchema = require('./schema/project')
 const RunSchema = require('./schema/run')
 const DatasetSchema = require('./schema/dataset')
 const OncotreeSchema = require('./schema/oncotree')
+const ToolStepSchema = require('./schema/toolStep')
 
-const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema, OncotreeSchema]
-
-const minioClient = require('../database/minio-client');
+const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema, OncotreeSchema, ToolStepSchema]
 
 const Minio = require('./minio')
 
@@ -37,11 +36,10 @@ const server = new ApolloServer({
       Projects: Models.Project,
       Runs: Models.Run,
       Datasets: Models.Dataset,
+      ToolSteps: Models.ToolStep,
 
       // MINIO
       Minio,
-      minioClient, //Should be replaced by above
-
     }
   }
 })

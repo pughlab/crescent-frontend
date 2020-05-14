@@ -15,14 +15,13 @@ const resolvers = {
         console.log(error)
       }
     },
-    hasMetadata: async ({datasetID}, variables, {Datasets, minioClient}) => {
+    hasMetadata: async ({datasetID}, variables, {Datasets, Minio}) => {
       try {
-        const objectStat = await minioClient.statObject(`dataset-${datasetID}`, 'metadata.tsv')
-        return RA.isNotNil(objectStat)
+        return Minio.bucketHasObject(`dataset-${datasetID}`, 'metadata.tsv')
       } catch(error) {
-        console.log(error)
+        console.log('hasMetadata', error)
       }
-    }
+    },
   },
 
   Query: {
@@ -36,18 +35,18 @@ const resolvers = {
     }
   },
   Mutation: {
-    // replaceMetadata
-    createDataset: async (parent, {name, matrix, features, barcodes, metadata}, {Datasets, minioClient}) => {
+    // TODO: sometimes uploading dataset without metadata fails
+    createDataset: async (parent, {name, matrix, features, barcodes, metadata}, {Datasets, Minio}) => {
       try {
         // Make dataset document and bucket
         const dataset = await Datasets.create({name})
         const {datasetID} = dataset
         const bucketName = `dataset-${datasetID}`
-        await minioClient.makeBucket(bucketName)
+        await Minio.client.makeBucket(bucketName)
         // Put files into bucket
         const putUploadIntoBucket = async (bucketName, file) => {
           const {filename, mimetype, encoding, createReadStream} = await file
-          await minioClient.putObject(bucketName, filename, createReadStream())
+          await Minio.client.putObject(bucketName, filename, createReadStream())
         }
         const files = [matrix, features, barcodes, ... R.isNil(metadata) ? [] : [metadata]]
         for (const file of files) {
@@ -56,35 +55,35 @@ const resolvers = {
         console.log('Creating dataset ', datasetID)
         return dataset
       } catch(error) {
+        console.log('createDataset', error)
+      }
+    },
+
+    deleteDataset: async (parent, {datasetID}, {Datasets, Minio}) => {
+      try {
+        const dataset = await Datasets.findOne({datasetID})
+        await Datasets.deleteOne({datasetID})
+        const bucketName = `dataset-${datasetID}`
+        await Minio.deleteBucketAndObjects(bucketName)
+        console.log('Deleting dataset ', datasetID)
+        return dataset
+      } catch(error) {
         console.log(error)
       }
     },
 
-    deleteDataset: async (parent, {datasetID}, {Datasets, minioClient}) => {
+    tagDataset: async (parent, {datasetID, cancerTag, oncotreeCode}, {Datasets}) => {
       try {
         const dataset = await Datasets.findOne({datasetID})
-        await Datasets.deleteOne({datasetID})
-        // Get bucket contents
-        const bucketName = `dataset-${datasetID}`
-        const bucketContents = await (new Promise(
-          (resolve, reject) => {
-            let objectsList = []
-            const objectsStream = minioClient.listObjects(bucketName)
-            objectsStream.on('data', obj => objectsList.push(obj.name))
-            objectsStream.on('error', e => reject(e))
-            objectsStream.on('end', () => resolve(objectsList))
-          }
-        ))
-        await minioClient.removeObjects(bucketName, bucketContents)
-        await minioClient.removeBucket(bucketName)
-        console.log('Deleting dataset ', datasetID)
-        // Will be null
+        dataset.cancerTag = cancerTag
+        dataset.oncotreeCode = oncotreeCode
+        await dataset.save()
         return dataset
       } catch(error) {
         console.log(error)
       }
     }
-  }
+  },
 }
 
 module.exports = resolvers

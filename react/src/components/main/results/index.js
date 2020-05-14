@@ -14,7 +14,7 @@ import ResultsComponent from './results'
 import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 
-const VisComponent = withRedux(
+const ResultsPageComponent = withRedux(
   ({
     app: {
       run: {
@@ -88,4 +88,4 @@ const VisComponent = withRedux(
   }
 )
 
-export default VisComponent
+export default ResultsPageComponent

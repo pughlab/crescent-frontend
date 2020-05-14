@@ -60,18 +60,6 @@ const ProjectSchema = new mongoose.Schema({
     default: []
   },
 
-  // Ontology tagging
-  cancerTag: {
-    type: Boolean,
-    default: true
-  },
-  oncotreeReference: {
-    type: String,
-    required: true
-  }
-
-
-
 })
 
 module.exports = ProjectSchema

@@ -2,10 +2,13 @@ const { gql } = require('apollo-server')
 
 const typeDefs = gql`
   type Dataset {
-    datasetID: ID
-    name: String
-    hasMetadata: Boolean
-    size: Int
+    datasetID: ID!
+    name: String!
+    hasMetadata: Boolean!
+    size: Int!
+    # Ontology tagging
+    cancerTag: Boolean
+    oncotreeCode: String
   }
 
   type Query {
@@ -22,7 +25,13 @@ const typeDefs = gql`
     ): Dataset
 
     deleteDataset(
-      datasetID: ID
+      datasetID: ID!
+    ): Dataset
+
+    tagDataset(
+      datasetID: ID!
+      cancerTag: Boolean
+      oncotreeCode: String
     ): Dataset
   }
 `

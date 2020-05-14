@@ -6,24 +6,25 @@ import Logo from './logo.jpg'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import withRedux from '../../redux/hoc'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 
-const UserInfo = withRedux(({
-  app: {
-    user: {
-      name, email
-    }
-  },
-  actions: {
-    setGuestUser
-  },
+import {setUser} from '../../redux/actions/context'
 
-  // Props
+import {useDispatch} from 'react-redux'
+import {useCrescentContext} from '../../redux/hooks'
+import {useUserQuery} from '../../apollo/hooks'
+
+
+const UserInfo = ({
   setOpen
 }) => {
+  const dispatch = useDispatch()
+  const context = useCrescentContext() 
+  const {userID} = context
+  const user = useUserQuery(userID)
+  // Create guest user to sign out
   const [createGuestUser, {loading, data, error}] = useMutation(gql`
     mutation CreateGuestUser {
       createGuestUser {
@@ -33,8 +34,8 @@ const UserInfo = withRedux(({
       }
     }
   `, {
-    onCompleted: ({createGuestUser}) => {
-      setGuestUser(createGuestUser)
+    onCompleted: ({createGuestUser: user}) => {
+      dispatch(setUser({user}))
       setOpen(false)
     }
   })
@@ -44,19 +45,23 @@ const UserInfo = withRedux(({
         <Image centered size='small' src={Logo}/>
       </Segment>
       <Segment>
+      {
+        RA.isNotNil(user) &&
         <Header>
-          {name}
-          <Header.Subheader content={email} />
+          {R.prop('name', user)}
+          <Header.Subheader content={R.prop('email', user)} />
         </Header>
+      }
       </Segment>
       <Segment>
         <Button
           fluid color='grey' size='massive'
-          content='Logout' onClick={() => createGuestUser()}
+          content='Logout'
+          onClick={() => createGuestUser()}
         />
       </Segment>
     </Segment.Group>
   )
-})
+}
 
 export default UserInfo

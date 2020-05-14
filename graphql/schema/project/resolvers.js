@@ -40,12 +40,10 @@ const resolvers = {
         name, description,
         projectIDs = [],
         datasetIDs = [],
-        oncotreeReference, cancerTag
       },
       {
         Datasets,
         Projects,
-        minioClient 
       }
     ) => {
       try {
@@ -53,56 +51,8 @@ const resolvers = {
           name, description,
           createdBy: userID,
           mergedProjectIDs: projectIDs,
-          uploadedDatasetIDs: datasetIDs,
-          oncotreeReference, cancerTag
+          uploadedDatasetIDs: datasetIDs
         })
-        return project
-      } catch(error) {
-        console.error(error)
-      }
-    },
-
-    // Create a project given a userID
-    // TODO: move userID into context
-    createProject: async (
-      parent,
-      {
-        userID,
-        name,
-        description,
-        barcodesObjectName,
-        genesObjectName,
-        matrixObjectName,
-      },
-      {
-        Datasets,
-        Projects,
-        minioClient
-      }
-    ) => {
-      try {
-        const dataset = await Datasets.create({
-          barcodesID: barcodesObjectName,
-          featuresID: genesObjectName,
-          matrixID: matrixObjectName
-        })
-        const {datasetID} = dataset
-        const project = await Projects.create({name, description, createdBy: userID, datasetID})
-        const {projectID} = project
-        await minioClient.makeBucket(`project-${projectID}`)
-        const copyObjectToProjectBucket = async (uploadID) => {
-          // Get object from temporary bucket and put into project bucket
-          const tempObjectStream = await minioClient.getObject('temporary', `${uploadID}`)
-          await minioClient.putObject(`project-${projectID}`, `${uploadID}`, tempObjectStream)
-          // Remove from temporary bucket
-          await minioClient.removeObject('temporary', `${uploadID}`)
-
-        }
-        await copyObjectToProjectBucket(barcodesObjectName)
-        await copyObjectToProjectBucket(genesObjectName)
-        await copyObjectToProjectBucket(matrixObjectName)
-        // Create directory of uploads for project so pipeline can read
-
         return project
       } catch(error) {
         console.error(error)
@@ -176,21 +126,6 @@ const resolvers = {
       return await Runs.find({projectID})
     },
 
-    datasetSize: async ({projectID}, variables, {Datasets, minioClient}) => {
-      try {
-        return await new Promise((resolve, reject) => {
-          let size = 0
-          const stream = minioClient.listObjects(`project-${projectID}`)
-          stream.on('data', obj => {size = size + R.prop('size', obj)})
-          stream.on('error', err => { reject(err) } )
-          stream.on('end', () => {resolve(size)})
-        })
-      } catch(error) {
-        // console.error(error)
-      }
-
-    },
-
     mergedProjects: async ({mergedProjectIDs}, variables, {Projects}) => {
       try {
         return await Promise.all(R.map(
@@ -245,20 +180,6 @@ const resolvers = {
         console.error(error)
       }
     },
-
-    oncotreeTissue: async ({oncotreeReference}, variables, {}) => {
-      try {
-        const requestURL = `http://oncotree.mskcc.org/api/tumorTypes/search/level/1?version=oncotree_latest_stable&exactMatch=true`
-        const {data: tissues} = await axios.get(requestURL)
-        console.log(tissues)
-        return R.find(
-          R.propEq('code', oncotreeReference),
-          tissues
-        )
-      } catch(error) {
-        console.log(error)
-      }
-    }
   }
 }
 

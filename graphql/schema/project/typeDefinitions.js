@@ -28,13 +28,6 @@ const typeDefs = gql`
     uploadedDatasets: [Dataset]
 
     allDatasets: [Dataset]
-
-    datasetSize: Int
-
-    cancerTag: Boolean
-    oncotreeReference: OncotreeCode
-    oncotreeTissue: OncotreeTissue
-
   }
   type Query {
     project(projectID: ID): Project
@@ -60,18 +53,8 @@ const typeDefs = gql`
       description: String
       projectIDs: [ID]!
       datasetIDs: [ID]!
-      cancerTag: Boolean
-      oncotreeReference: OncotreeCode
     ): Project
-
-    createProject(
-      userID: ID,
-      name: String,
-      description: String,
-      barcodesObjectName: ID!,
-      genesObjectName: ID!,
-      matrixObjectName: ID!,
-    ): Project
+    
     
     shareProjectByEmail(
       projectID: ID

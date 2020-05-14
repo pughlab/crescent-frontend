@@ -21,6 +21,7 @@ const typeDefs = gql`
   type Query {
     # The query 'messages' expects array of type 'Message'
     users: [User]!
+    user(userID: ID!): User!
   }
   # 'Mutation' is similar (but is invoked and not executed immediately)
   type Mutation {

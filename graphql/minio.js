@@ -1,4 +1,6 @@
 const Minio = require('minio');
+const R = require('ramda')
+const RA = require('ramda-adjunct')
 
 const minioClient = new Minio.Client({
   endPoint: 'minio',
@@ -7,6 +9,8 @@ const minioClient = new Minio.Client({
   accessKey: process.env.MINIO_ACCESS_KEY,
   secretKey: process.env.MINIO_SECRET_KEY
 })
+
+
 
 module.exports = {
   client: minioClient,
@@ -28,4 +32,36 @@ module.exports = {
       console.log(error)
     }
   },
+
+  bucketHasObject: async (bucketName, objectName) => {
+    try {
+      const objectStat = await minioClient.statObject(bucketName, objectName)
+      console.log('objectStat', objectStat)
+      return RA.isNotNil(objectStat)
+    } catch(error) {
+      if (R.propEq('code', 'NotFound', error)) {
+        return false
+      } else {
+        console.log('bucketHasObject', error)
+      }
+    }
+  },
+
+  deleteBucketAndObjects: async bucketName => {
+    try {
+      const bucketContents = await (new Promise(
+        (resolve, reject) => {
+          let objectsList = []
+          const objectsStream = minioClient.listObjects(bucketName)
+          objectsStream.on('data', obj => objectsList.push(obj.name))
+          objectsStream.on('error', e => reject(e))
+          objectsStream.on('end', () => resolve(objectsList))
+        }
+      ))
+      await minioClient.removeObjects(bucketName, bucketContents)
+      await minioClient.removeBucket(bucketName)
+    } catch(error) {
+      console.log(error)
+    }
+  }
 }

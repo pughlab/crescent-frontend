@@ -5,116 +5,84 @@ import {Menu, Card, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import withRedux from '../../redux/hoc'
-
 import Logo from '../login/logo.jpg'
 
-import Marquee from 'react-marquee'
 import InfoModal from '../info/InfoModal'
 import LoginModal from '../login/LoginModal'
 
-const MenuComponent = withRedux(({
-  app: {
-    user,
-    project,
-    run,
-    view: {main, isGuest}
-  },
-  actions: {
-    toggleProjects,
-    toggleRuns,
-  }
+import ProjectHeader from './ProjectHeader'
+import RunHeader from './RunHeader'
+
+import {useDispatch} from 'react-redux'
+import {goHome, goBack} from '../../redux/actions/context'
+import {useCrescentContext} from '../../redux/hooks'
+
+const MenuComponent = ({
+
 }) => {
-  const isMainView = R.equals(main)
+  const dispatch = useDispatch()
+  const context = useCrescentContext()
+  const {view} = context
+  const isCurrentView = R.equals(view)
   return (
     <Segment attached='top' as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid>
+          {/* Home button even though there's only three pages... */}
           <Popup inverted
             trigger={
-              <Button icon basic inverted color='grey'
-                size='large'
-                onClick={() => toggleProjects(isGuest ? 'published' : 'uploaded')}
+              <Button icon basic inverted color='grey' size='big'
+                // disabled={isCurrentView('projects')}
+                onClick={() => dispatch(goHome())}
               >
-                {/* <Icon color='black' name='home' size='large'/> */}
                 <Icon size='big'>
                   <Image src={Logo}centered/>
                 </Icon>
               </Button>
             }
-            content={
-              isMainView('projects') ? 'Go to projects' : 'Go to projects'
-            }
+            content={'Go to Projects (Home)'}
             position='bottom center'
           />
-          <Popup inverted
-            trigger={
-              <Button icon basic inverted color='grey'
-                onClick={() => {
-                  if (isMainView('runs')) {
-                    toggleProjects()
-                  } else if (isMainView('vis')) {
-                    toggleRuns()
-                  } else if (
-                    R.any(isMainView, ['login', 'info'])
-                  ) {
-                    // Go back to projects for now
-                    R.isNil(project) ? toggleProjects() : toggleRuns()
-                  }
-                }}
-                // disabled={R.or(isMainView('projects'), R.isNil(project))}
-                disabled={isMainView('projects')}
-              >
-                <Icon color='black' name='left arrow' size='large' />
-              </Button>
-            }
-            content={
-              isMainView('runs') ?
-                'Go back to projects'
-              : isMainView('vis') ?
-                'Go back to runs'
-              : R.isNil(project) ? 'Go back to projects' : 'Go back to runs'
-            }
-            position='bottom center'
-          />
+
+          {/* Back button even though there's only three pages... */}
+          {
+            R.not(isCurrentView('projects')) &&
+            <Popup inverted 
+              disabled={isCurrentView('projects')}
+              trigger={
+                <Button icon basic inverted color='grey'
+                  disabled={isCurrentView('projects')}
+                  onClick={() => {dispatch(goBack())}}
+                >
+                  <Icon color='black' name='left arrow' size='large' />
+                </Button>
+              }
+              content={
+                isCurrentView('projects') ? 'Back' //Will be disabled anyway
+                : isCurrentView('runs') ?
+                  'Go back to projects'
+                : isCurrentView('results') ?
+                  'Go back to runs'
+                : 'Back' //Should also never be reached
+              }
+              position='bottom center'
+            />
+          }
         </Button.Group>
       </Grid.Column>
       <Grid.Column width={12} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
-        {
-          isMainView('projects')  ? 
-            <Header
-              textAlign='center'
-              // size='large'
-              content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
-            />
-          : isMainView('runs')  ?
-            <Header textAlign='center'
-              // size='large'
-              content={R.prop('name', project)}
-            />
-          : isMainView('login') ?
-            <Header textAlign='center'
-            >
-              {
-                RA.isNotNil(user) ? 
-                  <>
-                    User
-                  </>
-                :
-                  <>
-                    <Icon name='sign in' />
-                    Log In
-                  </>
-              }
-            </Header>
-          : isMainView('vis') ?
-            <Header textAlign='center'
-              // size='large'
-              content={R.prop('name', project)}
-              subheader={R.prop('name', run)}
-            />
-          : <Header textAlign='center' content={'Info'} /> 
-        }
+      {
+        isCurrentView('projects') ?
+          <Header
+            textAlign='center'
+            content={'CReSCENT: CanceR Single Cell ExpressioN Toolkit'}
+          />
+        : isCurrentView('runs') ?
+          <ProjectHeader />
+        : isCurrentView('results') ?
+          <RunHeader />
+        : null
+      }
       </Grid.Column>
       <Grid.Column width={2} verticalAlign='middle'>
         <Button.Group fluid widths={2} size='mini'>
@@ -124,6 +92,6 @@ const MenuComponent = withRedux(({
       </Grid.Column>
     </Segment>
   )
-})
+}
 
 export default MenuComponent

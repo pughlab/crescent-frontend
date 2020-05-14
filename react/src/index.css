@@ -11,7 +11,10 @@ html, body {
 
 #root, #root>div {
   min-height: 100vh;
+  background-image: url("memphis-mini.png");
 }
+
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

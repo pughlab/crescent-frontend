@@ -1,12 +1,15 @@
 const { gql } = require('apollo-server')
 
 const typeDefs = gql`
+  scalar RunParameters
+
   type Run {
     runID: ID
     createdOn: Date
     createdBy: User
     name: String
     params: String
+    parameters: RunParameters
     projectID: ID
     project: Project
     status: String
@@ -32,6 +35,13 @@ const typeDefs = gql`
       projectID: ID,
       userID: ID,
       datasetIDs: [ID]
+    ): Run
+
+    updateRunParameterValue(
+      runID: ID!
+      step: String!,
+      parameter: String!,
+      value: ToolParameterValue!
     ): Run
 
     submitRun(
