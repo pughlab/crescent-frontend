@@ -58,7 +58,7 @@ const ProjectsPageComponent = ({
       </Button.Group>
       {
         R.equals(activeProjectKind, 'uploaded') &&
-        <Fade>
+        <Fade down>
           <Segment attached>
             <NewProjectModal />
           </Segment>

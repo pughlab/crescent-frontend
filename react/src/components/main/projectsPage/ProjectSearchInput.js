@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import * as R from 'ramda'
-import {Input, Segment, Dropdown, Grid, Button, Divider, Form, Checkbox} from 'semantic-ui-react'
+import {Input, Segment, Dropdown, Grid, Button, Divider, Form, Checkbox, Popup} from 'semantic-ui-react'
 
 import {useDispatch} from 'react-redux'
 
@@ -9,15 +9,11 @@ import {setSearchFilter, setTissueFilter, setOncotreeFilter} from '../../../redu
 
 import {useOncotreeQuery} from '../../../apollo/hooks'
 
-import NewProjectModel from './NewProjectModal'
-
 import Fade from 'react-reveal/Fade'
 
 const ProjectSearchInput = ({
 
 }) => {
-  const [show, setShow] = useState(false)
-  
   const oncotree = useOncotreeQuery()
 
   const dispatch = useDispatch()
@@ -33,6 +29,7 @@ const ProjectSearchInput = ({
 
   
   return (
+    <Fade down appear={true} spy={activeProjectKind}>
     <Segment attached='bottom' as={Segment.Group} verticalAlign='middle'>
       <Segment>
         <Input fluid
@@ -44,7 +41,20 @@ const ProjectSearchInput = ({
       </Segment>
 
       <Segment as={Grid}>
-        <Grid.Column width={6}>
+        <Grid.Column width={1}>
+          <Popup
+            trigger={
+              <Button fluid icon='close' color='red' basic
+                onClick={() => {
+                  dispatch(setTissueFilter({cancer: true, nonCancer: true}))
+                  dispatch(setOncotreeFilter({codes: []}))
+                }}
+              />
+            }
+            content='Reset tissue filters'
+          />
+        </Grid.Column>
+        <Grid.Column width={5}>
         <Button.Group widths={2} fluid size='small'>
           <Button
             active={cancer}
@@ -86,7 +96,7 @@ const ProjectSearchInput = ({
         </Grid.Column>
       </Segment>
     </Segment>
-    
+    </Fade>
   )
 }
 

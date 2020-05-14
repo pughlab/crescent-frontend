@@ -71,7 +71,7 @@ const UploadedProjectsList = ({
 
   return (
     R.isEmpty(filteredProjects) ?
-    <Fade>
+      <Fade up>
       <Segment basic>
         <Segment placeholder>
           <Header icon>
