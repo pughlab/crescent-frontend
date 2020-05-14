@@ -31,8 +31,8 @@ const MenuComponent = ({
           {/* Home button even though there's only three pages... */}
           <Popup inverted
             trigger={
-              <Button icon basic inverted color='grey' size='large'
-                disabled={isCurrentView('projects')}
+              <Button icon basic inverted color='grey' size='big'
+                // disabled={isCurrentView('projects')}
                 onClick={() => dispatch(goHome())}
               >
                 <Icon size='big'>
