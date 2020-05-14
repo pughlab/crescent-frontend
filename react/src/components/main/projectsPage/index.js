@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Header, Button, Segment, Divider} from 'semantic-ui-react'
+import {Header, Button, Segment, Divider, Checkbox} from 'semantic-ui-react'
 
 import Fade from 'react-reveal/Fade'
 
@@ -14,6 +14,8 @@ import PublicProjectsList from './PublicProjectsList'
 import UploadedProjectsList from './UploadedProjectsList'
 
 import ProjectSearchInput from './ProjectSearchInput'
+
+import NewProjectModal from './NewProjectModal'
 
 const ProjectsPageComponent = ({
 
@@ -54,14 +56,18 @@ const ProjectsPageComponent = ({
           />
         </Button>
       </Button.Group>
-
+      {
+        R.equals(activeProjectKind, 'uploaded') &&
+        <Fade>
+          <Segment attached>
+            <NewProjectModal />
+          </Segment>
+        </Fade>
+      }
       <ProjectSearchInput />
-
-
       <Divider hidden horizontal />
       {
         isActiveProjectKind('uploaded') ?
-          
           <UploadedProjectsList />
         : isActiveProjectKind('public') ?
           <PublicProjectsList />

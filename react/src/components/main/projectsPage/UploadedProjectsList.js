@@ -70,33 +70,25 @@ const UploadedProjectsList = ({
   )(userProjects)
 
   return (
-    <>
-    
-    <NewProjectModal />
-    
-    <Divider horizontal />
-    {
-      R.isEmpty(filteredProjects) ?
-        <Fade>
-        <Segment basic>
-          <Segment placeholder>
-            <Header icon>
-              <Icon name='exclamation' />
-              No Projects
-            </Header>
-          </Segment>
+    R.isEmpty(filteredProjects) ?
+    <Fade>
+      <Segment basic>
+        <Segment placeholder>
+          <Header icon>
+            <Icon name='exclamation' />
+            No Projects
+          </Header>
         </Segment>
-        </Fade>
-      :
-        <Card.Group itemsPerRow={3}>
-        {
-          R.compose(
-            R.map(({projectID}) => <ProjectCard key={projectID} {...{projectID}} />)
-          )(filteredProjects)
-        }
-        </Card.Group>
-    }
-    </>
+      </Segment>
+      </Fade>
+    :
+      <Card.Group itemsPerRow={3}>
+      {
+        R.compose(
+          R.map(({projectID}) => <ProjectCard key={projectID} {...{projectID}} />)
+        )(filteredProjects)
+      }
+      </Card.Group>
   )
 }
 
