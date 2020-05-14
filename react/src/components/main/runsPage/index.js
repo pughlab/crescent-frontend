@@ -62,9 +62,9 @@ const RunsPageComponent = ({
       {/* PROJECT CREATOR ACTIONS */}
       {
         R.and(isUploadedProject, currentUserIsCreator) &&
-        <Button.Group attached='top' widths={3} size='large'>
+        <Button.Group attached='top' widths={2} size='large'>
           <ShareProjectModal {...{project}} />
-          <AddMetadataModal {...{project}} />
+          {/* <AddMetadataModal {...{project}} /> */}
           <ArchiveProjectModal {...{project}} />
         </Button.Group>
       }
