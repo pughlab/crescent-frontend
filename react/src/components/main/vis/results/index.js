@@ -9,6 +9,7 @@ import withRedux from '../../../../redux/hoc'
 import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
 import QCPlot from './QCPlot'
+import HeatMap from './HeatMap'
 
 
 import {ClimbingBoxLoader} from 'react-spinners'
@@ -30,7 +31,8 @@ const ResultsComponent = withRedux(
       [R.equals('violin'), R.always(<ViolinPlot/>)],
       [R.equals('qc'), R.always(<QCPlot/>)],
       [R.equals('tsne'), R.always(<ScatterPlot/>)],
-      [R.equals('umap'), R.always(<ScatterPlot/>)]
+      [R.equals('umap'), R.always(<ScatterPlot/>)],
+      [R.equals('heatmap'), R.always(<HeatMap/>)]
     ])
 
     return (

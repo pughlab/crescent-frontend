@@ -80,6 +80,15 @@ const clearResults = () => (dispatch, getState) => {
   });
 }
 
+const fetchHeatMap = () => (dispatch, getState) => {
+  const {
+    app: {
+      run: {runID}
+    }
+  } = getState()
+  return fetchEndpoint(`/express/heatmap/${runID}`)
+}
+
 const fetchTopExpressed = runID => (dispatch, getState) => {
   fetchEndpoint(`/express/top-expressed/${runID}`).then((result) => {
     dispatch({
@@ -193,6 +202,7 @@ export default {
   fetchScatter,
   fetchOpacity,
   fetchViolin,
+  fetchHeatMap,
   fetchTopExpressed,
   fetchQC,
   fetchAvailableQC,

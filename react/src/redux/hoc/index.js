@@ -38,6 +38,7 @@ export default connect(
         fetchScatter: () => dispatch(Actions.thunks.fetchScatter()),
         fetchOpacity: () => dispatch(Actions.thunks.fetchOpacity()),
         fetchViolin: () => dispatch(Actions.thunks.fetchViolin()),
+        fetchHeatMap: () => dispatch(Actions.thunks.fetchHeatMap()),
         fetchTopExpressed: runID => dispatch(Actions.thunks.fetchTopExpressed(runID)),
         fetchQC: runID => dispatch(Actions.thunks.fetchQC(runID)),
         fetchAvailableQC: runID => dispatch(Actions.thunks.fetchAvailableQC(runID)),

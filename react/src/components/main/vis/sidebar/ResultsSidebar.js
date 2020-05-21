@@ -93,11 +93,18 @@ const ResultsSidebar = withRedux(
                 </Button>
                 <Segment>
                   {
+                  R.cond([
+                    [R.equals('qc'), R.always(<QualityControlMenu/>)],
+                    [R.equals('heatmap'), R.always(<Segment/>)],
+                    [R.T, R.always(<VisualizationMenu/>)]
+                  ])(activeResult)
+                  /*
                   R.ifElse(
                     R.equals('qc'),
                     R.always(<QualityControlMenu/>),
                     R.always(<VisualizationMenu/>)
                   )(activeResult)
+                  */
                   }
                 </Segment>
               </Segment.Group>
