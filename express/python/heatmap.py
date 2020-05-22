@@ -11,12 +11,12 @@ import helper
 def get_heatmap_data(runID):
 	""" given a runID, fetch the heatmap data """
 	heatmap_data = {}
-	path = "/usr/src/app/results/{runID}/SEURAT/frontend_coordinates/HEATMAPCoordinates.tsv".format(runID=runID)
+	path = "/usr/src/app/results/{runID}/GSVA/crescent.GSVA_enrichment_scores.tsv".format(runID=runID)
 	if not os.path.isfile(path):
 		# try command-line path
-		path = "../../results/{runID}/SEURAT/frontend_coordinates/HEATMAPCoordinates.tsv".format(runID=runID)
+		path = "../../results/{runID}/GSVA/crescent.GSVA_enrichment_scores.tsv".format(runID=runID)
 		if not os.path.isfile(path):
-			helper.return_error("Heatmap coordinate file not found")	
+			helper.return_error("Heatmap scores file not found")	
 	
 	with open(path) as heatmap_file:
 		reader = csv.reader(heatmap_file, delimiter="\t")
