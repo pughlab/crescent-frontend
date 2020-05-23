@@ -81,7 +81,7 @@ const makeCWLJobJSON = async (
       number_genes: `${minNumberGenes},${maxNumberGenes}`,
       gsva_R_script: {
         class: 'File',
-        path: '/usr/src/app/crescent/GSVA.R'
+        path: '/usr/src/app/crescent/Runs_GSVA.R'
       },
       gene_set: {
         class: 'File',
