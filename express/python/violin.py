@@ -94,19 +94,6 @@ def get_expression(feature, runID):
 		else:
 			helper.return_error("Feature Not Found")
 
-	with open(path) as norm_counts:
-		reader = csv.reader(norm_counts, delimiter="\t")
-		barcodes = next(reader)
-		for row in reader:
-			if str(row[0]) == str(feature):
-				feature_exp = [float(x) for x in row[1:]]
-				# dict where barcodes are keys, opacities are values
-				return dict(zip(barcodes, feature_exp)) 
-
-	helper.return_error("Feature Not Found")
-
-
-
 def new_violin_group(label, y_coord):
 	""" creates a new violin group for the plot """
 	global colour_counter

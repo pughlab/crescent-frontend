@@ -36,7 +36,7 @@ def find_plot_files(runID):
 	folder_path = "/usr/src/app/results/{runID}/SEURAT/frontend_coordinates".format(runID=runID)
 	if not os.path.isdir(folder_path):
 		# try command-line path
-		folder_path = "../../results/{runID}/SEURAT/frontend_coordinates".format(runID=runID)
+		folder_path = "../../results/{runID}/SEURAT/frontend_coordinates".format(runID=runID)	
 		if not os.path.isdir(folder_path):
 			helper.return_error("coordinates folder not found ("+folder_path+")")	
 	for filename in os.listdir(folder_path):
