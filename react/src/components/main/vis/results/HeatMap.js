@@ -68,11 +68,11 @@ const HeatMap = withRedux(
             <Label.Detail>{selectedCluster}</Label.Detail>
           </Label>
           <Label>
-            Selected Cell Type:
+            Selected Cluster Label:
             <Label.Detail>{selectedCellType}</Label.Detail>
           </Label>
           <Label>
-            Selected Probability Value:
+            Selected Enrichment Score:
             <Label.Detail>{selectedValue}</Label.Detail>
           </Label>
 
