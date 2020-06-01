@@ -79,9 +79,12 @@ def find_plot_files(runID):
 					second_line.append("group")
 					new_groups.append(second_line)
 					for row in groups_reader:
-						cell_label = cluster_labels[row[1]]
-						new_row = row + [cell_label]
-						new_groups.append(new_row)
+						if row[1] in cluster_labels:
+							cell_label = cluster_labels[row[1]]
+							new_row = row + [cell_label]
+							new_groups.append(new_row)
+						else:
+							pass
 		
 		if new_groups:
 			# new groups file made, now ouput file

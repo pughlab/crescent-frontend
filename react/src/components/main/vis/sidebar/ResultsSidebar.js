@@ -6,7 +6,8 @@ import * as RA from 'ramda-adjunct'
 
 import withRedux from '../../../../redux/hoc'
 import VisualizationMenu from '../results/VisualizationMenu';
-import QualityControlMenu from '../results/QualityControlMenu'
+import QualityControlMenu from '../results/QualityControlMenu';
+import HeatmapMenu from '../results/HeatmapMenu';
 
 const ResultsSidebar = withRedux(
   ({
@@ -95,7 +96,7 @@ const ResultsSidebar = withRedux(
                   {
                   R.cond([
                     [R.equals('qc'), R.always(<QualityControlMenu/>)],
-                    [R.equals('heatmap'), R.always(<Segment/>)],
+                    [R.equals('heatmap'), R.always(<HeatmapMenu/>)],
                     [R.T, R.always(<VisualizationMenu/>)]
                   ])(activeResult)
                   /*

@@ -202,6 +202,12 @@ router.get(
           python_process.then((result) => {res.send(result)})
         })
         break;
+      case 'gsva_metrics':
+        python_process = call_python('gsva_metrics.py', {runID});
+        python_process.then((result) => {
+          res.send(result)
+        })
+        break;
       default:
         res.status(404).send("ERROR: invalid metadata endpoint")
     }

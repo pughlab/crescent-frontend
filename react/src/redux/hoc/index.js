@@ -43,6 +43,7 @@ export default connect(
         fetchQC: runID => dispatch(Actions.thunks.fetchQC(runID)),
         fetchAvailableQC: runID => dispatch(Actions.thunks.fetchAvailableQC(runID)),
         fetchMetrics: runID => dispatch(Actions.thunks.fetchMetrics(runID)),
+        fetchGSVAMetrics: runID => dispatch(Actions.thunks.fetchGSVAMetrics(runID)),
         getCategoricalGroups: runID => dispatch(Actions.thunks.getCategoricalGroups(runID)),
         resetGroups: runID => dispatch(Actions.thunks.resetGroups(runID)),
       }

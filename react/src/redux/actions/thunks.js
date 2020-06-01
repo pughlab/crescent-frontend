@@ -111,6 +111,10 @@ const fetchMetrics = runID => (dispatch, getState) => {
   return fetchEndpoint(`/express/metadata/qc_metrics/${runID}`)
 }
 
+const fetchGSVAMetrics = runID => (dispatch, getState) => {
+  return fetchEndpoint(`/express/metadata/gsva_metrics/${runID}`)
+}
+
 const initializeResults = runID => (dispatch, getState) => {
   dispatch({
     type: 'TOGGLE_LOADING_RESULTS',
@@ -207,6 +211,7 @@ export default {
   fetchQC,
   fetchAvailableQC,
   fetchMetrics,
+  fetchGSVAMetrics,
   getCategoricalGroups,
   resetGroups
 }
