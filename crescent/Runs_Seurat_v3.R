@@ -1174,16 +1174,9 @@ StopWatchStart$AverageGeneExpression  <- Sys.time()
 
 cluster.averages<-AverageExpression(object = seurat.object.f, use.scale = F, use.counts = F)
 OutfileClusterAverages<-paste(Tempdir, "/AVERAGE_GENE_EXPRESSION_TABLES/", PrefixOutfiles,".", ProgramOutdir, "_AverageGeneExpressionPerCluster.tsv", sep="")
-
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-  Headers<-paste("AVERAGE_GENE_EXPRESSION",paste("C", names(cluster.averages$RNA), sep="", collapse="\t"), sep="\t", collapse = "\t")
-  write.table(Headers,file = OutfileClusterAverages, row.names = F, col.names = F, sep="\t", quote = F)
-  write.table(data.frame(cluster.averages$RNA),file = OutfileClusterAverages, row.names = T, col.names = F, sep="\t", quote = F, append = T)
-} else {
-  Headers<-paste("AVERAGE_GENE_EXPRESSION",paste("r", Resolution, "_C", names(cluster.averages$RNA), sep="", collapse="\t"), sep="\t", collapse = "\t")
-  write.table(Headers,file = OutfileClusterAverages, row.names = F, col.names = F, sep="\t", quote = F)
-  write.table(data.frame(cluster.averages$RNA),file = OutfileClusterAverages, row.names = T, col.names = F, sep="\t", quote = F, append = T)
-}
+Headers<-paste("AVERAGE_GENE_EXPRESSION",paste("C", names(cluster.averages$RNA), sep="", collapse="\t"), sep="\t", collapse = "\t")
+write.table(Headers,file = OutfileClusterAverages, row.names = F, col.names = F, sep="\t", quote = F)
+write.table(data.frame(cluster.averages$RNA),file = OutfileClusterAverages, row.names = T, col.names = F, sep="\t", quote = F, append = T)
 
 StopWatchEnd$AverageGeneExpression  <- Sys.time()
 
@@ -1557,5 +1550,5 @@ writeLines(paste("END - All done!!! See:\n", OutfileCPUusage, "\nfor computing t
 quit()
 
 #################################################################
-### PUGHLAB/CRESCENT/RUNS_SEURAT_V3 GITHUB VERSION 916d802d0b ###
+### PUGHLAB/CRESCENT/RUNS_SEURAT_V3 GITHUB VERSION 98d12effba ###
 #################################################################
