@@ -38,7 +38,8 @@ const HeatmapMenu = withRedux(
   console.log(gsvaMetrics)
   return (
     <>
-    <Segment basic style={{padding: '0rem'}}>
+    <Divider horizontal content='Top Predicted Cell Labels' />
+    <Segment basic style={{padding: '0rem'}} style={{maxHeight: '60vh', overflowY: 'scroll'}}>
     {
         R.ifElse(
           R.isNil,
@@ -58,7 +59,7 @@ const HeatmapMenu = withRedux(
                   size={'tiny'}
                   style={{margin: '0.25rem'}}
                   content={`Enrichment Score: `+score}
-                  />
+                />
               </Segment>
             ))
           )(gsvaMetrics)
