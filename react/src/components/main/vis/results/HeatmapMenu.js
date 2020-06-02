@@ -53,12 +53,15 @@ const HeatmapMenu = withRedux(
                 size={'tiny'}
                 style={{margin: '0.25rem'}}
                 content={`Predicted Label: `+value}
+                color={R.ifElse(R.equals("UNDEFINED"),R.always('red'),R.always(undefined))(value)}
                 />
                 <Button
                   basic
                   size={'tiny'}
                   style={{margin: '0.25rem'}}
                   content={`Enrichment Score: `+score}
+                  color={R.ifElse(R.equals("NA"),R.always('red'),R.always(undefined))(score)}
+
                 />
               </Segment>
             ))

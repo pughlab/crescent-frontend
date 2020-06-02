@@ -12,7 +12,7 @@ DESC = {
 	'UMAP': {"label": 'UMAP', "result": 'umap', "description": 'Uniform Manifold Approximation and Projection for Dimension Reduction'},
 	'VIOLIN': {"label": 'Gene Expression Violin', "result": 'violin', "description": 'Violin Plots'},
 	'QC': {"label": "QC", "result": 'qc', "description": 'Quality Control Plots'},
-	'HEATMAP': {"label": "Heatmap", "result": "heatmap", "description": "GSVA enrichment scores"}
+	'HEATMAP': {"label": "Heatmap", "result": "heatmap", "description": "GSVA Enrichment Scores"}
 }
 
 def has_qc(runID):
