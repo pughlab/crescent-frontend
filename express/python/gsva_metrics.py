@@ -32,8 +32,13 @@ def get_gsva_metrics(runID):
 			for row in reader:
 				cluster = row[0].replace("C","")
 				idx = next((i for i, item in enumerate(cluster_labels) if item["cluster"] == cluster), None)
-				celltype_idx = header.index(cluster_labels[idx]['value'])
-				cluster_labels[idx]['score'] = row[celltype_idx]
+				try:
+					celltype_idx = header.index(cluster_labels[idx]['value'])
+					cluster_labels[idx]['score'] = row[celltype_idx]
+				except Exception as e:
+					cluster_labels[idx]['score'] = 'NA'
+
+
 
 	return sorted(cluster_labels, key=lambda i:int(i['cluster']))
 
