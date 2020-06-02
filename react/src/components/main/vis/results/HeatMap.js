@@ -46,7 +46,7 @@ const HeatMap = withRedux(
 
   return (
     <>
-      <Header textAlign='center' content='GSVA HeatMap' />
+      <Header textAlign='center' content='GSVA HeatMap - LM22 PBMC Signature (PMID: 25822800)' />
       <Plot
         config={{showTips: false}}
         data={heatmapData}
