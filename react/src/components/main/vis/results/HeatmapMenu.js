@@ -38,7 +38,7 @@ const HeatmapMenu = withRedux(
   console.log(gsvaMetrics)
   return (
     <>
-    <Divider horizontal content='Top Predicted Cell Labels' />
+    <Divider horizontal content='Top Predicted Cluster Labels' />
     <Segment basic style={{padding: '0rem'}} style={{maxHeight: '60vh', overflowY: 'scroll'}}>
     {
         R.ifElse(
@@ -47,12 +47,12 @@ const HeatmapMenu = withRedux(
           R.addIndex(R.map)(
             ({cluster, value, score}, index) => (
               <Segment compact key={index}>
-                <Label attached='top' content={`Cluster: `+cluster}/>
+                <Label attached='top' content={`Cluster `+cluster}/>
                 <Button
                 basic
                 size={'tiny'}
                 style={{margin: '0.25rem'}}
-                content={`Predicted Cell: `+value}
+                content={`Predicted Label: `+value}
                 />
                 <Button
                   basic
