@@ -38,8 +38,6 @@ def get_gsva_metrics(runID):
 				except Exception as e:
 					cluster_labels[idx]['score'] = 'NA'
 
-
-
 	return sorted(cluster_labels, key=lambda i:int(i['cluster']))
 
 def main():

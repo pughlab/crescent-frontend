@@ -53,6 +53,9 @@ def find_plot_files(runID):
 		if not os.path.isdir(gsva_folder_path):
 			pass # this is fine, just means no gsva results available 
 
+	# violin always available
+	available_plots['violin']	= DESC['VIOLIN']
+
 	new_groups = []
 	if os.path.isfile(os.path.join(gsva_folder_path,"crescent.GSVA_fdr_values.tsv")):
 		available_plots['heatmap'] = DESC['HEATMAP']
@@ -91,12 +94,7 @@ def find_plot_files(runID):
 			with open(os.path.join(folder_path, "groups.tsv"), 'w') as out_file:
 				tsv_writer = csv.writer(out_file, delimiter='\t')
 				tsv_writer.writerows(new_groups)
-				
 
-	#print(new_groups)
-	# violin always available
-	available_plots['violin']	= DESC['VIOLIN']
-	
 	return available_plots
 
 def main():
