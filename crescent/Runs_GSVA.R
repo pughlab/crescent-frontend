@@ -101,7 +101,7 @@ option_list <- list(
                 a) Type the number of cores to use for parellelization (e.g. '4')
                 b) Type 'MAX' to determine and use all available cores in the system
                 Default = 'MAX'")
-
+  
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -130,7 +130,13 @@ StopWatchStart$Overall  <- Sys.time()
 ####################################
 
 DefaultParameters <- list(
-  DigitsForRound = 5 ### Number of digits to round up enrichment score values in outfiles
+  ### General
+  DigitsForRound = 5, ### Number of digits to round up enrichment score values in outfiles
+  
+  ### Scoring
+  MinEScoreToAssignLabel = 0,
+  LabelForUndefinedScored = "UNDEFINED"
+  
 )
 
 ####################################
@@ -161,7 +167,7 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   ## Using `Tempdir/DIRECTORY` for temporary storage of outfiles because sometimes long paths of outdirectories casuse R to leave outfiles unfinished
   ## 'DIRECTORY' is one of the directories specified at FILE_TYPE_OUT_DIRECTORIES
   ## Then at the end of the script they'll be moved into `Outdir/ProgramOutdir`
-
+  
   ### Checking if the system follows a mirror /scratch vs. /home structure
   ### If that's the case, this script will use Tempdir at /scratch, not at /home
   ### This is because systems like SciNet (Compute Canada) using 'Slurm Workload Manager'
@@ -263,8 +269,6 @@ if (NumbCoresAvailable < NumbCoresRequested) {
 
 writeLines(paste("\nUsing ", NumbCoresToUse, " cores\n", sep = "", collapse = ""))
 
-plan(strategy = "multicore", workers = NumbCoresToUse)
-
 ####################################
 ### Load data
 ####################################
@@ -305,7 +309,7 @@ StopWatchStart$RunGSVA  <- Sys.time()
 
 ### Get and print out GSVA enrichment scores
 StartTimeGsva<-Sys.time()
-EnrichmentScores<-gsva(expr=fullmat, gset.idx.list=gmt2, min.sz=1, max.sz=Inf, mx.diff=TRUE, verbose=T, parallel.sz=0)
+EnrichmentScores<-gsva(expr=fullmat, gset.idx.list=gmt2, min.sz=1, max.sz=Inf, mx.diff=TRUE, verbose=T, parallel.sz=NumbCoresToUse)
 SortedRowNames<-rownames(EnrichmentScores)
 SortedColNames<-colnames(EnrichmentScores)
 #
@@ -400,16 +404,34 @@ StopWatchEnd$SortGSVAERmatrix  <- Sys.time()
 
 ####################################
 ### Outfile *.GSVA_final_label.tsv - currently simply taking the maximum GSVA enrichment score for each array (column of --infile_mat)
+### and making enrichment scores <= 0 to show 'UNDEFINED' predictions
 ####################################
 
 StopWatchStart$GetFinalLabel  <- Sys.time()
 
 writeLines("\n*** Write cluster labels based on maximum GSVA enrichment scores ***\n")
 
-row.names(predictions.mat.ordered) <- sub("C", "", row.names(predictions.mat.ordered))
+if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+  row.names(predictions.mat.ordered) <- sub("C", "", row.names(predictions.mat.ordered))
+}
 
-write(paste(row.names(predictions.mat.ordered), colnames(predictions.mat.ordered)[max.col(predictions.mat.ordered, ties.method="first")], sep = "\t", collapse = "\n"),
-      OutfileFinalLabel)
+HighestScoreLabels <- colnames(predictions.mat.ordered)[max.col(predictions.mat.ordered, ties.method="first")]
+HighestScoreLabels.df <- as.data.frame(cbind(row.names(predictions.mat.ordered), HighestScoreLabels))
+colnames(HighestScoreLabels.df)[1] <- "cluster"
+
+close(file(OutfileFinalLabel, open="w")) # just to clean-up OutfileFinalLabel if there is a pre-existing run
+
+sapply(row.names(HighestScoreLabels.df), FUN=function(eachClusterN) {
+  ClusterId     <- HighestScoreLabels.df[eachClusterN,"cluster"]
+  LabelAssigned <- HighestScoreLabels.df[eachClusterN,"HighestScoreLabels"]
+  EnrichmentScore <- predictions.mat.ordered[ClusterId,LabelAssigned]
+  
+  if (EnrichmentScore > DefaultParameters$MinEScoreToAssignLabel) {
+    write(file = OutfileFinalLabel, x = paste(ClusterId, LabelAssigned, sep = "\t"), append = T)
+  }else{
+    write(file = OutfileFinalLabel, x = paste(ClusterId, DefaultParameters$LabelForUndefinedScored, sep = "\t"), append = T)
+  }
+})
 
 StopWatchEnd$GetFinalLabel  <- Sys.time()
 
