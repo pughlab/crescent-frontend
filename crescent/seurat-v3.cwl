@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: /usr/src/app/crescent-seurat.simg
+    dockerImageId: /usr/src/app/crescent-seurat-gsva.simg
 
 baseCommand: [Rscript]
 
@@ -125,7 +125,7 @@ inputs:
       prefix: -w
 
   outs_dir:
-    type: string
+    type: string?
     default: N
     inputBinding:
       position: 20
@@ -136,3 +136,8 @@ outputs:
     type: Directory
     outputBinding:
       glob: SEURAT
+
+  seurat_avg_exp_output:
+    type: File
+    outputBinding:
+      glob: SEURAT/AVERAGE_GENE_EXPRESSION_TABLES/crescent.SEURAT_AverageGeneExpressionPerCluster.tsv

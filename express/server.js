@@ -202,6 +202,12 @@ router.get(
           python_process.then((result) => {res.send(result)})
         })
         break;
+      case 'gsva_metrics':
+        python_process = call_python('gsva_metrics.py', {runID});
+        python_process.then((result) => {
+          res.send(result)
+        })
+        break;
       default:
         res.status(404).send("ERROR: invalid metadata endpoint")
     }
@@ -284,6 +290,17 @@ router.get(
     python_process.then((result) => {res.send(result);})
   }
 );
+
+router.get(
+  `/heatmap/:runID`,
+  (req, res) => {
+    const {
+      params: {runID}
+    } = req;
+    python_process = call_python('heatmap.py', {runID})
+    python_process.then((result) => {res.send(result);})
+  }
+)
 
 router.get('/search/:query/:runID',
   async (req, res) => {

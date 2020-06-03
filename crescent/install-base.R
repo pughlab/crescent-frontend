@@ -6,7 +6,11 @@ withCallingHandlers(
 )
 setRepositories(ind = 1:2)
 withCallingHandlers(
-    install.packages(c('fmsb','optparse','staplr','devtools'),repos='https://cloud.r-project.org/'),
+    install.packages(c('fmsb','optparse','staplr','devtools', 'GSA'),repos='https://cloud.r-project.org/'),
+    warning = stop
+)
+withCallingHandlers(
+    BiocManager::install(c('GSVA', 'qvalue')),
     warning = stop
 )
 withCallingHandlers(

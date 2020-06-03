@@ -78,7 +78,16 @@ const makeCWLJobJSON = async (
       percent_mito: `${minPercentMito},${maxPercentMito}`,
       // percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
       // number_genes: '50,8000',
-      number_genes: `${minNumberGenes},${maxNumberGenes}`
+      number_genes: `${minNumberGenes},${maxNumberGenes}`,
+      gsva_R_script: {
+        class: 'File',
+        path: '/usr/src/app/crescent/Runs_GSVA.R'
+      },
+      gene_set: {
+        class: 'File',
+        path: '/usr/src/app/crescent/LM22_signature.gmt'
+      },
+      matrix_input_type: 'DGE',
     }
   } catch(error) {
     console.error('Make job json error', error)
@@ -108,7 +117,7 @@ const submitCWL = async (
         --maxLogFileSize \
         0 \
         --singularity \
-        /usr/src/app/crescent/seurat-v3.cwl \
+        /usr/src/app/crescent/crescent.cwl \
         frontend_seurat_inputs.json \ 
     `,
       { 

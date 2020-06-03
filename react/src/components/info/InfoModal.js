@@ -52,7 +52,12 @@ const InfoModal = ({
 
           <Segment>
             <Header content='Privacy and Security Policy'/>
-            Please review our <b>Privacy and Security Policy</b> and details on how to make your CReSCENT project public on the <a href='https://pughlab.github.io/crescent-frontend/#section-8' target='_blank' rel="noopener noreferrer">CReSCENT Docs</a>.
+            Please review our <i>Privacy and Security Policy</i> and details on how to make your CReSCENT project public on the <a href='https://pughlab.github.io/crescent-frontend/#section-8' target='_blank' rel="noopener noreferrer">CReSCENT Docs</a>.
+          </Segment>
+
+          <Segment>
+            <Header content='Citation'/>
+            Suluxan Mohanraj, J Javier Díaz-Mejía, Martin D Pham, Hillary Elrick, Mia Husić, Shaikh Rashid, Ping Luo, Prabnur Bal, Kevin Lu, Samarth Patel, et al., CReSCENT: CanceR Single Cell ExpressioN Toolkit, <i>Nucleic Acids Research</i>, gkaa437, <a href='https://doi.org/10.1093/nar/gkaa437' target='_blank' rel="noopener noreferrer">https://doi.org/10.1093/nar/gkaa437</a>.
           </Segment>
 
           <Segment>

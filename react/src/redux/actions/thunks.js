@@ -80,6 +80,15 @@ const clearResults = () => (dispatch, getState) => {
   });
 }
 
+const fetchHeatMap = () => (dispatch, getState) => {
+  const {
+    app: {
+      run: {runID}
+    }
+  } = getState()
+  return fetchEndpoint(`/express/heatmap/${runID}`)
+}
+
 const fetchTopExpressed = runID => (dispatch, getState) => {
   fetchEndpoint(`/express/top-expressed/${runID}`).then((result) => {
     dispatch({
@@ -100,6 +109,10 @@ const fetchQC = selectedQC => (dispatch, getState) => {
 
 const fetchMetrics = runID => (dispatch, getState) => {
   return fetchEndpoint(`/express/metadata/qc_metrics/${runID}`)
+}
+
+const fetchGSVAMetrics = runID => (dispatch, getState) => {
+  return fetchEndpoint(`/express/metadata/gsva_metrics/${runID}`)
 }
 
 const initializeResults = runID => (dispatch, getState) => {
@@ -193,10 +206,12 @@ export default {
   fetchScatter,
   fetchOpacity,
   fetchViolin,
+  fetchHeatMap,
   fetchTopExpressed,
   fetchQC,
   fetchAvailableQC,
   fetchMetrics,
+  fetchGSVAMetrics,
   getCategoricalGroups,
   resetGroups
 }
