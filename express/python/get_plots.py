@@ -67,7 +67,7 @@ def find_plot_files(runID):
 			with open(os.path.join(folder_path, "groups.tsv")) as f:
 				groups_reader = csv.reader(f, delimiter="\t")
 				first_line = next(groups_reader)
-				if "GSVA_Label" not in first_line:
+				if "GSVA_Labels" not in first_line:
 					# add the predicted cell labels to each barcode in groups.tsv
 					if os.path.isfile(os.path.join(gsva_folder_path, "crescent.GSVA_final_label.tsv")):
 						cluster_labels = {}
@@ -76,7 +76,7 @@ def find_plot_files(runID):
 							for row in reader:
 								cluster_labels[row[0]] = row[1]
 
-					first_line.append("GSVA_Label")
+					first_line.append("GSVA_Labels")
 					new_groups.append(first_line)
 					second_line = next(groups_reader)
 					second_line.append("group")
