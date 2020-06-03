@@ -87,7 +87,16 @@ const AddMetadataModal = withRedux(({
     >
       <Modal.Content>
         <Segment attached='top'>
-          <Header icon='upload' content={projectName} subheader='Upload/replace metadata file for this project?' />
+          <Header>
+            <Icon name='upload'/>
+            <Header.Content>
+              {projectName}
+              <Header.Subheader>
+                Upload/replace metadata file for this project. Instructions and file format can be found <a href='https://pughlab.github.io/crescent-frontend/#item-2-2' target='_blank' rel="noopener noreferrer">here</a>.
+              </Header.Subheader>
+            </Header.Content>
+
+          </Header> 
         </Segment>
         <Segment attached='bottom' loading={false}>
           <Segment placeholder>
