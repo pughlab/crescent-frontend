@@ -46,6 +46,9 @@ const ParametersComponent = withRedux(
       normalizationMethod,
       applyCellFilters,
       returnThreshold,
+      saveFilteredData,
+      saveRObject,
+      saveUnfilteredData,
     } = parameters
     // Disable changing parameters if run is not pending
     // Also disable segment below
@@ -63,7 +66,10 @@ const ParametersComponent = withRedux(
       'resolution': resolution => mergeAndSetParameters({resolution}),
       'apply_cell_filters' : applyCellFilters => mergeAndSetParameters({applyCellFilters}),
       'normalization_method' : normalizationMethod => mergeAndSetParameters({normalizationMethod}),
-      'return_threshold' : returnThreshold => mergeAndSetParameters({returnThreshold})
+      'return_threshold' : returnThreshold => mergeAndSetParameters({returnThreshold}),
+      'save_filtered_data' : saveFilteredData => mergeAndSetParameters({saveFilteredData}),
+      'save_r_object' : saveRObject => mergeAndSetParameters({saveRObject}),
+      'save_unfiltered_data' : saveUnfilteredData => mergeAndSetParameters({saveUnfilteredData})
     }
     const values = {
       'sc_input_type': singleCell,
@@ -74,7 +80,10 @@ const ParametersComponent = withRedux(
       'resolution': resolution,
       'apply_cell_filters': applyCellFilters,
       'normalization_method' : normalizationMethod, 
-      'return_threshold' : returnThreshold
+      'return_threshold' : returnThreshold,
+      'save_filtered_data' : saveFilteredData,
+      'save_r_object': saveRObject,
+      'save_unfiltered_data': saveUnfilteredData,
     }
 
     const currentUserNotCreator = R.not(R.equals(currentUserID, creatorUserID))

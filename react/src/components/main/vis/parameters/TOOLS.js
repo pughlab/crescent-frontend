@@ -214,6 +214,60 @@ const TOOLS = {
         }
       ]
     },
+    {
+      label: 'Save Data',
+      step: 'save',
+      parameters: [
+        {
+          step: 'save',
+          parameter: 'save_unfiltered_data',
+          label: 'Unfiltered MTX Files',
+          prompt: 'Save unfiltered raw data (MTX format)',
+          description: 'Indicates if unfiltered raw data uploaded as input should be saved in MTX format. Default is "No".',
+          input: {
+            type: 'select',
+            defaultValue: 'N',
+            options: [
+              {key: 'yes', value: 'Y', text: 'Yes'},
+              {key: 'no', value: 'N', text: 'No'},
+            ]
+          },
+          disabled: false
+        },
+        {
+          step: 'save',
+          parameter: 'save_filtered_data',
+          label: 'Filtered MTX Files',
+          prompt: 'Save filtered raw data and normalized data (MTX format)',
+          description: 'Indicates if filtered raw data and normalized data from the run should be saved in MTX format. Default is "No".',
+          input: {
+            type: 'select',
+            defaultValue: 'N',
+            options: [
+              {key: 'yes', value: 'Y', text: 'Yes'},
+              {key: 'no', value: 'N', text: 'No'},
+            ]
+          },
+          disabled: false
+        },
+        {
+          step: 'save',
+          parameter: 'save_r_object',
+          label: 'R Object',
+          prompt: 'Save R Object',
+          description: 'Indicates if R Object (data and analyses) from the run should be saved as RDS. Default is "No". ',
+          input: {
+            type: 'select',
+            defaultValue: 'N',
+            options: [
+              {key: 'yes', value: 'Y', text: 'Yes'},
+              {key: 'no', value: 'N', text: 'No'},
+            ]
+          },
+          disabled: false
+        }
+      ]
+    },
   ]
 }
 

@@ -33,6 +33,9 @@ const initialState = {
           normalizationMethod: '2',
           applyCellFilters: 'Y',
           returnThreshold: 0.01,
+          saveFilteredData: 'N',
+          saveRObject: 'N',
+          saveUnfilteredData: 'N'
         },
         isSubmitted: false
       },
@@ -156,6 +159,9 @@ const GQLReducer = {
               normalizationMethod: '2',
               applyCellFilters: 'Y',
               returnThreshold: 0.01,
+              saveFilteredData: 'N',
+              saveRObject: 'N',
+              saveUnfilteredData: 'N'
             }
           : JSON.parse(params)
         ),

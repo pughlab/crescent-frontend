@@ -22,6 +22,9 @@ const makeCWLJobJSON = async (
     normalizationMethod,
     applyCellFilters,
     returnThreshold,
+    saveFilteredData,
+    saveRObject,
+    saveUnfilteredData,
   },
   runID,
 ) => {
@@ -79,6 +82,9 @@ const makeCWLJobJSON = async (
       // percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
       // number_genes: '50,8000',
       number_genes: `${minNumberGenes},${maxNumberGenes}`,
+      save_filtered_data: saveFilteredData,
+      save_r_object: saveRObject,
+      save_unfiltered_data : saveUnfilteredData,
       gsva_R_script: {
         class: 'File',
         path: '/usr/src/app/crescent/Runs_GSVA.R'
