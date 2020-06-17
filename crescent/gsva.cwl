@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: /usr/src/app/crescent-seurat-gsva.simg
+    dockerImageId: /usr/src/app/crescent-seurat-droplet-gsva.simg
 
 baseCommand: [Rscript]
 
