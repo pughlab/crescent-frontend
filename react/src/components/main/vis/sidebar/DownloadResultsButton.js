@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {Button} from 'semantic-ui-react'
 
 import * as R from 'ramda'
@@ -35,9 +35,9 @@ const DownloadResultsButton = withRedux(
       R.prop('run'),
       R.always({downloadable: false})
     )(data)
-    
-    // console.log(data)
-    
+
+    const [clicked, setClicked] = useState(false)
+        
     return (
       <Button fluid color='violet'
         content={R.prop(runStatus, {
@@ -47,13 +47,19 @@ const DownloadResultsButton = withRedux(
           failed: 'DOWNLOAD RUN LOGS'
         })}
         disabled={
-          R.or(R.either(R.equals('pending'), R.equals('submitted'))(runStatus)),(RA.isFalse(downloadable))
-        }
+          R.any(RA.isTrue, [
+            R.either(R.equals('pending'), R.equals('submitted'))(runStatus),
+            clicked,
+            R.not(downloadable)
+          ])}
         download
         target='_blank'
         // Should only work with nginx reverse proxy
         // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
         href={`/express/download/${runID}`}
+        onClick={() => {
+          setClicked(true)
+        }}
       />
     )
   }
