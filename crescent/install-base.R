@@ -10,7 +10,11 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    BiocManager::install(c('GSVA', 'qvalue')),
+    devtools::install_version("mnormt", version = "1.5-5", repos = "http://cran.us.r-project.org"),
+    warning = stop
+)
+withCallingHandlers(
+    BiocManager::install(c('GSVA', 'qvalue', 'DropletUtils')), 
     warning = stop
 )
 withCallingHandlers(
