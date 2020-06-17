@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: /usr/src/app/crescent-seurat-gsva.simg
+    dockerImageId: /usr/src/app/crescent-seurat-droplet-gsva.simg
 
 baseCommand: [Rscript]
 
@@ -37,12 +37,6 @@ inputs:
     inputBinding:
       position: 5
       prefix: -p
-
-  summary_plots:
-    type: string?
-    inputBinding:
-      position: 6
-      prefix: -s
 
   colour_tsne_discrete:
     type: File?
@@ -129,8 +123,28 @@ inputs:
     default: N
     inputBinding:
       position: 20
-      prefix: -o 
+      prefix: -o
 
+  save_filtered_data:
+    type: string
+    default: N
+    inputBinding:
+      position: 21
+      prefix: -k
+
+  save_r_object:
+    type: string
+    default: N
+    inputBinding:
+      position: 22
+      prefix: -s
+
+  save_unfiltered_data:
+    type: string
+    default: N
+    inputBinding:
+      position: 23
+      prefix: -l
 outputs:
   seurat_output:
     type: Directory
