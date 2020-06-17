@@ -65,6 +65,15 @@ inputs:
 
   outs_dir:
     type: string?
+  
+  save_filtered_data:
+    type: string?
+
+  save_r_object:
+    type: string?
+  
+  save_unfiltered_data:
+    type: string?
 
   gsva_R_script:
     type: File
@@ -117,6 +126,9 @@ steps:
             number_cores: number_cores
             runs_cwl: runs_cwl
             outs_dir: outs_dir
+            save_filtered_data: save_filtered_data
+            save_r_object: save_r_object
+            save_unfiltered_data: save_unfiltered_data
         out: [seurat_output, seurat_avg_exp_output]
 
     gsva:
