@@ -60,7 +60,7 @@ const makeCWLJobJSON = async (
     return {
       R_script: {
         class: 'File',
-        path: '/usr/src/app/crescent/Runs_Seurat_v3.R'
+        path: '/usr/src/app/crescent/Runs_Seurat_v3_SingleDataset.R'
 
       },
       sc_input: {
@@ -113,7 +113,7 @@ const submitCWL = async (
   const cwl = spawn(
     `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
      mkdir /usr/src/app/results/${runID} && \
-     cp /usr/src/app/crescent/Runs_Seurat_v3.R /usr/src/app/results/${runID} && \
+     cp /usr/src/app/crescent/Runs_Seurat_v3_SingleDataset.R /usr/src/app/results/${runID} && \
      cd /usr/src/app/results/${runID} && \
      rm -f frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
