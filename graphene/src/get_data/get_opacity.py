@@ -163,12 +163,17 @@ def get_opacity_data(feature, group, runID):
     minio_config = {}
     with open('get_data/minio_config.json') as minio_config_file:
         minio_config = json.load(minio_config_file)
+    # minio_client = Minio(
+    #     minio_config["host"],
+    #     access_key=minio_config["access_key"],
+    #     secret_key=minio_config["secret_key"],
+    #     secure=minio_config["secure"]
+    # )
     minio_client = Minio(
-        minio_config["host"],
-        access_key=minio_config["access_key"],
-        secret_key=minio_config["secret_key"],
-        secure=minio_config["secure"]
-    )
+    'minio:'+os.getenv('MINIO_HOST_PORT'),
+    access_key=os.getenv('MINIO_ACCESS_KEY'),
+    secret_key=os.getenv('MINIO_SECRET_KEY'),
+    secure=False)
     
     opacities = get_opacities(feature, paths["normalised_counts"])
     plotly_obj = sort_barcodes(opacities, group, paths, minio_client)
