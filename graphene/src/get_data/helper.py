@@ -89,7 +89,8 @@ def sort_traces(trace_objects):
 	return 
 
 def set_IDs(paths, runID):
-	client = MongoClient(host='127.0.0.1', port=27017)
+	# client = MongoClient(host='127.0.0.1', port=27017)
+	client = MongoClient(os.getenv('MONGO_URL'))
 	db = client['crescent']
 	runs = db['runs']
 
