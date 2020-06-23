@@ -1,6 +1,0 @@
-{
-    "host": "127.0.0.1:9000",
-    "access_key": "crescent-access",
-    "secret_key": "crescent-secret",
-    "secure": false
-}

@@ -1,11 +1,11 @@
 {
     "frontend_coordinates" : {
         "bucket": "run-",
-        "object":"frontend_coordinates/"
+        "object":"SEURAT/frontend_coordinates/"
     },
     "groups": {
         "bucket": "run-",
-        "object": "frontend_groups/groups.tsv"
+        "object": "SEURAT/frontend_groups/groups.tsv"
     },
     "metadata": {
         "bucket": "dataset-",
@@ -17,6 +17,22 @@
     },
     "top_expressed": {
         "bucket": "run-",
-        "object": "frontend_markers/TopTwoMarkersPerCluster.tsv"
+        "object": "SEURAT/frontend_markers/TopTwoMarkersPerCluster.tsv"
+    },
+    "qc_data": {
+        "bucket": "run-",
+        "object": "SEURAT/frontend_qc/qc_data.tsv"
+    },
+    "before_filtering": {
+        "bucket": "run-",
+        "object": "SEURAT/frontend_qc/BeforeFiltering.tsv"
+    },
+    "after_filtering": {
+        "bucket": "run-",
+        "object": "SEURAT/frontend_qc/BeforeFiltering.tsv"
+    },
+    "qc_metrics": {
+        "bucket": "run-",
+        "object": "SEURAT/frontend_qc/qc_metrics.tsv"
     }
 }

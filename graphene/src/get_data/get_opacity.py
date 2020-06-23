@@ -8,10 +8,10 @@ import itertools
 import loompy
 from minio import Minio
 
+from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_IDs, sort_traces
 from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
-
 
 colour_dict = {}
 
@@ -158,17 +158,9 @@ def get_opacity_data(feature, group, runID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    set_IDs(paths, runID)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], setDatasetID=True)
 
-    minio_config = {}
-    with open('get_data/minio_config.json') as minio_config_file:
-        minio_config = json.load(minio_config_file)
-    minio_client = Minio(
-        minio_config["host"],
-        access_key=minio_config["access_key"],
-        secret_key=minio_config["secret_key"],
-        secure=minio_config["secure"]
-    )
+    minio_client = get_minio_client()
     
     opacities = get_opacities(feature, paths["normalised_counts"])
     plotly_obj = sort_barcodes(opacities, group, paths, minio_client)

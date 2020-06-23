@@ -13,10 +13,10 @@ class ViolinData(ObjectType):
         return parent["name"]
 
     # type = violin if this returns true, else type = box
-    is_type_box = Boolean()
+    type = String()
     @staticmethod
-    def resolve_is_type_box(parent, info):
-        return parent["type"] == "box"
+    def resolve_type(parent, info):
+        return parent["type"]
     
     spanmode = Field(SpanMode)
     @staticmethod

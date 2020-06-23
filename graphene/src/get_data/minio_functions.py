@@ -6,17 +6,9 @@ import gzip
 from minio import Minio
 from minio import ResponseError
 
-def get_client():
-    return Minio(
-        'minio:'+os.getenv('MINIO_HOST_PORT'),
-        access_key=os.getenv('MINIO_ACCESS_KEY'),
-        secret_key=os.getenv('MINIO_SECRET_KEY'),
-        secure=False
-    )
-
-def object_exists(bucket, objct, minio_client):
+def object_exists(bucket, objct, minio_client, recurse=True):
     if (minio_client.bucket_exists(bucket)):
-        for obj in minio_client.list_objects(bucket):
+        for obj in minio_client.list_objects(bucket, recursive=recurse):
             if (obj.object_name == objct):
                 return True
     return False
@@ -37,6 +29,22 @@ def get_first_line(bucket, objct, minio_client, gzipped=False):
         first_line = minio_client.get_object(bucket, objct).readline()
     return format_line_as_string_list(first_line)
 
+def get_first_n_lines(n, bucket, objct, minio_client, gzipped=False):
+    final_list = []
+    if n <= 0:
+        return []
+    if (gzipped):
+        with gzip.open(minio_client.get_object(bucket, objct), 'rb') as data:
+            while not n == 0:
+                final_list.append(format_line_as_string_list(data.readline()))
+                n -= 1
+    else:
+        data = minio_client.get_object(bucket, objct)
+        while not n == 0:
+            final_list.append(format_line_as_string_list(data.readline()))
+            n -= 1
+    return final_list
+
 def get_obj_as_2dlist(bucket, objct, minio_client, include_header=True, gzipped=False):
     obj = minio_client.get_object(bucket, objct)
     if(gzipped):
@@ -56,3 +64,12 @@ def count_lines(bucket, objct, minio_client):
     for line in obj:
         count += 1
     return count
+
+def get_list_of_object_names(bucket, minio_client, prefix="", recursive=True):
+    return list(
+        map(
+            lambda obj: obj.object_name, 
+            minio_client.list_objects(bucket, prefix=prefix , recursive=recursive)
+        )
+    )
+

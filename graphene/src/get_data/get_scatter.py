@@ -4,7 +4,7 @@ import sys
 import os
 import json
 import csv
-from minio import Minio
+
 """
 Run these if you need to run this file directly
 Refer to https://chrisyeh96.github.io/2017/08/08/definitive-guide-python-imports.html#case-2-syspath-could-change
@@ -12,6 +12,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 """
+from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_IDs, sort_traces
 from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists
@@ -202,18 +203,10 @@ def get_scatter_data(vis, group, runID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "frontend_coordinates", "normalised_counts"], setDatasetID=True)
 
-    minio_config = {}
-    with open('get_data/minio_config.json') as minio_config_file:
-        minio_config = json.load(minio_config_file)
-    minio_client = Minio(
-        minio_config["host"],
-        access_key=minio_config["access_key"],
-        secret_key=minio_config["secret_key"],
-        secure=minio_config["secure"]
-    )
-
+    minio_client = get_minio_client()
+    
     barcode_coords = get_coordinates(vis, paths["frontend_coordinates"], minio_client)
     plotly_obj = label_barcodes(barcode_coords, group, paths, minio_client)
     colour_dict = {}
