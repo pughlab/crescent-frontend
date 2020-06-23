@@ -1,5 +1,6 @@
 from minio import Minio
 from pymongo import MongoClient
+import os
 
 # Switch the comented parts with the uncommented if you are wokring with CReSCENT
 
