@@ -1,40 +1,26 @@
-from graphene import ObjectType, String, Field, ID
-from schema.result import Result
-from schema.minio_bucket import MinioBucket
-from schema.loom_file import LoomFile
-from minio_client.client import minio_client
+from graphene import ObjectType, String, Field, ID, List
 
-# Test for apollo client in hooks
-class Test(ObjectType):
-  test_field = String()
-  def resolve_test_field(parent, info):
-    return parent['testParentField']
+from get_data.get_scatter import get_scatter_data
+from get_data.get_violin import get_violin_data
+from get_data.get_opacity import get_opacity_data
 
-# Define your queries and their resolvers here
+from schema.scatter import Scatter
+from schema.violin import Violin
+from schema.opacity import Opacity
+
 class Query(ObjectType):
-  test = Field(Test)
-  def resolve_test(parent, info):
-    return {'testParentField': 'somefield'}
-
-  # Field method specifies return type and arguments
-  result = Field(Result, run_ID=ID(required=True))
-  # Must have resolve_ prefix
-  def resolve_result(parent, info, run_ID):
-    return {'run_ID': run_ID}
-
-  # A type definition and resolver for each field
-  bucket = Field(MinioBucket, bucket_name=String(required=True))
-  def resolve_bucket(parent, info, bucket_name):
-    if minio_client.bucket_exists(bucket_name):
-      return {'bucket_name': bucket_name}
-    else:
-      return None
-
-  loom_file = Field(
-    LoomFile,
-    bucket_name=String(required=True),
-    object_name=String(required=True))
-  def resolve_loom_file(parent, info, bucket_name, object_name):
-    return {'bucket_name': bucket_name, 'object_name': object_name}
-
-
+    scatter = Field(Scatter, vis=String(), group=String(), runID=String())
+    @staticmethod
+    def resolve_scatter(parent, info, vis, group, runID):
+        return {"data": get_scatter_data(vis, group, runID)}
+    
+    violin = Field(Violin, feature=String(), group=String(), runID=String())
+    @staticmethod
+    def resolve_violin(parent, info, feature, group, runID):
+        return {"data": get_violin_data(feature, group, runID,)}
+    
+    opacity = Field(Opacity, feature=String(), group=String(), runID=String())
+    @staticmethod
+    def resolve_opacity(parent, info, feature, group, runID):
+        return {"data": get_opacity_data(feature, group, runID)}
+  

@@ -3,7 +3,7 @@ from graphene import Schema, Mutation, ObjectType, String, Field, ID, List, Int
 
 from minio import Minio
 from minio.error import ResponseError
-from minio_client.client import minio_client
+from client import minio_client
 
 class MinioObject(ObjectType):
   # TODO: figure out bidirectional relation between types
@@ -17,6 +17,7 @@ class MinioObject(ObjectType):
   last_modified = graphene.types.datetime.DateTime()
 
   presigned_url = String()
+  @staticmethod
   def resolve_presigned_url(parent, info):
     try:
       return minio_client.presigned_get_object(
@@ -27,10 +28,10 @@ class MinioObject(ObjectType):
 
 class MinioBucket(ObjectType):
   bucket_name = String()
-
   # Has shape
   #   [{bucket_name, object_name, size, last_modified, etag}]
   objects = List(MinioObject)
+  @staticmethod
   def resolve_objects(parent, info):
     try:
       objects = minio_client.list_objects(parent['bucket_name'])

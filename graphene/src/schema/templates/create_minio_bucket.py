@@ -3,8 +3,8 @@ from graphene import Schema, Mutation, String, Field, ID, List
 from minio import Minio
 from minio.error import ResponseError
 
-from .minio_bucket import MinioBucket
-from minio_client.client import minio_client
+from minio_bucket import MinioBucket
+from client import minio_client
 
 class CreateMinioBucket(Mutation):
   # Use minio bucket type definition to be returned when created
@@ -13,6 +13,7 @@ class CreateMinioBucket(Mutation):
   class Arguments:
     bucket_name = String()
   # Resolver function with arguments
+  @staticmethod
   def mutate(root, info, bucket_name):
     try:
       minio_client.make_bucket(bucket_name)

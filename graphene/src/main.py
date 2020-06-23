@@ -1,14 +1,11 @@
 # Create graphql schema and serve as single endpoint on fastapi server
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from starlette.graphql import GraphQLApp
+from fastapi.middleware.cors import CORSMiddleware
 from graphene import Schema
 from query import Query
-from mutation import Mutation
 
 app = FastAPI()
-# TODO: figure out prod
-# For CORS
 app.add_middleware(
   CORSMiddleware,
   allow_origins=["http://localhost:3000"],
@@ -17,6 +14,4 @@ app.add_middleware(
   allow_headers=["*"]
 )
 # For Playground
-app.add_route("/", GraphQLApp(schema=Schema(query=Query, mutation=Mutation)))
-# For Voyager
-app.add_route("/graphql", GraphQLApp(schema=Schema(query=Query, mutation=Mutation)))
+app.add_route("/", GraphQLApp(schema=Schema(query=Query)))

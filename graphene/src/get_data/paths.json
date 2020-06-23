@@ -1,0 +1,22 @@
+{
+    "frontend_coordinates" : {
+        "bucket": "run-",
+        "object":"frontend_coordinates/"
+    },
+    "groups": {
+        "bucket": "run-",
+        "object": "frontend_groups/groups.tsv"
+    },
+    "metadata": {
+        "bucket": "dataset-",
+        "object": "metadata.tsv"
+    },
+    "normalised_counts": {
+        "prefix": "",
+        "suffix": "/SEURAT/frontend_normalized/normalized_counts.loom"
+    },
+    "top_expressed": {
+        "bucket": "run-",
+        "object": "frontend_markers/TopTwoMarkersPerCluster.tsv"
+    }
+}

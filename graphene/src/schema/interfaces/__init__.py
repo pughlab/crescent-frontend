@@ -1,1 +1,0 @@
-from .minio_object_interface import MinioObjectInterface
