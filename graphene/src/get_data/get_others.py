@@ -160,5 +160,3 @@ def get_available_categorical_groups(runID):
         metadata_groups = [group for group, grouptype in metadata_types if grouptype == 'group']
     
     return {"groups": list(set(groups) | set(metadata_groups))}
-
-print(get_available_categorical_groups("5eda76def93f82004f4114c6"))
