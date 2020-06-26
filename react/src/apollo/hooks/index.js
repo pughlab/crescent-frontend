@@ -5,6 +5,7 @@ import useCuratedProjectsQuery from './useCuratedProjectsQuery'
 import useProjectRunsQuery from './useProjectRunsQuery'
 import useProjectDetailsQuery from './useProjectDetailsQuery'
 import useRunDetailsQuery from './useRunDetailsQuery'
+import useResultsAvailableQuery from './useResultsAvailableQuery'
 import useToolStepsQuery from './useToolStepsQuery'
 import useToolParameterQuery from './useToolParameterQuery'
 import useRunDatasetsQuery from './useRunDatasetsQuery'
@@ -23,6 +24,7 @@ export {
   useProjectRunsQuery,
   useProjectDetailsQuery,
   useRunDetailsQuery,
+  useResultsAvailableQuery, 
   useToolStepsQuery,
   useToolParameterQuery,
   useRunDatasetsQuery,
