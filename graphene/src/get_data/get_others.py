@@ -106,20 +106,25 @@ def get_plots(runID):
         DESC = json.load(desc_file)
 
     # violin always available
-    available_plots = [DESC["VIOLIN"]]
+    available_plots = []
 
     coordinates_pattern = re.compile(r".*frontend_coordinates/(?P<vis>.*)Coordinates.tsv")
     qc_pattern = re.compile(r".*frontend_qc.*")
     object_names = get_list_of_object_names(paths["frontend_coordinates"]["bucket"], minio_client)
-    
+    add_QC = False
+
     for object_name in object_names:
         match = coordinates_pattern.match(object_name)
         if match is not None:
             vis = match.groupdict()["vis"]
             if vis in DESC:
                 available_plots.append(DESC[vis])
-        elif (not "QC" in available_plots) and (qc_pattern.match(object_name) is not None):
-            available_plots.append(DESC["QC"])
+        elif (not add_QC) and (qc_pattern.match(object_name) is not None):
+            add_QC = True
+
+    if add_QC:
+        available_plots.append(DESC["QC"])
+    
     return available_plots
 
 def get_qc_metrics(runID):
