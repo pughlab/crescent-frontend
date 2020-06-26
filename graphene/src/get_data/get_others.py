@@ -117,6 +117,9 @@ def get_plots(runID):
         elif (not "QC" in available_plots) and (qc_pattern.match(object_name) is not None):
             available_plots.append("QC")
     
+    # violin always available
+    available_plots.append("VIOLIN")
+    
     return available_plots
 
 def get_qc_metrics(runID):
