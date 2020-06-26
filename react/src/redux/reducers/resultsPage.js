@@ -4,6 +4,7 @@ import createReducer from './createReducer'
 const initialState = {
   activeSidebarTab: 'parameters', // visualizations
   activePipelineStep: null,
+  activeResult: null,
 }
 
 export default createReducer(
@@ -21,7 +22,12 @@ export default createReducer(
         activePipelineStep: R.always(pipelineStep)
       })(state)
     },
-
+    'resultsPage/setActiveResult': (state, payload) => {
+      const {result} = payload
+      return R.evolve({
+        activeResult: R.always(result)
+      })(state)
+    },
 
     'resultsPage/reset': R.always(initialState),
   }
