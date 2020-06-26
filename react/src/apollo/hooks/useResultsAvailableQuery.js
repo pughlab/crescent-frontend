@@ -39,7 +39,11 @@ export default function useResultsAvailable(runID) {
   const [plots, setPlots] = useState(null)
   const {loading, data, error} = useQuery(gql`
     query ResultsAvailable($runID: ID) {
-      plots(runID: $runID)
+      plots(runID: $runID) {
+        label
+        result
+        description
+      }
     }
     `, {
     client,
