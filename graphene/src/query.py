@@ -19,6 +19,7 @@ from schema.opacity import Opacity
 from schema.top_expressed import TopExpressed
 from schema.available_qc import AvailableQC
 from schema.qc_metrics import QCMetrics
+from schema.plots import Plot
 
 class Query(ObjectType):
     scatter = Field(Scatter, vis=String(), group=String(), runID=ID())
@@ -56,7 +57,7 @@ class Query(ObjectType):
     def resolve_cellcount(parent, info, runID):
         return get_cellcount(runID)
     
-    plots = List(String, runID=ID())
+    plots = List(Plot, runID=ID())
     @staticmethod
     def resolve_plots(parent, info, runID):
         return get_plots(runID)

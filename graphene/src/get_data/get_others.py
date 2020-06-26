@@ -101,10 +101,12 @@ def get_cellcount(runID):
 def get_plots(runID):
     minio_client = get_minio_client()
     paths = get_paths(runID, ["frontend_coordinates"])
-    DESC = ["QC", "TSNE", "UMAP"]
+    DESC = {}
+    with open('get_data/desc.json') as desc_file:
+        DESC = json.load(desc_file)
 
     # violin always available
-    available_plots = ["VIOLIN"]
+    available_plots = [DESC["VIOLIN"]]
 
     coordinates_pattern = re.compile(r".*frontend_coordinates/(?P<vis>.*)Coordinates.tsv")
     qc_pattern = re.compile(r".*frontend_qc.*")
@@ -115,10 +117,9 @@ def get_plots(runID):
         if match is not None:
             vis = match.groupdict()["vis"]
             if vis in DESC:
-                available_plots.append(vis)
+                available_plots.append(DESC[vis])
         elif (not "QC" in available_plots) and (qc_pattern.match(object_name) is not None):
-            available_plots.append("QC")
-    
+            available_plots.append(DESC["QC"])
     return available_plots
 
 def get_qc_metrics(runID):

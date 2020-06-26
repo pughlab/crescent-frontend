@@ -80,7 +80,11 @@ CELLCOUNT
 PLOTS
 
 {
-  plots(runID: "5eda76def93f82004f4114c6")
+  plots(runID: "5eda76def93f82004f4114c6") {
+    label
+    result
+    description
+  }
 }
 
 QC METRICS
