@@ -101,8 +101,10 @@ def get_cellcount(runID):
 def get_plots(runID):
     minio_client = get_minio_client()
     paths = get_paths(runID, ["frontend_coordinates"])
-    DESC = ["QC", "TSNE", "UMAP", "VIOLIN"]
-    available_plots = []
+    DESC = ["QC", "TSNE", "UMAP"]
+
+    # violin always available
+    available_plots = ["VIOLIN"]
 
     coordinates_pattern = re.compile(r".*frontend_coordinates/(?P<vis>.*)Coordinates.tsv")
     qc_pattern = re.compile(r".*frontend_qc.*")
@@ -116,9 +118,6 @@ def get_plots(runID):
                 available_plots.append(vis)
         elif (not "QC" in available_plots) and (qc_pattern.match(object_name) is not None):
             available_plots.append("QC")
-    
-    # violin always available
-    available_plots.append("VIOLIN")
     
     return available_plots
 

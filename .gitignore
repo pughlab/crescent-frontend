@@ -20,3 +20,15 @@ frontend_seurat_inputs.json
 
 .env
 nginx/certs/
+
+# Prab's dev stuff
+graphene/src/minio_data
+graphene/src/mongodb_data
+graphene/src/minio.exe
+graphene/src/mongod.exe
+run_databases.bat
+test.py
+graphene/src/5eda76def93f82004f4114c6
+
+# For people that can't use docker
+graphene/src/get_data/get_clients.py

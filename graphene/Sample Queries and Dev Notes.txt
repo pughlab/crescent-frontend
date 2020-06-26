@@ -1,0 +1,155 @@
+SCATTER
+
+{
+  scatter(vis: "TSNE", group: "Seurat_Clusters_Resolution1", runID: "5eda76def93f82004f4114c6") {
+    data {
+      name
+      mode
+      text
+      x
+      y
+      marker {
+        color
+      }
+    }
+  }
+}
+
+
+VIOLIN
+
+{
+  violin(feature: "Rb1cc1", group: "Seurat_Clusters_Resolution1", runID: "5eda76def93f82004f4114c6") {
+    data {
+      type
+      spanmode
+      fillcolor
+      line {
+        color
+      }
+      points
+      jitter
+      width
+      meanline {
+        visible
+      }
+      x
+      y
+      bandwidth
+    }
+  }
+}
+
+TOP EXPRESSED
+
+{
+  topExpressed(runID: "5eda76def93f82004f4114c6") {
+    data {
+      gene
+      cluster
+      pVal
+      avgLogFc
+    }
+  }
+}
+
+AVAILABLE QC
+
+{
+  availableQc(runID: "5eda76def93f82004f4114c6") {
+    data {
+      key
+      text
+      value
+    }
+  }
+}
+
+GROUPS
+
+{
+  groups(runID: "5eda76def93f82004f4114c6")
+}
+
+CELLCOUNT
+
+{
+  cellcount(runID: "5eda76def93f82004f4114c6")
+}
+
+PLOTS
+
+{
+  plots(runID: "5eda76def93f82004f4114c6")
+}
+
+QC METRICS
+
+{
+  qcMetrics(runID: "5eda76def93f82004f4114c6") {
+    cellcounts {
+      Before
+      After
+    }
+    qcSteps {
+      filtertype
+      min
+      max
+      numRemoved
+    }
+  }
+}
+
+CATEGORICAL GROUPS
+
+{
+  categoricalGroups(runID: "5eda76def93f82004f4114c6")
+}
+
+
+Notes:
+
+1) SCATTER's mode gives an array of strings which must be joined with a +
+
+2) PLOTS returns a list of strings (length <= 4). Make a JSON object from desc.json file in get_data folder,
+  and keep only those key, value pairs where the key belongs to our list.
+
+3) QC METRICS used to return a weird format for graphene to parse. It used to be :
+[
+  {
+    "cellcounts": {
+      "Before": "1189",
+      "After": "1113"
+    }
+  },
+  {
+    "qc_steps": [
+      {
+        "filtertype": "nFeature_RNA",
+        "min": "50",
+        "max": "8000",
+        "num_removed": "0"
+      },
+      ... (others like that)
+    ]
+  }
+]
+
+Which is now:
+
+A JSON object with 2 key and objects, instead of an array with 2 elements that are that key and object
+{
+  "cellcounts": {
+    "Before": 1189, INTEGERS here!
+    "After": 1113
+  },
+  "qc_steps": [
+    {
+      "filtertype": "ribo.fraction",
+      "min": 0, FLOATS here!
+      "max": 0.75, FLOATS here!
+      "num_removed": 0 INTEGERS here!
+    },
+    ... (others like that)
+  ]
+}
