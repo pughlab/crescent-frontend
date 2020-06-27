@@ -5,6 +5,7 @@ const initialState = {
   activeSidebarTab: 'parameters', // visualizations
   activePipelineStep: null,
   activeResult: null,
+  selectedQC: null,
 }
 
 export default createReducer(
@@ -26,6 +27,12 @@ export default createReducer(
       const {result} = payload
       return R.evolve({
         activeResult: R.always(result)
+      })(state)
+    },
+    'resultsPage/setSelectedQC': (state, payload) => {
+      const {QC} = payload
+      return R.evolve({
+        selectedQC: R.always(QC)
       })(state)
     },
 
