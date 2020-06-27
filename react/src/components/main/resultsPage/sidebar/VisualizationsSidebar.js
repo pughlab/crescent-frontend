@@ -9,8 +9,8 @@ import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/hooks'
 import {setActiveResult} from '../../../../redux/actions/resultsPage'
 
-import VisualizationMenu from '../../results/results/VisualizationMenu'
-import QualityControlMenu from '../../results/results/QualityControlMenu'
+import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
+import QualityControlMenu from '../../resultsPage/visualizations/QualityControlMenu'
 
 const VisualizationsSidebar = ({
 }) => {    
@@ -93,13 +93,13 @@ const VisualizationsSidebar = ({
                 </Button.Content>
               </Button>
               <Segment>
-                {/* {
+                {
                 R.ifElse(
                   R.equals('qc'),
                   R.always(<QualityControlMenu/>),
                   R.always(<VisualizationMenu/>)
                 )(activeResult)
-                } */}
+                }
               </Segment>
             </Segment.Group>
           )
