@@ -16,6 +16,9 @@ import useTagDatasetMutation from './useTagDatasetMutation'
 import useResultsAvailableQuery from './useResultsAvailableQuery'
 import useQCAvailableQuery from './useQCAvailableQuery'
 import useQCMetricsQuery from './useQCMetricsQuery'
+import useAvailableGroupsQuery from './useAvailableGroupsQuery'
+import useTopExpressedQuery from './useTopExpressedQuery'
+import useScatterQuery from './useScatterQuery'
 import useGraphene from './useGraphene'
 
 export {
@@ -37,6 +40,9 @@ export {
   useResultsAvailableQuery, 
   useQCAvailableQuery,
   useQCMetricsQuery,
+  useScatterQuery,
+  useAvailableGroupsQuery,
+  useTopExpressedQuery,
 
   useGraphene
 }
