@@ -21,11 +21,19 @@ const setActiveResult = ({result}) => ({
   }
 })
 
+const setSelectedQC = ({QC}) => ({
+  type: 'resultsPage/setSelectedQC',
+  payload: {
+    QC
+  }
+})
+
 const resetResultsPage = R.always({type: 'resultsPage/reset'})
 
 export {
   setActiveSidebarTab,
   setActivePipelineStep,
   setActiveResult,
+  setSelectedQC,
   resetResultsPage
 }
