@@ -6,7 +6,7 @@ import json
 class HexColour(Scalar):
     # Should be of the form #RRGGBB where R,G,B are valid hexadecimal digits
     @staticmethod
-    def coerce_colour(colour):
+    def coerce_hex_colour(colour):
         if ((colour[0] == "#") and (len(colour) == 7)):
             # Check if digits are valid hex digits
             try:
@@ -15,12 +15,18 @@ class HexColour(Scalar):
                 return colour.upper()
             except ValueError:
                 return None
-        return None
+        else:
+            colours = {}
+            with open('schema/secondary/colours.json') as colours_file:
+                colours = json.load(colours_file)
+            if (colour.lower() in colours):
+                return colours[colour.lower()].upper()
+            return None
 
     # serialize: gets invoked when serializing the result to send it back to a client.
-    serialize = coerce_colour
+    serialize = coerce_hex_colour
     # parseValue: gets invoked to parse client input that was passed through variables.
-    parse_value = coerce_colour
+    parse_value = coerce_hex_colour
 
     # parseLiteral: gets invoked to parse client input that was passed inline in the query.
     @staticmethod
@@ -35,6 +41,13 @@ class HexColour(Scalar):
                     return colour.upper()
                 except ValueError:
                     return
+            else:
+                colours = {}
+                with open('schema/secondary/colours.json') as colours_file:
+                    colours = json.load(colours_file)
+                if (colour.lower() in colours):
+                    return colours[colour.lower()].upper()
+                return
 
     @staticmethod
     def hex_to_RGB(hexcode):

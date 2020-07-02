@@ -1,10 +1,6 @@
 #!/bin/python
 
-import sys
-import os
 import json
-import csv
-import itertools
 import loompy
 import numpy as np
 """

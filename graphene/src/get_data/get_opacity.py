@@ -1,12 +1,7 @@
 #!/bin/python3
 
-import sys
-import os
 import json
-import csv
-import itertools
 import loompy
-from minio import Minio
 
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient

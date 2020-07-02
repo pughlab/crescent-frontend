@@ -2,9 +2,7 @@
 
 import sys
 import re
-import os
 import json
-from operator import itemgetter
 from bson import ObjectId
 
 from get_data.get_client import get_mongo_client
@@ -70,7 +68,6 @@ COLOURS = [
 def return_error(msg):
     """ format the error message and perform a system flush before exiting """
     print(json.dumps({"error": msg}))
-    sys.stdout.flush()
     sys.exit()
 
 def is_int(cluster_name):

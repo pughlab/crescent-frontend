@@ -3,6 +3,8 @@ from graphene import ObjectType, Int, String, Field, ID, List
 from get_data.get_scatter import get_scatter_data
 from get_data.get_violin import get_violin_data
 from get_data.get_opacity import get_opacity_data
+from get_data.get_qc_scatter import get_qc_scatter_data
+from get_data.get_qc_violin import get_qc_violin_data
 from get_data.get_others import (
     get_available_categorical_groups,
     get_available_qc_data,
@@ -13,13 +15,15 @@ from get_data.get_others import (
     get_top_expressed_data,
 )
 
-from schema.scatter import Scatter
-from schema.violin import Violin
-from schema.opacity import Opacity
-from schema.top_expressed import TopExpressed
 from schema.available_qc import AvailableQC
-from schema.qc_metrics import QCMetrics
+from schema.opacity import Opacity
 from schema.plots import Plot
+from schema.qc_metrics import QCMetrics
+from schema.qc_scatter import QCScatter
+from schema.qc_violin import QCViolin
+from schema.scatter import Scatter
+from schema.top_expressed import TopExpressed
+from schema.violin import Violin
 
 class Query(ObjectType):
     scatter = Field(Scatter, vis=String(), group=String(), runID=ID())
@@ -71,4 +75,14 @@ class Query(ObjectType):
     @staticmethod
     def resolve_categorical_groups(parent, info, runID):
         return get_available_categorical_groups(runID)["groups"]
-  
+    
+    qc_scatter = Field(QCScatter, qc_type=String(), runID=ID())
+    @staticmethod
+    def resolve_qc_scatter(parent, info, qc_type, runID):
+        return get_qc_scatter_data(qc_type, runID)
+    
+    qc_violin = Field(QCViolin, runID=ID())
+    @staticmethod
+    def resolve_qc_violin(parent, info, runID):
+        return {"data": get_qc_violin_data(runID)}
+    

@@ -1,9 +1,6 @@
 #!/bin/python
 
-import sys
-import os
 import json
-import csv
 
 """
 Run these if you need to run this file directly
@@ -98,6 +95,7 @@ def label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv):
     label_idx = groups_tsv[0].index(str(group)) # column index of group
     group_type = groups_tsv[1][label_idx] # datatype
     # construction of plotly object depends on group_type
+    global colour_dict
     if group_type == 'group':
         # colour by discrete label
         for row in groups_tsv[2:]:
@@ -118,13 +116,16 @@ def label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv):
         barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
         add_barcodes(plotly_obj, group, barcode_values, barcode_coords, num_cells, all_zeros)
     else:
+        colour_dict = {}
         return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
+    colour_dict = {}
 
 def label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv, metadata_tsv):
     # the requested group is in the user-defined metadata.tsv
     label_idx = metadata_tsv[0].index(str(group)) # column index of group
     group_type = metadata_tsv[1][label_idx] # datatype
     # master dictionary of all barcodes with x,y coordinates for the selected scatterplot
+    global colour_dict
     all_barcodes = {key: True for key in barcode_coords.keys()}
     if group_type == 'group':
         # colour by discrete label, for any barcode that doesn't have a label, give "NA"
@@ -154,7 +155,9 @@ def label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv
         barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
         add_barcodes(plotly_obj, group, barcode_values, barcode_coords, num_cells, False)
     else:
+        colour_dict = {}
         return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
+    colour_dict = {}
 
 def label_barcodes(barcode_coords, group, paths, minio_client):
     """ given the coordinates for the barcodes, sorts them into the specified groups and returns a plotly object """
@@ -176,7 +179,6 @@ def label_barcodes(barcode_coords, group, paths, minio_client):
         )
     else:
         return_error(group + " is not an available group in groups.tsv or metadata.tsv")
-
     return list(plotly_obj.values())
 
 def get_coordinates(vis, path, minio_client):
@@ -198,8 +200,6 @@ def get_coordinates(vis, path, minio_client):
 
 def get_scatter_data(vis, group, runID):
     """ given a vistype grouping, and runID: returns the plotly object """
-    global colour_dict
-
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
@@ -209,7 +209,6 @@ def get_scatter_data(vis, group, runID):
     
     barcode_coords = get_coordinates(vis, paths["frontend_coordinates"], minio_client)
     plotly_obj = label_barcodes(barcode_coords, group, paths, minio_client)
-    colour_dict = {}
     try:
         sort_traces(plotly_obj)
     except:

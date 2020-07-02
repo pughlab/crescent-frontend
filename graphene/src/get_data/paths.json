@@ -29,7 +29,7 @@
     },
     "after_filtering": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_qc/BeforeFiltering.tsv"
+        "object": "SEURAT/frontend_qc/AfterFiltering.tsv"
     },
     "qc_metrics": {
         "bucket": "run-",
