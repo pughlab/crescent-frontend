@@ -18,6 +18,9 @@ import useQCAvailableQuery from './useQCAvailableQuery'
 import useQCMetricsQuery from './useQCMetricsQuery'
 import useQCViolinQuery from './useQCViolinQuery'
 import useQCScatterQuery from './useQCScatterQuery'
+import useAvailableGroupsQuery from './useAvailableGroupsQuery'
+import useTopExpressedQuery from './useTopExpressedQuery'
+import useScatterQuery from './useScatterQuery'
 import useGraphene from './useGraphene'
 
 export {
@@ -41,6 +44,9 @@ export {
   useQCMetricsQuery,
   useQCViolinQuery,
   useQCScatterQuery,
+  useScatterQuery,
+  useAvailableGroupsQuery,
+  useTopExpressedQuery,
 
   useGraphene,
 }
