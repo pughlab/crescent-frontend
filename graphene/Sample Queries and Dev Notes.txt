@@ -111,6 +111,56 @@ CATEGORICAL GROUPS
 }
 
 
+QC SCATTER
+
+{
+  qcScatter(qc_type: "Number_of_Genes", runID: "5eda76def93f82004f4114c6") {
+    mode
+    text
+    hovertext
+    x
+    y
+    marker {
+      color
+      colorscale
+      showscale
+    }
+  }
+}
+
+Other qc_type: "Number_of_Reads", "Mitochondrial_Genes_Percentage" , "Ribosomal_Protein_Genes_Percentage"
+
+QC VIOLIN
+
+{
+  qcViolin(runID: "5eda76def93f82004f4114c6") {
+    data {
+      type
+      points
+      jitter
+      text
+      hoverinfo
+      meanline {
+        visible
+        color
+      }
+      x
+      y
+      marker {
+        opacity
+      }
+      pointpos
+      name
+      xaxis
+      yaxis
+      line {
+        color
+      }
+    }
+  }
+}
+
+
 Notes:
 
 1) SCATTER's mode gives an array of strings which must be joined with a +
