@@ -22,7 +22,7 @@ const client = new ApolloClient({
 
 
 export default function useAvailableGroups(runID) {
-  const [availableGroups, setAvailableGroups] = useState(null)
+  const [groups, setAvailableGroups] = useState(null)
   const {loading, data, error} = useQuery(gql`
     query Groups($runID: ID) {
       groups(runID: $runID)
@@ -31,11 +31,11 @@ export default function useAvailableGroups(runID) {
     client,
     fetchPolicy: 'cache-and-network',
     variables: {runID},
-    onCompleted: ({availableGroups}) => {
-      setAvailableGroups(availableGroups)
+    onCompleted: ({groups}) => {
+      setAvailableGroups(groups)
     }
   })
 
-  return availableGroups
+  return groups
 }
 
