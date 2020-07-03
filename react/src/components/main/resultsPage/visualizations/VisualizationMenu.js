@@ -25,16 +25,16 @@ const VisualizationMenu = ({
   const {selectedFeature, selectedGroup} = useResultsPage()
   //available groups & top expressed must be queries
   
-  const availableGroups = useAvailableGroupsQuery(runID)
+  const groups = useAvailableGroupsQuery(runID)
   const topExpressed = useTopExpressedQuery(runID)
 
   
-  if (R.any(R.isNil, [availableGroups, topExpressed])) {
-    console.log(availableGroups, topExpressed)
+  if (R.any(R.isNil, [groups, topExpressed])) {
+    console.log(groups, topExpressed)
     return null
   }
 
-  console.log("AVAILABLE GROUPS QUERY RESULT: ", availableGroups) 
+  console.log("AVAILABLE GROUPS QUERY RESULT: ", groups) 
   //HERE CHECK RESPONSE, HANDLE SEARCH CHANGE, SELECT FEATURE
   //RESET FEATURE, FEATURE BUTTON
 
@@ -70,7 +70,7 @@ const VisualizationMenu = ({
   const availableGroupsArray = R.compose(
     R.head,
     R.values
-  )(availableGroups)
+  )(groups)
 
   
   // format a list for a dropdown
@@ -89,7 +89,7 @@ const VisualizationMenu = ({
               selection
               labeled
               defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : availableGroupsArray[0]}
-              options={formatList(availableGroups)}
+              options={formatList(groups)}
               onChange={(event, {value}) => console.log(value)}
               //onChange={(event, {value}) => changeActiveGroup(value)}
             />
