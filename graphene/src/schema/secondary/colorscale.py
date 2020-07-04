@@ -7,7 +7,7 @@ from schema.secondary.unitinterval import UnitInterval
 class ColorScaleMapping(Scalar):
     @staticmethod
     def coerce_color_scale_mapping(csm):
-        ui = UnitInterval.coerce_unit(csm[0])
+        ui = UnitInterval.coerce_unit_int(csm[0])
         colour = HexColour.coerce_hex_colour(csm[1])
         if ( (ui is not None) and (colour is not None) ):
             return [ui, colour]

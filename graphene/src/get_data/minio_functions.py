@@ -73,3 +73,6 @@ def get_list_of_object_names(bucket, minio_client, prefix="", recursive=True):
         )
     )
 
+def get_all_lines(bucket, objct, minio_client, gzipped=False):
+    list_2D = get_obj_as_2dlist(bucket, objct, minio_client, gzipped=gzipped)
+    return [symbol_list[0] for symbol_list in list_2D]

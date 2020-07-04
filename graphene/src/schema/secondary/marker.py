@@ -10,17 +10,16 @@ from schema.secondary.colorscale import ColorScaleMapping
 from schema.secondary.marker_color import MarkerColor
 from schema.secondary.unitinterval import UnitInterval
 
+# Some fields should not return anything if the color array isn't numbers
+def isArrayNotNumerical(color_array):
+    for color in color_array:
+        try:
+            int(color)
+        except ValueError:
+            return True
+    return False
+
 class Marker(ObjectType):
-    # Some fields should not return anything if the color array isn't numbers
-    @staticmethod
-    def isArrayNotNumerical(color_array):
-        for color in color_array:
-            try:
-                int(color)
-            except ValueError:
-                return True
-        return False
-    
     color = List(MarkerColor)
     @staticmethod
     def resolve_color(parent, info):

@@ -34,5 +34,9 @@
     "qc_metrics": {
         "bucket": "run-",
         "object": "SEURAT/frontend_qc/qc_metrics.tsv"
+    },
+    "features": {
+        "bucket": "run-",
+        "object": "SEURAT/frontend_raw/features.tsv"
     }
 }

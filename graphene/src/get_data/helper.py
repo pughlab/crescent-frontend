@@ -95,8 +95,11 @@ def set_IDs(paths, runID, keys, setDatasetID=False):
 
     if setDatasetID:
         # Currently set to getting the first dataset associated with run. Basically assumes there is only 1 dataset
+        run_metadata = runs.find_one({'runID': runID}) # Find run's metadata from runID
+        if run_metadata is None:
+            return_error("Could not find the dataset id for runID: {0}".format(runID))
         datasetID = str(
-            runs.find_one({'runID': ObjectId(runID)}) # Find run's metadata from runID
+            run_metadata
             ['datasetIDs'] # Get datasetIDs
             [0] # Get the first one
         ) # Get a string from the returned ObjectID
@@ -119,6 +122,5 @@ def set_IDs(paths, runID, keys, setDatasetID=False):
                     paths_required[key] = paths[key]
     if "normalised_counts" in keys:
         paths_required["normalised_counts"] = paths["normalised_counts"]["prefix"] + runID + paths["normalised_counts"]["suffix"]
-
     return paths_required
     

@@ -15,7 +15,7 @@ def get_qc_scatter_data(qc_type, runID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["frontend_coordinates", "groups", "qc_data"], setDatasetID=True)
+    paths = set_IDs(paths, runID, ["frontend_coordinates", "groups", "qc_data"])
 
     minio_client = get_minio_client()
 
@@ -32,4 +32,4 @@ def get_qc_scatter_data(qc_type, runID):
     else:
         return_error("selected QC data not found in file")
     
-    return list(traces.values())
+    return list(traces.values())[0]

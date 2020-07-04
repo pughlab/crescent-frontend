@@ -114,7 +114,7 @@ CATEGORICAL GROUPS
 QC SCATTER
 
 {
-  qcScatter(qc_type: "Number_of_Genes", runID: "5eda76def93f82004f4114c6") {
+  qcScatter(qcType: "Number_of_Genes", runID: "5eda76def93f82004f4114c6") {
     mode
     text
     hovertext
