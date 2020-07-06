@@ -114,7 +114,7 @@ const QualityControlMenu = ({
         R.isNil,
         R.always(<div></div>),
         R.addIndex(R.map)(
-          ({filtertype, num_removed, min, max}, index) => (
+          ({filtertype, numRemoved, min, max}, index) => (
             <Segment compact key={index}>
               <Label attached='top' content={filtertype}/>
               <Button
@@ -133,8 +133,8 @@ const QualityControlMenu = ({
               basic
               size={'tiny'}
               style={{margin: '0.25rem'}}
-              content={`Cells Removed: `+num_removed}
-              color={R.ifElse(R.equals("0"),R.always(undefined),R.always('red'))(num_removed)}
+              content={`Cells Removed: `+numRemoved}
+              color={R.ifElse(R.equals("0"),R.always(undefined),R.always('red'))(numRemoved)}
               />
             </Segment>
         ))
