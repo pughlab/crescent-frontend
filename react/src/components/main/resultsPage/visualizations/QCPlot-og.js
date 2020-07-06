@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
 import { Loader, Segment, Header, Icon } from 'semantic-ui-react'
 
 import {ClimbingBoxLoader} from 'react-spinners'
@@ -10,7 +9,7 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useQCViolinQuery, useQCScatterQuery} from '../../../../apollo/hooks'
+import {useQCViolinQuery} from '../../../../apollo/hooks'
 
 const QCPlot = ({
 }) => { 
@@ -18,43 +17,24 @@ const QCPlot = ({
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
   const {selectedQC} = useResultsPage()
-  console.log(selectedQC)
 
-  // const qcType = "Number_of_Genes"
   const qcViolin = useQCViolinQuery(runID)
-  const qcScatter = useQCScatterQuery(selectedQC, runID)
-  // console.log(qcScatter)
-
-  // const qcScatterData = R.compose(
-  //   R.values,
-  //   R.map
-  // )(qcScatter)
-
-  // console.log(qcScatter)
-  const qcScatterData = []
-  qcScatterData.push(qcScatter)
-  // console.log(qcScatterData)
+  console.log(qcViolin)
 
 
-  if (R.any(R.isNil, [qcViolin, qcScatter])) {
-    return null
-  }
+  // if (R.any(R.isNil, [qcViolin])) {
+  //   return null
+  // }
 
+  const qcViolinData = R.compose(
+    R.head,
+    R.values
+  )(qcViolin)
 
-  // const qcViolinData = R.compose(
-  //   R.head,
-  //   R.values
-  // )(qcViolin)
+  console.log(qcViolinData)  
 
-  // const qcScatterData = R.compose(
-  //   R.head,
-  //   R.values
-  // )(qcScatter)
+  const qcData = qcViolinData
 
-  // console.log(R.values(qcScatter))
-  // console.log()
-
-  const qcData = qcScatterData
   // // use local state for data
   // const [qcData, setQCData] = useState( [] )
 

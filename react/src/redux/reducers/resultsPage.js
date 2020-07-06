@@ -30,9 +30,9 @@ export default createReducer(
       })(state)
     },
     'resultsPage/setSelectedQC': (state, payload) => {
-      const {QC} = payload
+      const {value} = payload
       return R.evolve({
-        selectedQC: R.always(QC)
+        selectedQC: R.always(value)
       })(state)
     },
 
