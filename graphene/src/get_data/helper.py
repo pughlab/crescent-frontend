@@ -95,9 +95,7 @@ def set_IDs(paths, runID, keys, setDatasetID=False):
 
     if setDatasetID:
         # Currently set to getting the first dataset associated with run. Basically assumes there is only 1 dataset
-        run_metadata = runs.find_one({'runID': runID}) # Find run's metadata from runID
-        if run_metadata is None:
-            return_error("Could not find the dataset id for runID: {0}".format(runID))
+        run_metadata = runs.find_one({'runID': ObjectId(runID)}) # Find run's metadata from runID
         datasetID = str(
             run_metadata
             ['datasetIDs'] # Get datasetIDs

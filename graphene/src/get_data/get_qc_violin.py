@@ -53,7 +53,7 @@ def get_qc_violin_data(runID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["before_filtering", "after_filtering"], setDatasetID=True)
+    paths = set_IDs(paths, runID, ["before_filtering", "after_filtering"])
     qc_files = ["before_filtering", "after_filtering"]
 
     minio_client = get_minio_client()
