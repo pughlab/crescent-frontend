@@ -21,10 +21,10 @@ const setActiveResult = ({result}) => ({
   }
 })
 
-const setSelectedQC = ({QC}) => ({
+const setSelectedQC = ({value}) => ({
   type: 'resultsPage/setSelectedQC',
   payload: {
-    QC
+    value
   }
 })
 
