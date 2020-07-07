@@ -73,15 +73,15 @@ class Query(ObjectType):
     def resolve_qc_violin(parent, info, runID):
         return {"data": get_qc_violin_data(runID)}
 
-    scatter = Field(Scatter, vis=String(), group=String(), runID=ID())
-    @staticmethod
-    def resolve_scatter(parent, info, vis, group, runID):
-        return {"data": get_scatter_data(vis, group, runID)}
-
     search = List(SearchResult, query=String(), runID=ID())
     @staticmethod
     def resolve_search(parent, info, query, runID):
         return run_search(query, runID)
+    
+    scatter = Field(Scatter, vis=String(), group=String(), runID=ID())
+    @staticmethod
+    def resolve_scatter(parent, info, vis, group, runID):
+        return {"data": get_scatter_data(vis, group, runID)}
 
     top_expressed = Field(TopExpressed, runID=ID())
     @staticmethod
