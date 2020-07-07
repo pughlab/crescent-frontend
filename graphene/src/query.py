@@ -13,6 +13,7 @@ from get_data.get_others import (
     get_plots,
     get_qc_metrics,
     get_top_expressed_data,
+    total_size
 )
 from get_data.search_features import run_search
 
@@ -82,6 +83,11 @@ class Query(ObjectType):
     @staticmethod
     def resolve_scatter(parent, info, vis, group, runID):
         return {"data": get_scatter_data(vis, group, runID)}
+
+    size = Int(runID=ID())
+    @staticmethod
+    def resolve_size(parent, info, runID):
+        return total_size(runID)
 
     top_expressed = Field(TopExpressed, runID=ID())
     @staticmethod
