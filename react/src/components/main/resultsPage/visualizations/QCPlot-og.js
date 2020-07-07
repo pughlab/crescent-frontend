@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
+import withRedux from '../../../../redux/hoc'
 import { Loader, Segment, Header, Icon } from 'semantic-ui-react'
 
 import {ClimbingBoxLoader} from 'react-spinners'
@@ -9,7 +10,7 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useQCViolinQuery} from '../../../../apollo/hooks'
+import {useQCViolinQuery, useQCScatterQuery} from '../../../../apollo/hooks'
 
 const QCPlot = ({
 }) => { 
@@ -17,23 +18,46 @@ const QCPlot = ({
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
   const {selectedQC} = useResultsPage()
+  console.log(selectedQC)
 
+  // const qcType = "Number_of_Genes"
   const qcViolin = useQCViolinQuery(runID)
-  console.log(qcViolin)
+  const qcScatter = useQCScatterQuery(selectedQC, runID)
+  // console.log(qcScatter)
+
+  // const qcScatterData = R.compose(
+  //   R.values,
+  //   R.map
+  // )(qcScatter)
+
+  // console.log(qcScatter)
 
 
-  // if (R.any(R.isNil, [qcViolin])) {
-  //   return null
-  // }
+
+  if (R.any(R.isNil, [qcViolin, qcScatter])) {
+    return null
+  }
+
+  const qcScatterData = []
+  qcScatterData.push(qcScatter)
 
   const qcViolinData = R.compose(
     R.head,
     R.values
   )(qcViolin)
 
-  console.log(qcViolinData)  
+  console.log(qcScatterData)
+  console.log(qcViolinData)
 
-  const qcData = qcViolinData
+  // const qcScatterData = R.compose(
+  //   R.head,
+  //   R.values
+  // )(qcScatter)
+
+  // console.log(R.values(qcScatter))
+  // console.log()
+
+  // const qcData = qcViolinData
 
   // // use local state for data
   // const [qcData, setQCData] = useState( [] )
@@ -56,20 +80,20 @@ const QCPlot = ({
   
   return (
     // Empty qc data => loading
-    R.isEmpty(qcData) ?
-      <Segment basic placeholder style={{height: '100%'}}>
-        <Header textAlign='center' icon>
-          <ClimbingBoxLoader color='#6435c9' />
-        </Header>
-      </Segment>
-    :
+    // R.isEmpty(qcViolinData) ?
+    //   <Segment basic placeholder style={{height: '100%'}}>
+    //     <Header textAlign='center' icon>
+    //       <ClimbingBoxLoader color='#6435c9' />
+    //     </Header>
+    //   </Segment>
+    // :
       // Plot data
       R.equals('Before_After_Filtering', selectedQC) ?
         <>
         <Header textAlign='center' content={R.isNil(selectedQC) ? '' : "Metrics Before and After QC (Violins)"} />
         <Plot
           config={{showTips: false}}
-          data={qcData}
+          data={qcViolinData}
           useResizeHandler
           style={{width: '100%', height:'90%'}}
           layout={{
@@ -79,16 +103,16 @@ const QCPlot = ({
             showlegend: false,
             hovermode: 'closest',
             yaxis: {
-              range: [0, R.isNil(qcData[0]) ? 1.1 : Math.max(...R.map(parseInt, qcData[0]['y']))+1]
+              range: [0, R.isNil(qcViolinData[0]) ? 1.1 : Math.max(...R.map(parseInt, qcViolinData[0]['y']))+1]
             },
             yaxis2: {
-              range: [0, R.isNil(qcData[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcData[2]['y'])))+1]
+              range: [0, R.isNil(qcViolinData[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcViolinData[2]['y'])))+1]
             },
             yaxis3: {
-              range: [0, R.isNil(qcData[4]) ? 101: Math.round(Math.max(...R.map(parseInt, qcData[4]['y'])))+1]
+              range: [0, R.isNil(qcViolinData[4]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolinData[4]['y'])))+1]
             },
             yaxis4: {
-              range: [0, R.isNil(qcData[6]) ? 101: Math.round(Math.max(...R.map(parseInt, qcData[6]['y'])))+1]
+              range: [0, R.isNil(qcViolinData[6]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolinData[6]['y'])))+1]
             },
             annotations: [
               {
@@ -140,7 +164,7 @@ const QCPlot = ({
         <Header textAlign='center' content={R.isNil(selectedQC) ? '' : (selectedQC.replace(/_/g," ")+" (UMAP)")} />
         <Plot
           config={{showTips: false}}
-          data={qcData}
+          data={qcScatterData}
           useResizeHandler
           style={{width: '100%', height:'100%'}}
           layout={{

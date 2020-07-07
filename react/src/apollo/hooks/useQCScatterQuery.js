@@ -6,6 +6,8 @@ import {createUploadLink} from 'apollo-upload-client'
 import {useState} from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
+import * as R from 'ramda'
+
 
 require('dotenv').config()
 console.log(process.env.REACT_APP_GRAPHENE_URL_DEV)
@@ -57,7 +59,12 @@ export default function useQCScatter(qcType, runID) {
     fetchPolicy: 'cache-and-network',
     variables: {qcType, runID},
     onCompleted: ({qcScatter}) => {
-      setQCScatter(qcScatter)
+      R.compose(
+        setQCScatter,
+        R.evolve({
+          mode: R.join('+')
+        })
+      )(qcScatter)
     }
   })
 
