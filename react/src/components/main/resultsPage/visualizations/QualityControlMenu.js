@@ -94,7 +94,7 @@ const QualityControlMenu = ({
 
     <Divider horizontal content='QC Metrics' />
     <Segment basic textAlign='center' style={{padding: '0rem'}}>
-    <Label basic color={'blue'} size={'large'}>
+    <Label basic color={'blue'} size={'medium'}>
       Cells Before QC:
       <Label.Detail>
         {
@@ -107,42 +107,7 @@ const QualityControlMenu = ({
         }
       </Label.Detail>
     </Label>
-    </Segment>
-
-    {
-      R.ifElse(
-        R.isNil,
-        R.always(<div></div>),
-        R.addIndex(R.map)(
-          ({filtertype, numRemoved, min, max}, index) => (
-            <Segment compact key={index}>
-              <Label attached='top' content={filtertype}/>
-              <Button
-              basic
-              size={'tiny'}
-              style={{margin: '0.25rem'}}
-              content={`Filter Min: `+min}
-              />
-              <Button
-              basic
-              size={'tiny'}
-              style={{margin: '0.25rem'}}
-              content={`Filter Max: `+max}
-              />
-              <Button
-              basic
-              size={'tiny'}
-              style={{margin: '0.25rem'}}
-              content={`Cells Removed: `+numRemoved}
-              color={R.ifElse(R.equals("0"),R.always(undefined),R.always('red'))(numRemoved)}
-              />
-            </Segment>
-        ))
-      )(qcSteps)
-
-    }
-    <Segment basic textAlign='center' style={{padding: '0rem'}}>
-    <Label basic color={'orange'} size={'large'}>
+    <Label basic color={'orange'} size={'medium'} >
       Cells After QC:
       <Label.Detail>
         {
@@ -156,6 +121,39 @@ const QualityControlMenu = ({
       </Label.Detail>
     </Label>
     </Segment>
+    {
+      R.ifElse(
+        R.isNil,
+        R.always(<div></div>),
+        R.addIndex(R.map)(
+          ({filtertype, numRemoved, min, max}, index) => (
+            <Segment compact key={index} style={{padding: '0.77rem'}} >
+              <Label attached='top' content={filtertype}/>
+              <Label
+              basic
+              size={'small'}
+              style={{margin: '0.25rem'}}
+              content={`Filter Min: `+min}
+              color='grey'
+              />
+              <Label
+              basic
+              size={'small'}
+              style={{margin: '0.25rem'}}
+              content={`Filter Max: `+max}
+              color='grey'
+              />
+              <Label
+              basic
+              size={'small'}
+              style={{margin: '0.25rem'}}
+              content={`Cells Removed: `+numRemoved}
+              color={R.ifElse(R.equals(0),R.always('grey'),R.always('red'))(numRemoved)}
+              />
+            </Segment>
+        ))
+      )(qcSteps)
+    }
     </>
   )
 }
