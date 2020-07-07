@@ -5,7 +5,7 @@ const initialState = {
   activeSidebarTab: 'parameters', // visualizations
   activePipelineStep: null,
   activeResult: null,
-  selectedQC: null,
+  selectedQC: 'Before_After_Filtering',
 }
 
 export default createReducer(
