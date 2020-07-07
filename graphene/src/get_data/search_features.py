@@ -15,8 +15,8 @@ def binary_search(query, _list):
     else:
         first = 0
         last = len(_list) - 1
-        while (first < last):
-            mid = (first + last) / 2
+        while (last - first > 1):
+            mid = int((first + last) / 2)
             if (_list[mid].lower() == query.lower()):
                 return mid
             elif (_list[mid].lower() < query.lower()):
@@ -31,21 +31,24 @@ Finds 3 more strings that also have the same prefix either above or below the in
 def crawler(idx, query, _list):
     final_list = [idx]
     last_idx = len(_list) - 1
-    for i in range(3):
+    for i in range(1, 3):
         prev_idx = idx - i
+
         if ((prev_idx >= 0) and _list[prev_idx].lower().startswith(query.lower())):
             final_list.append(prev_idx)
-
         if(len(final_list) == 4):
-            return final_list.sort()
+            final_list.sort()
+            return final_list
         
         next_idx = idx + i
+
         if ((next_idx <= last_idx) and _list[next_idx].lower().startswith(query.lower())):
             final_list.append(next_idx)
-
         if(len(final_list) == 4):
-            return final_list.sort()
-    return final_list.sort()
+            final_list.sort()
+            return final_list
+    final_list.sort()
+    return final_list
 
 def prefix_binary_search(query, _list):
     if (_list[0].lower().startswith(query.lower())):
@@ -55,8 +58,8 @@ def prefix_binary_search(query, _list):
     else:
         first = 0
         last = len(_list) - 1
-        while (first < last):
-            mid = (first + last) / 2
+        while (last - first > 1):
+            mid = int((first + last) / 2)
             if (_list[mid].lower().startswith(query.lower())):
                 return crawler(mid, query, _list)
             elif (_list[mid].lower() < query.lower()):
@@ -65,7 +68,7 @@ def prefix_binary_search(query, _list):
                 last = mid
         return [-1] # Not Found
 
-def run_search(runID, query):
+def run_search(query, runID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
