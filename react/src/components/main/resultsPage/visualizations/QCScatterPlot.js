@@ -1,8 +1,10 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Loader, Segment, Header, Icon } from 'semantic-ui-react'
+import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 
+import Tada from 'react-reveal/Tada'
+import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
 
 import * as R from 'ramda'
@@ -32,10 +34,14 @@ const QCScatterPlot = ({
 
   // console.log(qcScatter)
 
-
-
   if (R.any(R.isNil, [qcScatter])) {
-    return null
+    return (
+      <Segment style={{height: '100%'}} basic>
+      <Tada forever duration={1000}>
+        <Image src={Logo} centered size='medium' />
+      </Tada>
+    </Segment>
+    )
   }
 
   const qcScatterData = []
