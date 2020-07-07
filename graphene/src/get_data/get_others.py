@@ -8,6 +8,7 @@ from get_data.minio_functions import (
     get_first_n_lines,
     get_list_of_object_names,
     get_obj_as_2dlist,
+    get_size,
     object_exists
 )
 from get_data.helper import return_error, set_IDs
@@ -171,3 +172,7 @@ def get_available_categorical_groups(runID):
         metadata_groups = [group for group, grouptype in metadata_types if grouptype == 'group']
     
     return {"groups": list(set(groups) | set(metadata_groups))}
+
+def total_size(runID):
+    minio_client = get_minio_client()
+    return get_size('run-'+str(runID), minio_client)

@@ -20,3 +20,5 @@ frontend_seurat_inputs.json
 
 .env
 nginx/certs/
+
+**/.vscode
