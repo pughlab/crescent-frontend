@@ -6,6 +6,8 @@ const initialState = {
   activePipelineStep: null,
   activeResult: null,
   selectedQC: null,
+  selectedFeature: null,
+  selectedGroup: null,
 }
 
 export default createReducer(
@@ -33,6 +35,18 @@ export default createReducer(
       const {QC} = payload
       return R.evolve({
         selectedQC: R.always(QC)
+      })(state)
+    },
+    'resultsPage/setSelectedFeature': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        selectedFeature: R.always(value)
+      })(state)
+    },
+    'resultsPage/setSelectedGroup': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        selectedGroup: R.always(value)
       })(state)
     },
 
