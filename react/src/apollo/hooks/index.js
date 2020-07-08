@@ -21,6 +21,7 @@ import useQCScatterQuery from './useQCScatterQuery'
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
+import useSearchFeaturesQuery from './useSearchFeaturesQuery'
 import useGraphene from './useGraphene'
 
 export {
@@ -47,6 +48,7 @@ export {
   useScatterQuery,
   useAvailableGroupsQuery,
   useTopExpressedQuery,
+  useSearchFeaturesQuery,
 
   useGraphene,
 }
