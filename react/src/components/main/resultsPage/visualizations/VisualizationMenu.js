@@ -3,39 +3,44 @@ import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
 import { Button, Form, Divider, Segment, Popup, Label, Icon, Header, Grid } from 'semantic-ui-react'
 
+import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useAvailableGroupsQuery, useTopExpressedQuery} from '../../../../apollo/hooks'
+import {setSelectedFeature, setSelectedGroup} from '../../../../redux/actions/resultsPage'
+
 import reduxThunks from '../../../../redux/actions/thunks'
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 const VisualizationMenu = ({
 }) => { 
-  const {changeActiveGroup, changeSelectedFeature} = reduxThunks
+  // const {changeActiveGroup, changeSelectedFeature} = reduxThunks
   const [currentSearch, changeSearch] = useState('')
   const [currentOptions, changeCurrentOptions] = useState([])
   
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
+
  // console.log("use results: ", useResultsPage())
   const {selectedFeature, selectedGroup} = useResultsPage()
   //available groups & top expressed must be queries
   
   const groups = useAvailableGroupsQuery(runID)
   const topExpressed = useTopExpressedQuery(runID)
+  // const search = useTopExpressedQuery(runID)
+
 
   if (R.any(R.isNil, [groups, topExpressed])) {
-    console.log(groups, topExpressed)
+    // console.log(groups, topExpressed)
     return null
   }
 
     
-  const availableGroupsArray = R.compose(
-    R.head,
-    R.values
-  )(groups)
+  // const availableGroupsArray = R.compose(
+  //   R.head,
+  //   R.values
+  // )(groups)
 
   const topExpressedArray = R.compose(
     R.head,
@@ -56,34 +61,45 @@ const VisualizationMenu = ({
   }
 
  
-  //UNSURE
+  // UNSURE
+  // const handleSearchChange = (event, {searchQuery}) => {
+  //   changeSearch(searchQuery)
+  //   console.log("SEARCH QUERY:", searchQuery)
+  //   if (RA.isNotEmpty(searchQuery)) {
+  //     const isOption = gene => R.startsWith(searchQuery, gene)
+  //     console.log(" ALL GENE: ", R.map(R.prop('gene'), topExpressedArray))
+  //     const allGenes = R.map(R.prop('gene'), topExpressedArray)
+  //     const options =  R.filter(isOption, allGenes)
+  //     console.log("OPTIONS:", options)
+  //     console.log("TEST:", isOption('CAN'))
+  //     changeCurrentOptions(options)
+  //     console.log("CURR OP", currentOptions)
+  //   }
+  // }
+
   const handleSearchChange = (event, {searchQuery}) => {
     changeSearch(searchQuery)
-    console.log("SEARCH QUERY:", searchQuery)
     if (RA.isNotEmpty(searchQuery)) {
-      const isOption = gene => R.startsWith(searchQuery, gene)
-      console.log(" ALL GENE: ", R.map(R.prop('gene'), topExpressedArray))
-      const allGenes = R.map(R.prop('gene'), topExpressedArray)
-      const options =  R.filter(isOption, allGenes)
-      console.log("OPTIONS:", options)
-      console.log("TEST:", isOption('CAN'))
-      changeCurrentOptions(options)
-      console.log("CURR OP", currentOptions)
+      fetch(`/express/search/${searchQuery}/${runID}`)
+        .then(checkResponse)
+        .then(resp => resp.json())
+        .then(changeCurrentOptions)
+        .catch((err) => console.log(err))
     }
   }
 
   const handleSelectFeature = (event, {value}) => {
     changeSearch('') // reset search
-    dispatch(changeSelectedFeature(value)) // store
+    dispatch(setSelectedFeature({value})) // store
   }
 
-  const resetSelectFeature = () => {
+  const resetSelectFeature = ({value}) => {
     changeSearch('')
     changeCurrentOptions([])
-    dispatch(changeSelectedFeature(null))
+    dispatch(setSelectedFeature({value}))
   }
 
-  console.log("TOPEXPrESED ARR: ", topExpressedArray) 
+  // console.log("TOPEXPrESED ARR: ", topExpressedArray) 
 
   const featureButton = ({gene, pVal, avgLogFc, cluster}) => {
     return (
@@ -114,8 +130,8 @@ const VisualizationMenu = ({
   // format a list for a dropdown
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
 
-  console.log("AVAILABLE GROUPS:", availableGroupsArray)
-  console.log("SELECTED GROUPS:", selectedGroup)
+  // console.log("AVAILABLE GROUPS:", availableGroupsArray)
+  // console.log("SELECTED GROUPS:", selectedGroup)
 
   
   return(
@@ -126,9 +142,11 @@ const VisualizationMenu = ({
               fluid
               selection
               labeled
-              defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : availableGroupsArray[0]}
+              defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : groups[0]}
               options={formatList(groups)}
-              onChange={(event, {value}) => dispatch(changeActiveGroup({value}))}
+              // onChange={(event, {value}) => dispatch(changeActiveGroup({value}))}
+              onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
+
             />
           </Form.Field>
         <Divider horizontal />
