@@ -8,7 +8,7 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useAvailableGroupsQuery, useTopExpressedQuery} from '../../../../apollo/hooks'
+import {useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery} from '../../../../apollo/hooks'
 import {setSelectedFeature, setSelectedGroup} from '../../../../redux/actions/resultsPage'
 
 import reduxThunks from '../../../../redux/actions/thunks'
@@ -28,10 +28,11 @@ const VisualizationMenu = ({
   
   const groups = useAvailableGroupsQuery(runID)
   const topExpressed = useTopExpressedQuery(runID)
-  // const search = useTopExpressedQuery(runID)
+  const search = useSearchFeaturesQuery(currentSearch, runID)
 
+  // console.log(search)
 
-  if (R.any(R.isNil, [groups, topExpressed])) {
+  if (R.any(R.isNil, [groups, topExpressed, search])) {
     // console.log(groups, topExpressed)
     return null
   }
@@ -47,6 +48,11 @@ const VisualizationMenu = ({
     R.values
   )(topExpressed)
 
+  // const searchArray = []
+  // searchArray.push(search)
+  // const searchArray = R.values(search)
+  // console.log(searchArray)
+
   console.log("SELECTED GROUP: ", selectedGroup) 
   console.log("SELECTED FEATURE: ", selectedFeature) 
  
@@ -55,10 +61,10 @@ const VisualizationMenu = ({
   //RESET FEATURE, FEATURE BUTTON
 
 
-  const checkResponse = (resp) => {
-    if(!resp.ok){throw Error(resp.statusText);}
-    return resp
-  }
+  // const checkResponse = (resp) => {
+  //   if(!resp.ok){throw Error(resp.statusText);}
+  //   return resp
+  // }
 
  
   // UNSURE
@@ -77,14 +83,21 @@ const VisualizationMenu = ({
   //   }
   // }
 
+  // const handleSearchChange = (event, {searchQuery}) => {
+  //   changeSearch(searchQuery)
+  //   if (RA.isNotEmpty(searchQuery)) {
+  //     fetch(`/express/search/${searchQuery}/${runID}`)
+  //       .then(checkResponse)
+  //       .then(resp => resp.json())
+  //       .then(changeCurrentOptions)
+  //       .catch((err) => console.log(err))
+  //   }
+  // }
+
   const handleSearchChange = (event, {searchQuery}) => {
     changeSearch(searchQuery)
     if (RA.isNotEmpty(searchQuery)) {
-      fetch(`/express/search/${searchQuery}/${runID}`)
-        .then(checkResponse)
-        .then(resp => resp.json())
-        .then(changeCurrentOptions)
-        .catch((err) => console.log(err))
+      changeCurrentOptions(search)
     }
   }
 
