@@ -32,7 +32,7 @@ def get_top_expressed_data(runID):
     top_two_markers = top_two_markers[1:]
     for row in top_two_markers:
         feature_result = {}
-        for i in range(0, len(header)):
+        for i in range(len(header)):
             value = row[i]
             # deal with formatting for known columns
             if header[i] == 'avg_logFC':
