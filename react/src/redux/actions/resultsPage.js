@@ -28,6 +28,21 @@ const setSelectedQC = ({value}) => ({
   }
 })
 
+const setSelectedFeature = ({value}) => ({
+  type: 'resultsPage/setSelectedFeature',
+  payload: {
+    value
+  }
+})
+
+const setSelectedGroup = ({value}) => ({
+  type: 'resultsPage/setSelectedGroup',
+  payload: {
+    value
+  }
+})
+
+
 const resetResultsPage = R.always({type: 'resultsPage/reset'})
 
 export {
@@ -35,5 +50,7 @@ export {
   setActivePipelineStep,
   setActiveResult,
   setSelectedQC,
+  setSelectedFeature,
+  setSelectedGroup,
   resetResultsPage
 }
