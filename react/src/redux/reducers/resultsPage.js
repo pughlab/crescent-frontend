@@ -37,12 +37,6 @@ export default createReducer(
         selectedQC: R.always(value)
       })(state)
     },
-    'resultsPage/setSelectedFeature': (state, payload) => {
-      const {value} = payload
-      return R.evolve({
-        selectedFeature: R.always(value)
-      })(state)
-    },
     'resultsPage/setSelectedGroup': (state, payload) => {
       const {value} = payload
       return R.evolve({
