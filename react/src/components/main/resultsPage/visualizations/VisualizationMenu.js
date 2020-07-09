@@ -8,7 +8,7 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery} from '../../../../apollo/hooks'
+import {useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useCategoricalGroupsQuery} from '../../../../apollo/hooks'
 import {setSelectedFeature, setSelectedGroup} from '../../../../redux/actions/resultsPage'
 
 import reduxThunks from '../../../../redux/actions/thunks'
@@ -22,17 +22,22 @@ const VisualizationMenu = ({
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
 
- // console.log("use results: ", useResultsPage())
-  const {selectedFeature, selectedGroup} = useResultsPage()
+  // console.log("use results: ", useResultsPage())
+  const {activeResult, selectedFeature, selectedGroup} = useResultsPage()
+  const isActiveResult = R.equals(activeResult)
+  console.log(activeResult)
+
   //available groups & top expressed must be queries
   
   const groups = useAvailableGroupsQuery(runID)
+  const categoricalGroups = useCategoricalGroupsQuery(runID)
+
   const topExpressed = useTopExpressedQuery(runID)
   const search = useSearchFeaturesQuery(currentSearch, runID)
 
   // console.log(search)
 
-  if (R.any(R.isNil, [groups, topExpressed, search])) {
+  if (R.any(R.isNil, [groups, categoricalGroups, topExpressed, search])) {
     // console.log(groups, topExpressed)
     return null
   }
@@ -55,6 +60,7 @@ const VisualizationMenu = ({
 
   console.log("SELECTED GROUP: ", selectedGroup) 
   console.log("SELECTED FEATURE: ", selectedFeature) 
+  console.log(search)
  
 
   //HERE CHECK RESPONSE, HANDLE SEARCH CHANGE, SELECT FEATURE
@@ -139,7 +145,6 @@ const VisualizationMenu = ({
     )
   }
 
-  
   // format a list for a dropdown
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
 
@@ -156,7 +161,8 @@ const VisualizationMenu = ({
               selection
               labeled
               defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : groups[0]}
-              options={formatList(groups)}
+              // options={formatList(groups)}
+              options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
               // onChange={(event, {value}) => dispatch(changeActiveGroup({value}))}
               onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
 
