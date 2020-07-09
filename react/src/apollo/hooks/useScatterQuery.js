@@ -61,11 +61,8 @@ export default function useScatter(vis, group, runID) {
     onCompleted: ({scatter}) => {
       R.compose(
         setScatter,
-        R.map(R.evolve({
-          data: {
-            mode: R.join('+')
-          }
-        }))
+        R.map(R.evolve({mode: R.join('+')})),
+        R.prop('data')
       )(scatter)
     }
   })
