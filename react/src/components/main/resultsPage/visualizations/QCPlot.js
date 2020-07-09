@@ -23,7 +23,7 @@ const QCPlot = ({
   console.log(selectedQC)
 
   return (
-  <Segment style={{height: '100%'}}>
+  <Segment basic style={{height: '100%'}}>
     {
     R.ifElse(
       R.equals('Before_After_Filtering'),

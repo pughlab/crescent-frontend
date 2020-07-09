@@ -12,7 +12,7 @@
         "object": "metadata.tsv"
     },
     "normalised_counts": {
-        "prefix": "",
+        "prefix": "../minio/upload/run-",
         "suffix": "/SEURAT/frontend_normalized/normalized_counts.loom"
     },
     "top_expressed": {
