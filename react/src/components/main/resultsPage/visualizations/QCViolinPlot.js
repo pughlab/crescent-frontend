@@ -38,7 +38,7 @@ const QCViolinPlot = ({
 
   if (R.any(R.isNil, [qcViolin])) {
     return (
-    <Segment style={{height: '100%'}} basic>
+    <Segment basic style={{height: '100%'}} placeholder>
       <Tada forever duration={1000}>
         <Image src={Logo} centered size='medium' />
       </Tada>
@@ -87,14 +87,14 @@ const QCViolinPlot = ({
 
   
   return (
-    // Empty qc data => loading
-    R.isEmpty(qcViolinData) ?
-      <Segment basic placeholder style={{height: '100%'}}>
-        <Header textAlign='center' icon>
-          <ClimbingBoxLoader color='#6435c9' />
-        </Header>
-      </Segment>
-    :
+    // // Empty qc data => loading
+    // R.isEmpty(qcViolinData) ?
+    //   <Segment basic placeholder style={{height: '100%'}}>
+    //     <Header textAlign='center' icon>
+    //       <ClimbingBoxLoader color='#6435c9' />
+    //     </Header>
+    //   </Segment>
+    // :
     <>
     <Header textAlign='center' content={R.isNil(selectedQC) ? '' : "Metrics Before and After QC (Violins)"} />
     <Plot

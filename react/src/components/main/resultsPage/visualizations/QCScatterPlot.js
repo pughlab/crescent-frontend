@@ -36,7 +36,7 @@ const QCScatterPlot = ({
 
   if (R.any(R.isNil, [qcScatter])) {
     return (
-      <Segment style={{height: '100%'}} basic>
+      <Segment style={{height: '100%'}} basic placeholder>
       <Tada forever duration={1000}>
         <Image src={Logo} centered size='medium' />
       </Tada>
