@@ -49,10 +49,25 @@ class Query(ObjectType):
     def resolve_groups(parent, info, runID):
         return get_groups(runID)
 
-    opacity = Field(Opacity, feature=String(), group=String(), runID=ID())
+    opacity = Field(Opacity, vis=String(), feature=String(), group=String(), runID=ID())
     @staticmethod
-    def resolve_opacity(parent, info, feature, group, runID):
-        return {"data": get_opacity_data(feature, group, runID)}
+    def resolve_opacity(parent, info, vis, feature, group, runID):
+        opacity_data = get_opacity_data(feature, group, runID)
+        scatter_data = get_scatter_data(vis, group, runID)
+        length = min(len(opacity_data), len(scatter_data))
+        # Now we merge each corresponding object in 
+        data = [
+            {
+                **opacity_data[idx], 
+                "x": scatter_data[idx]["x"],
+                "y": scatter_data[idx]["y"],
+                "mode": scatter_data[idx]["mode"]
+            } 
+            for idx in range(length) if opacity_data[idx]["name"] == scatter_data[idx]["name"]
+        ]
+        return {
+            "data": data
+        }
 
     plots = List(Plot, runID=ID())
     @staticmethod
