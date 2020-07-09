@@ -60,7 +60,7 @@ const VisualizationMenu = ({
 
   console.log("SELECTED GROUP: ", selectedGroup) 
   console.log("SELECTED FEATURE: ", selectedFeature) 
-  console.log(search)
+  // console.log(groups)
  
 
   //HERE CHECK RESPONSE, HANDLE SEARCH CHANGE, SELECT FEATURE
@@ -160,7 +160,8 @@ const VisualizationMenu = ({
               fluid
               selection
               labeled
-              defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : groups[0]}
+              // all groups! assumes that first group is categorical (might not be true in the future)
+              defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : dispatch(setSelectedGroup({value: groups[0]}))}
               // options={formatList(groups)}
               options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
               // onChange={(event, {value}) => dispatch(changeActiveGroup({value}))}
@@ -206,7 +207,7 @@ const VisualizationMenu = ({
       {
         RA.isNotEmpty(topExpressedArray) &&
         <Segment basic
-          style={{maxHeight: '40vh', overflowY: 'scroll'}}
+          style={{maxHeight: '28vh', overflowY: 'scroll'}}
         >
           {
             R.compose(
