@@ -65,7 +65,7 @@ const VisualizationsComponent = ({
             </Segment>
           ),
           R.always(
-            <Segment basic style={{height: '100%', padding: 0}}>
+            <Segment style={{height: '100%'}}>
               {determinePlotType(activeResult)}
             </Segment>
           )
