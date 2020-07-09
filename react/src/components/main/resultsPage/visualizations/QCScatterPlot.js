@@ -91,7 +91,7 @@ const QCScatterPlot = ({
         config={{showTips: false}}
         data={qcScatterData}
         useResizeHandler
-        style={{width: '100%', height:'100%'}}
+        style={{width: '100%', height:'95%'}}
         layout={{
           autosize: true,
           hovermode: 'closest',
