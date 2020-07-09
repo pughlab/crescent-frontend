@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Loader, Segment, Header, Icon } from 'semantic-ui-react'
+import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
@@ -38,25 +38,9 @@ const ViolinPlot = ({
   //   }
   // }, [selectedGroup, selectedFeature])
 
-  if (R.any(R.isNil, [violin])) {
-    return null
-  }
-
-  const violinData = R.compose(
-    R.head,
-    R.values
-  )(violin)
-
-  return (
-    // Violin plot must have selected feature
-    R.isNil(selectedFeature) ?
-      // <Segment basic placeholder style={{height: '100%'}}>
-      //   <Header icon>
-      //     <Icon name='right arrow' />
-      //     Select a feature to initialize violin plot
-      //   </Header>
-      // </Segment>
-      <Segment style={{height: '100%'}} placeholder>
+  if (R.any(R.isNil, [selectedFeature])) {
+    return (
+      <Segment basic style={{height: '100%'}} placeholder>
         <Shake forever duration={10000}>
         <Header textAlign='center' icon>
           <Icon name='right arrow' />
@@ -64,17 +48,53 @@ const ViolinPlot = ({
         </Header>  
         </Shake>      
       </Segment>
-    // Empty violin data => loading
-    : R.isEmpty(violinData) ?
-      <Segment basic placeholder style={{height: '100%'}}>
-        <Header textAlign='center' icon>
-          <ClimbingBoxLoader color='#6435c9' />
-        </Header>
+    )
+  }
+  if (R.any(R.isNil, [violin])) {
+    return (
+      <Segment basic style={{height: '100%'}} placeholder>
+        <Tada forever duration={1000}>
+          <Image src={Logo} centered size='medium' />
+        </Tada>
       </Segment>
-    :
+    )
+  }
+
+  const violinData = R.compose(
+    R.head,
+    R.values
+  )(violin)
+
+  console.log(violinData)
+
+  return (
+    // Violin plot must have selected feature
+    // R.isNil(selectedFeature) ?
+    //   // <Segment basic placeholder style={{height: '100%'}}>
+    //   //   <Header icon>
+    //   //     <Icon name='right arrow' />
+    //   //     Select a feature to initialize violin plot
+    //   //   </Header>
+    //   // </Segment>
+    //   <Segment style={{height: '100%'}} placeholder>
+    //     <Shake forever duration={10000}>
+    //     <Header textAlign='center' icon>
+    //       <Icon name='right arrow' />
+    //       Select a feature to initialize violin plot
+    //     </Header>  
+    //     </Shake>      
+    //   </Segment>
+    // // Empty violin data => loading
+    // : R.isEmpty(violinData) ?
+    //   <Segment basic placeholder style={{height: '100%'}}>
+    //     <Header textAlign='center' icon>
+    //       <ClimbingBoxLoader color='#6435c9' />
+    //     </Header>
+    //   </Segment>
+    // :
     // Plot data
-      <>
-      <Header textAlign='center' content='Gene Expression Violin' />
+    <>
+    <Header textAlign='center' content='Gene Expression Violin' />
       <Plot
         config={{showTips: false}}
         data={violinData}
@@ -88,7 +108,7 @@ const ViolinPlot = ({
           margin: {l:45, r:20, b:20, t:20},
         }}
       />
-      </>
+    </>
   )
 }
 
