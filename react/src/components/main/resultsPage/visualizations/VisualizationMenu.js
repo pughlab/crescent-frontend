@@ -25,7 +25,7 @@ const VisualizationMenu = ({
   // console.log("use results: ", useResultsPage())
   const {activeResult, selectedFeature, selectedGroup} = useResultsPage()
   const isActiveResult = R.equals(activeResult)
-  console.log(activeResult)
+ // console.log(activeResult)
 
   //available groups & top expressed must be queries
   
@@ -34,7 +34,7 @@ const VisualizationMenu = ({
 
   const topExpressed = useTopExpressedQuery(runID)
   const search = useSearchFeaturesQuery(currentSearch, runID)
-
+  console.log("SEARCH OUTSIDE!", search)
   // console.log(search)
 
   if (R.any(R.isNil, [groups, categoricalGroups, topExpressed, search])) {
@@ -58,9 +58,8 @@ const VisualizationMenu = ({
   // const searchArray = R.values(search)
   // console.log(searchArray)
 
-  console.log("SELECTED GROUP: ", selectedGroup) 
-  console.log("SELECTED FEATURE: ", selectedFeature) 
-  // console.log(groups)
+  //console.log("SELECTED GROUP: ", selectedGroup) 
+  //console.log("SELECTED FEATURE: ", selectedFeature) 
  
 
   //HERE CHECK RESPONSE, HANDLE SEARCH CHANGE, SELECT FEATURE
@@ -101,6 +100,9 @@ const VisualizationMenu = ({
   // }
 
   const handleSearchChange = (event, {searchQuery}) => {
+    console.log("SEARCH QUERY", searchQuery)
+    console.log("CURR OPTION", currentOptions)
+    console.log("CURR SEARCH", currentSearch)
     changeSearch(searchQuery)
     if (RA.isNotEmpty(searchQuery)) {
       changeCurrentOptions(search)
@@ -198,9 +200,9 @@ const VisualizationMenu = ({
         search
         searchQuery={currentSearch}
         selection
-        options={currentOptions}
+        options={search}
         value={selectedFeature}
-        onSearchChange={handleSearchChange}
+        onSearchChange={ handleSearchChange}
         onChange={handleSelectFeature}
       />
       <Divider horizontal content='Top Differentially Expressed Genes' />
