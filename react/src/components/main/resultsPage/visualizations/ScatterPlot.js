@@ -1,7 +1,10 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Loader, Container, Header, Segment, Dimmer} from 'semantic-ui-react'
+import { Image, Container, Header, Segment, Dimmer} from 'semantic-ui-react'
+
+import Tada from 'react-reveal/Tada'
+import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
 
 import * as R from 'ramda'
@@ -29,8 +32,18 @@ const ScatterPlot = ({
 
 
 
-  if (R.any(R.isNil, [plots, scatter])) {
+  if (R.any(R.isNil, [plots])) {
     return null
+  }
+
+  if (R.any(R.isNil, [scatter])) {
+    return (
+      <Segment basic style={{height: '100%'}} placeholder>
+        <Tada forever duration={1000}>
+          <Image src={Logo} centered size='medium' />
+        </Tada>
+      </Segment>
+    )
   }
 
   // const scatterData = R.compose(
@@ -68,13 +81,10 @@ const ScatterPlot = ({
   // }
 
   // // determine proper name of active plot
-  const currentScatterPlotType = R.ifElse(
-    R.isNil,
-    R.always(''),
-    R.path([activeResult, 'label'])
+  const currentScatterPlotType = R.compose(
+    R.prop('label'),
+    R.find(R.propEq('result', activeResult)),
   )(plots)
-
-  console.log(currentScatterPlotType)
 
   // // add traces and opacity
   // useEffect(() => {
@@ -116,17 +126,18 @@ const ScatterPlot = ({
 
 
   return (
+    // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
+    // <Dimmer active={isLoading} inverted>
+    //   <ClimbingBoxLoader color='#6435c9' />
+    // </Dimmer>
+    // <Segment style={{height: '100%'}}>
     <>
-    <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
-    <Dimmer active={isLoading} inverted>
-      <ClimbingBoxLoader color='#6435c9' />
-    </Dimmer>
     <Header textAlign='center' content={currentScatterPlotType} />
       <Plot
         config={{showTips: false}}
         data={scatter}
         useResizeHandler
-        style={{width: '100%', height:'100%'}}
+        style={{width: '100%', height:'90%'}}
         layout={{
           autosize: true,
           hovermode: 'closest',
@@ -136,8 +147,8 @@ const ScatterPlot = ({
           legend: {"orientation": "v"}
         }}
       />
-    </Dimmer.Dimmable>
-    </>
+    {/* </Dimmer.Dimmable> */}
+  </>
   )
 }
 
