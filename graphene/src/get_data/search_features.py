@@ -69,7 +69,7 @@ def prefix_binary_search(query, _list):
 def run_search(query, runID):
     # First check that query isn't blank
     if query == "":
-        return [{'text': '', 'value': ''}]
+        return []
     
     paths = {}
     with open('get_data/paths.json') as paths_file:
@@ -93,4 +93,4 @@ def run_search(query, runID):
                 result.append({'text': features_list[idx], 'value': features_list[idx]})
             return result
         else:
-            return [{'text': '', 'value': ''}]
+            return []
