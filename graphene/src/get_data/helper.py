@@ -79,13 +79,14 @@ def is_int(cluster_name):
 
 def sort_traces(trace_objects):
     """ sort the lists of violin, opacity, or scatter objects by cluster name """
+    """
     # if all cluster names can be cast to int, sort by their integer value
     if all(is_int(x['name']) for x in trace_objects):
         trace_objects.sort(key=lambda i: int(i['name']))
     # otherwise, sort alphabetically
     else:
-        trace_objects.sort(key=lambda i: i['name'])
-    return 
+    """
+    trace_objects.sort(key=lambda i: i['name'])
 
 def set_IDs(paths, runID, keys, setDatasetID=False):
     client = get_mongo_client()

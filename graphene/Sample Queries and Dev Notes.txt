@@ -123,6 +123,8 @@ QC VIOLIN
 
 SEARCH
 
+Note: features.tsv *MUST* by sorted for this to work
+
 {
   search(query="Literally Anything", runID="5eda76def93f82004f4114c6") {
     text
