@@ -16,8 +16,8 @@ import reduxThunks from '../../../../redux/actions/thunks'
 const VisualizationMenu = ({
 }) => { 
   // const {changeActiveGroup, changeSelectedFeature} = reduxThunks
-  const [currentSearch, changeSearch] = useState('')
-  const [currentOptions, changeCurrentOptions] = useState([])
+  const [currentSearch, setSearch] = useState('')
+  const [currentOptions, setCurrentOptions] = useState([])
   
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
@@ -103,20 +103,20 @@ const VisualizationMenu = ({
     console.log("SEARCH QUERY", searchQuery)
     console.log("CURR OPTION", currentOptions)
     console.log("CURR SEARCH", currentSearch)
-    changeSearch(searchQuery)
+    setSearch(searchQuery)
     if (RA.isNotEmpty(searchQuery)) {
-      changeCurrentOptions(search)
+      setCurrentOptions(search)
     }
   }
 
   const handleSelectFeature = (event, {value}) => {
-    changeSearch('') // reset search
+    setSearch(value) // reset search
     dispatch(setSelectedFeature({value})) // store
   }
 
   const resetSelectFeature = ({value}) => {
-    changeSearch('')
-    changeCurrentOptions([])
+    setSearch('')
+    setCurrentOptions([])
     dispatch(setSelectedFeature({value}))
   }
 
