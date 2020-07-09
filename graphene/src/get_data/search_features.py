@@ -25,10 +25,8 @@ def binary_search(query, _list):
                 last = mid
         return -1 # Not Found
 
-"""
-Finds 3 more strings that also have the same prefix either above or below the index
-"""
 def crawler(idx, query, _list):
+    # Finds 3 more strings that also have the same prefix either above or below the index
     final_list = [idx]
     last_idx = len(_list) - 1
     for i in range(1, 3):
@@ -69,6 +67,10 @@ def prefix_binary_search(query, _list):
         return [-1] # Not Found
 
 def run_search(query, runID):
+    # First check that query isn't blank
+    if query == "":
+        return [{'text': '', 'value': ''}]
+    
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
@@ -80,8 +82,10 @@ def run_search(query, runID):
 
     search = binary_search(query, features_list)
     if (search >= 0):
+        # We found a perfect match
         return [{'text': features_list[search], 'value': features_list[search]}]
     else:
+        # Look for partial match where the query is a prefix, and match potential features
         search = prefix_binary_search(query, features_list)
         if (search != [-1]):
             result = []
