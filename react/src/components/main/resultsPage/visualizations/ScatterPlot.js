@@ -21,8 +21,11 @@ const ScatterPlot = ({
   const plots = useResultsAvailableQuery(runID)
   const scatter = useScatterQuery(activeResult, selectedGroup, runID)
 
+  // const [isLoading, setIsLoading] = useState( true );
+
   console.log(scatter)
   console.log(plots)
+  console.log(activeResult)
 
 
 
@@ -41,19 +44,12 @@ const ScatterPlot = ({
 
   // scatterData = scatter
 
-  // const scatterData = R.compose(
-  //   R.head,
-  //   R.values,
-  // )(scatter)
-  // console.log(scatterData)
-
-  const scatterData = scatter
+  // const scatterData = scatter
 
 
 
   // use local state for data since too big for redux store
   // const [scatterData, setScatterData] = useState( [] );
-  // const [isLoading, setIsLoading] = useState( true );
 
   const isLoading = false
   // // func to knit opacity from server into traces
@@ -77,6 +73,8 @@ const ScatterPlot = ({
     R.always(''),
     R.path([activeResult, 'label'])
   )(plots)
+
+  console.log(currentScatterPlotType)
 
   // // add traces and opacity
   // useEffect(() => {
@@ -126,7 +124,7 @@ const ScatterPlot = ({
     <Header textAlign='center' content={currentScatterPlotType} />
       <Plot
         config={{showTips: false}}
-        data={scatterData}
+        data={scatter}
         useResizeHandler
         style={{width: '100%', height:'100%'}}
         layout={{
