@@ -37,6 +37,8 @@ const client = new ApolloClient({
 //   return 
 // }
 
+// FEATURES DATA NEEDS TO BE ORDERED!!!!!!
+
 export default function useSearchFeatures(query, runID) {
   const [search, setSearch] = useState(null)
   const {loading, data, error} = useQuery(gql`
