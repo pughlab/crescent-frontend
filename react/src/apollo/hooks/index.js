@@ -22,6 +22,8 @@ import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
 import useSearchFeaturesQuery from './useSearchFeaturesQuery'
+import useViolinQuery from './useViolinQuery'
+import useCategoricalGroupsQuery from './useCategoricalGroupsQuery'
 import useGraphene from './useGraphene'
 
 export {
@@ -49,6 +51,8 @@ export {
   useAvailableGroupsQuery,
   useTopExpressedQuery,
   useSearchFeaturesQuery,
+  useViolinQuery,
+  useCategoricalGroupsQuery,
 
   useGraphene,
 }
