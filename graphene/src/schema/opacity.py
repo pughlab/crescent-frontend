@@ -50,9 +50,3 @@ class OpacityData(ObjectType):
     @staticmethod
     def resolve_type(parent, info):
         return parent["type"]
-
-class Opacity(ObjectType):
-    data = List(NonNull(OpacityData))
-    @staticmethod
-    def resolve_data(parent, info):
-        return parent["data"]

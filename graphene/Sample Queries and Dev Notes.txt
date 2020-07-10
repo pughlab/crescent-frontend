@@ -2,11 +2,9 @@ AVAILABLE QC
 
 {
   availableQc(runID: "5eda76def93f82004f4114c6") {
-    data {
-      key
-      text
-      value
-    }
+    key
+    text
+    value
   }
 }
 
@@ -32,13 +30,11 @@ OPACITY
 
 {
   opacity(feature: "Rb1cc1", group: "Seurat_Clusters_Resolution1", runID: "5eda76def93f82004f4114c6") {
-    data {
-      name
-      text
-      marker {
-        opacity
-        color
-      }
+    name
+    text
+    marker {
+      opacity
+      color
     }
   }
 }
@@ -95,28 +91,26 @@ QC VIOLIN
 
 {
   qcViolin(runID: "5eda76def93f82004f4114c6") {
-    data {
-      type
-      points
-      jitter
-      text
-      hoverinfo
-      meanline {
-        visible
-        color
-      }
-      x
-      y
-      marker {
-        opacity
-      }
-      pointpos
-      name
-      xaxis
-      yaxis
-      line {
-        color
-      }
+    type
+    points
+    jitter
+    text
+    hoverinfo
+    meanline {
+      visible
+      color
+    }
+    x
+    y
+    marker {
+      opacity
+    }
+    pointpos
+    name
+    xaxis
+    yaxis
+    line {
+      color
     }
   }
 }
@@ -136,15 +130,13 @@ SCATTER
 
 {
   scatter(vis: "TSNE", group: "Seurat_Clusters_Resolution1", runID: "5eda76def93f82004f4114c6") {
-    data {
-      name
-      mode
-      text
-      x
-      y
-      marker {
-        color
-      }
+    name
+    mode
+    text
+    x
+    y
+    marker {
+      color
     }
   }
 }
@@ -153,12 +145,10 @@ TOP EXPRESSED
 
 {
   topExpressed(runID: "5eda76def93f82004f4114c6") {
-    data {
-      gene
-      cluster
-      pVal
-      avgLogFc
-    }
+    gene
+    cluster
+    pVal
+    avgLogFc
   }
 }
 
@@ -166,23 +156,21 @@ VIOLIN
 
 {
   violin(feature: "Rb1cc1", group: "Seurat_Clusters_Resolution1", runID: "5eda76def93f82004f4114c6") {
-    data {
-      type
-      spanmode
-      fillcolor
-      line {
-        color
-      }
-      points
-      jitter
-      width
-      meanline {
-        visible
-      }
-      x
-      y
-      bandwidth
+    type
+    spanmode
+    fillcolor
+    line {
+      color
     }
+    points
+    jitter
+    width
+    meanline {
+      visible
+    }
+    x
+    y
+    bandwidth
   }
 }
 

@@ -15,9 +15,3 @@ class AvailableQCPiece(ObjectType):
     @staticmethod
     def resolve_value(parent, info):
         return parent["value"]
-
-class AvailableQC(ObjectType):
-    data = List(AvailableQCPiece)
-    @staticmethod
-    def resolve_data(parent, info):
-        return parent["data"]

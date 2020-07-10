@@ -75,9 +75,3 @@ class ViolinData(ObjectType):
             return parent['bandwidth']
         else:
             return None
-
-class Violin(ObjectType):
-    data = List(NonNull(ViolinData))
-    @staticmethod
-    def resolve_data(parent, info):
-        return parent["data"]

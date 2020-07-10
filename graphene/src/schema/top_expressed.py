@@ -22,9 +22,3 @@ class TopExpression(ObjectType):
     @staticmethod
     def resolve_avg_log_fc(parent, info):
         return parent["avg_logFC"]
-
-class TopExpressed(ObjectType):
-    data = List(TopExpression)   
-    @staticmethod
-    def resolve_data(parent, info):
-        return parent["data"]

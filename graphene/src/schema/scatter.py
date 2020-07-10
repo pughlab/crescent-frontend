@@ -38,10 +38,3 @@ class ScatterData(ObjectType):
     @staticmethod
     def resolve_type(parent, info):
         return parent["type"]
-
-class Scatter(ObjectType):
-    """docstring for Scatter"""
-    data = List(NonNull(ScatterData))
-    @staticmethod
-    def resolve_data(parent, info):
-        return parent["data"]

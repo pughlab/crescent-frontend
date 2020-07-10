@@ -85,9 +85,3 @@ class QCViolinData(ObjectType):
     @staticmethod
     def resolve_line(parent, info):
         return parent["line"]
-
-class QCViolin(ObjectType):
-    data = List(NonNull(QCViolinData))
-    @staticmethod
-    def resolve_data(parent, info):
-        return parent["data"]
