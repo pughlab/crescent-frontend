@@ -61,13 +61,11 @@ class Query(ObjectType):
                 **opacity_data[idx], 
                 "x": scatter_data[idx]["x"],
                 "y": scatter_data[idx]["y"],
-                "mode": scatter_data[idx]["mode"]
+                "mode": scatter_data[idx]["mode"],
+                "type": scatter_data[idx]["type"]
             } 
             for idx in range(length) if opacity_data[idx]["name"] == scatter_data[idx]["name"]
         ]
-        for idx in range(length):
-            if ("type" in scatter_data[idx]):
-                opacity_data[idx]["type"] = scatter_data[idx]["type"]
         return {"data": data}
 
     plots = List(Plot, runID=ID())

@@ -40,6 +40,8 @@ def add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells):
         if num_cells > 20000:
             # add different rendering to improve speeds
             template_obj["type"] = "scattergl"
+        else:
+            template_obj["type"] = "scatter"
         plotly_obj[label] = template_obj
 
 def add_barcodes(plotly_obj, column_name, barcode_values, barcode_coords, num_cells, all_zeros):
@@ -73,6 +75,8 @@ def add_barcodes(plotly_obj, column_name, barcode_values, barcode_coords, num_ce
     if num_cells > 20000:
         # set different rendering to improve speeds
         template_obj["type"] = "scattergl"
+    else:
+        template_obj["type"] = "scatter"
 
     gradient_iter = 0
     for barcode, value in barcode_values:
