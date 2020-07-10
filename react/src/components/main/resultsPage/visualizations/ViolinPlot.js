@@ -60,12 +60,12 @@ const ViolinPlot = ({
     )
   }
 
-  const violinData = R.compose(
-    R.head,
-    R.values
-  )(violin)
+  // const violinData = R.compose(
+  //   R.head,
+  //   R.values
+  // )(violin)
 
-  console.log(violinData)
+  // console.log(violinData)
 
   return (
     // Violin plot must have selected feature
@@ -97,7 +97,7 @@ const ViolinPlot = ({
     <Header textAlign='center' content='Gene Expression Violin' />
       <Plot
         config={{showTips: false}}
-        data={violinData}
+        data={violin}
         useResizeHandler
         style={{width: '100%', height:'90%'}}
         layout={{
