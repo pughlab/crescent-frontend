@@ -11,7 +11,7 @@ import * as R from 'ramda'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useResultsAvailableQuery, useScatterQuery} from '../../../../apollo/hooks'
+import {useResultsAvailableQuery, useScatterQuery, useOpacityQuery} from '../../../../apollo/hooks'
 import {setSelectedQC} from '../../../../redux/actions/resultsPage'
 
 const ScatterPlot = ({
@@ -20,23 +20,35 @@ const ScatterPlot = ({
 
   const dispatch = useDispatch()
   const {activeResult, selectedFeature, selectedGroup} = useResultsPage()
+  const isFeatureNotSelected = R.or(R.isNil, R.isEmpty)(selectedFeature)
+
 
   const plots = useResultsAvailableQuery(runID)
   const scatter = useScatterQuery(activeResult, selectedGroup, runID)
+  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID)
 
   // const [isLoading, setIsLoading] = useState( true );
 
   console.log(scatter)
-  console.log(plots)
-  console.log(activeResult)
+  console.log(opacity)
+  console.log("FEATURE: ", selectedFeature)
 
-
-
+  
   if (R.any(R.isNil, [plots])) {
     return null
   }
 
   if (R.any(R.isNil, [scatter])) {
+    return (
+      <Segment basic style={{height: '100%'}} placeholder>
+        <Tada forever duration={1000}>
+          <Image src={Logo} centered size='medium' />
+        </Tada>
+      </Segment>
+    )
+  }
+
+  if ((R.not(isFeatureNotSelected)) && (R.any(R.isNil, [opacity]))) {
     return (
       <Segment basic style={{height: '100%'}} placeholder>
         <Tada forever duration={1000}>
@@ -85,6 +97,7 @@ const ScatterPlot = ({
     R.prop('label'),
     R.find(R.propEq('result', activeResult)),
   )(plots)
+
 
   // // add traces and opacity
   // useEffect(() => {
@@ -135,7 +148,8 @@ const ScatterPlot = ({
     <Header textAlign='center' content={currentScatterPlotType} />
       <Plot
         config={{showTips: false}}
-        data={scatter}
+        // data={opacity}
+        data={isFeatureNotSelected ? scatter : opacity}
         useResizeHandler
         style={{width: '100%', height:'90%'}}
         layout={{
