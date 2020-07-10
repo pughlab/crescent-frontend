@@ -49,10 +49,7 @@ class OpacityData(ObjectType):
     type = String()
     @staticmethod
     def resolve_type(parent, info):
-        if ("type" in parent):
-            return parent["type"]
-        else:
-            return "scatter"
+        return parent["type"]
 
 class Opacity(ObjectType):
     data = List(NonNull(OpacityData))
