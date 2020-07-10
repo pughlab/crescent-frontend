@@ -37,11 +37,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useScatter(vis, group, runID) {
-  const [scatter, setScatter] = useState(null)
+export default function useOpacity(vis, feature, group, runID) {
+  const [opacity, setOpacity] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query Scatter($vis: String, $group: String, $runID: ID) {
-      scatter(vis: $vis, group: $group, runID: $runID) {
+    query Opacity($vis: String, $feature: String, $group: String, $runID: ID) {
+      opacity(vis: $vis, feature: $feature, group: $group, runID: $runID) {
         data {
             name
             type
@@ -50,6 +50,7 @@ export default function useScatter(vis, group, runID) {
             x
             y
             marker {
+                opacity
                 color
             }
         }
@@ -58,16 +59,16 @@ export default function useScatter(vis, group, runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {vis, group, runID},
-    onCompleted: ({scatter}) => {
+    variables: {vis, feature, group, runID},
+    onCompleted: ({opacity}) => {
       R.compose(
-        setScatter,
+        setOpacity,
         R.map(R.evolve({mode: R.join('+')})),
         R.prop('data')
-      )(scatter)
+      )(opacity)
     }
   })
 
-  return scatter
+  return opacity
 }
 

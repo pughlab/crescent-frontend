@@ -21,6 +21,7 @@ import useQCScatterQuery from './useQCScatterQuery'
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
+import useOpacityQuery from './useOpacityQuery'
 import useSearchFeaturesQuery from './useSearchFeaturesQuery'
 import useViolinQuery from './useViolinQuery'
 import useCategoricalGroupsQuery from './useCategoricalGroupsQuery'
@@ -48,6 +49,7 @@ export {
   useQCViolinQuery,
   useQCScatterQuery,
   useScatterQuery,
+  useOpacityQuery,
   useAvailableGroupsQuery,
   useTopExpressedQuery,
   useSearchFeaturesQuery,
