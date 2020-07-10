@@ -65,8 +65,8 @@ export default function useViolin(feature, group, runID) {
     client,
     fetchPolicy: 'cache-and-network',
     variables: {feature, group, runID},
-    onCompleted: ({violin}) => {
-      setViolin(violin)
+    onCompleted: ({violin: {data}}) => {
+      setViolin(data)
     }
   })
 
