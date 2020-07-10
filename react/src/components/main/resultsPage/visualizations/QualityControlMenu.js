@@ -70,10 +70,10 @@ const QualityControlMenu = ({
   //   R.always(qcMetrics[1])
   // )(qcMetrics)
 
-  const availableQcArray = R.compose(
-    R.head,
-    R.values
-  )(availableQc)
+  // const availableQcArray = R.compose(
+  //   R.head,
+  //   R.values
+  // )(availableQc)
 
   // console.log(R.values(availableQcArray))
 
@@ -84,7 +84,7 @@ const QualityControlMenu = ({
       selection
       fluid
       labeled
-      options={availableQcArray}
+      options={availableQc}
       // options = {dropdown_plots}
 
       onChange={(e, {value}) => dispatch(setSelectedQC({value}))}

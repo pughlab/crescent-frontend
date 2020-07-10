@@ -49,13 +49,13 @@ const QCViolinPlot = ({
   // const qcScatterData = []
   // qcScatterData.push(qcScatter)
 
-  const qcViolinData = R.compose(
-    R.head,
-    R.values
-  )(qcViolin)
+  // const qcViolinData = R.compose(
+  //   R.head,
+  //   R.values
+  // )(qcViolin)
 
   // console.log(qcScatterData)
-  console.log(qcViolinData)
+  // console.log(qcViolinData)
 
   // const qcScatterData = R.compose(
   //   R.head,
@@ -99,7 +99,7 @@ const QCViolinPlot = ({
     <Header textAlign='center' content={R.isNil(selectedQC) ? '' : "Metrics Before and After QC (Violins)"} />
     <Plot
       config={{showTips: false}}
-      data={qcViolinData}
+      data={qcViolin}
       useResizeHandler
       style={{width: '100%', height:'90%'}}
       layout={{
@@ -109,16 +109,16 @@ const QCViolinPlot = ({
         showlegend: false,
         hovermode: 'closest',
         yaxis: {
-          range: [0, R.isNil(qcViolinData[0]) ? 1.1 : Math.max(...R.map(parseInt, qcViolinData[0]['y']))+1]
+          range: [0, R.isNil(qcViolin[0]) ? 1.1 : Math.max(...R.map(parseInt, qcViolin[0]['y']))+1]
         },
         yaxis2: {
-          range: [0, R.isNil(qcViolinData[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcViolinData[2]['y'])))+1]
+          range: [0, R.isNil(qcViolin[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcViolin[2]['y'])))+1]
         },
         yaxis3: {
-          range: [0, R.isNil(qcViolinData[4]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolinData[4]['y'])))+1]
+          range: [0, R.isNil(qcViolin[4]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolin[4]['y'])))+1]
         },
         yaxis4: {
-          range: [0, R.isNil(qcViolinData[6]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolinData[6]['y'])))+1]
+          range: [0, R.isNil(qcViolin[6]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolin[6]['y'])))+1]
         },
         annotations: [
           {

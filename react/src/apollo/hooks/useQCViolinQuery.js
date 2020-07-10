@@ -40,28 +40,26 @@ export default function useQCViolin(runID) {
   const {loading, data, error} = useQuery(gql`
     query QCViolin($runID: ID) {
       qcViolin(runID: $runID) {
-        data {
-          type
-          points
-          jitter
-          text
-          hoverinfo
-          meanline {
-            visible
-            color
-          }
-          x
-          y
-          marker {
-            opacity
-          }
-          pointpos
-          name
-          xaxis
-          yaxis
-          line {
-            color
-          }
+        type
+        points
+        jitter
+        text
+        hoverinfo
+        meanline {
+          visible
+          color
+        }
+        x
+        y
+        marker {
+          opacity
+        }
+        pointpos
+        name
+        xaxis
+        yaxis
+        line {
+          color
         }
       }
     }

@@ -42,16 +42,14 @@ export default function useScatter(vis, group, runID) {
   const {loading, data, error} = useQuery(gql`
     query Scatter($vis: String, $group: String, $runID: ID) {
       scatter(vis: $vis, group: $group, runID: $runID) {
-        data {
-            name
-            type
-            mode
-            text
-            x
-            y
-            marker {
-                color
-            }
+        name
+        type
+        mode
+        text
+        x
+        y
+        marker {
+            color
         }
       }
     }
@@ -63,7 +61,6 @@ export default function useScatter(vis, group, runID) {
       R.compose(
         setScatter,
         R.map(R.evolve({mode: R.join('+')})),
-        R.prop('data')
       )(scatter)
     }
   })

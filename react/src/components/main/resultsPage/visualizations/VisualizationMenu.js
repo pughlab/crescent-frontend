@@ -48,10 +48,10 @@ const VisualizationMenu = ({
   //   R.values
   // )(groups)
 
-  const topExpressedArray = R.compose(
-    R.head,
-    R.values
-  )(topExpressed)
+  // const topExpressedArray = R.compose(
+  //   R.head,
+  //   R.values
+  // )(topExpressed)
 
   // const searchArray = []
   // searchArray.push(search)
@@ -207,7 +207,7 @@ const VisualizationMenu = ({
       />
       <Divider horizontal content='Top Differentially Expressed Genes' />
       {
-        RA.isNotEmpty(topExpressedArray) &&
+        RA.isNotEmpty(topExpressed) &&
         <Segment basic
           style={{maxHeight: '28vh', overflowY: 'scroll'}}
         >
@@ -223,7 +223,7 @@ const VisualizationMenu = ({
              ),
               R.toPairs,
               R.groupBy(R.prop('cluster'))
-            )(topExpressedArray)
+            )(topExpressed)
           }
         </Segment>
       }

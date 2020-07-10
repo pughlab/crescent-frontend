@@ -40,11 +40,9 @@ export default function useQCAvailable(runID) {
   const {loading, data, error} = useQuery(gql`
     query QCAvailable($runID: ID) {
       availableQc(runID: $runID) {
-        data {
-          key
-          text
-          value
-        }
+        key
+        text
+        value
       }
     }
     `, {

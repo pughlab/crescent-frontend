@@ -42,31 +42,29 @@ export default function useViolin(feature, group, runID) {
   const {loading, data, error} = useQuery(gql`
     query Violin($feature: String, $group: String, $runID: ID) {
       violin(feature: $feature, group: $group, runID: $runID) {
-        data {
-          type
-          spanmode
-          fillcolor
-          line {
-            color
-          }
-          points
-          jitter
-          width
-          meanline {
-            visible
-          }
-          x
-          y
-          bandwidth
+        type
+        spanmode
+        fillcolor
+        line {
+          color
         }
+        points
+        jitter
+        width
+        meanline {
+          visible
+        }
+        x
+        y
+        bandwidth
       }
     }
     `, {
     client,
     fetchPolicy: 'cache-and-network',
     variables: {feature, group, runID},
-    onCompleted: ({violin: {data}}) => {
-      setViolin(data)
+    onCompleted: ({violin}) => {
+      setViolin(violin)
     }
   })
 

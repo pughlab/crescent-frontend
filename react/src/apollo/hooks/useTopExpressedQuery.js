@@ -40,12 +40,10 @@ export default function useTopExpressed(runID) {
   const {loading, data, error} = useQuery(gql`
     query TopExpressed($runID: ID) {
         topExpressed(runID: $runID) {
-            data {
-            gene
-            cluster
-            pVal
-            avgLogFc
-            }
+          gene
+          cluster
+          pVal
+          avgLogFc
         }
     }
     `, {

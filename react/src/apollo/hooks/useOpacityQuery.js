@@ -42,17 +42,15 @@ export default function useOpacity(vis, feature, group, runID) {
   const {loading, data, error} = useQuery(gql`
     query Opacity($vis: String, $feature: String, $group: String, $runID: ID) {
       opacity(vis: $vis, feature: $feature, group: $group, runID: $runID) {
-        data {
-            name
-            type
-            mode
-            text
-            x
-            y
-            marker {
-                opacity
-                color
-            }
+        name
+        type
+        mode
+        text
+        x
+        y
+        marker {
+            opacity
+            color
         }
       }
     }
@@ -64,7 +62,7 @@ export default function useOpacity(vis, feature, group, runID) {
       R.compose(
         setOpacity,
         R.map(R.evolve({mode: R.join('+')})),
-        R.prop('data')
+        // R.prop('data')
       )(opacity)
     }
   })
