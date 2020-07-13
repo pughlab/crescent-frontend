@@ -127,7 +127,7 @@ Note: features.tsv *MUST* by sorted for this to work
 }
 
 SCATTER
-
+Note: vis will automatically be capitalized
 {
   scatter(vis: "TSNE", group: "Seurat_Clusters_Resolution1", runID: "5eda76def93f82004f4114c6") {
     name

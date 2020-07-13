@@ -190,13 +190,13 @@ def get_coordinates(vis, path, minio_client):
     barcode_coords = {}
     
     coordinate_file = get_obj_as_2dlist(
-        path["bucket"], "{path}{vis}Coordinates.tsv".format(path=path["object"], vis=vis),
+        path["bucket"], "{path}{vis}Coordinates.tsv".format(path=path["object"], vis=vis.upper()),
         minio_client, include_header=False
     )
     for row in coordinate_file:
         barcode = row[0]
         if barcode in barcode_coords:
-            return_error("duplicate barcode entry in Bucket: frontend_coordinates, Object: {vis}Coordinates.tsv".format(vis=vis))
+            return_error("duplicate barcode entry in Bucket: frontend_coordinates, Object: {vis}Coordinates.tsv".format(vis=vis.upper()))
         else:
             barcode_coords[barcode] = [round(float(row[1]), 3), round(float(row[2]), 3)]
 
