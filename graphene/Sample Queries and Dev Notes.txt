@@ -29,12 +29,15 @@ GROUPS
 OPACITY
 
 {
-  opacity(feature: "Rb1cc1", group: "Seurat_Clusters_Resolution1", runID: "5eda76def93f82004f4114c6") {
+  opacity(vis: "tsne", feature: "Rb1cc1", group: "Seurat_Clusters_Resolution1", runID: "5eda76def93f82004f4114c6") {  
     name
+    mode
     text
+    x
+    y
     marker {
-      opacity
-      color
+        opacity
+        color
     }
   }
 }
@@ -120,7 +123,7 @@ SEARCH
 Note: features.tsv *MUST* by sorted for this to work
 
 {
-  search(query="Literally Anything", runID="5eda76def93f82004f4114c6") {
+  search(query:"Literally Anything", runID:"5eda76def93f82004f4114c6") {
     text
     value
   }

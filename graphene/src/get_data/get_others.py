@@ -170,8 +170,8 @@ def get_available_categorical_groups(runID):
         metadata_tsv = get_first_n_lines(2, paths["metadata"]["bucket"], paths["metadata"]["object"], minio_client)
         metadata_types = list(zip(metadata_tsv[0], metadata_tsv[1]))[1:]
         metadata_groups = [group for group, grouptype in metadata_types if grouptype == 'group']
-    
-    return {"groups": list(set(groups) | set(metadata_groups))}
+        return {"groups": list(set(groups) | set(metadata_groups))}
+    return {"groups": groups}
 
 def total_size(runID):
     minio_client = get_minio_client()
