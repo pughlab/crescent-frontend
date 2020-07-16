@@ -26,6 +26,19 @@ GROUPS
   groups(runID: "5eda76def93f82004f4114c6")
 }
 
+HEATMAP
+
+{
+  heatmap(runID: "5eda76def93f82004f4114c6") {
+    x
+    y
+    text
+    hoverinfo
+    z
+    type
+  }
+}
+
 OPACITY
 
 {
