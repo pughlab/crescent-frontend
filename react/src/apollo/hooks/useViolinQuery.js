@@ -42,6 +42,7 @@ export default function useViolin(feature, group, runID) {
   const {loading, data, error} = useQuery(gql`
     query Violin($feature: String, $group: String, $runID: ID) {
       violin(feature: $feature, group: $group, runID: $runID) {
+        name
         type
         spanmode
         fillcolor
