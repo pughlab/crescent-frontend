@@ -1,7 +1,23 @@
 {
-    "frontend_coordinates" : {
+    "after_filtering": {
         "bucket": "run-",
-        "object":"SEURAT/frontend_coordinates/"
+        "object": "SEURAT/frontend_qc/AfterFiltering.tsv"
+    },
+    "before_filtering": {
+        "bucket": "run-",
+        "object": "SEURAT/frontend_qc/BeforeFiltering.tsv"
+    },
+    "features": {
+        "bucket": "run-",
+        "object": "SEURAT/frontend_raw/features.tsv"
+    },
+    "enrichment_scores": {
+        "bucket": "run-",
+        "object": "GSVA/GSVA_RESULTS/crescent.GSVA_enrichment_scores.tsv"
+    },
+    "frontend_coordinates": {
+        "bucket": "run-",
+        "object": "SEURAT/frontend_coordinates/"
     },
     "groups": {
         "bucket": "run-",
@@ -15,28 +31,16 @@
         "prefix": "../minio/upload/run-",
         "suffix": "/SEURAT/frontend_normalized/normalized_counts.loom"
     },
-    "top_expressed": {
-        "bucket": "run-",
-        "object": "SEURAT/frontend_markers/TopTwoMarkersPerCluster.tsv"
-    },
     "qc_data": {
         "bucket": "run-",
         "object": "SEURAT/frontend_qc/qc_data.tsv"
-    },
-    "before_filtering": {
-        "bucket": "run-",
-        "object": "SEURAT/frontend_qc/BeforeFiltering.tsv"
-    },
-    "after_filtering": {
-        "bucket": "run-",
-        "object": "SEURAT/frontend_qc/AfterFiltering.tsv"
     },
     "qc_metrics": {
         "bucket": "run-",
         "object": "SEURAT/frontend_qc/qc_metrics.tsv"
     },
-    "features": {
+    "top_expressed": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_raw/features.tsv"
+        "object": "SEURAT/frontend_markers/TopTwoMarkersPerCluster.tsv"
     }
 }

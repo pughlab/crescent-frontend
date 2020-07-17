@@ -16,8 +16,10 @@ from get_data.get_others import (
     total_size
 )
 from get_data.search_features import run_search
+from get_data.get_heatmap import get_heatmap_data
 
 from schema.available_qc import AvailableQCPiece
+from schema.heatmap import Heatmap
 from schema.opacity import OpacityData
 from schema.plots import Plot
 from schema.qc_metrics import QCMetrics
@@ -48,6 +50,11 @@ class Query(ObjectType):
     @staticmethod
     def resolve_groups(parent, info, runID):
         return get_groups(runID)
+
+    heatmap = Field(Heatmap, runID=ID())
+    @staticmethod
+    def resolve_heatmap(parent, info, runID):
+        return get_heatmap_data(runID)
 
     opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID())
     @staticmethod
