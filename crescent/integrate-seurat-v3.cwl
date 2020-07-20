@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: /usr/src/app/crescent-v3.simg
+    dockerImageId: /usr/src/app/crescent-seurat-droplet-gsva.simg
 
 baseCommand: [Rscript]
 
@@ -24,7 +24,7 @@ inputs:
     type: string?
     inputBinding:
       position: 2
-      prefix: -k
+      prefix: -z
 
   resolution:
     type: float?
@@ -81,12 +81,21 @@ inputs:
       position: 11
       prefix: -w
 
-  minio_path:
-    type: Directory
+#  minio_path:
+#    inputBinding:
+#      position: 12
+#      prefix: -x
+#    type: 
+#      type: array
+#      items: Directory
+
+  minio_path:  
+    type: Directory[]
     inputBinding:
       position: 12
       prefix: -x
-
+      itemSeparator: ","
+      
   outs_dir:
     type: string
     default: N
