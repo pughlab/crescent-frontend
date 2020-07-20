@@ -12,6 +12,7 @@ import useOncotreeQuery from './useOncotreeQuery'
 
 import useUpdateRunParameterMutation from './useUpdateRunParameterMutation'
 import useTagDatasetMutation from './useTagDatasetMutation'
+import useSubmitRunMutation from './useSubmitRunMutation'
 
 import useResultsAvailableQuery from './useResultsAvailableQuery'
 import useQCAvailableQuery from './useQCAvailableQuery'
@@ -42,6 +43,7 @@ export {
 
   useUpdateRunParameterMutation,
   useTagDatasetMutation,
+  useSubmitRunMutation,
 
   useResultsAvailableQuery, 
   useQCAvailableQuery,
