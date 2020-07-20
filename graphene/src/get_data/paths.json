@@ -1,15 +1,15 @@
 {
     "after_filtering": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_qc/AfterFiltering.tsv"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_qc/AfterFiltering.tsv"
     },
     "before_filtering": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_qc/BeforeFiltering.tsv"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_qc/BeforeFiltering.tsv"
     },
     "features": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_raw/features.tsv"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_raw/features.tsv"
     },
     "enrichment_scores": {
         "bucket": "run-",
@@ -17,11 +17,11 @@
     },
     "frontend_coordinates": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_coordinates/"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_coordinates/"
     },
     "groups": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_groups/groups.tsv"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_groups/groups.tsv"
     },
     "metadata": {
         "bucket": "dataset-",
@@ -29,18 +29,18 @@
     },
     "normalised_counts": {
         "prefix": "../minio/upload/run-",
-        "suffix": "/SEURAT/frontend_normalized/normalized_counts.loom"
+        "suffix": "/SEURAT/CRESCENT_CLOUD/frontend_normalized/normalized_counts.loom"
     },
     "qc_data": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_qc/qc_data.tsv"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_qc/qc_data.tsv"
     },
     "qc_metrics": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_qc/qc_metrics.tsv"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_qc/qc_metrics.tsv"
     },
     "top_expressed": {
         "bucket": "run-",
-        "object": "SEURAT/frontend_markers/TopTwoMarkersPerCluster.tsv"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_markers/TopTwoMarkersPerCluster.tsv"
     }
 }
