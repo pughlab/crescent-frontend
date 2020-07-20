@@ -28,34 +28,64 @@ const makeCWLJobJSON = async (
 ) => {
   try {
     // Put files from project's dataset into system
-    const {params, datasetIDs} = await Run.findOne({runID})
+    // const {datasetIDs} = await Run.findOne({runID})
+    const run = await Run.findOne({runID})
+    const {datasetIDs, parameters} = run
+    // const datasetID 
+
+    // const {
+    //   // singleCell,
+    //   // numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+    //   // percentMito: {min: minPercentMito, max: maxPercentMito},
+    //   // datasetsQualityControl,
+    //   resolution,
+    //   principalDimensions,
+    //   normalizationMethod,
+    //   returnThreshold,
+    // } = params
+
     const {
-      // singleCell,
-      // numberGenes: {min: minNumberGenes, max: maxNumberGenes},
-      // percentMito: {min: minPercentMito, max: maxPercentMito},
-      datasetsQualityControl,
+      quality, 
+      normalization: {normalization_method}, 
+      reduction: {pca_dimensions}, 
+      clustering: {resolution}, 
+      expression: {return_threshold}
+    } = parameters
+
+    const seuratMultiSampleParameters = {
       resolution,
-      principalDimensions,
-      normalizationMethod,
-      returnThreshold,
-    } = params
+      project_id: 'crescent',
+      pca_dimensions,
+      normalization_method,
+      return_threshold,
+    }
+
     // Make datasets csv
     const datasets = R.compose(
 
       R.map(
-        ({datasetID, name}) => ({
-          name,
-          dataset_path: `/dataset-${datasetID.toString()}`,
-          experiment_type: 'type',
-          // add experiment_type here etc
-          ... R.prop(datasetID, datasetsQualityControl),
-          ribo_min: '0',
-          ribo_max: '0.75',
-          ngenes_min: '50',
-          ngenes_max: '8000',
-          nreads_min: '1',
-          nreads_max: '80000',
-        })
+        ({datasetID, name}) => { 
+          const {
+            sc_input_type,
+            percent_mito: {min: minPercentMito, max: maxPercentMito},
+            number_genes: {min: minNumberGenes, max: maxNumberGenes},
+          } = quality[datasetID]
+          return {
+            dataset_ID: `dataset-${datasetID.toString()}`,
+            name,
+            dataset_type: 'type',
+            dataset_format: sc_input_type,
+            // add experiment_type here etc
+            mito_min: minPercentMito,
+            mito_max: maxPercentMito,
+            ribo_min: '0',
+            ribo_max: '0.75',
+            ngenes_min: minNumberGenes,
+            ngenes_max: maxNumberGenes,
+            nreads_min: '1',
+            nreads_max: '80000',
+          }
+        }
       )
     )(
       await Dataset.find({datasetID: {$in: datasetIDs}})
@@ -90,39 +120,27 @@ const makeCWLJobJSON = async (
     } catch(error) {
       console.log('Error putting datasets.csv into bucket')
     }
+    const minioPath = '/usr/src/app/minio/upload/'
+    const cwlDatasetDirectoryInput = datasetID => ({class: 'Directory', path: `${minioPath}/dataset-${datasetID}`})
+    const minio_path = R.compose(R.map(cwlDatasetDirectoryInput), R.keys)(quality)
 
     // pipeline JSON config
     return {
       R_script: {
         class: 'File',
-        path: '/usr/src/app/crescent/integrates_datasets_with_seurat.R'
+        path: '/usr/src/app/crescent/Script/Runs_Seurat_v3_MultiDatasets.R'
       },
-
-      // DONT NEED FOR MERGED
-      // sc_input: {
-      //   class: 'Directory',
-      //   // path: `/usr/src/app/minio/download/${projectID}`
-      //   path: runDirFilePath
-
-      // },
-      // sc_input_type: singleCell, //'MTX', // change to singleCell eventually if supporting seurat v2
-      // percent_mito: `${minPercentMito},${maxPercentMito}`,
-      // number_genes: `${minNumberGenes},${maxNumberGenes}`
-
       sc_input: {
         class: 'File',
         path: `/usr/src/app/minio/upload/run-${runID}/datasets.csv`
       },
-      resolution,
-      project_id: 'crescent',
-      // summary_plots: 'n',
-      pca_dimensions: principalDimensions,
-      // normalization_method: normalizationMethod,
-      return_threshold: returnThreshold,
-      minio_path: {
-        class: 'Directory',
-        path: '/usr/src/app/minio/upload'
-      },
+      // minio_path: [
+      //   // {class: 'Directory', path: '/usr/src/app/minio/upload/dataset-5f11070c67691b0288e8fc3d'},
+      //   // {class: 'Directory', path: '/usr/src/app/minio/upload/dataset-5f11071d67691b0288e8fc40'},
+      //   {class: 'Directory', path: '/usr/src/app/minio/upload'},
+      // ],
+      minio_path,
+      ...seuratMultiSampleParameters,
     }
   } catch(error) {
     console.error('Make job json error', error)
@@ -141,16 +159,17 @@ const submitMergedCWL = async (
   console.log(jobJSON)
   const cwl = spawn(
     `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
-     mkdir /usr/src/app/results/${runID} && \
-     cd /usr/src/app/results/${runID} && \
+     cd /usr/src/app/minio/upload/run-${runID} && \
+     cp /usr/src/app/crescent/Script/Runs_Seurat_v3_MultiDatasets.R /usr/src/app/minio/upload/run-${runID} && \
      rm -f frontend_seurat_inputs.json && \
      echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
      toil-cwl-runner \
         --writeLogs \
-        /usr/src/app/results/${runID} \
+        /usr/src/app/minio/upload/run-${runID}  \
         --maxLogFileSize \
         0 \
         --singularity \
+        --debug \
         /usr/src/app/crescent/integrate-seurat-v3.cwl \
         frontend_seurat_inputs.json \ 
     `,
