@@ -17,10 +17,10 @@ const RunSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  params: {
-    type: String,
-    // required: true
-  },
+  // params: {
+  //   type: String,
+  //   // required: true
+  // },
   parameters: {
     type: mongoose.Schema.Types.Mixed,
     default: null

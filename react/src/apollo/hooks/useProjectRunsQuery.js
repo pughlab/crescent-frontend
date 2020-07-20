@@ -15,7 +15,7 @@ export default function useProjectRunsQuery(projectID) {
           name
         }
         name
-        params
+        # params
 
         parameters
         

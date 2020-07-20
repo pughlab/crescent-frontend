@@ -42,11 +42,11 @@ router.post(
   async (req, res) => {
     const {
       // params: {runID},
-      query: {name, params, runID}
+      query: {name, runID}
     } = req
     // // Parse and pass as object of parameters
-    const kwargs = JSON.parse(params)
-    submitCWL(kwargs, runID)
+    // const kwargs = JSON.parse(params)
+    submitCWL(runID)
     res.sendStatus(200)
   }
 );
@@ -56,9 +56,9 @@ router.post(
   '/runs/submitMerged',
   async (req, res) => {
     const {
-      query: {name, params, runID}
+      query: {name, runID}
     } = req
-    console.log(params, runID, name)
+    console.log(runID, name)
     // // Parse and pass as object of parameters
     // const kwargs = JSON.parse(params)
     submitMergedCWL(runID)

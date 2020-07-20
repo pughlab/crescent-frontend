@@ -8,7 +8,7 @@ const typeDefs = gql`
     createdOn: Date
     createdBy: User
     name: String
-    params: String
+    # params: String
     parameters: RunParameters
     projectID: ID
     project: Project
@@ -46,7 +46,7 @@ const typeDefs = gql`
 
     submitRun(
       runID: ID,
-      params: String
+      # params: String
     ): Run
 
     deleteRun(

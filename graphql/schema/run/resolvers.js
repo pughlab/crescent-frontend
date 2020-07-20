@@ -82,27 +82,28 @@ const resolvers = {
 
     // Determine how many datasets this run uses and submit
     // appropriate CWL job to Express (should be replaced by WES)
-    submitRun: async (parent, {runID, params}, {Runs}) => {
+    submitRun: async (parent, {runID}, {Runs}) => {
       try {
         const run = await Runs.findOne({runID})
         const {name, datasetIDs} = run
-        console.log('Submitting run', runID, params, datasetIDs)
-        run.params = params
-        // run.status = 'submitted'
+        console.log('Submitting run', runID, datasetIDs)
+        // run.params = params
+        run.status = 'submitted'
         await run.save()
         const lengthIsOne = R.compose(R.equals(1), R.length)
         if (lengthIsOne(datasetIDs)) {
           await axios.post(
             `/express/runs/submit`,
             {},
-            {params: {name, params, runID}}
+            // axios params 
+            {params: {name, runID}}
           )
         } else {
           await axios.post(
             `/express/runs/submitMerged`,
             {},
             // DatasetIDs can be parsed from the params object quality control field
-            {params: {name, params, runID}}
+            {params: {name, runID}}
           )
         }
         return run
