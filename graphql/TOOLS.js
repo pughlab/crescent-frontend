@@ -117,11 +117,11 @@ const TOOLS = {
           description: '"LogNormalize", "SCTransform", or "Skip Normalization" (Input MTX is already normalized). If "Skip Normalization" is used, data should be in log scale, low quality cells should already be removed, and option "No" should be selected in the Quality Control "Apply QC Filters" parameter. Default is "SCTransform". ',
           input: {
             type: 'select',
-            defaultValue: 'sc_transform',
+            defaultValue: '2',
             options: [
-              {key: 'log_normalize', value: 'log_normalize', text: 'LogNormalize'},
-              {key: 'sc_transform', value: 'sc_transform', text: 'SCTransform'},
-              {key: 'skip_normalization', value: 'skip_normalization', text: 'Skip Normalization (input already normalized)'},
+              {key: 'log_normalize', value: '1', text: 'LogNormalize'},
+              {key: 'sc_transform', value: '2', text: 'SCTransform'},
+              {key: 'skip_normalization', value: '3', text: 'Skip Normalization (input already normalized)'},
             ]
           },
           disabled: false
