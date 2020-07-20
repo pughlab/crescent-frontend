@@ -42,6 +42,12 @@
 ###   SMTR_res1.SEURAT_GlobalClustering_Rad_unknownt1_NonRad_TSNEPlot_ColourByCellClusters.pdf
 ###   When it should be:
 ###   SMTR_res1.SEURAT_GlobalClustering_Rad_unknown_TSNEPlot_ColourByCellClusters.pdf
+### 3) To program a loop to avoid an error when integrating very heretogeneous datasets--where few anchors are expected:
+###    Error in nn2(data = c(-0.0268782296438318, -0.0333332648557412, -0.032492403275445,  : 
+###       Cannot find more nearest neighbours than there are points
+###    To avoid this error one can modify `k.filter` from 200 (default) to lower values, e.g. `k.filter = 160` worked out for
+###    Pugh/dePerrot labe SMARTER datasets, where sample SMTR05t1_NonRad integrated vs. SMTR0[2-4] produced the above error
+###    Documented here: https://github.com/satijalab/seurat/issues/997
 ####################################
 
 ####################################
@@ -122,7 +128,7 @@ option_list <- list(
                 9) dataset minimum number of genes (e.g. '50')
                 10) dataset maximum number of genes (e.g. '8000')
                 11) dataset minimum number of reads (e.g. '1')
-                12) dataset minimum number of reads (e.g. '80000')
+                12) dataset maximum number of reads (e.g. '80000')
                 Default = 'No default. It's mandatory to specify this parameter'
 
                 Notes:
@@ -208,6 +214,12 @@ option_list <- list(
                 *PCElbowPlot.pdf, use the number of PC's where the elbow shows a plateau along the y-axes low numbers
                 Default = '10'"),
   #
+  make_option(c("-n", "--k_filter"), default="200",
+              help="Integrating highly heterogenous datasets can lead to a too small number of anchors,
+                resulting in an error 'Cannot find more nearest neighbours than there are points'
+                This can be avoided by using a -k_filter value smaller than the default (e.g. '150')
+                Default = '200'"),
+  #
   make_option(c("-e", "--return_threshold"), default="0.01",
               help="For each differentially expressed genes test returns only hits that have an UNcorrected p-value < return_thresh
                 Default = '0.01'"),
@@ -248,6 +260,10 @@ option_list <- list(
                 Note, if using 'y/Y' this supersedes option -o
                 Default = 'N'"),
   #
+  make_option(c("-x", "--minio_path"), default="NA",
+              help="Used with the 'run_cwl' option above for mounting input data files in 'inputs_list' to CWL containers. 
+                Default = 'NA'"),
+  #
   make_option(c("-a", "--max_global_variables"), default="4000",
               help="Indicates maximum allowed total size (in bytes) of global variables identified.
                 Used by library(future) to prevent too large exports
@@ -269,6 +285,7 @@ InfileMetadata          <- opt$infile_metadata
 InfileSelectedGenes     <- opt$infile_selected_genes
 ApplySelectedGenes      <- opt$apply_list_genes
 PcaDimsUse              <- c(1:as.numeric(opt$pca_dimensions))
+KFilter                 <- as.numeric(opt$k_filter)
 ThreshReturn            <- as.numeric(opt$return_threshold)
 DiffGeneExprComparisons <- opt$diff_gene_expr_comparisons
 MetadataColNamesForDge  <- opt$metadata_column_names_for_dge
@@ -276,6 +293,7 @@ NumbCores               <- opt$number_cores
 SaveRObject             <- opt$save_r_object
 RunsCwl                 <- opt$run_cwl
 MaxGlobalVariables      <- as.numeric(opt$max_global_variables)
+MinioPath               <- as.list(strsplit(opt$minio_path, ",")[[1]])
 
 ####################################
 ### Define outdirs and CWL parameters
@@ -506,6 +524,12 @@ if (7 %in% RequestedDiffGeneExprComparisons == T) {
 
 #### Metadata options
 
+if (length(grep('^NA$', InfileMetadata, perl = T))) {
+  writeLines("\nNo metadata will be used\n")
+}else{
+  CellPropertiesFromMetadata <- data.frame(read.table(InfileMetadata, header = T, row.names = 1, check.names = F))
+}
+
 if ((8 %in% RequestedDiffGeneExprComparisons == T) | 
     (9 %in% RequestedDiffGeneExprComparisons == T) | 
     (10 %in% RequestedDiffGeneExprComparisons == T) |
@@ -527,7 +551,6 @@ if ((8 %in% RequestedDiffGeneExprComparisons == T) |
   writeLines(paste0("\n*** Check that requested --metadata_column_names_for_dge exist in --infile_metadata ***\n"))
   
   MetadataColNamesForDge.list  = unlist(strsplit(MetadataColNamesForDge, ","))
-  CellPropertiesFromMetadata <- data.frame(read.table(InfileMetadata, header = T, row.names = 1, check.names = F))
   if (sum(MetadataColNamesForDge.list %in% colnames(CellPropertiesFromMetadata)) == length(MetadataColNamesForDge.list)) {
   writeLines("\nOk\n")
   }else{
@@ -561,10 +584,29 @@ if ((1 %in% RequestedApplySelectedGenes == T) |
 ####################################
 writeLines("\n*** Load --inputs_list ***\n")
 
-InputsList<-gsub("^~/",paste0(UserHomeDirectory,"/"), InputsList)
-InputsTable<-read.table(InputsList, header = F, row.names = 1, stringsAsFactors = F)
-colnames(InputsTable)<-c("PathToDataset","DatasetType","DatasetFormat","MinMitoFrac","MaxMitoFrac","MinRiboFrac","MaxRiboFrac","MinNGenes","MaxNGenes","MinNReads","MaxNReads")
+if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+  MinioDataPaths = data.frame(dataset_ID=rep(0, length(MinioPath)), dataset_path=rep(0, length(MinioPath)))
+  
+  for (i in seq_along(MinioPath)) {
+    MinioDataPaths[i, ] = c(basename(MinioPath[[i]]), MinioPath[[i]])
+  }
 
+  InputsTable0 <- read.table(InputsList, header = T, sep = ",", stringsAsFactors = F)
+  
+  MergedInputsTable <- merge(MinioDataPaths, InputsTable0, by="dataset_ID")
+  MergeFilter <- c("name", "dataset_path", "dataset_type", "dataset_format", "mito_min", "mito_max", "ribo_min", "ribo_max", "ngenes_min", "ngenes_max", "nreads_min", "nreads_max")
+  MergedInputsTableFiltered <- MergedInputsTable[MergeFilter]
+  MergedInputsTableFilteredFinal <- MergedInputsTableFiltered[,-1]
+  rownames(MergedInputsTableFilteredFinal) <- MergedInputsTableFiltered[,1]
+  colnames(MergedInputsTableFilteredFinal) <-c("PathToDataset","DatasetType","DatasetFormat","MinMitoFrac","MaxMitoFrac","MinRiboFrac","MaxRiboFrac","MinNGenes","MaxNGenes","MinNReads","MaxNReads")
+  
+  InputsTable <- MergedInputsTableFilteredFinal
+
+} else {
+  InputsList<-gsub("^~/",paste0(UserHomeDirectory,"/"), InputsList)
+  InputsTable<-read.table(InputsList, header = F, row.names = 1, stringsAsFactors = F)
+  colnames(InputsTable)<-c("PathToDataset","DatasetType","DatasetFormat","MinMitoFrac","MaxMitoFrac","MinRiboFrac","MaxRiboFrac","MinNGenes","MaxNGenes","MinNReads","MaxNReads")
+}
 ####################################
 ### Load scRNA-seq data and generate QC plots and tables
 ####################################
@@ -591,8 +633,12 @@ for (dataset in rownames(InputsTable)) {
   print(NumberOfDatasets)
   Dataset.SO <-paste0(dataset, ".so")
 
-  PathToDataset <- gsub("^~/",paste0(UserHomeDirectory,"/"), InputsTable[dataset,"PathToDataset"])
-  
+  if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+    PathToDataset <- InputsTable[dataset,"PathToDataset"]
+  } else {
+    PathToDataset <- gsub("^~/",paste0(UserHomeDirectory,"/"), InputsTable[dataset,"PathToDataset"])
+  }
+
   DatasetType   <- InputsTable[dataset,"DatasetType"]
 
   list_DatasetToType[[dataset]]      <- DatasetType
@@ -1139,11 +1185,11 @@ StopWatchStart$FindIntegrationAnchors  <- Sys.time()
 writeLines("\n*** Run FindIntegrationAnchors() ***\n")
 if (regexpr("^NA$", ReferenceDatasets , ignore.case = T)[1] == 1) {
   writeLines("\n*** No reference datasets will be used. Finding anchors in all-vs-all dataset pairwise comparisons ***\n")
-  seurat.object.anchors <- FindIntegrationAnchors(object.list = seurat.object.list, normalization.method = "SCT", anchor.features = seurat.object.integratedfeatures, verbose = T)
+  seurat.object.anchors <- FindIntegrationAnchors(object.list = seurat.object.list, k.filter = KFilter, normalization.method = "SCT", anchor.features = seurat.object.integratedfeatures, verbose = T)
 
 }else if (regexpr("[0-9]", ReferenceDatasets , ignore.case = T, perl = T)[1] == 1) {
   writeLines(paste0("\n*** Dataset number(s): ", ReferenceDatasets, " will be used as reference(s) ***\n"))
-  seurat.object.anchors <- FindIntegrationAnchors(object.list = seurat.object.list, normalization.method = "SCT", anchor.features = seurat.object.integratedfeatures, reference = c(as.numeric(unlist(strsplit(ReferenceDatasets, ",")))), verbose = T)
+  seurat.object.anchors <- FindIntegrationAnchors(object.list = seurat.object.list, k.filter = KFilter, normalization.method = "SCT", anchor.features = seurat.object.integratedfeatures, reference = c(as.numeric(unlist(strsplit(ReferenceDatasets, ",")))), verbose = T)
 
 }else{
   stop(paste0("Unexpected format in --reference_datasets ", ReferenceDatasets))
@@ -2953,41 +2999,46 @@ for (stepToClock in names(StopWatchStart)) {
 ####################################
 
 ### using two steps to copy files (`file.copy` and `file.remove`) instead of just `file.rename` to avoid issues with path to Tempdir in cluster systems
-
-sapply(FILE_TYPE_OUT_DIRECTORIES, FUN=function(DirName) {
-  TempdirWithData <- paste0(Tempdir, "/", DirName)
-  if (DirName == "SELECTED_GENE_DIMENSION_REDUCTION_PLOTS") {
-    sapply(list.dirs(TempdirWithData, full.names = F, recursive = F), FUN=function(SubDirName) {
-      sapply(list.dirs(paste0(TempdirWithData, "/", SubDirName), full.names = F, recursive = F), FUN=function(SubSubDirName) {
-        OutdirFinal <- gsub(pattern = Tempdir, replacement =  paste0(Outdir, "/", ProgramOutdir), x = paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName))
-        dir.create(file.path(OutdirFinal), showWarnings = F, recursive = T)
-        sapply(list.files(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName), pattern = ".pdf", full.names = F), FUN=function(EachFileName) {
-          file.copy(from=paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName), to=paste0(OutdirFinal, "/", EachFileName), overwrite=T)
-          file.remove(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName))
+if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+  writeLines("\n*** Keeping files at: ***\n")
+  writeLines(Tempdir)
+} else {
+  writeLines("\n*** Moving outfiles into outdir ***\n")
+  sapply(FILE_TYPE_OUT_DIRECTORIES, FUN=function(DirName) {
+    TempdirWithData <- paste0(Tempdir, "/", DirName)
+    if (DirName == "SELECTED_GENE_DIMENSION_REDUCTION_PLOTS") {
+      sapply(list.dirs(TempdirWithData, full.names = F, recursive = F), FUN=function(SubDirName) {
+        sapply(list.dirs(paste0(TempdirWithData, "/", SubDirName), full.names = F, recursive = F), FUN=function(SubSubDirName) {
+          OutdirFinal <- gsub(pattern = Tempdir, replacement =  paste0(Outdir, "/", ProgramOutdir), x = paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName))
+          dir.create(file.path(OutdirFinal), showWarnings = F, recursive = T)
+          sapply(list.files(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName), pattern = ".pdf", full.names = F), FUN=function(EachFileName) {
+            file.copy(from=paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName), to=paste0(OutdirFinal, "/", EachFileName), overwrite=T)
+            file.remove(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName))
+          })
         })
       })
-    })
-  }else if (DirName == "FILTERED_DATA_MATRICES" | DirName == "UNFILTERED_DATA_MATRICES") {
-    sapply(list.dirs(TempdirWithData, full.names = F, recursive = F), FUN=function(SubDirName) {
-      sapply(list.dirs(paste0(TempdirWithData, "/", SubDirName), full.names = F, recursive = F), FUN=function(SubSubDirName) {
-        OutdirFinal <- gsub(pattern = Tempdir, replacement =  paste0(Outdir, "/", ProgramOutdir), x = paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName))
-        dir.create(file.path(OutdirFinal), showWarnings = F, recursive = T)
-        sapply(list.files(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName), pattern = ".gz", full.names = F), FUN=function(EachFileName) {
-          file.copy(from=paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName), to=paste0(OutdirFinal, "/", EachFileName), overwrite=T)
-          file.remove(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName))
+    }else if (DirName == "FILTERED_DATA_MATRICES" | DirName == "UNFILTERED_DATA_MATRICES") {
+      sapply(list.dirs(TempdirWithData, full.names = F, recursive = F), FUN=function(SubDirName) {
+        sapply(list.dirs(paste0(TempdirWithData, "/", SubDirName), full.names = F, recursive = F), FUN=function(SubSubDirName) {
+          OutdirFinal <- gsub(pattern = Tempdir, replacement =  paste0(Outdir, "/", ProgramOutdir), x = paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName))
+          dir.create(file.path(OutdirFinal), showWarnings = F, recursive = T)
+          sapply(list.files(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName), pattern = ".gz", full.names = F), FUN=function(EachFileName) {
+            file.copy(from=paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName), to=paste0(OutdirFinal, "/", EachFileName), overwrite=T)
+            file.remove(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName))
+          })
         })
       })
-    })
-  }else{
-    OutdirFinal <- paste0(Outdir, "/", ProgramOutdir, "/", DirName)
-    print(OutdirFinal)
-    dir.create(file.path(OutdirFinal), showWarnings = F, recursive = T)
-    sapply(list.files(TempdirWithData, pattern = paste0("^", PrefixOutfiles, ".", ProgramOutdir), full.names = F), FUN=function(EachFileName) {
-      file.copy(from=paste0(TempdirWithData, "/", EachFileName), to=paste0(OutdirFinal, "/", EachFileName), overwrite=T)
-      file.remove(paste0(TempdirWithData, "/", EachFileName))
-    })
-  }
-})
+    }else{
+      OutdirFinal <- paste0(Outdir, "/", ProgramOutdir, "/", DirName)
+      print(OutdirFinal)
+      dir.create(file.path(OutdirFinal), showWarnings = F, recursive = T)
+      sapply(list.files(TempdirWithData, pattern = paste0("^", PrefixOutfiles, ".", ProgramOutdir), full.names = F), FUN=function(EachFileName) {
+        file.copy(from=paste0(TempdirWithData, "/", EachFileName), to=paste0(OutdirFinal, "/", EachFileName), overwrite=T)
+        file.remove(paste0(TempdirWithData, "/", EachFileName))
+      })
+    }
+  })
+}
 
 ####################################
 ### Turning warnings on
