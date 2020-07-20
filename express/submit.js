@@ -12,116 +12,152 @@ const minioClient = require('../database/minio-client');
 
 // Make object to write as CWL job JSON file
 const makeCWLJobJSON = async (
-  {
-    datasetsQualityControl,
-    resolution,
-    principalDimensions,
-    normalizationMethod,
-    applyCellFilters,
-    returnThreshold,
-  },
+  // {
+  //   datasetsQualityControl,
+  //   resolution,
+  //   principalDimensions,
+  //   normalizationMethod,
+  //   applyCellFilters,
+  //   returnThreshold,
+  // },
   runID,
 ) => {
   try {
-    const {
-      singleCell,
-      numberGenes: {min: minNumberGenes, max: maxNumberGenes},
-      percentMito: {min: minPercentMito, max: maxPercentMito},
-    } = R.compose(
-      R.head,
-      R.values
-    )(datasetsQualityControl)
+    // const {
+    //   singleCell,
+    //   numberGenes: {min: minNumberGenes, max: maxNumberGenes},
+    //   percentMito: {min: minPercentMito, max: maxPercentMito},
+    // } = R.compose(
+    //   R.head,
+    //   R.values
+    // )(datasetsQualityControl)
 
     // Put files from project's dataset into system
     const run = await Run.findOne({runID})
-    const {projectID} = run
-    const project = await Project.findOne({projectID})
-    const {datasetID} = project
-    const dataset = await Dataset.findOne({datasetID})
-    const {barcodesID, featuresID, matrixID} = dataset
+
+    // get parameters and destructure from run document 
+    const {datasetIDs, parameters} = run
+    const [datasetID] = datasetIDs 
+
+    const {
+      quality, 
+      normalization: {normalization_method}, 
+      reduction: {pca_dimensions}, 
+      clustering: {resolution}, 
+      expression: {return_threshold}
+    } = parameters
+
+    const {
+      sc_input_type,
+      percent_mito: {min: minPercentMito, max: maxPercentMito},
+      number_genes: {min: minNumberGenes, max: maxNumberGenes},
+    } = quality[datasetID]
+
+    const seuratSingleSampleParameters = {
+      sc_input_type, //'MTX', // change to singleCell eventually if supporting seurat v2
+      resolution,
+      project_id: 'crescent',
+      pca_dimensions,
+      normalization_method,
+      return_threshold,
+
+      // add to db schema later 
+      // apply_cell_filters: applyCellFilters,
+
+      percent_mito: `${minPercentMito},${maxPercentMito}`,
+      number_genes: `${minNumberGenes},${maxNumberGenes}`,
+      // percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
+    }
+
+    // const project = await Project.findOne({projectID})
+    // const {datasetID} = project
+    // const dataset = await Dataset.findOne({datasetID})
+    // const {barcodesID, featuresID, matrixID} = dataset
 
     // Run files path
-    const runDirFilePath = `/usr/src/app/minio/download/${runID}`
+    // const runDirFilePath = `/usr/src/app/minio/download/${runID}`
 
-    // Make project directory and put data files there
-    await fsp.mkdir(runDirFilePath)
-    const copyObjectToFile = async (uploadID, fileName) => {
-      await minioClient.fGetObject(
-        // From project bucket
-        `project-${projectID}`,
-        // with object name/ID
-        `${uploadID}`, 
-        // put into local file system for pipeline
-        R.join('/', [runDirFilePath, fileName])
-      )
-    }
-    await copyObjectToFile(barcodesID, 'barcodes.tsv.gz')
-    await copyObjectToFile(featuresID, 'features.tsv.gz')
-    await copyObjectToFile(matrixID, 'matrix.mtx.gz')
+    // // Make project directory and put data files there
+    // await fsp.mkdir(runDirFilePath)
+    // const copyObjectToFile = async (uploadID, fileName) => {
+    //   await minioClient.fGetObject(
+    //     // From datasets bucket
+    //     `dataset-${datasetID}`,
+    //     // with object name/ID
+    //     `${uploadID}`, 
+    //     // put into local file system for pipeline
+    //     R.join('/', [runDirFilePath, fileName])
+    //   )
+    // }
+    // await copyObjectToFile(barcodesID, 'barcodes.tsv.gz')
+    // await copyObjectToFile(featuresID, 'features.tsv.gz')
+    // await copyObjectToFile(matrixID, 'matrix.mtx.gz')
+
+    const datasetBucketPath = `/usr/src/app/minio/upload/dataset-${datasetID}`
 
     // pipeline JSON config
     return {
       R_script: {
         class: 'File',
-        path: 'Script/Runs_Seurat_v3.R' 
+        path: '/usr/src/app/crescent/Script/Runs_Seurat_v3_SingleDataset.R' 
       },
-      // sc_input: {
-      //   class: 'Directory',
-      //   // path: `/usr/src/app/minio/download/${projectID}`
-      //   // path: runDirFilePath
-      //    path: `minio/download/${runID}`
-      // },
-      R_dir: {
+      sc_input: {
         class: 'Directory',
-        path: 'Script'
+         path: datasetBucketPath
       },
-      sc_input_type: singleCell, //'MTX', // change to singleCell eventually if supporting seurat v2
-      resolution,
-      project_id: 'crescent',
-      summary_plots: 'n',
-      pca_dimensions: principalDimensions,
-      normalization_method: normalizationMethod,
-      return_threshold: returnThreshold,
-      apply_cell_filters: applyCellFilters,
-      // percent_mito: '0,0.2', // v2: 'Inf,0.05',
-      percent_mito: `${minPercentMito},${maxPercentMito}`,
-      // percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
-      // number_genes: '50,8000',
-      number_genes: `${minNumberGenes},${maxNumberGenes}`,
-      minioInputPath: `minio/project-${projectID}/inputs/`,
-      destinationPath: `minio/project-${projectID}/runs/${runID}`,
-      access_key: `crescent-access`,
-      secret_key: `crescent-secret`,
-      minio_domain: `host.docker.internal`,
-      minio_port: `9000`
+      // R_dir: {
+      //   class: 'Directory',
+      //   path: 'Script'
+      // },
+
+      ...seuratSingleSampleParameters,
+
+      // minioInputPath: `minio/project-${projectID}/inputs/`,
+      // destinationPath: `minio/project-${projectID}/runs/${runID}`,
+      // access_key: `crescent-access`,
+      // secret_key: `crescent-secret`,
+      // minio_domain: `host.docker.internal`,
+      // minio_port: `9000`
     }
   } catch(error) {
     console.error('Make job json error', error)
   }
 }
 
-
 // GETTING SINGULARITY IMAGE ERROR
 
 const submitCWL = async (
-  kwargs,
   runID
 ) => {
   const run = await Run.findOne({runID})
-  const jobJSON = await makeCWLJobJSON(kwargs, runID)
+  const jobJSON = await makeCWLJobJSON(runID)
   console.log(jobJSON)
   const cwl = spawn(
+    // `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
+    //  mkdir /usr/src/app/results/${runID} && \
+    //  cp /usr/src/app/crescent/Runs_Seurat_v3.R /usr/src/app/results/${runID} && \
+    //  cd /usr/src/app/results/${runID} && \
+    //  rm -f frontend_seurat_inputs.json && \
+    //  echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
+    //  python3 \
+    //     /usr/src/app/express/python/WesCall.py \
+    //     /usr/src/app/results/${runID} \
+    //     /usr/src/app/minio/download/${runID} \
+    // `,
     `export TMPDIR=/Users/smohanra/Desktop/crescentMockup/tmp && \
-     mkdir /usr/src/app/results/${runID} && \
-     cp /usr/src/app/crescent/Runs_Seurat_v3.R /usr/src/app/results/${runID} && \
-     cd /usr/src/app/results/${runID} && \
-     rm -f frontend_seurat_inputs.json && \
-     echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
-     python3 \
-        /usr/src/app/express/python/WesCall.py \
-        /usr/src/app/results/${runID} \
-        /usr/src/app/minio/download/${runID} \
-    `,
+    cd /usr/src/app/minio/upload/run-${runID} && \
+    cp /usr/src/app/crescent/Script/Runs_Seurat_v3_SingleDataset.R /usr/src/app/minio/upload/run-${runID} && \
+    rm -f frontend_seurat_inputs.json && \
+    echo '${JSON.stringify(jobJSON)}' >> frontend_seurat_inputs.json && \
+    toil-cwl-runner \
+       --writeLogs \
+       /usr/src/app/minio/upload/run-${runID}  \
+       --maxLogFileSize \
+       0 \
+       --singularity \
+       /usr/src/app/crescent/seurat-v3-non-wes.cwl \
+       frontend_seurat_inputs.json \ 
+   `,
       { 
         shell: true
       }
