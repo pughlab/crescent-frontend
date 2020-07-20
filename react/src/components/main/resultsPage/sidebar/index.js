@@ -16,8 +16,9 @@ import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 const SidebarComponent = ({
 
 }) => {
-  const {runID} = useCrescentContext()
+  const {userID: currentUserID, runID} = useCrescentContext()
   const run = useRunDetailsQuery(runID)
+
 
   const dispatch = useDispatch()
   const {activeSidebarTab} = useResultsPage()
@@ -26,8 +27,9 @@ const SidebarComponent = ({
   if (R.isNil(run)) {
     return null
   }
-  const {status: runStatus} = run
+  const {status: runStatus, createdBy: {userID: creatorUserID}} = run
   const disableResults = R.equals('pending', runStatus)
+  const enableSubmit = R.equals(currentUserID, creatorUserID)
   return (
     
     <Segment basic style={{padding: 0, display: 'flex', flexDirection: 'column'}}>
@@ -64,12 +66,12 @@ const SidebarComponent = ({
       <Segment attached='bottom'>
       {
         R.cond([
-          [R.equals('parameters'), R.always(<SubmitRunButton />)],
+          [R.compose(R.and(enableSubmit), R.equals('parameters')), R.always(<SubmitRunButton />)],
           [R.equals('visualizations'), R.always(
             // R.equals('submitted', runStatus) ? <RefreshRunButton /> : 
             <DownloadResultsButton />
-              
-          )]
+          )],
+          [R.T, R.always(null)]
         ])(activeSidebarTab)
       }
       </Segment>

@@ -44,11 +44,12 @@ const VisualizationsComponent = ({
     <>
     {
       R.equals('submitted', runStatus) ?
-        <Segment style={{height: '100%'}} placeholder>
-          <Tada forever duration={1000}>
-            <Image src={Logo} centered size='medium' />
-          </Tada>
-          <Header content='' textAlign='center' />  
+        <Segment style={{height: '100%'}} >
+          <Segment style={{height: '100%'}} basic placeholder>
+            <Tada forever duration={1000}>
+              <Image src={Logo} centered size='medium' />
+            </Tada>
+          </Segment>
         </Segment>
       :
       // ... otherwise visualize results
