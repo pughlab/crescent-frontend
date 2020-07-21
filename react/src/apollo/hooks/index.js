@@ -26,6 +26,8 @@ import useOpacityQuery from './useOpacityQuery'
 import useSearchFeaturesQuery from './useSearchFeaturesQuery'
 import useViolinQuery from './useViolinQuery'
 import useCategoricalGroupsQuery from './useCategoricalGroupsQuery'
+import useCellCountsQuery from './useCellCountsQuery'
+
 import useGraphene from './useGraphene'
 
 export {
@@ -57,6 +59,7 @@ export {
   useSearchFeaturesQuery,
   useViolinQuery,
   useCategoricalGroupsQuery,
+  useCellCountsQuery,
 
   useGraphene,
 }
