@@ -12,17 +12,20 @@ import moment from 'moment'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
 import {setRun} from '../../../../redux/actions/context'
-import {useRunDetailsQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery, useCellCountsQuery} from '../../../../apollo/hooks'
 
 const ParameterPopoverContent = ({
-  parameters
+  normalization,
+  reduction,
+  clustering,
+  expression
 }) => {
-  const {
-    normalization,
-    reduction,
-    clustering,
-    expression
-  } = parameters
+  // const {
+  //   normalization,
+  //   reduction,
+  //   clustering,
+  //   expression
+  // } = parameters
   const parameterValues = R.compose(
     // R.flatten,
     R.unnest,
@@ -57,13 +60,21 @@ const RunCard = ({
 
   const {
     runID, name,
-    parameters,
+    parameters: {
+      quality,
+      normalization,
+      reduction,
+      clustering,
+      expression
+    },
     createdBy: {
       userID: runCreatorUserID,
       name: creatorName
     },
     status, createdOn, submittedOn, completedOn
   } = run
+
+  const cellcount = useCellCountsQuery(runID)
 
   const color = R.prop(status, {
     pending: 'orange',
@@ -93,7 +104,7 @@ const RunCard = ({
           </Button>
         }
       >
-        <ParameterPopoverContent {...{parameters}} />
+        <ParameterPopoverContent {...{normalization,reduction,clustering,expression}} />
       </Popup>
 
       <Card.Content>
@@ -118,11 +129,12 @@ const RunCard = ({
             }
             {
               RA.isNotNil(submittedOn) &&
-                <Label content={<Icon style={{margin: 0}} name='file archive' />} detail='1'/>
+                <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(R.keys(quality))} dataset(s)`}/>
             }
             {
               RA.isNotNil(submittedOn) &&
-                <Label content={<Icon style={{margin: 0}} name='certificate' />} detail='1000'/>
+              RA.isNotNil(cellcount) &&
+                <Label content={<Icon style={{margin: 0}} name='certificate' />} detail={`${cellcount} cells`}/>
             }
           </Label.Group>
         </Card.Header>
