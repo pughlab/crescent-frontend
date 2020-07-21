@@ -56,9 +56,13 @@ const ProjectCard = ({
             }
             content={
               <>
-                <Segment>
-                  {description}
-                </Segment>
+                <Message size='mini'>
+                  <Message.Content>
+                    <Divider horizontal content='Details' />
+                    {description}
+                  </Message.Content>
+                </Message>
+                
               <Segment.Group>
                 <Segment>
                   <Label.Group>

@@ -44,7 +44,7 @@ const VisualizationsComponent = ({
     <>
     {
       R.equals('submitted', runStatus) ?
-        <Segment style={{height: '100%'}} >
+        <Segment style={{height: '100%'}} color='violet'>
           <Segment style={{height: '100%'}} basic placeholder>
             <Tada forever duration={1000}>
               <Image src={Logo} centered size='medium' />
@@ -56,7 +56,7 @@ const VisualizationsComponent = ({
         R.ifElse(
           R.isNil,
           R.always(
-            <Segment style={{height: '100%'}} placeholder>
+            <Segment style={{height: '100%'}} color='violet' placeholder>
               <Shake forever duration={10000}>
               <Header textAlign='center' icon>
                 <Icon name='right arrow' />
@@ -66,7 +66,7 @@ const VisualizationsComponent = ({
             </Segment>
           ),
           R.always(
-            <Segment style={{height: '100%'}}>
+            <Segment style={{height: '100%'}} color='violet'>
               {determinePlotType(activeResult)}
             </Segment>
           )

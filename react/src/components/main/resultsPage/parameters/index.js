@@ -27,7 +27,7 @@ const ParametersComponent = ({
   const {status: runStatus} = run
   if (R.isNil(activePipelineStep)) {
     return (
-      <Segment placeholder style={{height: '100%'}}>
+      <Segment placeholder style={{height: '100%'}} color='blue'>
         <Shake forever duration={10000}>
         <Header textAlign='center' icon>
           <Icon name='right arrow' />
