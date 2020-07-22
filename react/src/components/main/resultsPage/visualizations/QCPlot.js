@@ -10,28 +10,35 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useRunDatasetsQuery} from '../../../../apollo/hooks'
 
 import QCViolinPlot from './QCViolinPlot'
 import QCScatterPlot from './QCScatterPlot'
 
 const QCPlot = ({
 }) => { 
-
   const {runID} = useCrescentContext()
-  const dispatch = useDispatch()
   const {selectedQC} = useResultsPage()
   console.log(selectedQC)
 
+  const run = useRunDatasetsQuery(runID)
+  if (R.isNil(run)) {
+    return null
+  }
+
   return (
-  <Segment basic style={{height: '100%'}}>
+    <Segment basic style={{height: '100%'}}>
     {
-    R.ifElse(
-      R.equals('Before_After_Filtering'),
-      R.always(<QCViolinPlot/>),
-      R.always(<QCScatterPlot/>)
-    )(selectedQC)
+      R.equals(selectedQC, 'Before_After_Filtering') ?
+        R.compose(
+          R.map(datasetID => <QCViolinPlot key={datasetID} {...{runID, datasetID}} />),
+          R.pluck('datasetID'),
+          R.prop('datasets')
+        )(run)
+      :
+        <QCScatterPlot/>
     }
-  </Segment>
+    </Segment>
   )
 }
 
