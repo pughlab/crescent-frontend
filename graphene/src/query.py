@@ -31,10 +31,10 @@ from schema.top_expressed import TopExpression
 from schema.violin import ViolinData
 
 class Query(ObjectType):
-    available_qc = List(AvailableQCPiece, runID=ID())
+    available_qc = List(AvailableQCPiece, runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_available_qc(parent, info, runID):
-        return get_available_qc_data(runID)
+    def resolve_available_qc(parent, info, runID, datasetID):
+        return get_available_qc_data(runID, datasetID)
 
     categorical_groups = List(String, runID=ID())
     @staticmethod
@@ -85,15 +85,15 @@ class Query(ObjectType):
     def resolve_qc_metrics(parent, info, runID):
         return get_qc_metrics(runID)
     
-    qc_scatter = Field(QCScatter, qc_type=String(), runID=ID())
+    qc_scatter = Field(QCScatter, qc_type=String(), runID=ID()) # , datasetID=ID()
     @staticmethod
-    def resolve_qc_scatter(parent, info, qc_type, runID):
-        return get_qc_scatter_data(qc_type, runID)
+    def resolve_qc_scatter(parent, info, qc_type, runID): # , datasetID
+        return get_qc_scatter_data(qc_type, runID) # , datasetID
     
-    qc_violin = List(NonNull(QCViolinData), runID=ID())
+    qc_violin = List(NonNull(QCViolinData), runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_qc_violin(parent, info, runID):
-        return get_qc_violin_data(runID)
+    def resolve_qc_violin(parent, info, runID, datasetID):
+        return get_qc_violin_data(runID, datasetID)
 
     search = List(SearchResult, query=String(), runID=ID())
     @staticmethod

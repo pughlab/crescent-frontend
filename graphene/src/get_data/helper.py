@@ -86,23 +86,33 @@ def sort_traces(trace_objects):
     else:
         trace_objects.sort(key=lambda i: i['name'])
 
-def set_IDs(paths, runID, keys, setDatasetID=False):
+def set_name(paths, datasetID, keys):
     client = get_mongo_client()
     db = client['crescent']
-    runs = db['runs']
+    datasets = db['datasets']
+    name = datasets.find_one({'datasetID': ObjectId(datasetID)})['name']
+    for key in keys:
+        paths[key]["object"] =  paths[key]["object"]["prefix"] + name + paths[key]["object"]["suffix"]
+    return paths
+
+def set_IDs(paths, runID, keys, findDatasetID=False):
     paths_required = {}
 
-    if setDatasetID:
+    if findDatasetID:
         # Currently set to getting the first dataset associated with run. Basically assumes there is only 1 dataset
+        client = get_mongo_client()
+        db = client['crescent']
+        runs = db['runs']
+
         run_metadata = runs.find_one({'runID': ObjectId(runID)}) # Find run's metadata from runID
         datasetID = str(
             run_metadata
             ['datasetIDs'] # Get datasetIDs
             [0] # Get the first one
         ) # Get a string from the returned ObjectID
+        datasetid_pattern = re.compile(r"(?P<pre>.*)(?P<run>dataset-)(?P<post>.*)")
 
     runid_pattern = re.compile(r"(?P<pre>.*)(?P<run>run-)(?P<post>.*)")
-    datasetid_pattern = re.compile(r"(?P<pre>.*)(?P<run>dataset-)(?P<post>.*)")
 
     for key in keys:
         if ("bucket" in paths[key]):
@@ -111,7 +121,7 @@ def set_IDs(paths, runID, keys, setDatasetID=False):
                 groups = match.groupdict()
                 paths[key]["bucket"] = "{0}run-{1}{2}".format(groups["pre"], runID, groups["post"])
                 paths_required[key] = paths[key]
-            elif setDatasetID:
+            elif findDatasetID:
                 match = datasetid_pattern.match(paths[key]["bucket"])
                 if match is not None:
                     groups = match.groupdict()

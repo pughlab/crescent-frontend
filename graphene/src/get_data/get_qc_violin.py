@@ -4,7 +4,7 @@ import json
 from copy import deepcopy
 
 from get_data.get_client import get_minio_client
-from get_data.helper import COLOURS, return_error, set_IDs
+from get_data.helper import COLOURS, return_error, set_IDs, set_name
 from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
 
 DEFAULT_VIOLIN = {
@@ -48,12 +48,14 @@ def intialize_traces(header):
 
     return result
 
-def get_qc_violin_data(runID):
+def get_qc_violin_data(runID, datasetID):
     """ before/after filtering is chosen plot"""
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
     paths = set_IDs(paths, runID, ["before_filtering", "after_filtering"])
+    paths = set_name(paths, datasetID, ["before_filtering", "after_filtering"])
+
     qc_files = ["before_filtering", "after_filtering"]
 
     minio_client = get_minio_client()

@@ -4,10 +4,10 @@ import json
 
 from get_data.get_client import get_minio_client
 from get_data.get_scatter import get_coordinates, label_with_groups
-from get_data.helper import return_error, set_IDs
+from get_data.helper import return_error, set_IDs #, set_name
 from get_data.minio_functions import count_lines, get_obj_as_2dlist, object_exists
 
-def get_qc_scatter_data(qc_type, runID):
+def get_qc_scatter_data(qc_type, runID): # , datasetID
     """ scatter plot labelled with tsv of chosen type """
     if qc_type not in ['Number_of_Genes','Number_of_Reads','Mitochondrial_Genes_Percentage','Ribosomal_Protein_Genes_Percentage']:
         return_error(str(qc_type)+ " is not a valid option")
@@ -16,6 +16,7 @@ def get_qc_scatter_data(qc_type, runID):
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
     paths = set_IDs(paths, runID, ["frontend_coordinates", "groups", "qc_data"])
+    # paths= set_name(paths, datasetID, ["qc_data"])
 
     minio_client = get_minio_client()
 

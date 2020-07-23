@@ -1,11 +1,17 @@
 {
     "after_filtering": {
         "bucket": "run-",
-        "object": "SEURAT/CRESCENT_CLOUD/frontend_qc/AfterFiltering.tsv"
+        "object": {
+            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_qc/",
+            "suffix": "_AfterFiltering.tsv"
+        }
     },
     "before_filtering": {
         "bucket": "run-",
-        "object": "SEURAT/CRESCENT_CLOUD/frontend_qc/BeforeFiltering.tsv"
+        "object": {
+            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_qc/",
+            "suffix": "_BeforeFiltering.tsv"
+        }
     },
     "features": {
         "bucket": "run-",
@@ -37,7 +43,10 @@
     },
     "qc_metrics": {
         "bucket": "run-",
-        "object": "SEURAT/CRESCENT_CLOUD/frontend_qc/qc_metrics.tsv"
+        "object": {
+            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_qc/",
+            "suffix": "_qc_metrics.tsv"
+        }
     },
     "top_expressed": {
         "bucket": "run-",

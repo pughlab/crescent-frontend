@@ -11,13 +11,13 @@ from get_data.minio_functions import (
     get_size,
     object_exists
 )
-from get_data.helper import return_error, set_IDs
+from get_data.helper import return_error, set_IDs, set_name
 
-def get_paths(runID, keys, setDatasetID=False):
+def get_paths(runID, keys, findDatasetID=False):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    return set_IDs(paths, runID, keys, setDatasetID=setDatasetID)
+    return set_IDs(paths, runID, keys, findDatasetID=findDatasetID)
 
 def get_top_expressed_data(runID):
     """ given a runID get the top 10 expressed genes + their avg log fold change and p-value """
@@ -50,13 +50,14 @@ def get_top_expressed_data(runID):
 
     return result 
 
-def get_available_qc_data(runID):
+def get_available_qc_data(runID, datasetID):
     dropdown_plots = {}
     with open('get_data/dropdown_plots.json') as dropdown_plots_file:#TO:DO add get_data
         dropdown_plots = json.load(dropdown_plots_file)
     
     minio_client = get_minio_client()
     paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_data"])
+    paths = set_name(paths, datasetID, ["before_filtering", "after_filtering"]) # "qc_data"
 
     available_plots = []
     # if both before and after tsv files exist, can show filtering
@@ -77,7 +78,7 @@ def get_available_qc_data(runID):
 def get_groups(runID):
     """ given a runID, fetches the available groups to label cell barcodes by """
     minio_client = get_minio_client()
-    paths = get_paths(runID, ["groups", "metadata"], setDatasetID=True)
+    paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
     groups = paths["groups"]
     metadata = paths["metadata"]
 
@@ -134,6 +135,7 @@ def get_plots(runID):
 def get_qc_metrics(runID):
     minio_client = get_minio_client()
     paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_metrics"])
+    paths= set_name(paths, datasetID, ["before_filtering", "after_filtering", "qc_metrics"])
 
     metrics = {
         "cellcounts": {
@@ -160,7 +162,7 @@ def get_qc_metrics(runID):
 def get_available_categorical_groups(runID):
     """ given a runID, fetches the available groups (of non-numeric type) to label cell barcodes by """
     minio_client = get_minio_client()
-    paths = get_paths(runID, ["groups", "metadata"], setDatasetID=True)
+    paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
 
     groups_tsv = get_first_n_lines(2, paths["groups"]["bucket"], paths["groups"]["object"], minio_client)
     group_types = list(zip(groups_tsv[0], groups_tsv[1]))[1:]

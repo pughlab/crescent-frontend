@@ -153,7 +153,7 @@ def get_opacity_data(feature, group, runID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], setDatasetID=True)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True)
 
     minio_client = get_minio_client()
     
