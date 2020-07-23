@@ -80,10 +80,10 @@ class Query(ObjectType):
     def resolve_plots(parent, info, runID):
         return get_plots(runID)
 
-    qc_metrics = Field(QCMetrics, runID=ID())
+    qc_metrics = Field(QCMetrics, runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_qc_metrics(parent, info, runID):
-        return get_qc_metrics(runID)
+    def resolve_qc_metrics(parent, info, runID, datasetID):
+        return get_qc_metrics(runID, datasetID)
     
     qc_scatter = Field(QCScatter, qc_type=String(), runID=ID()) # , datasetID=ID()
     @staticmethod

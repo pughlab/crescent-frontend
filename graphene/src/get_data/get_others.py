@@ -132,7 +132,7 @@ def get_plots(runID):
 
     return available_plots_with_data
 
-def get_qc_metrics(runID):
+def get_qc_metrics(runID, datasetID):
     minio_client = get_minio_client()
     paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_metrics"])
     paths= set_name(paths, datasetID, ["before_filtering", "after_filtering", "qc_metrics"])
