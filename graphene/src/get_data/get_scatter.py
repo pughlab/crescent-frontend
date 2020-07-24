@@ -202,7 +202,7 @@ def get_coordinates(vis, path, minio_client):
 
     return barcode_coords
 
-def get_scatter_data(vis, group, runID, datasetID):
+def get_scatter_data(vis, group, runID):
     """ given a vistype grouping, and runID: returns the plotly object """
     paths = {}
     with open('get_data/paths.json') as paths_file:
