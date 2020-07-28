@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Loader, Segment, Header, Icon } from 'semantic-ui-react'
+import { Loader, Segment, Header, Icon, Grid } from 'semantic-ui-react'
 
 import {ClimbingBoxLoader} from 'react-spinners'
 
@@ -26,19 +26,26 @@ const QCPlot = ({
     return null
   }
 
+  const isSingleSample = R.compose(R.equals(1), R.length, R.prop('datasets'))(run)
+
   return (
-    <Segment basic style={{height: '100%'}}>
+
+    <Grid columns={isSingleSample ? 1 : 2}> 
     {
-      R.equals(selectedQC, 'Before_After_Filtering') ?
-        R.compose(
-          R.map(datasetID => <QCViolinPlot key={datasetID} {...{runID, datasetID}} />),
-          R.pluck('datasetID'),
-          R.prop('datasets')
-        )(run)
-      :
-        <QCScatterPlot/>
+      R.compose(
+        R.map(datasetID => 
+          <Grid.Column>
+            {
+            R.equals(selectedQC, 'Before_After_Filtering') ? 
+              <QCViolinPlot {...{runID, datasetID}} /> : <QCScatterPlot {...{runID, datasetID}} />
+            }       
+          </Grid.Column>
+        ),
+        R.pluck('datasetID'),
+        R.prop('datasets')
+      )(run)
     }
-    </Segment>
+    </Grid>
   )
 }
 
