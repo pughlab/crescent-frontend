@@ -27,9 +27,17 @@ const VisualizationsSidebar = ({
   if (R.any(R.isNil, [run, plots])) {
     return null
   }
-  const {status: runStatus} = run
+  const {status: runStatus, datasets} = run
+
+  // SINGLE DATASET QC METRICS/QC AVAILABLE UNTIL SIDE MENU REFACTOR!
+  const datasetID = R.compose(R.prop(0), R.pluck('datasetID'))(datasets)
+  console.log('datsetID', datasetID)
+
+  // const {} = run
   // console.log('run status:')
   // console.log(runStatus)
+
+  console.log('DATASETS: ', datasets)
 
 
   return (
@@ -96,7 +104,7 @@ const VisualizationsSidebar = ({
                 {
                 R.ifElse(
                   R.equals('qc'),
-                  R.always(<QualityControlMenu/>),
+                  R.always(<QualityControlMenu {...{runID, datasetID}} />),
                   R.always(<VisualizationMenu/>)
                 )(activeResult)
                 }
