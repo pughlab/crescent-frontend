@@ -8,19 +8,23 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useQCAvailableQuery, useQCMetricsQuery} from '../../../../apollo/hooks'
+import {useRunDatasetsQuery, useQCAvailableQuery, useQCMetricsQuery} from '../../../../apollo/hooks'
 import {setSelectedQC} from '../../../../redux/actions/resultsPage'
 
 const QualityControlMenu = ({
+  runID,
+  datasetID
 }) => {    
-  const {runID} = useCrescentContext()
+  // const {runID} = useCrescentContext()
 
   const dispatch = useDispatch()
   const {selectedQC} = useResultsPage()
   // const isActiveResult = R.equals(activeResult)
 
-  const availableQc = useQCAvailableQuery(runID)
-  const qcMetrics = useQCMetricsQuery(runID)
+  // const run = useRunDatasetsQuery(runID)
+
+  const availableQc = useQCAvailableQuery({runID, datasetID})
+  const qcMetrics = useQCMetricsQuery({runID, datasetID})
 
   if (R.any(R.isNil, [availableQc, qcMetrics])) {
     return null
@@ -28,7 +32,6 @@ const QualityControlMenu = ({
 
   const {cellcounts: cellcounts} = qcMetrics
   const {qcSteps: qcSteps} = qcMetrics
-
 
 
   // const [AvailableQCPlots, setAvailableQCPlots] = useState([])

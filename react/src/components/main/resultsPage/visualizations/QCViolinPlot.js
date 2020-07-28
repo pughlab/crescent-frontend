@@ -15,15 +15,19 @@ import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useQCViolinQuery} from '../../../../apollo/hooks'
 
 const QCViolinPlot = ({
+  runID,
+  datasetID
 }) => { 
 
-  const {runID} = useCrescentContext()
-  const dispatch = useDispatch()
+  // const {runID} = useCrescentContext()
+  // const dispatch = useDispatch()
+
   const {selectedQC} = useResultsPage()
   console.log(selectedQC)
 
   // const qcType = "Number_of_Genes"
-  const qcViolin = useQCViolinQuery(runID)
+  const qcViolin = useQCViolinQuery({runID, datasetID})
+
   // const qcScatter = useQCScatterQuery(selectedQC, runID)
   // console.log(qcScatter)
 
