@@ -35,11 +35,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useQCViolin(runID) {
+export default function useQCViolin({runID, datasetID}) {
   const [qcViolin, setQCViolin] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query QCViolin($runID: ID) {
-      qcViolin(runID: $runID) {
+    query QCViolin($runID: ID, $datasetID: ID) {
+      qcViolin(runID: $runID, datasetID: $datasetID) {
         type
         points
         jitter
@@ -66,7 +66,7 @@ export default function useQCViolin(runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID},
+    variables: {runID, datasetID},
     onCompleted: ({qcViolin}) => {
       setQCViolin(qcViolin)
     }

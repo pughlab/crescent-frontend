@@ -35,11 +35,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useQCMetrics(runID) {
+export default function useQCMetrics({runID, datasetID}) {
   const [qcMetrics, setQCMetrics] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query QCMetrics($runID: ID) {
-      qcMetrics(runID: $runID) {
+    query QCMetrics($runID: ID, $datasetID: ID) {
+      qcMetrics(runID: $runID, datasetID: $datasetID) {
         cellcounts {
           Before
           After
@@ -55,7 +55,7 @@ export default function useQCMetrics(runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID},
+    variables: {runID, datasetID},
     onCompleted: ({qcMetrics}) => {
       setQCMetrics(qcMetrics)
     }

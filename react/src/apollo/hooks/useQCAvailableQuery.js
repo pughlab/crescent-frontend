@@ -35,11 +35,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useQCAvailable(runID) {
+export default function useQCAvailable({runID, datasetID}) {
   const [availableQc, setAvailableQC] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query QCAvailable($runID: ID) {
-      availableQc(runID: $runID) {
+    query QCAvailable($runID: ID, $datasetID: ID) {
+      availableQc(runID: $runID, datasetID: $datasetID) {
         key
         text
         value
@@ -48,7 +48,7 @@ export default function useQCAvailable(runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID},
+    variables: {runID, datasetID},
     onCompleted: ({availableQc}) => {
       setAvailableQC(availableQc)
     }
