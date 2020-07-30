@@ -9,6 +9,7 @@ import useToolStepsQuery from './useToolStepsQuery'
 import useToolParameterQuery from './useToolParameterQuery'
 import useRunDatasetsQuery from './useRunDatasetsQuery'
 import useOncotreeQuery from './useOncotreeQuery'
+import useOncotreeSunburstQuery from './useOncotreeSunburstQuery'
 
 import useUpdateRunParameterMutation from './useUpdateRunParameterMutation'
 import useTagDatasetMutation from './useTagDatasetMutation'
@@ -42,6 +43,7 @@ export {
   useToolParameterQuery,
   useRunDatasetsQuery,
   useOncotreeQuery,
+  useOncotreeSunburstQuery,
 
   useUpdateRunParameterMutation,
   useTagDatasetMutation,

@@ -1,12 +1,16 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useReducer} from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition} from 'semantic-ui-react'
+import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition, Form} from 'semantic-ui-react'
+
+import {Sunburst} from 'react-vis'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {useProjectDetailsQuery, useOncotreeQuery, useTagDatasetMutation} from '../../../apollo/hooks'
-import {useCrescentContext} from '../../../redux/hooks'
+import {useProjectDetailsQuery, useOncotreeQuery, useOncotreeSunburstQuery, useTagDatasetMutation} from '../../../../apollo/hooks'
+import {useCrescentContext} from '../../../../redux/hooks'
+
+import OncotreeSunburst from './OncotreeSunburst'
 
 const TagOncotreeModal = ({
   datasetID,
@@ -22,6 +26,7 @@ const TagOncotreeModal = ({
   const {name, cancerTag, oncotreeCode, hasMetadata} = dataset
   return (
     <Modal
+      size='large'
       trigger={
         <Label as={Button}>
           {name}
@@ -74,12 +79,15 @@ const TagOncotreeModal = ({
             onChange={(e, {value}) => tagDataset({variables: {cancerTag, oncotreeCode: value}})}
           />
       </Modal.Content>
+      <Modal.Content>
+        <OncotreeSunburst />
+      </Modal.Content>
     </Modal>
   )
 }
 
-const UploadedDatasetsDetails = ({
-}) => {
+export default function UploadedDatasetsDetails ({
+}) {
   const {userID: currentUserID, projectID} = useCrescentContext()
   const project = useProjectDetailsQuery(projectID)
   if (R.isNil(project)) {
@@ -106,5 +114,3 @@ const UploadedDatasetsDetails = ({
     </Segment>
   )
 }
-
-export default UploadedDatasetsDetails
