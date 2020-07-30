@@ -15,6 +15,11 @@ const resolvers = {
       return {
         version
       }
+    },
+    oncotreeRawJSON: async (parent, variables, context) => {
+      const requestURL = `http://oncotree.mskcc.org/api/tumorTypes/tree`
+      const {data: tree} = await axios.get(requestURL)
+      return tree
     }
   },
   Mutation: {

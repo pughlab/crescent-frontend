@@ -3,6 +3,7 @@ const { gql } = require('apollo-server')
 // TYPE DEFINITIONS define the "shape" of your data and specify
 // which ways the data can be fetched from the GraphQL server.
 const typeDefs = gql`
+  scalar OncotreeRawJSON
   scalar OncotreeCode
 
   type OncotreeTumourType {
@@ -25,6 +26,7 @@ const typeDefs = gql`
 
   type Query {
     oncotree: Oncotree
+    oncotreeRawJSON: OncotreeRawJSON
   }
 
 `
