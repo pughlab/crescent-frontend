@@ -7,7 +7,8 @@ import * as RA from 'ramda-adjunct'
 
 import UHN from './UHN.png'
 import SK from './SK.png'
-import GC from './GC.jpeg'
+import GC from './GC.png'
+import OG from './OG.png'
 import MBD from './MBD.jpg'
 
 const InfoModal = ({
@@ -64,7 +65,7 @@ const InfoModal = ({
           <Segment>
             <Header content='Supported By'/>
             <Grid>
-              <Grid.Row columns={4}>
+              <Grid.Row columns={5}>
                 <Grid.Column>
                   <Image src={UHN}/>
                 </Grid.Column>
@@ -73,6 +74,9 @@ const InfoModal = ({
                 </Grid.Column>
                 <Grid.Column>
                   <Image src={GC}/> 
+                </Grid.Column>
+                <Grid.Column>
+                  <Image src={OG}/>
                 </Grid.Column>
                 <Grid.Column>
                   <Image src={MBD}/>
