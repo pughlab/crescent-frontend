@@ -30,18 +30,19 @@ const QCPlot = ({
 
   return (
 
-    <Grid columns={isSingleSample ? 1 : 2}> 
+    <Grid style={isSingleSample ? {height: '100%'} : {height: '100%', overflowY: 'scroll'}} divided='vertically'> 
     {
       R.compose(
-        R.map(datasetID => 
-          <Grid.Column>
-            {
-            R.equals(selectedQC, 'Before_After_Filtering') ? 
-              <QCViolinPlot {...{runID, datasetID}} /> : <QCScatterPlot {...{runID, datasetID}} />
-            }       
-          </Grid.Column>
+        R.map(({datasetID, name}) => 
+          <Grid.Row style={isSingleSample ? {height: '100%'} : {height: '50%'}} key={datasetID}>
+            <Grid.Column >
+              {
+              R.equals(selectedQC, 'Before_After_Filtering') ? 
+                <QCViolinPlot {...{runID, datasetID, name}} /> : <QCScatterPlot {...{runID, datasetID}} />
+              }       
+            </Grid.Column>
+          </Grid.Row>
         ),
-        R.pluck('datasetID'),
         R.prop('datasets')
       )(run)
     }

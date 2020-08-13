@@ -16,7 +16,8 @@ import {useQCViolinQuery} from '../../../../apollo/hooks'
 
 const QCViolinPlot = ({
   runID,
-  datasetID
+  datasetID,
+  name
 }) => { 
 
   // const {runID} = useCrescentContext()
@@ -100,7 +101,7 @@ const QCViolinPlot = ({
     //   </Segment>
     // :
     <>
-    <Header textAlign='center' content={R.isNil(selectedQC) ? '' : "Metrics Before and After QC (Violins)"} />
+    <Header textAlign='center' content={R.isNil(selectedQC) ? '' : `Metrics Before and After QC (Violins) for ${name}`} />
     <Plot
       config={{showTips: false}}
       data={qcViolin}
