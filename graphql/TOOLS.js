@@ -33,7 +33,9 @@ const TOOLS = {
               {key: 'dge', value: 'DGE', text: 'DGE'},
             ]
           },
-          disabled: true
+          disabled: true,
+          singleDataset: true,
+          multiDataset: true,
         },
         // {
         //   step: 'quality',
@@ -62,21 +64,25 @@ const TOOLS = {
             step: 0.1,
             defaultValue: {min: 0, max: 0.2},
           },
-          disabled: false
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
         },
-        // {
-        //   step: 'quality',
-        //   parameter: 'percent_ribo',
-        //   label: 'Ribosomal Protein Genes Fraction',
-        //   prompt: 'Specify range of ribosomal protein genes fraction',
-        //   description: 'The minimum and maximum fraction (between 0 and 1) of ribosomal protein gene counts in a cell to be included in normalization and clustering analyses.',
-        //   input: {
-        //     type: 'range',
-        //     step: 0.05,
-        //     defaultValue: {min: 0, max: 0.75},
-        //   },
-        //   disabled: false
-        // },
+        {
+          step: 'quality',
+          parameter: 'percent_ribo',
+          label: 'Ribosomal Protein Genes Fraction',
+          prompt: 'Specify range of ribosomal protein genes fraction',
+          description: 'The minimum and maximum fraction (between 0 and 1) of ribosomal protein gene counts in a cell to be included in normalization and clustering analyses.',
+          input: {
+            type: 'range',
+            step: 0.05,
+            defaultValue: {min: 0, max: 0.75},
+          },
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
+        },
         {
           step: 'quality',
           parameter: 'number_genes',
@@ -88,21 +94,25 @@ const TOOLS = {
             step: 1,
             defaultValue: {min: 50, max: 8000},
           },
-          disabled: false
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
         },
-        // {
-        //   step: 'quality',
-        //   parameter: 'number_reads',
-        //   label: 'Number of Reads',
-        //   prompt: 'Specify range for number of reads',
-        //   description: 'The minimum and maximum number of unique gene counts in a cell to be included in normalization and clustering analyses. Default is 50 to 8000.',
-        //   input: {
-        //     type: 'range',
-        //     step: 1,
-        //     defaultValue: {min: 50, max: 8000},
-        //   },
-        //   disabled: false
-        // }
+        {
+          step: 'quality',
+          parameter: 'number_reads',
+          label: 'Number of Reads',
+          prompt: 'Specify range for number of reads',
+          description: 'The minimum and maximum number of unique gene counts in a cell to be included in normalization and clustering analyses. Default is 50 to 8000.',
+          input: {
+            type: 'range',
+            step: 1,
+            defaultValue: {min: 1, max: 8000},
+          },
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
+        }
       ]
     },
     {
@@ -124,7 +134,9 @@ const TOOLS = {
               {key: 'skip_normalization', value: '3', text: 'Skip Normalization (input already normalized)'},
             ]
           },
-          disabled: false
+          disabled: false,
+          singleDataset: true,
+          multiDataset: false,
         }
       ]
     },
@@ -142,7 +154,9 @@ const TOOLS = {
             type: 'integer',
             defaultValue: 10,
           },
-          disabled: false
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
         }
       ]
     },
@@ -161,7 +175,9 @@ const TOOLS = {
             step: 0.1,
             defaultValue: 1.0,
           },
-          disabled: false
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
         }
       ]
     },
@@ -180,7 +196,99 @@ const TOOLS = {
             step: 0.01,
             defaultValue: 0.01,
           },
-          disabled: false
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
+        },
+        {
+          step: 'expression',
+          parameter: 'dge_comparisons',
+          label: 'Differential Gene Expression Comparisons',
+          prompt: 'Select differential gene expression comparisons',
+          // description: '"LogNormalize", "SCTransform", or "Skip Normalization" (Input MTX is already normalized). If "Skip Normalization" is used, data should be in log scale, low quality cells should already be removed, and option "No" should be selected in the Quality Control "Apply QC Filters" parameter. Default is "SCTransform". ',
+          description: "1-12",
+          input: {
+            type: 'multiSelect',
+            defaultValue: '1',
+            options: [
+              // {key: 'no_deg', value: '0', text: '0: no differentially expressed genes are computed'},
+              {key: 'global_all', value: '1', text: '1 = using global cell clusers, compares each cell cluster vs. the rest of cells'},
+              {key: 'global_dataset_all', value: '2', text: '2 = using global cell clusers, for each dataset, compares each cell cluster vs. the rest of cells'},
+              // {key: 'global_dataset_same_cluster', value: '3', text: '3: using global cell clusers, for each dataset, compares each cell cluster vs. the same cluster from other datasets. Needs `-v 1`'},
+              {key: 'global_type_all', value: '4', text: '4 = using global cell clusers, for each dataset type, compares each cell cluster vs. the rest of cells'},
+              // {key: 'global_type_same_cluster', value: '5', text: '5: using global cell clusers, for each dataset type, compares each cell cluster vs. the same cluster from other dataset types. Needs `-v 1`'},
+              // {key: 'reclustered_dataset_all', value: '6', text: '6: using re-clustered cells, for each dataset, compares each cell cluster vs. the rest of cells. Needs `-v 2`'},
+              // {key: 'reclustered_type_all', value: '7', text: '7: using re-clustered cells, for each dataset type, compares each cell cluster vs. the rest of cells. Needs `-v 3`'},
+              // {key: 'metadata_all', value: '8', text: '8: using metadata annotations, compares each cell class specified by `-b` and `-c` vs. the rest of cells'},
+              // {key: 'metadata_dataset_all', value: '9', text: '9: using metadata annotations, for each dataset, compares each cell class specified by `-b` and `-c` vs. the rest of cells'},
+              // {key: 'metadata_dataset_same_cluster', value: '10', text: '10: using metadata annotations, for each dataset, compares each cell class specified by `-b` and `-c` vs. the same class from other datasets'},
+              // {key: 'metadata_type_all', value: '11', text: '11: using metadata annotations, for each dataset type, compares each cell class specified by `-b` and `-c` vs. the rest of cells'},
+              // {key: 'metadata_type_same_cluster', value: '12', text: '12: using metadata annotations, for each dataset type, compares each cell class specified by `-b` and `-c` vs. the same class from other dataset types'},
+            ]
+          },
+          disabled: false,
+          singleDataset: false,
+          multiDataset: true,
+        }
+      ]
+    },
+    {
+      label: 'Save Data',
+      step: 'save',
+      parameters: [
+        {
+          step: 'save',
+          parameter: 'save_unfiltered_data',
+          label: 'Unfiltered MTX Files',
+          prompt: 'Save unfiltered raw data (MTX format)',
+          description: 'Indicates if unfiltered raw data uploaded as input should be saved in MTX format. Default is "No".',
+          input: {
+            type: 'select',
+            defaultValue: 'N',
+            options: [
+              {key: 'yes', value: 'Y', text: 'Yes'},
+              {key: 'no', value: 'N', text: 'No'},
+            ]
+          },
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
+        },
+        {
+          step: 'save',
+          parameter: 'save_filtered_data',
+          label: 'Filtered MTX Files',
+          prompt: 'Save filtered raw data and normalized data (MTX format)',
+          description: 'Indicates if filtered raw data and normalized data from the run should be saved in MTX format. Default is "No".',
+          input: {
+            type: 'select',
+            defaultValue: 'N',
+            options: [
+              {key: 'yes', value: 'Y', text: 'Yes'},
+              {key: 'no', value: 'N', text: 'No'},
+            ]
+          },
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
+        },
+        {
+          step: 'save',
+          parameter: 'save_r_object',
+          label: 'R Object',
+          prompt: 'Save R Object',
+          description: 'Indicates if R Object (data and analyses) from the run should be saved as RDS. Default is "No". ',
+          input: {
+            type: 'select',
+            defaultValue: 'N',
+            options: [
+              {key: 'yes', value: 'Y', text: 'Yes'},
+              {key: 'no', value: 'N', text: 'No'},
+            ]
+          },
+          disabled: false,
+          singleDataset: true,
+          multiDataset: true,
         }
       ]
     },
