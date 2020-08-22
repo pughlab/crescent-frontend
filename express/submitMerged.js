@@ -46,18 +46,37 @@ const makeCWLJobJSON = async (
 
     const {
       quality, 
-      normalization: {normalization_method}, 
+      // normalization: {normalization_method}, 
       reduction: {pca_dimensions}, 
       clustering: {resolution}, 
-      expression: {return_threshold}
+      expression: {
+        return_threshold,
+        dge_comparisons,
+      },
+      save: {
+        save_unfiltered_data,
+        save_filtered_data,
+        save_r_object,
+      },
     } = parameters
+  
+    // const {
+    //   save_unfiltered_data,
+    //   save_filtered_data,
+    //   save_r_object,
+    // } = save
+
 
     const seuratMultiSampleParameters = {
       resolution,
       project_id: 'crescent',
       pca_dimensions,
-      normalization_method,
+      // normalization_method,
       return_threshold,
+      dge_comparisons: R.join(',', dge_comparisons),
+      save_unfiltered_data,
+      save_filtered_data,
+      save_r_object,
     }
 
     // Make datasets csv
@@ -68,7 +87,9 @@ const makeCWLJobJSON = async (
           const {
             sc_input_type,
             percent_mito: {min: minPercentMito, max: maxPercentMito},
+            percent_ribo: {min: minPercentRibo, max: maxPercentRibo},
             number_genes: {min: minNumberGenes, max: maxNumberGenes},
+            number_reads: {min: minNumberReads, max: maxNumberReads},
           } = quality[datasetID]
           return {
             dataset_ID: `dataset-${datasetID.toString()}`,
@@ -78,12 +99,16 @@ const makeCWLJobJSON = async (
             // add experiment_type here etc
             mito_min: minPercentMito,
             mito_max: maxPercentMito,
-            ribo_min: '0',
-            ribo_max: '0.75',
+            // ribo_min: '0',
+            // ribo_max: '0.75',
+            ribo_min: minPercentRibo,
+            ribo_max: maxPercentRibo,
             ngenes_min: minNumberGenes,
             ngenes_max: maxNumberGenes,
-            nreads_min: '1',
-            nreads_max: '80000',
+            // nreads_min: '1',
+            // nreads_max: '80000',
+            nreads_min: minNumberReads,
+            nreads_max: maxNumberReads,
           }
         }
       )
