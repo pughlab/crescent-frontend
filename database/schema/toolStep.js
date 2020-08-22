@@ -32,7 +32,15 @@ const ToolStepSchema = new mongoose.Schema({
   disabled: {
     type: Boolean,
     required: true
-  }
+  },
+  singleDataset: {
+    type: Boolean,
+    required: true
+  },
+  multiDataset: {
+    type: Boolean,
+    required: true
+  },
 })
 
 module.exports = ToolStepSchema

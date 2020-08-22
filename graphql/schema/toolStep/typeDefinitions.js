@@ -13,6 +13,8 @@ const typeDefs = gql`
     description: String
     input: ToolParameterInput
     disabled: Boolean
+    singleDataset: Boolean
+    multiDataset: Boolean
   }
 
   type ToolStep {
