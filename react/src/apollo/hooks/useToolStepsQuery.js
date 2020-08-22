@@ -15,6 +15,8 @@ export default function useToolStepsQuery() {
         label
         parameters {
           parameter
+          singleDataset
+          multiDataset
         }
       }
     }
