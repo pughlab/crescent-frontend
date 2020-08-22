@@ -25,6 +25,9 @@ const resolvers = {
       try {
         const run = await Runs.create({name, projectID, createdBy: userID, datasetIDs})
         const {runID} = run
+
+        const isSingleDataset = R.compose(R.equals(1), R.length)(datasetIDs)
+
         // Add default parameters
         const defaultParameters = R.compose(
           R.evolve({
@@ -40,7 +43,8 @@ const resolvers = {
               R.map(({parameter, input: {defaultValue}}) => ({[parameter]: defaultValue}))
             )
           ),
-          R.groupBy(R.prop('step'))
+          R.groupBy(R.prop('step')),
+          R.filter(R.prop(isSingleDataset ? 'singleDataset' : 'multiDataset'))
         )(await ToolSteps.find({}))
 
         console.log(defaultParameters)
