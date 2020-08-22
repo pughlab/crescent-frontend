@@ -41,7 +41,8 @@ const IntegerParameterInput = ({
   
   const valueTransform = value => R.isNil(datasetID) ? parseInt(value) : {value: parseInt(value), datasetID}
   return (
-    <Form loading={isLoading}>
+    // <Form loading={isLoading}>
+    <Form>
       <Form.Input
         type='number'
         label={label}
@@ -63,7 +64,7 @@ const FloatParameterInput = ({
   toolParameter,
   datasetID
 }) => {
-  const {step, parameter, label, disabled, input: {defaultValue}} = toolParameter
+  const {step, parameter, label, disabled, input: {defaultValue, step: increaseStep}} = toolParameter
 
   const {runID} = useCrescentContext()
   const run = useRunDetailsQuery(runID)
@@ -75,11 +76,13 @@ const FloatParameterInput = ({
   const disableInput = R.or(disabled, R.not(R.equals('pending', runStatus)))
   const valueTransform = value => R.isNil(datasetID) ? parseFloat(value) : {value: parseFloat(value), datasetID}
   return (
-    <Form loading={isLoading}>
+    // <Form loading={isLoading}>
+    <Form>
       <Form.Input
         type='number'
         label={label}
         disabled={disableInput}
+        step={increaseStep}
         // error={warning}
         value={parseFloat(parameterValue)}
         onChange={(e, {value}) => updateRunParameterValue({variables: {value: valueTransform(value)}})}
@@ -97,7 +100,7 @@ const RangeParameterInput = ({
   toolParameter,
   datasetID
 }) => {
-  const {step, parameter, label, disabled, input: {defaultValue}} = toolParameter
+  const {step, parameter, label, disabled, input: {defaultValue, step: increaseStep}} = toolParameter
   const {min: defaultMin, max: defaultMax} = defaultValue
   const {runID} = useCrescentContext()
   const run = useRunDetailsQuery(runID)
@@ -119,7 +122,7 @@ const RangeParameterInput = ({
           disabled={disableInput}
           // error={warning}
           type='number'
-          step={step}
+          step={increaseStep}
           placeholder={defaultMin}
           label={`Min ${label}`}
           value={min}
@@ -128,7 +131,7 @@ const RangeParameterInput = ({
         <Form.Input
           disabled={disableInput}
           // error={warning}
-          step={step}
+          step={increaseStep}
           type='number'
           placeholder={defaultMax}
           label={`Max ${label}`}
@@ -145,6 +148,7 @@ const RangeParameterInput = ({
     </Form>
   ) 
 }
+
 const SelectParameterInput = ({
   toolParameter,
   datasetID
@@ -161,9 +165,51 @@ const SelectParameterInput = ({
   const disableInput = R.or(disabled, R.not(R.equals('pending', runStatus)))
   const valueTransform = value => R.isNil(datasetID) ? value : {value, datasetID}
   return (
-    <Form loading={isLoading}>
+    // <Form loading={isLoading}>
+    <Form>
       <Form.Dropdown selection search
         placeholder={defaultValue}
+        disabled={disableInput}
+        options={options}
+        label={label}
+        value={parameterValue}
+        onChange={(e, {value}) => updateRunParameterValue({variables: {value: valueTransform(value)}})}
+      />
+      {
+        R.not(disableInput) && 
+        <ResetToDefaultValueButton {...{disabled}}
+          onClick={() => updateRunParameterValue({variables: {value: valueTransform(defaultValue)}})}
+        />
+      }
+    </Form>
+  )
+}
+
+const MultiSelectParameterInput = ({
+  toolParameter,
+  datasetID
+}) => {
+  const {step, parameter, label, disabled, input: {defaultValue, options}} = toolParameter
+
+  const {runID} = useCrescentContext()
+  const run = useRunDetailsQuery(runID)
+  const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter, datasetID})
+  if (R.any(R.isNil, [run, parameterValue])) {
+    return null
+  }
+  const {status: runStatus} = run
+  const disableInput = R.or(disabled, R.not(R.equals('pending', runStatus)))
+  const valueTransform = value => R.isNil(datasetID) ? value : {value, datasetID}
+  return (
+    // <Form loading={isLoading}>
+    <Form>
+      <Form.Dropdown 
+        selection 
+        search
+        multiple
+        placeholder={'Select one or more DEG comparisons'}
+        defaultValue={defaultValue}
+        // placeholder={defaultValue}
         disabled={disableInput}
         options={options}
         label={label}
@@ -186,4 +232,5 @@ export {
   FloatParameterInput,
   RangeParameterInput,
   SelectParameterInput,
+  MultiSelectParameterInput,
 } 

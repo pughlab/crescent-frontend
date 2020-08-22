@@ -12,6 +12,7 @@ import {
   FloatParameterInput,
   RangeParameterInput,
   SelectParameterInput,
+  MultiSelectParameterInput,
 } from './ParameterInputs'
 
 // 
@@ -50,6 +51,9 @@ const PipelineParameter = ({
               )],
               [R.equals('select'), R.always(
                 <SelectParameterInput {...{toolParameter, datasetID}} />
+              )],
+              [R.equals('multiSelect'), R.always(
+                <MultiSelectParameterInput {...{toolParameter, datasetID}} />
               )],
             ])(type)
           }
