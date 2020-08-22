@@ -56,7 +56,7 @@ inputs:
       position: 7
       prefix: -e
 
-  expression_comp:
+  dge_comparisons:
     type: string?
     inputBinding:
       position: 8
@@ -68,22 +68,37 @@ inputs:
       position: 9
       prefix: -u
 
-  save_r_object:
-    type: string?
+  save_filtered_data:
+    type: string
+    default: N
     inputBinding:
       position: 10
+      prefix: -k
+
+  save_r_object:
+    type: string
+    default: N
+    inputBinding:
+      position: 11
       prefix: -s
+
+  save_unfiltered_data:
+    type: string
+    default: N
+    inputBinding:
+      position: 12
+      prefix: -l
 
   runs_cwl:
     type: string
     default: Y
     inputBinding:
-      position: 11
+      position: 13
       prefix: -w
 
 #  minio_path:
 #    inputBinding:
-#      position: 12
+#      position: 14
 #      prefix: -x
 #    type: 
 #      type: array
@@ -92,7 +107,7 @@ inputs:
   minio_path:  
     type: Directory[]
     inputBinding:
-      position: 12
+      position: 15
       prefix: -x
       itemSeparator: ","
       
@@ -100,7 +115,7 @@ inputs:
     type: string
     default: N
     inputBinding:
-      position: 13
+      position: 16
       prefix: -o 
 
 outputs:
