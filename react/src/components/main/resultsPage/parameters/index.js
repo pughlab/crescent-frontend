@@ -11,6 +11,7 @@ import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks'
 
 
 import Shake from 'react-reveal/Shake'
+import Jump from 'react-reveal/Jump'
 
 const ParametersComponent = ({
 
@@ -24,7 +25,11 @@ const ParametersComponent = ({
     return null
   }
 
-  const {status: runStatus} = run
+
+  const {status: runStatus, datasets} = run
+
+  const isSingleDataset = R.compose(R.equals(1), R.length)(datasets)
+
   if (R.isNil(activePipelineStep)) {
     return (
       <Segment placeholder style={{height: '100%'}} color='blue'>
@@ -44,6 +49,8 @@ const ParametersComponent = ({
     )
   }
 
+  const activePipelineStepData = R.find(R.propEq('step', activePipelineStep), toolSteps)
+
   return (
     <Segment style={{height: '100%'}} color='blue'>
     {
@@ -51,14 +58,34 @@ const ParametersComponent = ({
         <QualityControlParametersComponent />
       : 
         R.compose(
-          R.map(
-            ({parameter: parameterCode}) => (
-              <PipelineParameter key={parameterCode} {...{parameterCode}} />
+          R.ifElse(
+            R.isEmpty, 
+            R.always(
+              <Segment basic placeholder style={{height: '100%'}}>
+                <Shake forever duration={10000}>
+                  <Header textAlign='center' icon>
+                    <Icon name='dont' />
+                    {
+                        `There are no user-editable ${R.prop('label', activePipelineStepData)} parameters for a ${isSingleDataset ? 'single' : 'multi'} sample pipeline`
+                    }
+                    {
+                      R.and(R.equals('normalization', activePipelineStep), R.not(isSingleDataset)) && 
+                      <Header.Subheader content='Normalization uses scTransform for a multi sample pipeline'/>
+                    }
+                  </Header>
+                </Shake>
+              </Segment>
+            ), 
+            R.map(
+              ({parameter: parameterCode}) => (
+                <PipelineParameter key={parameterCode} {...{parameterCode}} />
+              )
             )
           ),
+          R.filter(R.prop(isSingleDataset ? 'singleDataset' : 'multiDataset')),
           R.prop('parameters'),
-          R.find(R.propEq('step', activePipelineStep))
-        )(toolSteps)
+          // R.find(R.propEq('step', activePipelineStep))
+        )(activePipelineStepData)
       }
     </Segment>
   )
