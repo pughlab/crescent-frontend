@@ -39,24 +39,41 @@ const makeCWLJobJSON = async (
     const {datasetIDs, parameters} = run
     const [datasetID] = datasetIDs 
 
+    const dataset = await Dataset.findOne({datasetID})
+    const {name} = dataset
+
+
     const {
       quality, 
       normalization: {normalization_method}, 
       reduction: {pca_dimensions}, 
       clustering: {resolution}, 
-      expression: {return_threshold}
+      expression: {return_threshold},
+      save: {
+        save_unfiltered_data,
+        save_filtered_data,
+        save_r_object,
+      },
     } = parameters
 
     const {
       sc_input_type,
       percent_mito: {min: minPercentMito, max: maxPercentMito},
+      percent_ribo: {min: minPercentRibo, max: maxPercentRibo},
       number_genes: {min: minNumberGenes, max: maxNumberGenes},
+      number_reads: {min: minNumberReads, max: maxNumberReads},
     } = quality[datasetID]
+
+    // const {
+    //   save_unfiltered_data,
+    //   save_filtered_data,
+    //   save_r_object,
+    // } = save
 
     const seuratSingleSampleParameters = {
       sc_input_type, //'MTX', // change to singleCell eventually if supporting seurat v2
       resolution,
-      project_id: 'crescent',
+      project_id: name,
       pca_dimensions,
       normalization_method,
       return_threshold,
@@ -65,8 +82,13 @@ const makeCWLJobJSON = async (
       // apply_cell_filters: applyCellFilters,
 
       percent_mito: `${minPercentMito},${maxPercentMito}`,
+      percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
       number_genes: `${minNumberGenes},${maxNumberGenes}`,
-      // percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
+      number_reads: `${minNumberReads},${maxNumberReads}`,
+      
+      save_unfiltered_data,
+      save_filtered_data,
+      save_r_object,
     }
 
     // const project = await Project.findOne({projectID})
