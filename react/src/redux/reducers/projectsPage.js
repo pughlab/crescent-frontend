@@ -1,14 +1,16 @@
 import * as R from 'ramda'
 import createReducer from './createReducer'
 
+import oncotreeFilter from '../helpers/filters/oncotreeFilter'
+import searchFilter from '../helpers/filters/searchFilter'
+import tissueFilter from '../helpers/filters/tissueFilter'
+
 const initialState = {
   activeProjectKind: 'public', // 'uploaded' 
-  searchFilter: '',
-  tissueFilter: {
-    cancer: true,
-    nonCancer: true
-  },
-  oncotreeFilter: []
+
+  ... tissueFilter.initialState,
+  ... searchFilter.initialState,
+  ... oncotreeFilter.initialState
 }
 
 export default createReducer(
@@ -20,26 +22,11 @@ export default createReducer(
       })(state)
     },
 
-    'projectsPage/setSearchFilter': (state, payload) => {
-      const {value} = payload
-      return R.evolve({
-        searchFilter: R.always(value)
-      })(state)
-    },
+    'projectsPage/setSearchFilter': searchFilter.setSearchFilter.reducer,    
 
-    'projectsPage/setTissueFilter': (state, payload) => {
-      const {cancer, nonCancer} = payload
-      return R.evolve({
-        tissueFilter: R.always({cancer, nonCancer})
-      })(state)
-    },
+    'projectsPage/setTissueFilter': tissueFilter.setTissueFilter.reducer,
 
-    'projectsPage/setOncotreeFilter': (state, payload) => {
-      const {codes} = payload
-      return R.evolve({
-        oncotreeFilter: R.always(codes)
-      })(state)
-    },
+    'projectsPage/setOncotreeFilter': oncotreeFilter.setOncotreeFilter.reducer,
 
     'projectsPage/reset': R.always(initialState),
   }
