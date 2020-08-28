@@ -19,13 +19,13 @@ const ScatterPlot = ({
   const {runID} = useCrescentContext()
 
   const dispatch = useDispatch()
-  const {activeResult, selectedFeature, selectedGroup} = useResultsPage()
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPage()
   const isFeatureNotSelected = R.or(R.isNil, R.isEmpty)(selectedFeature)
 
 
   const plots = useResultsAvailableQuery(runID)
-  const scatter = useScatterQuery(activeResult, selectedGroup, runID)
-  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID)
+  const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
+  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression)
 
   // const [isLoading, setIsLoading] = useState( true );
 
