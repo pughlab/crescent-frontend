@@ -20,6 +20,7 @@ import useQCAvailableQuery from './useQCAvailableQuery'
 import useQCMetricsQuery from './useQCMetricsQuery'
 import useQCViolinQuery from './useQCViolinQuery'
 import useQCScatterQuery from './useQCScatterQuery'
+import useDiffExpressionQuery from './useDiffExpressionQuery'
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
@@ -56,6 +57,7 @@ export {
   useQCScatterQuery,
   useScatterQuery,
   useOpacityQuery,
+  useDiffExpressionQuery,
   useAvailableGroupsQuery,
   useTopExpressedQuery,
   useSearchFeaturesQuery,
