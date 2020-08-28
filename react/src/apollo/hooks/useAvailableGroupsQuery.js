@@ -21,16 +21,16 @@ const client = new ApolloClient({
 })
 
 
-export default function useAvailableGroups(runID) {
+export default function useAvailableGroups(runID, datasetID) {
   const [groups, setAvailableGroups] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query Groups($runID: ID) {
-      groups(runID: $runID)
+    query Groups($runID: ID, $datasetID: ID) {
+      groups(runID: $runID, datasetID: $datasetID)
     }
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID},
+    variables: {runID, datasetID},
     onCompleted: ({groups}) => {
       setAvailableGroups(groups)
     }

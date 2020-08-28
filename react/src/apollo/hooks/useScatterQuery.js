@@ -37,11 +37,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useScatter(vis, group, runID) {
+export default function useScatter(vis, group, runID, datasetID) {
   const [scatter, setScatter] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query Scatter($vis: String, $group: String, $runID: ID) {
-      scatter(vis: $vis, group: $group, runID: $runID) {
+    query Scatter($vis: String, $group: String, $runID: ID, $datasetID: ID) {
+      scatter(vis: $vis, group: $group, runID: $runID, datasetID: $datasetID) {
         name
         type
         mode
@@ -56,7 +56,7 @@ export default function useScatter(vis, group, runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {vis, group, runID},
+    variables: {vis, group, runID, datasetID},
     onCompleted: ({scatter}) => {
       R.compose(
         setScatter,

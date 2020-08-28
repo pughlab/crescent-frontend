@@ -35,11 +35,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useTopExpressed(runID) {
+export default function useTopExpressed(runID, datasetID) {
   const [topExpressed, setTopExpressed] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query TopExpressed($runID: ID) {
-        topExpressed(runID: $runID) {
+    query TopExpressed($runID: ID, $datasetID: ID) {
+        topExpressed(runID: $runID, datasetID: $datasetID) {
           gene
           cluster
           pVal
@@ -49,7 +49,7 @@ export default function useTopExpressed(runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID},
+    variables: {runID, datasetID},
     onCompleted: ({topExpressed}) => {
       setTopExpressed(topExpressed)
     }
