@@ -116,10 +116,10 @@ class Query(ObjectType):
     def resolve_size(parent, info, runID):
         return total_size(runID)
 
-    top_expressed = List(TopExpression, runID=ID())
+    top_expressed = List(TopExpression, runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_top_expressed(parent, info, runID):
-        return get_top_expressed_data(runID)
+    def resolve_top_expressed(parent, info, runID, datasetID):
+        return get_top_expressed_data(runID, datasetID)
     
     violin = List(NonNull(ViolinData), feature=String(), group=String(), runID=ID(), datasetID=ID())
     @staticmethod

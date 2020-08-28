@@ -11,7 +11,7 @@ from get_data.minio_functions import (
     get_size,
     object_exists
 )
-from get_data.helper import find_id, return_error, set_groups, set_IDs, set_name
+from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name
 
 def get_paths(runID, keys, findDatasetID=False):
     paths = {}
@@ -19,10 +19,11 @@ def get_paths(runID, keys, findDatasetID=False):
         paths = json.load(paths_file)
     return set_IDs(paths, runID, keys, findDatasetID=findDatasetID)
 
-def get_top_expressed_data(runID):
+def get_top_expressed_data(runID, datasetID):
     """ given a runID get the top 10 expressed genes + their avg log fold change and p-value """
 
     paths = get_paths(runID, ["top_expressed"])
+    paths["top_expressed"] = set_name_multi(paths["top_expressed"], datasetID, "top_expressed")
     minio_client = get_minio_client()
 
     result = []
@@ -79,7 +80,7 @@ def get_groups(runID, datasetID):
     """ given a runID, fetches the available groups to label cell barcodes by """
     minio_client = get_minio_client()
     paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
-    paths["groups"] = set_groups(paths["groups"], datasetID)
+    paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
     groups = paths["groups"]
     metadata = paths["metadata"]
 
@@ -164,7 +165,7 @@ def get_available_categorical_groups(runID, datasetID):
     """ given a runID, fetches the available groups (of non-numeric type) to label cell barcodes by """
     minio_client = get_minio_client()
     paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
-    paths["groups"] = set_groups(paths["groups"], datasetID)
+    paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     groups_tsv = get_first_n_lines(2, paths["groups"]["bucket"], paths["groups"]["object"], minio_client)
     group_types = list(zip(groups_tsv[0], groups_tsv[1]))[1:]

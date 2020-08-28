@@ -56,6 +56,9 @@
     },
     "top_expressed": {
         "bucket": "run-",
-        "object": "SEURAT/CRESCENT_CLOUD/frontend_markers/TopTwoMarkersPerCluster.tsv"
+        "object": {
+            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_markers/",
+            "suffix": "TopTwoMarkersPerCluster.tsv"
+        }
     }
 }

@@ -5,7 +5,7 @@ import loompy
 
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
-from get_data.helper import COLOURS, return_error, set_IDs, set_groups, sort_traces
+from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces
 from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
 
 colour_dict = {}
@@ -154,7 +154,7 @@ def get_opacity_data(feature, group, runID, datasetID):
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
     paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True)
-    paths["groups"] = set_groups(paths["groups"], datasetID)
+    paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()
     
