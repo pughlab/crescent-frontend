@@ -194,7 +194,7 @@ def get_diff_expression(runID):
         groups["bucket"] = "{0}run-{1}{2}".format(group_dict["pre"], runID, group_dict["post"])
 
     group_objects = minio_client.list_objects_v2(groups["bucket"], prefix=groups["object"]["prefix"], recursive=True)
-    group_filenames = [obj[len(groups["object"]["prefix"]):] for obj in group_objects] # Extract filenames from full paths
+    group_filenames = [obj.object_name[len(groups["object"]["prefix"]):] for obj in group_objects] # Extract filenames from full paths
     diff_expression = []
 
     if ("groups.tsv" in group_filenames):
