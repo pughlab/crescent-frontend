@@ -95,7 +95,7 @@ def find_id(name):
 
 def set_groups(paths, datasetID):
     if (datasetID.lower() == "all"):
-        paths["groups"] = paths[key]["object"]["prefix"] + paths[key]["object"]["suffix"]
+        paths["groups"] = paths["groups"]["object"]["prefix"] + paths["groups"]["object"]["suffix"]
     else:
         return set_name(paths, datasetID, ["groups"])
 
