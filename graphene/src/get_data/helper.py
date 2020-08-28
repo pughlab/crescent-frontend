@@ -93,11 +93,13 @@ def find_id(name):
     datasets = db["datasets"]
     return datasets.find_one({"name": name})["datasetID"]
 
-def set_groups(paths, datasetID):
+def set_groups(groups, datasetID):
     if (datasetID.lower() == "all"):
-        paths["groups"]["object"] = paths["groups"]["object"]["prefix"] + paths["groups"]["object"]["suffix"]
+        groups["object"] = groups["object"]["prefix"] + groups["object"]["suffix"]
+        return groups
     else:
-        return set_name(paths, datasetID, ["groups"])
+        # Create a copy in a format that set_name understands
+        return set_name({"groups": groups}, datasetID, ["groups"])["groups"]
 
 def set_name(paths, datasetID, keys):
     client = get_mongo_client()

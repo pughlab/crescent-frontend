@@ -75,10 +75,11 @@ def get_available_qc_data(runID, datasetID):
 
     return available_plots
 
-def get_groups(runID):
+def get_groups(runID, datasetID):
     """ given a runID, fetches the available groups to label cell barcodes by """
     minio_client = get_minio_client()
     paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
+    paths["groups"] = set_groups(paths["groups"], datasetID)
     groups = paths["groups"]
     metadata = paths["metadata"]
 
@@ -163,7 +164,7 @@ def get_available_categorical_groups(runID, datasetID):
     """ given a runID, fetches the available groups (of non-numeric type) to label cell barcodes by """
     minio_client = get_minio_client()
     paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
-    paths = set_groups(paths, datasetID)
+    paths["groups"] = set_groups(paths["groups"], datasetID)
 
     groups_tsv = get_first_n_lines(2, paths["groups"]["bucket"], paths["groups"]["object"], minio_client)
     group_types = list(zip(groups_tsv[0], groups_tsv[1]))[1:]

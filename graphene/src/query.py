@@ -52,10 +52,10 @@ class Query(ObjectType):
     def resolve_diff_expression(parent, info, runID):
         return get_diff_expression(runID)
 
-    groups = List(String, runID=ID())
+    groups = List(String, runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_groups(parent, info, runID):
-        return get_groups(runID)
+    def resolve_groups(parent, info, runID, datasetID):
+        return get_groups(runID, datasetID)
 
     heatmap = Field(Heatmap, runID=ID())
     @staticmethod
