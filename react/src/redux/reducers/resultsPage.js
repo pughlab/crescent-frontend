@@ -1,4 +1,5 @@
 import * as R from 'ramda'
+import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
 
 const initialState = {
@@ -8,6 +9,7 @@ const initialState = {
   selectedQC: 'Before_After_Filtering',
   selectedFeature: null,
   selectedGroup: null,
+  selectedDiffExpression: 'All',
 }
 
 export default createReducer(
@@ -53,6 +55,13 @@ export default createReducer(
       const {value} = payload
       return R.evolve({
         selectedGroup: R.always(value)
+      })(state)
+    },
+    'resultsPage/setSelectedDiffExpression': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        selectedDiffExpression: R.always(value),
+        selectedGroup: R_.alwaysNull,
       })(state)
     },
 

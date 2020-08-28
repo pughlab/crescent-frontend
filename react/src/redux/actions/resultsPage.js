@@ -42,6 +42,13 @@ const setSelectedGroup = ({value}) => ({
   }
 })
 
+const setSelectedDiffExpression = ({value}) => ({
+  type: 'resultsPage/setSelectedDiffExpression',
+  payload: {
+    value
+  }
+})
+
 
 const resetResultsPage = R.always({type: 'resultsPage/reset'})
 
@@ -52,5 +59,6 @@ export {
   setSelectedQC,
   setSelectedFeature,
   setSelectedGroup,
+  setSelectedDiffExpression,
   resetResultsPage
 }
