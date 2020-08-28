@@ -8,8 +8,8 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useCategoricalGroupsQuery} from '../../../../apollo/hooks'
-import {setSelectedFeature, setSelectedGroup} from '../../../../redux/actions/resultsPage'
+import {useDiffExpressionQuery, useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useCategoricalGroupsQuery} from '../../../../apollo/hooks'
+import {setSelectedFeature, setSelectedGroup, setSelectedDiffExpression} from '../../../../redux/actions/resultsPage'
 
 import reduxThunks from '../../../../redux/actions/thunks'
 
@@ -23,21 +23,27 @@ const VisualizationMenu = ({
   const dispatch = useDispatch()
 
   // console.log("use results: ", useResultsPage())
-  const {activeResult, selectedFeature, selectedGroup} = useResultsPage()
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression } = useResultsPage()
   const isActiveResult = R.equals(activeResult)
  // console.log(activeResult)
 
   //available groups & top expressed must be queries
-  
-  const groups = useAvailableGroupsQuery(runID)
-  const categoricalGroups = useCategoricalGroupsQuery(runID)
 
-  const topExpressed = useTopExpressedQuery(runID)
+  const diffExpression = useDiffExpressionQuery(runID)
+  
+  const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
+  // const categoricalGroups = useCategoricalGroupsQuery(runID)
+  console.log("RUNID:", runID)
+  console.log("DIFF:", diffExpression)
+  console.log("SEL DIFF:", selectedDiffExpression)
+  console.log("SEL GROUP:", selectedGroup)
+
+  const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression)
   const search = useSearchFeaturesQuery(currentSearch, runID)
   console.log("SEARCH OUTSIDE!", search)
   // console.log(search)
 
-  if (R.any(R.isNil, [groups, categoricalGroups, topExpressed, search])) {
+  if (R.any(R.isNil, [diffExpression, groups, topExpressed, search])) {
     // console.log(groups, topExpressed)
     return null
   }
@@ -156,6 +162,24 @@ const VisualizationMenu = ({
   
   return(
     <Form>
+      <Divider horizontal content='Datasets' />
+        <Form.Field>
+        <Form.Dropdown
+              fluid
+              selection
+              labeled
+              // all groups! assumes that first group is categorical (might not be true in the future)
+              defaultValue={RA.isNotNil(selectedDiffExpression) ? selectedDiffExpression : dispatch(setSelectedDiffExpression({value: diffExpression[0]}))}
+              // defaultValue={selectedDiffExpression}
+              // options={formatList(groups)}
+              // options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
+              options={diffExpression}
+              // onChange={(event, {value}) => dispatch(changeActiveGroup({value}))}
+              onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value}))}
+
+            />
+        </Form.Field>
+
       <Divider horizontal content='Colour By' />
         <Form.Field>
             <Form.Dropdown
@@ -164,8 +188,9 @@ const VisualizationMenu = ({
               labeled
               // all groups! assumes that first group is categorical (might not be true in the future)
               defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : dispatch(setSelectedGroup({value: groups[0]}))}
-              // options={formatList(groups)}
-              options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
+              options={formatList(groups)}
+              // options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
+
               // onChange={(event, {value}) => dispatch(changeActiveGroup({value}))}
               onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
 
