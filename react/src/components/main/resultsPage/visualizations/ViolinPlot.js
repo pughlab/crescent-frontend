@@ -20,8 +20,8 @@ const ViolinPlot = ({
 }) => {
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedFeature, selectedGroup} = useResultsPage()
-  const violin = useViolinQuery(selectedFeature, selectedGroup, runID)
+  const {selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPage()
+  const violin = useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression)
   // use local state for data since too big for redux store
   // const [violinData, setViolinData] = useState( [] )
 
