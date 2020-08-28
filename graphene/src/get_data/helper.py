@@ -86,13 +86,20 @@ def sort_traces(trace_objects):
     else:
         trace_objects.sort(key=lambda i: i['name'])
 
+# Given a name that is prepended to files in frontend_groups find the corresponding datasetID
+def find_id(name):
+    client = get_mongo_client()
+    db = client["crescent"]
+    datasets = db["datasets"]
+    return datasets.find_one({"name": name})["datasetID"]
+
 def set_name(paths, datasetID, keys):
     client = get_mongo_client()
-    db = client['crescent']
-    datasets = db['datasets']
-    name = datasets.find_one({'datasetID': ObjectId(datasetID)})['name']
+    db = client["crescent"]
+    datasets = db["datasets"]
+    name = datasets.find_one({"datasetID": ObjectId(datasetID)})["name"]
     for key in keys:
-        paths[key]["object"] =  paths[key]["object"]["prefix"] + name + paths[key]["object"]["suffix"]
+        paths[key]["object"] =  paths[key]["object"]["prefix"] + name + "_" + paths[key]["object"]["suffix"]
     return paths
 
 def set_IDs(paths, runID, keys, findDatasetID=False):

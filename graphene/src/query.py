@@ -9,6 +9,7 @@ from get_data.get_others import (
     get_available_categorical_groups,
     get_available_qc_data,
     get_cellcount,
+    get_diff_expression,
     get_groups,
     get_plots,
     get_qc_metrics,
@@ -18,7 +19,7 @@ from get_data.get_others import (
 from get_data.search_features import run_search
 from get_data.get_heatmap import get_heatmap_data
 
-from schema.available_qc import AvailableQCPiece
+from schema.dropdown_form import DropdownForm
 from schema.heatmap import Heatmap
 from schema.opacity import OpacityData
 from schema.plots import Plot
@@ -31,7 +32,7 @@ from schema.top_expressed import TopExpression
 from schema.violin import ViolinData
 
 class Query(ObjectType):
-    available_qc = List(AvailableQCPiece, runID=ID(), datasetID=ID())
+    available_qc = List(DropdownForm, runID=ID(), datasetID=ID())
     @staticmethod
     def resolve_available_qc(parent, info, runID, datasetID):
         return get_available_qc_data(runID, datasetID)
@@ -45,6 +46,11 @@ class Query(ObjectType):
     @staticmethod
     def resolve_cellcount(parent, info, runID):
         return get_cellcount(runID)
+
+    diff_expression = List(DropdownForm, runID=ID())
+    @staticmethod
+    def resolve_diff_expression(parent, info, runID):
+        return get_diff_expression(runID)
 
     groups = List(String, runID=ID())
     @staticmethod

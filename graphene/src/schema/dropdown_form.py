@@ -1,6 +1,6 @@
 from graphene import List, ObjectType, String
 
-class AvailableQCPiece(ObjectType):
+class DropdownForm(ObjectType):
     key = String()
     @staticmethod
     def resolve_key(parent, info):

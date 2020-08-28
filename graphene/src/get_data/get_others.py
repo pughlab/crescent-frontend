@@ -11,7 +11,7 @@ from get_data.minio_functions import (
     get_size,
     object_exists
 )
-from get_data.helper import return_error, set_IDs, set_name
+from get_data.helper import find_id, return_error, set_IDs, set_name
 
 def get_paths(runID, keys, findDatasetID=False):
     paths = {}
@@ -52,12 +52,12 @@ def get_top_expressed_data(runID):
 
 def get_available_qc_data(runID, datasetID):
     dropdown_plots = {}
-    with open('get_data/dropdown_plots.json') as dropdown_plots_file:#TO:DO add get_data
+    with open('get_data/dropdown_plots.json') as dropdown_plots_file:
         dropdown_plots = json.load(dropdown_plots_file)
     
     minio_client = get_minio_client()
     paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_data"])
-    paths = set_name(paths, datasetID, ["before_filtering", "after_filtering"]) # "qc_data"
+    paths = set_name(paths, datasetID, ["before_filtering", "after_filtering", "qc_data"])
 
     available_plots = []
     # if both before and after tsv files exist, can show filtering
@@ -178,3 +178,43 @@ def get_available_categorical_groups(runID):
 def total_size(runID):
     minio_client = get_minio_client()
     return get_size('run-'+str(runID), minio_client)
+
+def get_diff_expression(runID):
+    paths = {}
+    with open('get_data/paths.json') as paths_file:
+        paths = json.load(paths_file)
+    groups = paths["groups"]
+    minio_client = get_minio_client()
+
+    # Resolving the runID
+    runid_pattern = re.compile(r"(?P<pre>.*)(?P<run>run-)(?P<post>.*)")
+    match = runid_pattern.match(groups["bucket"])
+    if match is not None:
+        group_dict = match.groupdict()
+        groups["bucket"] = "{0}run-{1}{2}".format(group_dict["pre"], runID, group_dict["post"])
+
+    group_objects = minio_client.list_objects_v2(groups["bucket"], prefix=groups["object"]["prefix"], recursive=True)
+    group_filenames = [obj[len(groups["object"]["prefix"]):] for obj in group_objects] # Extract filenames from full paths
+    diff_expression = []
+
+    if ("groups.tsv" in group_filenames):
+        diff_expression.append({
+            "key": "All",
+            "text": "All datasets",
+            "value": "All"
+        })
+        group_filenames.remove("groups.tsv")
+    
+    # Extract name of dataset
+    filename_pattern = re.compile(r"(?P<name>.*)(?P<suffix>_groups.tsv)")
+    for filename in group_filenames:
+        match = filename_pattern.match(filename)
+        group_dict = match.groupdict()
+        name = group_dict["name"]
+        datasetID = find_id(name)
+        diff_expression.append({
+            "key": datasetID,
+            "text": name,
+            "value": datasetID
+        })
+    return diff_expression
