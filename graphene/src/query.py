@@ -37,10 +37,10 @@ class Query(ObjectType):
     def resolve_available_qc(parent, info, runID, datasetID):
         return get_available_qc_data(runID, datasetID)
 
-    categorical_groups = List(String, runID=ID())
+    categorical_groups = List(String, runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_categorical_groups(parent, info, runID):
-        return get_available_categorical_groups(runID)["groups"]
+    def resolve_categorical_groups(parent, info, runID, datasetID):
+        return get_available_categorical_groups(runID, datasetID)
     
     cellcount = Int(runID=ID())
     @staticmethod
