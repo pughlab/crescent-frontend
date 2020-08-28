@@ -62,11 +62,11 @@ class Query(ObjectType):
     def resolve_heatmap(parent, info, runID):
         return get_heatmap_data(runID)
 
-    opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID())
+    opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_opacity(parent, info, vis, feature, group, runID):
-        opacity_data = get_opacity_data(feature, group, runID)
-        scatter_data = get_scatter_data(vis, group, runID)
+    def resolve_opacity(parent, info, vis, feature, group, runID, datasetID):
+        opacity_data = get_opacity_data(feature, group, runID, datasetID)
+        scatter_data = get_scatter_data(vis, group, runID, datasetID)
         length = min(len(opacity_data), len(scatter_data))
         # Now we merge each corresponding object in 
         data = [
@@ -106,10 +106,10 @@ class Query(ObjectType):
     def resolve_search(parent, info, query, runID):
         return run_search(query, runID)
     
-    scatter = List(NonNull(ScatterData), vis=String(), group=String(), runID=ID())
+    scatter = List(NonNull(ScatterData), vis=String(), group=String(), runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_scatter(parent, info, vis, group, runID):
-        return get_scatter_data(vis, group, runID)
+    def resolve_scatter(parent, info, vis, group, runID, datasetID):
+        return get_scatter_data(vis, group, runID, datasetID)
 
     size = Int(runID=ID())
     @staticmethod
@@ -121,8 +121,8 @@ class Query(ObjectType):
     def resolve_top_expressed(parent, info, runID):
         return get_top_expressed_data(runID)
     
-    violin = List(NonNull(ViolinData), feature=String(), group=String(), runID=ID())
+    violin = List(NonNull(ViolinData), feature=String(), group=String(), runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_violin(parent, info, feature, group, runID):
-        return get_violin_data(feature, group, runID)
+    def resolve_violin(parent, info, feature, group, runID, datasetID):
+        return get_violin_data(feature, group, runID, datasetID)
     

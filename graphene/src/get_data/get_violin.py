@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 """
 
 from get_data.get_client import get_minio_client
-from get_data.helper import COLOURS, return_error, set_IDs, sort_traces
+from get_data.helper import COLOURS, return_error, set_groups, set_IDs, sort_traces
 from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
 
 colour_counter = 0
@@ -124,7 +124,7 @@ def calculate_bandwidths(plotly_obj):
             std = np.std(mod_values)
             violin_group['bandwidth'] = 0.9 * min(std, iqr/1.34) * (len(mod_values)**(-1/5.0))
 
-def get_violin_data(feature, group, runID):
+def get_violin_data(feature, group, runID, datasetID):
     """ given a grouping for the cells and a feature of interest, returns the plotly violin object """
     
     global colour_counter
@@ -133,6 +133,7 @@ def get_violin_data(feature, group, runID):
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
     paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True)
+    paths["groups"] = set_groups(paths["groups"], datasetID)
 
     minio_client = get_minio_client()
     
