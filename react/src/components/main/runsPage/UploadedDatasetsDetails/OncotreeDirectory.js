@@ -13,8 +13,6 @@ import {useCrescentContext} from '../../../../redux/hooks'
 import Fuse from 'fuse.js'
 
 import {useDebounce} from 'use-debounce'
-import continuousColorLegend from 'react-vis/dist/legends/continuous-color-legend';
-
 
 // Recursive component for rendering tree node
 function OncotreeDirectoryNode ({
@@ -72,7 +70,7 @@ function OncotreeDirectoryNode ({
             {
               R.compose(
                 R.map(node => <OncotreeDirectoryNode key={node.title} {...{node, filteredOncotree, tagDataset, datasetOncotreeCode, datasetOncotreeCodePath}} />),
-
+                // Bubble up current oncotree node path
                 R.isNil(datasetOncotreeCode) ? R.identity :
                   R.reduce(
                     (sortedChildren, node) => R.call(R.includes(node.title, datasetOncotreeCodePath) ? R.prepend : R.append, node, sortedChildren),
