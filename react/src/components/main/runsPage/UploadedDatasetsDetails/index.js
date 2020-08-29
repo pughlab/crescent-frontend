@@ -12,6 +12,7 @@ import {useCrescentContext} from '../../../../redux/hooks'
 
 import OncotreeSunburst from './OncotreeSunburst'
 import OncotreeTree from './OncotreeTree'
+import OncotreeDirectory from './OncotreeDirectory'
 
 const TagOncotreeModal = ({
   datasetID,
@@ -46,43 +47,49 @@ const TagOncotreeModal = ({
           </Header.Subheader>
         </Header>
         <Button.Group fluid widths={2}>
-            <Button content='Cancer'
-              disabled={disabledTagging}
-              active={cancerTag}
-              color={cancerTag ? 'blue' : undefined}
-              onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode}})}
-            />
-            <Button.Or />
-            <Button content='Non-cancer'
-              disabled={disabledTagging}
-              active={R.not(cancerTag)}
-              color={R.not(cancerTag) ? 'blue' : undefined}
-              onClick={() => tagDataset({variables: {cancerTag: false, oncotreeCode}})}
-            />
-          </Button.Group>
-          <Divider horizontal />
-          <Dropdown fluid
+          <Button content='Cancer'
             disabled={disabledTagging}
-            selection
-            search
-            placeholder='Select tissue type'
-            options={
-              R.map(
-                ({code, name}) => ({
-                  key: code,
-                  value: code,
-                  text: name
-                }),
-                tissueTypes
-              )
-            }
-            value={oncotreeCode}
-            onChange={(e, {value}) => tagDataset({variables: {cancerTag, oncotreeCode: value}})}
+            active={cancerTag}
+            color={cancerTag ? 'blue' : undefined}
+            onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode}})}
           />
-      </Modal.Content>
-      <Modal.Content>
+          <Button.Or />
+          <Button content='Non-cancer'
+            disabled={disabledTagging}
+            active={R.not(cancerTag)}
+            color={R.not(cancerTag) ? 'blue' : undefined}
+            onClick={() => tagDataset({variables: {cancerTag: false, oncotreeCode: null}})}
+          />
+        </Button.Group>
+
         {/* <OncotreeSunburst /> */}
-        <OncotreeTree />
+        {/* <OncotreeTree /> */}
+        {
+          cancerTag ?
+            <OncotreeDirectory {...{dataset, tagDataset}} />
+          :
+            <>
+            <Divider horizontal />
+            <Dropdown fluid
+              disabled={disabledTagging}
+              selection
+              search
+              placeholder='Select tissue type'
+              options={
+                R.map(
+                  ({code, name}) => ({
+                    key: code,
+                    value: code,
+                    text: name
+                  }),
+                  tissueTypes
+                )
+              }
+              value={oncotreeCode}
+              onChange={(e, {value}) => tagDataset({variables: {cancerTag, oncotreeCode: value}})}
+            /> 
+            </>
+        }
       </Modal.Content>
     </Modal>
   )
