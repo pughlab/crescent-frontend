@@ -92,14 +92,10 @@ const TagOncotreeModal = ({
               search
               placeholder='Select tissue type'
               options={
-                R.map(
-                  ({code, name}) => ({
-                    key: code,
-                    value: code,
-                    text: name
-                  }),
-                  tissueTypes
-                )
+                R.compose(
+                  R.map(({code, name}) => ({key: code, value: code, text: name})),
+                  R.sortBy(R.prop('name'))
+                )(tissueTypes)
               }
               value={oncotreeCode}
               onChange={(e, {value}) => tagDataset({variables: {cancerTag, oncotreeCode: value}})}
