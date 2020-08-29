@@ -50,17 +50,21 @@ const shadeColourHex = R.curry((level, hex) => {
   return `rgba(${r},${g},${b},${alpha})`
 })
 
-const makeChildNode = ({code, name, children, color, level}) => ({
-  title: code,
-  name,
-  color: R.compose(shadeColourHex(level), colourNameToHex)(color, level),
-  level,
-  ... R.isEmpty(children) ? {size: 1} : {children: makeChildrenNodes(children)}
-})
+const makeChildNode = R.curry(
+  (path, {code, name, children, color, level, parent}) => ({
+    title: code,
+    path: [...path, code],
+    name,
+    color: R.compose(shadeColourHex(level), colourNameToHex)(color, level),
+    level,
+    parent,
+    ... R.isEmpty(children) ? {size: 1} : {children: makeChildrenNodes([...path, code], children)}
+  })
+)
 
-const makeChildrenNodes = children => {
+const makeChildrenNodes = (path, children) => {
   return R.compose(
-    R.map(makeChildNode),
+    R.map(makeChildNode(path)),
     R.sortBy(R.prop('code')),
     R.values
   )(children)
@@ -69,11 +73,13 @@ const makeChildrenNodes = children => {
 const makeRootNode = oncotreeRawJSON => {
   const {TISSUE} = oncotreeRawJSON
   const {code, name, children} = TISSUE
-  const rootNode = {title: code, name, children: makeChildrenNodes(children)}
+  const path = [code]
+  const rootNode = {title: code, name, children: makeChildrenNodes(path, children), path}
   return rootNode
 }
 
 export default function useOncotreeSunburstQuery() {
+  const [oncotreeRawJSON, setOncotreeRawJSON] = useState(null)
   const [oncotree, setOncotree] = useState(null)
   const [tissues, setTissues] = useState(null)
 
@@ -87,12 +93,12 @@ export default function useOncotreeSunburstQuery() {
         const oncotreeSunburst = makeRootNode(oncotreeRawJSON)
         const {TISSUE: {children: oncotreeTissues}} = oncotreeRawJSON
         const tissues = R.compose(R.dissoc('children'))(oncotreeTissues)
-        console.log(oncotreeRawJSON)
+        setOncotreeRawJSON(oncotreeRawJSON)
         setOncotree(oncotreeSunburst)
         setTissues(tissues)
         
       }
     }
   })
-  return {oncotree, tissues}
+  return {oncotree, tissues, oncotreeRawJSON}
 }
