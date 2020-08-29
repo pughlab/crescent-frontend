@@ -11,6 +11,7 @@ import {useProjectDetailsQuery, useOncotreeQuery, useOncotreeSunburstQuery, useT
 import {useCrescentContext} from '../../../../redux/hooks'
 
 import OncotreeSunburst from './OncotreeSunburst'
+import OncotreeTree from './OncotreeTree'
 
 const TagOncotreeModal = ({
   datasetID,
@@ -80,7 +81,8 @@ const TagOncotreeModal = ({
           />
       </Modal.Content>
       <Modal.Content>
-        <OncotreeSunburst />
+        {/* <OncotreeSunburst /> */}
+        <OncotreeTree />
       </Modal.Content>
     </Modal>
   )
