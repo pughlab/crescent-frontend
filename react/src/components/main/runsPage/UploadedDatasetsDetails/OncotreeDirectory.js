@@ -13,6 +13,7 @@ import {useCrescentContext} from '../../../../redux/hooks'
 import Fuse from 'fuse.js'
 
 import {useDebounce} from 'use-debounce'
+import continuousColorLegend from 'react-vis/dist/legends/continuous-color-legend';
 
 
 // Recursive component for rendering tree node
@@ -20,17 +21,21 @@ function OncotreeDirectoryNode ({
   node,
   filteredOncotree,
   tagDataset,
-  datasetOncotreeCode
+  datasetOncotreeCode,
+  datasetOncotreeCodePath
 }) {
   const {title, name, children, path} = node
   // Check if current node is in path of a filtered node
   const isFilteredNode = R.ifElse(R.isNil, R.F, R.hasPath(path))(filteredOncotree)
+  const isTaggedNodePath = R.includes(title, datasetOncotreeCodePath)
+  const isTaggedNode = R.equals(title, datasetOncotreeCode)
+  console.log(title, datasetOncotreeCodePath, isTaggedNodePath)
 
   // Local state for expanding children
-  const [expanded, setExpanded] = useState(isFilteredNode)
+  const [expanded, setExpanded] = useState(R.or(isFilteredNode, isTaggedNodePath))
   useEffect(() => setExpanded(isFilteredNode), [filteredOncotree])
+  useEffect(() => setExpanded(isTaggedNodePath), [datasetOncotreeCodePath])
 
-  const isDatasetOncotreeNode = R.equals(datasetOncotreeCode, title)
   return (
     <List.Item>
       <List.Icon size='large' name={R.isNil(children) ? 'circle' : expanded ? 'circle minus' : 'circle plus'}
@@ -40,13 +45,13 @@ function OncotreeDirectoryNode ({
       <List.Content verticalAlign='top'>
         <Popup
           flowing
-          position='top left'
+          position='right center'
           hoverable
           on='click'
           trigger={
             <Button
-              color={isDatasetOncotreeNode ? 'blue' : isFilteredNode ? 'grey' : undefined}
-              basic={R.and(R.not(isDatasetOncotreeNode), R.not(isFilteredNode))}
+              color={isTaggedNodePath ? 'blue' : isFilteredNode ? 'grey' : undefined}
+              basic={R.and(R.not(isTaggedNodePath), R.not(isFilteredNode))}
               onClick={() => setExpanded(!expanded)}
               content={name}
             />
@@ -64,7 +69,18 @@ function OncotreeDirectoryNode ({
           RA.isNotNil(children) &&
           expanded &&
             <List.List>
-            {R.map(node => <OncotreeDirectoryNode key={node.title} {...{node, filteredOncotree, tagDataset, datasetOncotreeCode}} />, children) }
+            {
+              R.compose(
+                R.map(node => <OncotreeDirectoryNode key={node.title} {...{node, filteredOncotree, tagDataset, datasetOncotreeCode, datasetOncotreeCodePath}} />),
+
+                R.isNil(datasetOncotreeCode) ? R.identity :
+                  R.reduce(
+                    (sortedChildren, node) => R.call(R.includes(node.title, datasetOncotreeCodePath) ? R.prepend : R.append, node, sortedChildren),
+                    []
+                  ), 
+              )(children)
+              
+            }
             </List.List>
         }
       </List.Content>
@@ -134,6 +150,15 @@ export default function OncotreeDirectory ({
     )
   )(filteredNodes)
 
+  const oncotreeCodePath = R.ifElse(
+    R.isNil,
+    R_.alwaysEmptyArray,
+    R.compose(
+      R.prop('path'),
+      oncotreeCode => R.find(R.propEq('title', oncotreeCode), oncotreeNodes)
+    )
+  )(oncotreeCode)
+
   return ( 
     <Segment basic>
       <Input
@@ -147,7 +172,14 @@ export default function OncotreeDirectory ({
     {/* Render first layer of oncotree (tissues) */}
     {
       R.compose(
-        R.map(node => <OncotreeDirectoryNode key={node.title} node={node} filteredOncotree={filteredOncotree} tagDataset={tagDataset} datasetOncotreeCode={oncotreeCode} />),
+        R.map(node => <OncotreeDirectoryNode key={node.title} node={node} filteredOncotree={filteredOncotree} tagDataset={tagDataset} datasetOncotreeCode={oncotreeCode} datasetOncotreeCodePath={oncotreeCodePath} />),
+        // If dataset has non null oncotreeCode then bubble that parent tissue to top 
+        R.isNil(oncotreeCode) ? R.identity :
+          R.reduce(
+            (sortedTissues, node) => R.call(R.includes(node.title, oncotreeCodePath) ? R.prepend : R.append, node, sortedTissues),
+            []
+          ),
+          
         // If searching by text (i.e. computing non-null filteredOncotree) then bubble filtered nodes to top
         R.isNil(filteredOncotree) ? R.identity :
           R.compose(
