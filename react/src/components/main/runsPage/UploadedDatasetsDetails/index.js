@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useReducer} from 'react';
 
-import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition, Form} from 'semantic-ui-react'
+import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition, Form, Popup} from 'semantic-ui-react'
 
 import {Sunburst} from 'react-vis'
 
@@ -18,6 +18,7 @@ const TagOncotreeModal = ({
   datasetID,
   disabledTagging
 }) => {
+  const [open, setOpen] = useState(false)
   const oncotree = useOncotreeQuery()
   const {dataset, tagDataset} = useTagDatasetMutation(datasetID)
   if (R.any(R.isNil, [oncotree, dataset])) {
@@ -28,14 +29,29 @@ const TagOncotreeModal = ({
   const {name, cancerTag, oncotreeCode, hasMetadata} = dataset
   return (
     <Modal
+      open={open}
+      onClose={() => setOpen(false)}
       size='large'
       trigger={
-        <Label as={Button}>
-          {name}
-          {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
-          {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
-          <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} />
-        </Label>
+        <Popup
+          flowing
+          on='hover'
+          trigger={
+            <Label as={Button} onClick={() => setOpen(true)}>
+              {name}
+              {/* {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
+              {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+              <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
+            </Label>
+          }
+          content={
+            <Label>
+              {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
+              {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+              <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} />
+            </Label>
+          }
+        />
       }
     >
       <Modal.Content>
