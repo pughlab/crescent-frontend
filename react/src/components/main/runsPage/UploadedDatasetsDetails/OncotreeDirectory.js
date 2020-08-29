@@ -20,7 +20,8 @@ function OncotreeDirectoryNode ({
   filteredOncotree,
   tagDataset,
   datasetOncotreeCode,
-  datasetOncotreeCodePath
+  datasetOncotreeCodePath,
+  disabledTagging
 }) {
   const {title, name, children, path} = node
   // Check if current node is in path of a filtered node
@@ -46,8 +47,10 @@ function OncotreeDirectoryNode ({
           position='right center'
           hoverable
           on='click'
+          disabled={disabledTagging}
           trigger={
             <Button
+              compact
               color={isTaggedNodePath ? 'blue' : isFilteredNode ? 'grey' : undefined}
               basic={R.and(R.not(isTaggedNodePath), R.not(isFilteredNode))}
               onClick={() => setExpanded(!expanded)}
@@ -69,7 +72,7 @@ function OncotreeDirectoryNode ({
             <List.List>
             {
               R.compose(
-                R.addIndex(R.map)((node, idx) => <OncotreeDirectoryNode key={`${node.title}_${idx}`} {...{node, filteredOncotree, tagDataset, datasetOncotreeCode, datasetOncotreeCodePath}} />),
+                R.addIndex(R.map)((node, idx) => <OncotreeDirectoryNode key={`${node.title}_${idx}`} {...{node, filteredOncotree, tagDataset, datasetOncotreeCode, datasetOncotreeCodePath, disabledTagging}} />),
                 // Bubble up current oncotree node path
                 R.isNil(datasetOncotreeCode) ? R.identity :
                   R.reduce(
@@ -99,7 +102,7 @@ function unnestChildren(node) {
 }
 
 export default function OncotreeDirectory ({
-  dataset, tagDataset
+  dataset, tagDataset, disabledTagging
 }) {
   // State for searching oncotree nodes by name
   const [textSearch, setTextSearch] = useState('')
@@ -170,7 +173,7 @@ export default function OncotreeDirectory ({
     {/* Render first layer of oncotree (tissues) */}
     {
       R.compose(
-        R.addIndex(R.map)((node, idx) => <OncotreeDirectoryNode key={`${node.title}_${idx}`} node={node} filteredOncotree={filteredOncotree} tagDataset={tagDataset} datasetOncotreeCode={oncotreeCode} datasetOncotreeCodePath={oncotreeCodePath} />),
+        R.addIndex(R.map)((node, idx) => <OncotreeDirectoryNode key={`${node.title}_${idx}`} node={node} filteredOncotree={filteredOncotree} tagDataset={tagDataset} datasetOncotreeCode={oncotreeCode} datasetOncotreeCodePath={oncotreeCodePath} disabledTagging={disabledTagging}/>),
         // If dataset has non null oncotreeCode then bubble that parent tissue to top 
         R.isNil(oncotreeCode) ? R.identity :
           R.reduce(

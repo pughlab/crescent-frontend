@@ -82,7 +82,7 @@ const TagOncotreeModal = ({
         {/* <OncotreeTree /> */}
         {
           cancerTag ?
-            <OncotreeDirectory {...{dataset, tagDataset}} />
+            <OncotreeDirectory {...{dataset, tagDataset, disabledTagging}} />
           :
             <>
             <Divider horizontal />
