@@ -69,7 +69,7 @@ function OncotreeDirectoryNode ({
             <List.List>
             {
               R.compose(
-                R.map(node => <OncotreeDirectoryNode key={node.title} {...{node, filteredOncotree, tagDataset, datasetOncotreeCode, datasetOncotreeCodePath}} />),
+                R.addIndex(R.map)((node, idx) => <OncotreeDirectoryNode key={`${node.title}_${idx}`} {...{node, filteredOncotree, tagDataset, datasetOncotreeCode, datasetOncotreeCodePath}} />),
                 // Bubble up current oncotree node path
                 R.isNil(datasetOncotreeCode) ? R.identity :
                   R.reduce(
@@ -170,7 +170,7 @@ export default function OncotreeDirectory ({
     {/* Render first layer of oncotree (tissues) */}
     {
       R.compose(
-        R.map(node => <OncotreeDirectoryNode key={node.title} node={node} filteredOncotree={filteredOncotree} tagDataset={tagDataset} datasetOncotreeCode={oncotreeCode} datasetOncotreeCodePath={oncotreeCodePath} />),
+        R.addIndex(R.map)((node, idx) => <OncotreeDirectoryNode key={`${node.title}_${idx}`} node={node} filteredOncotree={filteredOncotree} tagDataset={tagDataset} datasetOncotreeCode={oncotreeCode} datasetOncotreeCodePath={oncotreeCodePath} />),
         // If dataset has non null oncotreeCode then bubble that parent tissue to top 
         R.isNil(oncotreeCode) ? R.identity :
           R.reduce(
