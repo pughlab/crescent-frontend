@@ -21,6 +21,7 @@ import useQCMetricsQuery from './useQCMetricsQuery'
 import useQCViolinQuery from './useQCViolinQuery'
 import useQCScatterQuery from './useQCScatterQuery'
 import useDiffExpressionQuery from './useDiffExpressionQuery'
+import useDiffExpressionGroupsQuery from './useDiffExpressionGroupsQuery'
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
@@ -64,6 +65,8 @@ export {
   useViolinQuery,
   useCategoricalGroupsQuery,
   useCellCountsQuery,
+
+  useDiffExpressionGroupsQuery,
 
   useGraphene,
 }
