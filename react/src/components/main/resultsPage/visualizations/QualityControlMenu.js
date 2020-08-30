@@ -9,31 +9,44 @@ import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useRunDatasetsQuery, useQCAvailableQuery, useQCMetricsQuery} from '../../../../apollo/hooks'
-import {setSelectedQC} from '../../../../redux/actions/resultsPage'
+import {setSelectedQC, setSelectedQCDataset} from '../../../../redux/actions/resultsPage'
 
 const QualityControlMenu = ({
-  runID,
-  datasetID
+  runID
 }) => {    
   // const {runID} = useCrescentContext()
 
   const dispatch = useDispatch()
-  const {selectedQC} = useResultsPage()
+  const {selectedQCDataset, selectedQC} = useResultsPage()
   // const isActiveResult = R.equals(activeResult)
 
   // const run = useRunDatasetsQuery(runID)
 
-  const availableQc = useQCAvailableQuery({runID, datasetID})
-  const qcMetrics = useQCMetricsQuery({runID, datasetID})
+  const run = useRunDatasetsQuery(runID)
 
-  if (R.any(R.isNil, [availableQc, qcMetrics])) {
+  // if (R.isNil(run)) {
+  //   return null
+  // }
+  
+  // const availableQc = useQCAvailableQuery({runID, selectedQCDataset})
+  // const qcMetrics = useQCMetricsQuery({runID, selectedQCDataset})
+
+  // if (R.any(R.isNil, [run, availableQc, qcMetrics])) {
+  //   return null
+  // }
+  if (R.any(R.isNil, [run])) {
     return null
   }
 
-  const {cellcounts: cellcounts} = qcMetrics
-  const {qcSteps: qcSteps} = qcMetrics
+  const {datasets} = run
+  // const {cellcounts: cellcounts} = qcMetrics
+  // const {qcSteps: qcSteps} = qcMetrics
+
+  const datasetIDs = R.pluck('datasetID')(datasets)
 
 
+  console.log('selected dataset: ',selectedQCDataset)
+  console.log('datasetIDs: ', datasetIDs)
   // const [AvailableQCPlots, setAvailableQCPlots] = useState([])
   // var [qcMetrics, setMetrics] = useState([])
 
@@ -80,9 +93,11 @@ const QualityControlMenu = ({
 
   // console.log(R.values(availableQcArray))
 
+  const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
+
   return (
     <>
-    <Divider horizontal content='QC Plot Type' />
+    {/* <Divider horizontal content='QC Plot Type' />
     <Dropdown
       selection
       fluid
@@ -93,9 +108,23 @@ const QualityControlMenu = ({
       onChange={(e, {value}) => dispatch(setSelectedQC({value}))}
 
       defaultValue={RA.isNotNilOrEmpty(selectedQC) ? selectedQC : ''}
+    /> */}
+    <Divider horizontal content='Datasets' />
+    <Dropdown
+      selection
+      fluid
+      labeled
+      options={formatList(datasetIDs)}
+      // options = {dropdown_plots}
+      value={selectedQCDataset}
+      defaultValue={RA.isNotNil(selectedQCDataset) ? selectedQCDataset : dispatch(setSelectedQCDataset({value: datasetIDs[0]}))}
+
+      onChange={(e, {value}) => dispatch(setSelectedQCDataset({value}))}
+
+      // defaultValue={RA.isNotNilOrEmpty(selectedQC) ? selectedQC : ''}
     />
 
-    <Divider horizontal content='QC Metrics' />
+    {/* <Divider horizontal content='QC Metrics' />
     <Segment basic textAlign='center' style={{padding: '0rem'}}>
     <Label basic color={'blue'} size={'medium'}>
       Cells Before QC:
@@ -156,7 +185,7 @@ const QualityControlMenu = ({
             </Segment>
         ))
       )(qcSteps)
-    }
+    } */}
     </>
   )
 }

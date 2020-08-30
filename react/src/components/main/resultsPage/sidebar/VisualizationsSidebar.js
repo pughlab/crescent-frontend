@@ -104,7 +104,7 @@ const VisualizationsSidebar = ({
                 {
                 R.ifElse(
                   R.equals('qc'),
-                  R.always(<QualityControlMenu {...{runID, datasetID}} />),
+                  R.always(<QualityControlMenu {...{runID}} />),
                   R.always(<VisualizationMenu/>)
                 )(activeResult)
                 }
