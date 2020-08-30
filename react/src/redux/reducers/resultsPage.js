@@ -10,6 +10,7 @@ const initialState = {
   selectedFeature: null,
   selectedGroup: null,
   selectedDiffExpression: 'All',
+  selectedQCDataset: null,
 }
 
 export default createReducer(
@@ -37,6 +38,12 @@ export default createReducer(
       const {value} = payload
       return R.evolve({
         selectedQC: R.always(value)
+      })(state)
+    },
+    'resultsPage/setSelectedQCDataset': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        selectedQCDataset: R.always(value)
       })(state)
     },
     'resultsPage/setSelectedGroup': (state, payload) => {

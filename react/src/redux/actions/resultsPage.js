@@ -28,6 +28,13 @@ const setSelectedQC = ({value}) => ({
   }
 })
 
+const setSelectedQCDataset = ({value}) => ({
+  type: 'resultsPage/setSelectedQCDataset',
+  payload: {
+    value
+  }
+})
+
 const setSelectedFeature = ({value}) => ({
   type: 'resultsPage/setSelectedFeature',
   payload: {
@@ -57,6 +64,7 @@ export {
   setActivePipelineStep,
   setActiveResult,
   setSelectedQC,
+  setSelectedQCDataset,
   setSelectedFeature,
   setSelectedGroup,
   setSelectedDiffExpression,
