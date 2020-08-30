@@ -8,10 +8,8 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useDiffExpressionQuery, useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useCategoricalGroupsQuery} from '../../../../apollo/hooks'
+import {useDiffExpressionQuery, useDiffExpressionGroupsQuery, useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useCategoricalGroupsQuery} from '../../../../apollo/hooks'
 import {setSelectedFeature, setSelectedGroup, setSelectedDiffExpression} from '../../../../redux/actions/resultsPage'
-
-import reduxThunks from '../../../../redux/actions/thunks'
 
 const VisualizationMenu = ({
 }) => { 
@@ -31,7 +29,9 @@ const VisualizationMenu = ({
 
   const diffExpression = useDiffExpressionQuery(runID)
   
-  const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
+  // const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
+
+  const groups = useDiffExpressionGroupsQuery(runID, selectedDiffExpression)
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
   console.log("RUNID:", runID)
   console.log("DIFF:", diffExpression)
@@ -169,7 +169,8 @@ const VisualizationMenu = ({
               selection
               labeled
               // all groups! assumes that first group is categorical (might not be true in the future)
-              defaultValue={RA.isNotNil(selectedDiffExpression) ? selectedDiffExpression : dispatch(setSelectedDiffExpression({value: diffExpression[0]}))}
+              // defaultValue={RA.isNotNil(selectedDiffExpression) ? selectedDiffExpression : dispatch(setSelectedDiffExpression({value: diffExpression[0]}))}
+              value={selectedDiffExpression}
               // defaultValue={selectedDiffExpression}
               // options={formatList(groups)}
               // options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
@@ -187,7 +188,10 @@ const VisualizationMenu = ({
               selection
               labeled
               // all groups! assumes that first group is categorical (might not be true in the future)
-              defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : dispatch(setSelectedGroup({value: groups[0]}))}
+              // defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : dispatch(setSelectedGroup({value: groups[0]}))}
+              value={selectedGroup}
+              // defaultValue={selectedGroup}
+
               options={formatList(groups)}
               // options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
 
