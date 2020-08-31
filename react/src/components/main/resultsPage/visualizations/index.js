@@ -25,20 +25,13 @@ const VisualizationsComponent = ({
   const dispatch = useDispatch()
   const {activeResult} = useResultsPage()
 
-  const plots = useResultsAvailableQuery(runID)
-
-  if (R.any(R.isNil, [run, plots])) {
+  if (R.any(R.isNil, [run])) {
     return null
   }
 
   const {status: runStatus} = run
 
-  const determinePlotType = R.cond([
-    [R.equals('violin'), R.always(<ViolinPlot/>)],
-    [R.equals('qc'), R.always(<QCPlot/>)],
-    [R.equals('tsne'), R.always(<ScatterPlot/>)],
-    [R.equals('umap'), R.always(<ScatterPlot/>)]
-  ])
+  const isActiveResult = R.equals(activeResult)
 
   return (
     <>
@@ -66,8 +59,12 @@ const VisualizationsComponent = ({
             </Segment>
           ),
           R.always(
-            <Segment style={{height: '84vh'}} color='violet'>
-              {determinePlotType(activeResult)}
+            <Segment style={{height: '100%'}} color='violet'>
+              {
+                isActiveResult('qc') ? <QCPlot />
+                : isActiveResult('violin') ? <ViolinPlot />
+                : (isActiveResult('tsne') || isActiveResult('umap')) && <ScatterPlot />
+              }
             </Segment>
           )
         )(activeResult)
@@ -77,23 +74,3 @@ const VisualizationsComponent = ({
 }
 
 export default VisualizationsComponent
-
-//   if (R.equals('submitted', runStatus)) {
-//     return (
-//       <Segment style={{height: '100%'}}>
-//         <Segment style={{height: '100%'}} basic placeholder>
-//           <Tada forever duration={1000}>
-//             <Image src={Logo} centered size='medium' />
-//           </Tada>
-//           <Header content='' textAlign='center' />
-//         </Segment>
-//       </Segment>
-//     )
-//   }
-//   return (
-//     <Segment style={{height: '100%'}} color='violet'>      
-//     </Segment>
-//   )
-// }
-
-// export default VisualizationsComponent
