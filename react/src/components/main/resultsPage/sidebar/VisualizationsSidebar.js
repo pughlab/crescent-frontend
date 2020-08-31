@@ -7,7 +7,7 @@ import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/hooks'
-import {setActiveResult} from '../../../../redux/actions/resultsPage'
+import {setActiveResult, addPlot, setActivePlot} from '../../../../redux/actions/resultsPage'
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
 import QualityControlMenu from '../../resultsPage/visualizations/QualityControlMenu'
@@ -16,12 +16,22 @@ const MultiPlotSelector = ({
 
 }) => {
   const [numPlots, setNumPlots] = useState(1)
+  
+  const dispatch = useDispatch()
+  const {activePlot, plotQueries} = useResultsPage()
 
   return (
     <Menu attached='top' color='violet'>
-      <Menu.Item active  content={1} />
-      <Menu.Item  content={2} />
-      <Menu.Item icon='plus' onClick={() => {}} />
+      {
+        R.compose(
+          R.addIndex(R.map)((plot, idx) => (
+            <Menu.Item active={R.equals(activePlot, idx)} content={R.inc(idx)}
+              onClick={() => dispatch(setActivePlot({value: idx}))}
+            />
+          ))
+        )(plotQueries)
+      }
+      <Menu.Item icon='plus' onClick={() => dispatch(addPlot())} />
     </Menu>
   )
 }

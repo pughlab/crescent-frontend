@@ -2,6 +2,15 @@ import * as R from 'ramda'
 import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
 
+const initialPlotQuery = {
+  activeResult: null,
+  selectedQC: 'Before_After_Filtering',
+  selectedFeature: null,
+  selectedGroup: null,
+  selectedDiffExpression: 'All',
+  selectedQCDataset: null,
+}
+
 const initialState = {
   activeSidebarTab: 'parameters', // visualizations
   activePipelineStep: null,
@@ -11,6 +20,20 @@ const initialState = {
   selectedGroup: null,
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
+
+  activePlot: 0,
+  plotQueries: [
+    {
+      activeResult: null,
+      selectedQC: 'Before_After_Filtering',
+      selectedFeature: null,
+      selectedGroup: null,
+      selectedDiffExpression: 'All',
+      selectedQCDataset: null,
+    }
+  ]
+
+
 }
 
 export default createReducer(
@@ -71,6 +94,27 @@ export default createReducer(
         selectedGroup: R_.alwaysNull,
       })(state)
     },
+
+    'resultsPage/addPlot': (state, payload) => {
+      const {plotQueries} = state
+      const addAndSetActivePlot =         R.evolve({
+        activePlot: R.always(R.length(plotQueries)),
+        plotQueries: R.append(initialPlotQuery)
+      })
+      return R.ifElse(
+        R.propSatisfies(R.compose(R.lt(6), R.length), 'plotQueries'),
+        R.identity,
+        addAndSetActivePlot
+      )(state)
+    },
+
+    'resultsPage/setActivePlot': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        activePlot: R.always(value)
+      })(state)
+    },
+
 
     'resultsPage/reset': R.always(initialState),
   }

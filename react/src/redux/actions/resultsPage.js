@@ -56,6 +56,15 @@ const setSelectedDiffExpression = ({value}) => ({
   }
 })
 
+const addPlot = () => ({
+  type: 'resultsPage/addPlot',
+  payload: {}
+})
+
+const setActivePlot = ({value}) => ({
+  type: 'resultsPage/setActivePlot',
+  payload: {value}
+})
 
 const resetResultsPage = R.always({type: 'resultsPage/reset'})
 
@@ -68,5 +77,7 @@ export {
   setSelectedFeature,
   setSelectedGroup,
   setSelectedDiffExpression,
-  resetResultsPage
+  resetResultsPage,
+  addPlot,
+  setActivePlot,
 }
