@@ -128,13 +128,13 @@ const VisualizationMenu = ({
 
   // console.log("TOPEXPrESED ARR: ", topExpressedArray) 
 
-  const featureButton = ({gene, pVal, avgLogFc, cluster}) => {
+  const FeatureButton = ({gene, pVal, avgLogFc, cluster}) => {
     return (
       <Popup
         size={'tiny'}
         inverted
         trigger={
-          <Button value={gene}
+          <Button value={gene} size='tiny'
             onClick={handleSelectFeature}
             color='violet'
             style={{margin: '0.25rem'}}
@@ -153,100 +153,66 @@ const VisualizationMenu = ({
     )
   }
 
-  // format a list for a dropdown
-  const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
-
   // console.log("AVAILABLE GROUPS:", availableGroupsArray)
   // console.log("SELECTED GROUPS:", selectedGroup)
 
   
   return(
     <Form>
-      <Divider horizontal content='Datasets' />
+        <Divider horizontal content='Datasets' />
         <Form.Field>
-        <Form.Dropdown
-              fluid
-              selection
-              labeled
-              // all groups! assumes that first group is categorical (might not be true in the future)
-              // defaultValue={RA.isNotNil(selectedDiffExpression) ? selectedDiffExpression : dispatch(setSelectedDiffExpression({value: diffExpression[0]}))}
-              value={selectedDiffExpression}
-              // defaultValue={selectedDiffExpression}
-              // options={formatList(groups)}
-              // options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
-              options={diffExpression}
-              // onChange={(event, {value}) => dispatch(changeActiveGroup({value}))}
-              onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value}))}
-
-            />
+        <Form.Dropdown fluid selection labeled
+          value={selectedDiffExpression}
+          options={diffExpression}
+          onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value}))}
+        />
         </Form.Field>
 
-      <Divider horizontal content='Colour By' />
+        <Divider horizontal content='Colour By' />
         <Form.Field>
-            <Form.Dropdown
-              fluid
-              selection
-              labeled
-              // all groups! assumes that first group is categorical (might not be true in the future)
-              // defaultValue={RA.isNotNil(selectedGroup) ? selectedGroup : dispatch(setSelectedGroup({value: groups[0]}))}
-              value={selectedGroup}
-              // defaultValue={selectedGroup}
-
-              options={formatList(groups)}
-              // options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
-
-              // onChange={(event, {value}) => dispatch(changeActiveGroup({value}))}
-              onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
-
-            />
-          </Form.Field>
-        <Divider horizontal />
-        <Form.Field>
-        {/* Reset feature selection */}
-        <Form.Button
-          fluid
-          animated='vertical'
-          color='violet'
-          disabled={R.isNil(selectedFeature)}
-          onClick={resetSelectFeature}
-        >
-          <Button.Content visible>
-          {
-            RA.isNotNil(selectedFeature) ? selectedFeature : 'Select or Search for a Gene'
-          }
-          </Button.Content>
-          <Button.Content hidden>
-          {
-            RA.isNotNil(selectedFeature) && 'Click to Reset'
-          }
-          </Button.Content>
-        </Form.Button>
-      </Form.Field>
+          <Form.Dropdown fluid selection labeled
+            // All groups! assumes that first group is categorical (might not be true in the future)
+            value={selectedGroup}
+            options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
+            onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
+          />
+        </Form.Field>
       <Divider horizontal content='Search Genes' />
-      <Form.Dropdown
-        placeholder={"Enter Gene Symbol"}
-        fluid
-        search
-        searchQuery={currentSearch}
-        selection
-        options={search}
-        value={selectedFeature}
-        onSearchChange={ handleSearchChange}
-        onChange={handleSelectFeature}
-      />
+      <Form.Group>
+        <Form.Field width={12}>
+          <Form.Dropdown
+            placeholder={"Enter Gene Symbol"}
+            fluid
+            search
+            searchQuery={currentSearch}
+            selection
+            options={search}
+            value={selectedFeature}
+            onSearchChange={ handleSearchChange}
+            onChange={handleSelectFeature}
+          />
+        </Form.Field>
+
+        <Form.Field width={4}>
+           <Button fluid disabled={R.isNil(selectedFeature)} icon='close' color='violet' onClick={() => resetSelectFeature({value: null})} />
+        </Form.Field>
+      </Form.Group>
+
       <Divider horizontal content='Top Differentially Expressed Genes' />
       {
         RA.isNotEmpty(topExpressed) &&
         <Segment basic
-          style={{maxHeight: '28vh', overflowY: 'scroll'}}
+          style={{maxHeight: '30vh', overflowY: 'scroll'}}
         >
           {
             R.compose(
               R.map(
                 ([cluster, features]) => (
-                  <Segment key={cluster} compact>
+                  <Segment key={cluster} compact size='small'>
                     <Label attached='top' content={`Cluster ${cluster}`} />
-                    {R.map(featureButton, features)}
+                    {
+                      R.addIndex(R.map)((feature, idx) => <FeatureButton key={idx} {...feature} />)(features)
+                    }
                   </Segment>
                 )
              ),
