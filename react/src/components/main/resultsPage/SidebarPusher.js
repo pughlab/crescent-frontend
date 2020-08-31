@@ -31,9 +31,9 @@ const ResultsPageSidebarPusher = ({
   const dispatch = useDispatch()
   const {runID} = useCrescentContext()
   useEffect(() => {dispatch(resetResultsPage())}, [runID])
-  const {activeSidebarTab} = useResultsPage()
+  const {activeSidebarTab, sidebarVisible} = useResultsPage()
 
-  const rightRef = React.useRef()
+  // Move this into redux
   const [visible, setVisible] = React.useState(true)
   return (
     <Grid stretched>
