@@ -14,12 +14,16 @@ import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useQCScatterQuery} from '../../../../apollo/hooks'
 
+import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
+ 
 const QCScatterPlot = ({
+  // plotIndex
 }) => { 
 
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
   const {selectedQC} = useResultsPage()
+  // const {selectedQC} = useResultsPagePlotQuery(index)
   console.log(selectedQC)
 
   // const qcType = "Number_of_Genes"

@@ -22,3 +22,9 @@ export default function useResultsPage() {
   console.log(resultsPage)
   return resultsPage
 }
+
+export function useResultsPagePlotQuery(index) {
+  const {plotQueries} = useResultsPage()
+  const plotQuery = plotQueries[index]
+  return plotQuery
+}
