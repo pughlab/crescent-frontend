@@ -33,10 +33,10 @@ const VisualizationMenu = ({
 
   const groups = useDiffExpressionGroupsQuery(runID, selectedDiffExpression)
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
-  console.log("RUNID:", runID)
-  console.log("DIFF:", diffExpression)
-  console.log("SEL DIFF:", selectedDiffExpression)
-  console.log("SEL GROUP:", selectedGroup)
+  // console.log("RUNID:", runID)
+  // console.log("DIFF:", diffExpression)
+  // console.log("SEL DIFF:", selectedDiffExpression)
+  // console.log("SEL GROUP:", selectedGroup)
 
   const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression)
   const search = useSearchFeaturesQuery(currentSearch, runID)
@@ -47,63 +47,6 @@ const VisualizationMenu = ({
     // console.log(groups, topExpressed)
     return null
   }
-
-    
-  // const availableGroupsArray = R.compose(
-  //   R.head,
-  //   R.values
-  // )(groups)
-
-  // const topExpressedArray = R.compose(
-  //   R.head,
-  //   R.values
-  // )(topExpressed)
-
-  // const searchArray = []
-  // searchArray.push(search)
-  // const searchArray = R.values(search)
-  // console.log(searchArray)
-
-  //console.log("SELECTED GROUP: ", selectedGroup) 
-  //console.log("SELECTED FEATURE: ", selectedFeature) 
- 
-
-  //HERE CHECK RESPONSE, HANDLE SEARCH CHANGE, SELECT FEATURE
-  //RESET FEATURE, FEATURE BUTTON
-
-
-  // const checkResponse = (resp) => {
-  //   if(!resp.ok){throw Error(resp.statusText);}
-  //   return resp
-  // }
-
- 
-  // UNSURE
-  // const handleSearchChange = (event, {searchQuery}) => {
-  //   changeSearch(searchQuery)
-  //   console.log("SEARCH QUERY:", searchQuery)
-  //   if (RA.isNotEmpty(searchQuery)) {
-  //     const isOption = gene => R.startsWith(searchQuery, gene)
-  //     console.log(" ALL GENE: ", R.map(R.prop('gene'), topExpressedArray))
-  //     const allGenes = R.map(R.prop('gene'), topExpressedArray)
-  //     const options =  R.filter(isOption, allGenes)
-  //     console.log("OPTIONS:", options)
-  //     console.log("TEST:", isOption('CAN'))
-  //     changeCurrentOptions(options)
-  //     console.log("CURR OP", currentOptions)
-  //   }
-  // }
-
-  // const handleSearchChange = (event, {searchQuery}) => {
-  //   changeSearch(searchQuery)
-  //   if (RA.isNotEmpty(searchQuery)) {
-  //     fetch(`/express/search/${searchQuery}/${runID}`)
-  //       .then(checkResponse)
-  //       .then(resp => resp.json())
-  //       .then(changeCurrentOptions)
-  //       .catch((err) => console.log(err))
-  //   }
-  // }
 
   const handleSearchChange = (event, {searchQuery}) => {
     console.log("SEARCH QUERY", searchQuery)
