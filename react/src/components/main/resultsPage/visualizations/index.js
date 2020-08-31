@@ -59,13 +59,37 @@ const VisualizationsComponent = ({
             </Segment>
           ),
           R.always(
-            <Segment style={{height: '100%'}} color='violet'>
+            <>
+            <Segment style={{height: '60vh'}} color='violet'>
               {
                 isActiveResult('qc') ? <QCPlot />
                 : isActiveResult('violin') ? <ViolinPlot />
                 : (isActiveResult('tsne') || isActiveResult('umap')) && <ScatterPlot />
               }
             </Segment>
+            {/* <Segment style={{height: '60vh'}} color='violet'>
+              {
+                isActiveResult('qc') ? <QCPlot />
+                : isActiveResult('violin') ? <ViolinPlot />
+                : (isActiveResult('tsne') || isActiveResult('umap')) && <ScatterPlot />
+              }
+            </Segment>
+            <Segment style={{height: '60vh'}} color='violet'>
+              {
+                isActiveResult('qc') ? <QCPlot />
+                : isActiveResult('violin') ? <ViolinPlot />
+                : (isActiveResult('tsne') || isActiveResult('umap')) && <ScatterPlot />
+              }
+            </Segment>
+            <Segment style={{height: '60vh'}} color='violet'>
+              {
+                isActiveResult('qc') ? <QCPlot />
+                : isActiveResult('violin') ? <ViolinPlot />
+                : (isActiveResult('tsne') || isActiveResult('umap')) && <ScatterPlot />
+              }
+            </Segment> */}
+
+            </>
           )
         )(activeResult)
       }

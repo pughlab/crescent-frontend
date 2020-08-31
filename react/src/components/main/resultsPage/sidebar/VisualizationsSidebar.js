@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Icon, Step, Header, Dropdown, Form, Divider } from 'semantic-ui-react'
+import { Segment, Button, Icon, Step, Header, Dropdown, Form, Divider, Menu, Label } from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
@@ -11,6 +11,20 @@ import {setActiveResult} from '../../../../redux/actions/resultsPage'
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
 import QualityControlMenu from '../../resultsPage/visualizations/QualityControlMenu'
+
+const MultiPlotSelector = ({
+
+}) => {
+  const [numPlots, setNumPlots] = useState(1)
+
+  return (
+    <Menu attached='top' color='violet'>
+      <Menu.Item active  content={1} />
+      <Menu.Item  content={2} />
+      <Menu.Item icon='plus' onClick={() => {}} />
+    </Menu>
+  )
+}
 
 const VisualizationsSidebar = ({
 }) => {    
@@ -84,8 +98,10 @@ const VisualizationsSidebar = ({
             </Step.Group>
           ),
           R.always(
-            <Segment.Group>
-              <Segment as={Form}>
+            <>
+              <MultiPlotSelector />
+
+              <Segment as={Form} attached>
                 <Divider horizontal content='Plots' />
                 <Form.Field>
                   <Dropdown fluid selection labeled
@@ -97,7 +113,7 @@ const VisualizationsSidebar = ({
                   />
                 </Form.Field>
               </Segment>
-              <Segment>
+              <Segment attached='bottom'>
                 {
                   R.ifElse(
                     R.equals('qc'),
@@ -106,7 +122,7 @@ const VisualizationsSidebar = ({
                   )(activeResult)
                 }
               </Segment>
-            </Segment.Group>
+            </>
           )
         )(activeResult)
       }
