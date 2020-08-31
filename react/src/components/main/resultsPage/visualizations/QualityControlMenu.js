@@ -15,8 +15,9 @@ import {setSelectedQC, setSelectedQCDataset} from '../../../../redux/actions/res
 import {useRunDatasetsDropdownQuery} from '../../../../apollo/hooks/useRunDatasetsQuery'
 
 const QualityControlMenu = ({
-  runID
+  
 }) => {    
+  const {runID} = useCrescentContext()
   const dispatch = useDispatch()
   const {selectedQCDataset, selectedQC} = useResultsPage()
   const datasetsOptions = useRunDatasetsDropdownQuery(runID, {
