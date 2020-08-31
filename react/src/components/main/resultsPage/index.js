@@ -14,6 +14,8 @@ import {useDispatch} from 'react-redux'
 
 import Fade from 'react-reveal/Fade'
 
+import ResultsPageSidebarPusher from './SidebarPusher'
+
 const ResultsPageComponent = ({
 
 }) => {
@@ -23,8 +25,8 @@ const ResultsPageComponent = ({
   const {activeSidebarTab} = useResultsPage()
   return (
     <Fade duration={2000}>
-    <Segment basic style={{minHeight: 'calc(100vh - 10rem)'}} as={Grid}>
-      <Grid.Column width={11}>
+    <Segment basic style={{minHeight: 'calc(100vh - 10rem)'}} as={Grid} stretched columns={1}>
+      {/* <Grid.Column width={11}>
         {
           R.cond([
             [R.equals('parameters'), R.always(<ParametersComponent />)],
@@ -34,6 +36,9 @@ const ResultsPageComponent = ({
       </Grid.Column>
       <Grid.Column width={5}>
           <SidebarComponent />
+      </Grid.Column> */}
+      <Grid.Column>
+        <ResultsPageSidebarPusher />
       </Grid.Column>
     </Segment>
     </Fade>

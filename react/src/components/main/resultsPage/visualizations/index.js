@@ -56,7 +56,7 @@ const VisualizationsComponent = ({
         R.ifElse(
           R.isNil,
           R.always(
-            <Segment style={{height: '100%'}} color='violet' placeholder>
+            <Segment color='violet' placeholder>
               <Shake forever duration={10000}>
               <Header textAlign='center' icon>
                 <Icon name='right arrow' />
