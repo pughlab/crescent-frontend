@@ -14,27 +14,30 @@ const initialPlotQuery = {
 const initialState = {
   activeSidebarTab: 'parameters', // visualizations
   activePipelineStep: null,
-  activeResult: null,
-  selectedQC: 'Before_After_Filtering',
-  selectedFeature: null,
-  selectedGroup: null,
-  selectedDiffExpression: 'All',
-  selectedQCDataset: null,
+  // activeResult: null,
+  // selectedQC: 'Before_After_Filtering',
+  // selectedFeature: null,
+  // selectedGroup: null,
+  // selectedDiffExpression: 'All',
+  // selectedQCDataset: null,
 
   activePlot: 0,
   plotQueries: [
-    {
-      activeResult: null,
-      selectedQC: 'Before_After_Filtering',
-      selectedFeature: null,
-      selectedGroup: null,
-      selectedDiffExpression: 'All',
-      selectedQCDataset: null,
-    }
+    initialPlotQuery
+    // {
+    //   activeResult: null,
+    //   selectedQC: 'Before_After_Filtering',
+    //   selectedFeature: null,
+    //   selectedGroup: null,
+    //   selectedDiffExpression: 'All',
+    //   selectedQCDataset: null,
+    // }
   ]
 
 
 }
+
+const evolveAtIndex = (transformations, index) => R.over(R.lensIndex(index), R.evolve(transformations))
 
 export default createReducer(
   initialState, {
@@ -51,47 +54,64 @@ export default createReducer(
         activePipelineStep: R.always(pipelineStep)
       })(state)
     },
+
+    // for plot
     'resultsPage/setActiveResult': (state, payload) => {
       const {result} = payload
+      const {activePlot} = state
       return R.evolve({
-        activeResult: R.always(result)
+        // activeResult: R.always(result)
+        plotQueries: evolveAtIndex({activeResult: R.always(result)}, activePlot)
       })(state)
     },
+    // for plot
     'resultsPage/setSelectedQC': (state, payload) => {
       const {value} = payload
+      const {activePlot} = state
       return R.evolve({
-        selectedQC: R.always(value)
+        // selectedQC: R.always(value)
+        plotQueries: evolveAtIndex({selectedQC: R.always(value)}, activePlot)
       })(state)
     },
+    // for plot
     'resultsPage/setSelectedQCDataset': (state, payload) => {
       const {value} = payload
+      const {activePlot} = state
       return R.evolve({
-        selectedQCDataset: R.always(value)
+        // selectedQCDataset: R.always(value)
+        plotQueries: evolveAtIndex({selectedQCDataset: R.always(value)}, activePlot)
       })(state)
     },
+    // for plot
     'resultsPage/setSelectedGroup': (state, payload) => {
       const {value} = payload
+      const {activePlot} = state
       return R.evolve({
-        selectedGroup: R.always(value)
+        // selectedGroup: R.always(value)
+        plotQueries: evolveAtIndex({selectedGroup: R.always(value)}, activePlot)
       })(state)
     },
+    // for plot
     'resultsPage/setSelectedFeature': (state, payload) => {
       const {value} = payload
+      const {activePlot} = state
       return R.evolve({
-        selectedFeature: R.always(value)
+        // selectedFeature: R.always(value)
+        plotQueries: evolveAtIndex({selectedFeature: R.always(value)}, activePlot)
       })(state)
     },
-    'resultsPage/setSelectedGroup': (state, payload) => {
-      const {value} = payload
-      return R.evolve({
-        selectedGroup: R.always(value)
-      })(state)
-    },
+    // for plot
     'resultsPage/setSelectedDiffExpression': (state, payload) => {
       const {value} = payload
+      const {activePlot} = state
       return R.evolve({
-        selectedDiffExpression: R.always(value),
-        selectedGroup: R_.alwaysNull,
+        plotQueries: evolveAtIndex(
+          {
+            selectedDiffExpression: R.always(value),
+            selectedGroup: R_.alwaysNull
+          },
+          activePlot
+        )
       })(state)
     },
 
