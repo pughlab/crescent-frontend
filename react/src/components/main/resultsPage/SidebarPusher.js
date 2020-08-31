@@ -9,7 +9,8 @@ import { Segment, Transition, Grid, Image, Message, Label,   Checkbox,
   Button,
   Container,
   Form,
-  Dimmer, } from 'semantic-ui-react'
+  Dimmer,
+  Popup, } from 'semantic-ui-react'
 
 import SidebarComponent from './sidebar'
 import ParametersComponent from './parameters'
@@ -32,45 +33,41 @@ const ResultsPageSidebarPusher = ({
   useEffect(() => {dispatch(resetResultsPage())}, [runID])
   const {activeSidebarTab} = useResultsPage()
 
-  const leftRef = React.useRef()
   const rightRef = React.useRef()
-  const [visible, setVisible] = React.useState(false)
+  const [visible, setVisible] = React.useState(true)
   return (
-    <Sidebar.Pushable>
-      <Sidebar
-        as={Segment}
-        animation='scale down'
-        direction='right'
-        target={rightRef}
-        visible={visible}
-        width='very wide'
-      >
-              <Button fluid
-                content='open'
-                onClick={() => setVisible(!visible)}
-              />
-        <SidebarComponent />
-      </Sidebar>
+    <Grid stretched>
+      <Grid.Column width={visible ? 10 : 15}>
+      {
+        R.cond([
+          [R.equals('parameters'), R.always(<ParametersComponent />)],
+          [R.equals('visualizations'), R.always(<VisualizationsComponent />)]
+        ])(activeSidebarTab)
+      }
+      </Grid.Column>
+      <Grid.Column width={1}>
+        <Popup
+          position='left center'
+          inverted
+          on='hover'
+          trigger={
+            <Button
+              color='black' basic
+              icon={visible ? 'right arrow' : 'left arrow'}
+              onClick={() => setVisible(!visible)}
+            />
+          }
+          content={visible ? 'Hide menu' : 'Show menu'}
+        />
+      </Grid.Column>
 
-      <Sidebar.Pusher as={Grid} stretched>
-
-            <Grid.Column width={15}>
-            {
-              R.cond([
-                [R.equals('parameters'), R.always(<ParametersComponent />)],
-                [R.equals('visualizations'), R.always(<VisualizationsComponent />)]
-              ])(activeSidebarTab)
-            }
-            </Grid.Column>
-            <Grid.Column width={1}>
-
-              <Button
-                content='open'
-                onClick={() => setVisible(!visible)}
-              />
-            </Grid.Column>
-      </Sidebar.Pusher>
-    </Sidebar.Pushable>
+      {
+        visible && 
+        <Grid.Column width={5}>
+          <SidebarComponent />
+        </Grid.Column>
+      }
+    </Grid>
   )
 }
 
