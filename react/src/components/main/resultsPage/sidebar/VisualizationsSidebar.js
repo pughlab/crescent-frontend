@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Icon, Step, Header } from 'semantic-ui-react'
+import { Segment, Button, Icon, Step, Header, Dropdown, Form, Divider } from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
@@ -70,16 +70,12 @@ const VisualizationsSidebar = ({
                 R.addIndex(R.map)(
                   ({result, label, description}, index) => (
                     // (result, index) => (
-                    <Step key={index}
-                      onClick={() => dispatch(setActiveResult({result}))}
-
-                    >
+                    <Step key={index} onClick={() => dispatch(setActiveResult({result}))} >
                       {
                         isActiveResult(result)
                         && <Icon name='eye' color='violet'/>
                       }
                       <Step.Content title={label} description={description} />
-                      {/* <Step.Content title={result} description={result} /> */}
                     </Step>
                   )
                 )
@@ -89,24 +85,25 @@ const VisualizationsSidebar = ({
           ),
           R.always(
             <Segment.Group>
-              <Button color='violet' fluid  animated='vertical' attached='top'
-                onClick={() => dispatch(setActiveResult({result: null}))}
-
-              >
-                <Button.Content visible>
-                  <Icon name='arrow left' />
-                </Button.Content>
-                <Button.Content hidden>
-                  Click to go back
-                </Button.Content>
-              </Button>
+              <Segment as={Form}>
+                <Divider horizontal content='Plots' />
+                <Form.Field>
+                  <Dropdown fluid selection labeled
+                    value={activeResult}
+                    options={R.compose(
+                      R.map(({result, label, description}) => ({key: result, value: result, text: description}))
+                    )(plots)}
+                    onChange={(e, {value}) => dispatch(setActiveResult({result: value}))}
+                  />
+                </Form.Field>
+              </Segment>
               <Segment>
                 {
-                R.ifElse(
-                  R.equals('qc'),
-                  R.always(<QualityControlMenu {...{runID}} />),
-                  R.always(<VisualizationMenu/>)
-                )(activeResult)
+                  R.ifElse(
+                    R.equals('qc'),
+                    R.always(<QualityControlMenu />),
+                    R.always(<VisualizationMenu/>)
+                  )(activeResult)
                 }
               </Segment>
             </Segment.Group>
