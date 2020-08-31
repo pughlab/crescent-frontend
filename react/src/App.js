@@ -60,9 +60,9 @@ const App = () => {
 
   return (
     <div ref={stickyRef} style={{minHeight: '100vh'}}>
-      <Sticky context={stickyRef}>
+      {/* <Sticky context={stickyRef}> */}
         <MenuComponent />
-      </Sticky>
+      {/* </Sticky> */}
       <Segment basic style={{marginTop: 0, paddingTop: 0}}>
       {
         R.cond([
