@@ -21,6 +21,7 @@ const initialState = {
   // selectedDiffExpression: 'All',
   // selectedQCDataset: null,
 
+  sidebarCollapsed: false,
   activePlot: 0,
   plotQueries: [
     initialPlotQuery
@@ -132,6 +133,12 @@ export default createReducer(
       const {value} = payload
       return R.evolve({
         activePlot: R.always(value)
+      })(state)
+    },
+
+    'resultsPage/toggleSidebarCollapsed': (state, payload) => {
+      return R.evolve({
+        sidebarCollapsed: R.not
       })(state)
     },
 

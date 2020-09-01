@@ -20,7 +20,7 @@ import ParametersComponent from './parameters'
 import VisualizationsComponent from './visualizations'
 
 import {useResultsPage} from '../../../redux/hooks'
-import {resetResultsPage} from '../../../redux/actions/resultsPage'
+import {resetResultsPage, toggleSidebarCollapsed} from '../../../redux/actions/resultsPage'
 import {useCrescentContext} from '../../../redux/hooks'
 import {useDispatch} from 'react-redux'
 
@@ -34,15 +34,11 @@ const ResultsPageSidebarPusher = ({
   const dispatch = useDispatch()
   const {runID} = useCrescentContext()
   useEffect(() => {dispatch(resetResultsPage())}, [runID])
-  const {activeSidebarTab, sidebarVisible} = useResultsPage()
-
-  // Move this into redux
-  const [visible, setVisible] = React.useState(true)
+  const {activeSidebarTab, sidebarCollapsed} = useResultsPage()
 
   const stickyRef = useRef()
 
-  const [showScroll, setShowScroll] = useState(false)
-
+  // const [showScroll, setShowScroll] = useState(false)
   // Resets plot zooming on scroll
   // window.addEventListener('scroll', 
   //   () => {
@@ -57,7 +53,7 @@ const ResultsPageSidebarPusher = ({
   return (
     <Ref innerRef={stickyRef}>
     <Grid>
-      <Grid.Column width={visible ? 10 : 15} stretched>
+      <Grid.Column width={sidebarCollapsed ? 10 : 15} stretched>
       {
         R.cond([
           [R.equals('parameters'), R.always(<ParametersComponent />)],
@@ -67,7 +63,7 @@ const ResultsPageSidebarPusher = ({
       </Grid.Column>
 
       {
-        visible && 
+        sidebarCollapsed && 
         <Grid.Column width={5} stretched>
           <Fade right>
           <SidebarComponent />
@@ -78,20 +74,20 @@ const ResultsPageSidebarPusher = ({
       <Grid.Column width={1} stretched>
       <Sticky context={stickyRef}>
         <Popup
-          position='left center'
+          position='top right'
           inverted
           on='hover'
           trigger={
             <Button fluid
               animated='fade'
               color='black' basic
-              onClick={() => setVisible(!visible)}
+              onClick={() => dispatch(toggleSidebarCollapsed())}
             >
-              <Button.Content visible content={<Icon name={visible ? 'right arrow' : 'left arrow'} />} />
-              <Button.Content hidden content={<Icon name={visible ? 'eye slash' : 'eye'} />} />
+              <Button.Content visible content={<Icon name={sidebarCollapsed ? 'right arrow' : 'left arrow'} />} />
+              <Button.Content hidden content={<Icon name={sidebarCollapsed ? 'eye slash' : 'eye'} />} />
             </Button>
           }
-          content={visible ? 'Hide menu' : 'Show menu'}
+          content={sidebarCollapsed ? 'Hide menu' : 'Show menu'}
         />
 
         <Divider horizontal />

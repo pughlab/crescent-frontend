@@ -66,6 +66,11 @@ const setActivePlot = ({value}) => ({
   payload: {value}
 })
 
+const toggleSidebarCollapsed = () => ({
+  type: 'resultsPage/toggleSidebarCollapsed',
+  payload: {}
+})
+
 const resetResultsPage = R.always({type: 'resultsPage/reset'})
 
 export {
@@ -80,4 +85,5 @@ export {
   resetResultsPage,
   addPlot,
   setActivePlot,
+  toggleSidebarCollapsed
 }
