@@ -43,15 +43,16 @@ const ResultsPageSidebarPusher = ({
 
   const [showScroll, setShowScroll] = useState(false)
 
-  window.addEventListener('scroll', 
-    () => {
-      if (!showScroll && window.pageYOffset > 200){
-        setShowScroll(true)
-      } else if (showScroll && window.pageYOffset <= 200){
-        setShowScroll(false)
-      }
-    }
-  )
+  // Resets plot zooming on scroll
+  // window.addEventListener('scroll', 
+  //   () => {
+  //     if (!showScroll && window.pageYOffset > 200){
+  //       setShowScroll(true)
+  //     } else if (showScroll && window.pageYOffset <= 200){
+  //       setShowScroll(false)
+  //     }
+  //   }
+  // )
 
   return (
     <Ref innerRef={stickyRef}>
@@ -65,7 +66,15 @@ const ResultsPageSidebarPusher = ({
       }
       </Grid.Column>
 
-      
+      {
+        visible && 
+        <Grid.Column width={5} stretched>
+          <Fade right>
+          <SidebarComponent />
+          </Fade>
+        </Grid.Column>
+      }
+
       <Grid.Column width={1} stretched>
       <Sticky context={stickyRef}>
         <Popup
@@ -86,14 +95,14 @@ const ResultsPageSidebarPusher = ({
         />
 
         <Divider horizontal />
-        {
-          showScroll &&
+        {/* {
           <Popup
             position='bottom center'
             inverted
             on='hover'
             trigger={
               <Button fluid
+                disabled={R.not(showScroll)}
                 animated='fade'
                 color='black' basic
                 onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
@@ -102,24 +111,14 @@ const ResultsPageSidebarPusher = ({
                 <Button.Content hidden content={<Icon name={'window maximize outline'} />} />
               </Button>
             }
-            content={'Click to scroll to top'}
+            content={'Scroll to top'}
           />
-        }
+        } */}
 
       </Sticky>
 
       
       </Grid.Column>
-      
-
-      {
-        visible && 
-        <Grid.Column width={5} stretched>
-          <Fade right>
-          <SidebarComponent />
-          </Fade>
-        </Grid.Column>
-      }
     </Grid>
     </Ref>
   )
