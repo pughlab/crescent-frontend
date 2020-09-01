@@ -25,7 +25,6 @@ export default function useResultsPage() {
 
 export function useResultsPagePlotQuery(index) {
   const {plotQueries} = useResultsPage()
-  console.log(plotQueries, index)
   const plotQuery = plotQueries[index]
   return plotQuery
 }
