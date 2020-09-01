@@ -64,7 +64,8 @@ export default function useOpacity(vis, feature, group, runID, datasetID) {
         R.map(R.evolve({mode: R.join('+')})),
         // R.prop('data')
       )(opacity)
-    }
+    },
+    skip: R.isNil(feature, group)
   })
 
   return opacity

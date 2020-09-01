@@ -66,7 +66,8 @@ export default function useViolin(feature, group, runID, datasetID) {
     variables: {feature, group, runID, datasetID},
     onCompleted: ({violin}) => {
       setViolin(violin)
-    }
+    },
+    skip: R.isNil(feature, group)
   })
 
   return violin

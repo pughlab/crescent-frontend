@@ -62,7 +62,8 @@ export default function useScatter(vis, group, runID, datasetID) {
         setScatter,
         R.map(R.evolve({mode: R.join('+')})),
       )(scatter)
-    }
+    },
+    skip: R.isNil(group)
   })
 
   return scatter
