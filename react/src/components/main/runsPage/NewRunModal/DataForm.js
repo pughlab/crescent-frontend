@@ -62,7 +62,7 @@ const ProjectDatasetSelect = ({
         }
       </Label.Group>
 
-      <Divider horizontal />
+      {/* <Divider horizontal />
       <Label attached='bottom' as={Button} size='small'
         color={
           RA.isNotEmpty(selectedDatasets) ? 'black' : undefined
@@ -74,13 +74,11 @@ const ProjectDatasetSelect = ({
         })}
         animated='vertical'
       >
-        <Button.Content visible>
-        {`${R.length(selectedDatasets)}/${R.length(allDatasets)}`}
-        </Button.Content>
+        <Button.Content visible content={`${R.length(selectedDatasets)}/${R.length(allDatasets)}`} />
         <Button.Content hidden>
           Select all datasets from this project
         </Button.Content>
-      </Label>
+      </Label> */}
     </Segment>
   )
 }
@@ -121,7 +119,7 @@ const DataForm = ({
             }
           </Label.Group>
 
-          <Divider horizontal />
+          {/* <Divider horizontal />
           <Label attached='bottom' as={Button} size='small'
             color={
               RA.isNotEmpty(selectedUploadedDatasets) ? 'black' : undefined
@@ -139,7 +137,7 @@ const DataForm = ({
             <Button.Content hidden>
               Select all datasets from this project
             </Button.Content>
-          </Label>
+          </Label> */}
         </Segment>
       }
       {

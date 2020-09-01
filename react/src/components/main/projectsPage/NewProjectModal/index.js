@@ -119,7 +119,11 @@ const NewProjectModal = ({
         </Button>
       }
     >
-      <Modal.Header as={Header} textAlign='center' content='New Project' />
+      <Modal.Header>
+        <Header textAlign='center' content='New Project'
+          subheader='Enter project details and select/upload your data'
+        />
+      </Modal.Header>
       <Modal.Header>
         <Step.Group fluid size='small' widths={4}>
         {

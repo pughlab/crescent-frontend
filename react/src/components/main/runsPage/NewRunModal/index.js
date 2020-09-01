@@ -1,9 +1,10 @@
 import React, {useState, useReducer} from 'react'
 
-import {Header, Form, Button, Modal, Icon} from 'semantic-ui-react'
+import {Header, Form, Button, Modal, Icon, Divider} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import * as R_ from 'ramda-extension'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
@@ -25,6 +26,7 @@ const NewRunModal = ({
   const [runName, setRunName] = useState('')
   const [datasetsState, datasetsDispatch] = useReducer(
     function (state, action) {
+      const maxDatasets = 3
       const {type} = action
       switch (type) {
         case 'TOGGLE_DATASET':
@@ -32,11 +34,21 @@ const NewRunModal = ({
           return R.ifElse(
             R.includes(datasetID),
             R.without([datasetID]),
-            R.append(datasetID)
+            // Limit number of datasets to three
+            R.ifElse(
+              R_.gtThanLength(maxDatasets),
+              R.append(datasetID),
+              R.identity
+            )
           )(state)
+
         case 'TOGGLE_MANY_DATASETS':
           const {datasetIDs} = action
-          return R.union(datasetIDs, state)
+          return R.ifElse(
+            R_.gtThanLength(maxDatasets),
+            R.union(datasetIDs),
+            R.identity
+          )(state)
         default:
           return state
       }
@@ -88,12 +100,16 @@ const NewRunModal = ({
         </Button>
       }
     >
-      <Modal.Header as={Header} textAlign='center' content='New Run' />
+      <Modal.Header>
+        <Header textAlign='center' content='New Run'
+          subheader={`Enter a run name and select up to three datasets (${R.length(datasetsState)}/3)`}
+        />
+      </Modal.Header>
       <Modal.Content>
         <Form>
           <Form.Input fluid
             placeholder='Enter a Run Name'
-            onChange={(e, {value}) => {setRunName(value)}}
+            onChange={(e, {value}) => setRunName(value)}
           />
 
           <DataForm {...{project, datasetsState, datasetsDispatch}} />
