@@ -11,28 +11,22 @@ import * as R from 'ramda'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 import {useResultsAvailableQuery, useScatterQuery, useOpacityQuery} from '../../../../apollo/hooks'
-import {setSelectedQC} from '../../../../redux/actions/resultsPage'
 
 const ScatterPlot = ({
+  plotQueryIndex
 }) => {
   const {runID} = useCrescentContext()
 
   const dispatch = useDispatch()
-  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPage()
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPagePlotQuery(plotQueryIndex)
   const isFeatureNotSelected = R.or(R.isNil, R.isEmpty)(selectedFeature)
 
 
   const plots = useResultsAvailableQuery(runID)
   const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression)
-
-  // const [isLoading, setIsLoading] = useState( true );
-
-  console.log(scatter)
-  console.log(opacity)
-  console.log("FEATURE: ", selectedFeature)
-
   
   if (R.any(R.isNil, [plots])) {
     return null

@@ -9,17 +9,19 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
-import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useCrescentContext} from '../../../../redux/hooks'
+import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 import {useRunDatasetsQuery} from '../../../../apollo/hooks'
+
 
 import QCViolinPlot from './QCViolinPlot'
 import QCScatterPlot from './QCScatterPlot'
 
 const QCPlot = ({
+  plotQueryIndex
 }) => { 
   const {runID} = useCrescentContext()
-  const {selectedQC} = useResultsPage()
-  console.log(selectedQC)
+  const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
 
   const run = useRunDatasetsQuery(runID)
   if (R.isNil(run)) {
@@ -34,11 +36,10 @@ const QCPlot = ({
       R.compose(
         R.map(({datasetID, name}) => 
           <Segment style={isSingleSample ? {height: '70vh'} : {height: '35vh'}} key={datasetID}>
-            
-              {
-              R.equals(selectedQC, 'Before_After_Filtering') ? 
-                <QCViolinPlot {...{runID, datasetID, name}} /> : <QCScatterPlot {...{runID, datasetID}} />
-              }       
+          {
+            R.equals(selectedQC, 'Before_After_Filtering') ? 
+              <QCViolinPlot {...{runID, datasetID, name, plotQueryIndex}} /> : <QCScatterPlot {...{runID, datasetID, plotQueryIndex}} />
+          }       
           </Segment>
         ),
         R.prop('datasets')

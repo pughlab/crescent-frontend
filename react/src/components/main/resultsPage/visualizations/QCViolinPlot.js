@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
+
 import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
@@ -12,34 +12,18 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 import {useQCViolinQuery} from '../../../../apollo/hooks'
 
 const QCViolinPlot = ({
   runID,
   datasetID,
-  name
+  name,
+  plotQueryIndex
 }) => { 
+  const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
 
-  // const {runID} = useCrescentContext()
-  // const dispatch = useDispatch()
-
-  const {selectedQC} = useResultsPage()
-  console.log(selectedQC)
-
-  // const qcType = "Number_of_Genes"
   const qcViolin = useQCViolinQuery({runID, datasetID})
-
-  // const qcScatter = useQCScatterQuery(selectedQC, runID)
-  // console.log(qcScatter)
-
-  // const qcScatterData = R.compose(
-  //   R.values,
-  //   R.map
-  // )(qcScatter)
-
-  // console.log(qcScatter)
-
-
 
   if (R.any(R.isNil, [qcViolin])) {
     return (
@@ -50,46 +34,6 @@ const QCViolinPlot = ({
     </Segment>
     )
   }
-
-  // const qcScatterData = []
-  // qcScatterData.push(qcScatter)
-
-  // const qcViolinData = R.compose(
-  //   R.head,
-  //   R.values
-  // )(qcViolin)
-
-  // console.log(qcScatterData)
-  // console.log(qcViolinData)
-
-  // const qcScatterData = R.compose(
-  //   R.head,
-  //   R.values
-  // )(qcScatter)
-
-  // console.log(R.values(qcScatter))
-  // console.log()
-
-  // const qcData = qcViolinData
-
-  // // use local state for data
-  // const [qcData, setQCData] = useState( [] )
-
-  // // use the selected plot type to determine this
-  // useEffect(() => {
-  //   setQCData( [] ) // set to loading
-  //   fetchQC(selectedQC).then((data) => {
-  //     R.ifElse(
-  //       R.has('error'),
-  //       R.always(console.log(data['error'])),
-  //       setQCData
-  //     )(data)
-  //   })
-  //   //TODO: return clear qc redux state change
-  //   return setQCData([])
-  
-  // }, [selectedQC])
-
   
   return (
     // // Empty qc data => loading

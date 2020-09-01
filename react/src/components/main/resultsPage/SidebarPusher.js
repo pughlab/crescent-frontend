@@ -87,7 +87,7 @@ const ResultsPageSidebarPusher = ({
               <Button.Content hidden content={<Icon name={sidebarCollapsed ? 'eye slash' : 'eye'} />} />
             </Button>
           }
-          content={sidebarCollapsed ? 'Hide menu' : 'Show menu'}
+          content={sidebarCollapsed ? 'Hide menu to show all plots' : 'Show menu to change plot queries'}
         />
 
         <Divider horizontal />

@@ -19,12 +19,13 @@ export default function useResultsPage() {
   )
   const resultsPage = useSelector(resultsPageSelector)
 
-  console.log(resultsPage)
+  // console.log(resultsPage)
   return resultsPage
 }
 
 export function useResultsPagePlotQuery(index) {
   const {plotQueries} = useResultsPage()
+  console.log(plotQueries, index)
   const plotQuery = plotQueries[index]
   return plotQuery
 }

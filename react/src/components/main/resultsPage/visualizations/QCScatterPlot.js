@@ -11,32 +11,20 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
-import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useCrescentContext} from '../../../../redux/hooks'
 import {useQCScatterQuery} from '../../../../apollo/hooks'
 
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
  
 const QCScatterPlot = ({
-  // plotIndex
+  plotQueryIndex
 }) => { 
 
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedQC} = useResultsPage()
-  // const {selectedQC} = useResultsPagePlotQuery(index)
-  console.log(selectedQC)
+  const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
 
-  // const qcType = "Number_of_Genes"
-  // const qcViolin = useQCViolinQuery(runID)
   const qcScatter = useQCScatterQuery(selectedQC, runID)
-  // console.log(qcScatter)
-
-  // const qcScatterData = R.compose(
-  //   R.values,
-  //   R.map
-  // )(qcScatter)
-
-  // console.log(qcScatter)
 
   if (R.any(R.isNil, [qcScatter])) {
     return (
@@ -50,43 +38,6 @@ const QCScatterPlot = ({
 
   const qcScatterData = []
   qcScatterData.push(qcScatter)
-
-  // const qcViolinData = R.compose(
-  //   R.head,
-  //   R.values
-  // )(qcViolin)
-
-  console.log(qcScatterData)
-  // console.log(qcViolinData)
-
-  // const qcScatterData = R.compose(
-  //   R.head,
-  //   R.values
-  // )(qcScatter)
-
-  // console.log(R.values(qcScatter))
-  // console.log()
-
-  // const qcData = qcViolinData
-
-  // // use local state for data
-  // const [qcData, setQCData] = useState( [] )
-
-  // // use the selected plot type to determine this
-  // useEffect(() => {
-  //   setQCData( [] ) // set to loading
-  //   fetchQC(selectedQC).then((data) => {
-  //     R.ifElse(
-  //       R.has('error'),
-  //       R.always(console.log(data['error'])),
-  //       setQCData
-  //     )(data)
-  //   })
-  //   //TODO: return clear qc redux state change
-  //   return setQCData([])
-  
-  // }, [selectedQC])
-
   
   return (
     <>

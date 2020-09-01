@@ -12,15 +12,17 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
-import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useCrescentContext} from '../../../../redux/hooks'
+import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 import {useViolinQuery} from '../../../../apollo/hooks'
 import {setSelectedQC} from '../../../../redux/actions/resultsPage'
 
 const ViolinPlot = ({
+  plotQueryIndex
 }) => {
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPage()
+  const {selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPagePlotQuery(plotQueryIndex)
   const violin = useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression)
   // use local state for data since too big for redux store
   // const [violinData, setViolinData] = useState( [] )
@@ -44,7 +46,7 @@ const ViolinPlot = ({
         <Shake forever duration={10000}>
         <Header textAlign='center' icon>
           <Icon name='right arrow' />
-          Select a feature to initialize violin plot
+          Select a feature to initialize violin plot kllkkl
         </Header>  
         </Shake>      
       </Segment>
