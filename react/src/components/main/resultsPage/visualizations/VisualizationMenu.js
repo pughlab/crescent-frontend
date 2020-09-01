@@ -8,68 +8,61 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 import {useDiffExpressionQuery, useDiffExpressionGroupsQuery, useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useCategoricalGroupsQuery} from '../../../../apollo/hooks'
 import {setSelectedFeature, setSelectedGroup, setSelectedDiffExpression} from '../../../../redux/actions/resultsPage'
 
 const VisualizationMenu = ({
 }) => { 
   // const {changeActiveGroup, changeSelectedFeature} = reduxThunks
-  const [currentSearch, setSearch] = useState('')
+  const [currentSearch, setCurrentSearch] = useState('')
   const [currentOptions, setCurrentOptions] = useState([])
   
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
 
   // console.log("use results: ", useResultsPage())
-  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression } = useResultsPage()
-  const isActiveResult = R.equals(activeResult)
- // console.log(activeResult)
+  const {activePlot} = useResultsPage()
+  const {selectedFeature, selectedGroup, selectedDiffExpression } = useResultsPagePlotQuery(activePlot)
+
 
   //available groups & top expressed must be queries
-
   const diffExpression = useDiffExpressionQuery(runID)
   
   // const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
 
   const groups = useDiffExpressionGroupsQuery(runID, selectedDiffExpression)
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
-  // console.log("RUNID:", runID)
-  // console.log("DIFF:", diffExpression)
-  // console.log("SEL DIFF:", selectedDiffExpression)
-  // console.log("SEL GROUP:", selectedGroup)
 
   const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression)
-  const search = useSearchFeaturesQuery(currentSearch, runID)
-  console.log("SEARCH OUTSIDE!", search)
-  // console.log(search)
+  const searchOptions = useSearchFeaturesQuery(currentSearch, runID)
 
-  if (R.any(R.isNil, [diffExpression, groups, topExpressed, search])) {
-    // console.log(groups, topExpressed)
+
+  useEffect(() => {
+    setCurrentSearch(selectedFeature || '')
+  }, [selectedFeature])
+
+  if (R.any(R.isNil, [diffExpression, groups, topExpressed, searchOptions])) {
     return null
   }
 
   const handleSearchChange = (event, {searchQuery}) => {
-    console.log("SEARCH QUERY", searchQuery)
-    console.log("CURR OPTION", currentOptions)
-    console.log("CURR SEARCH", currentSearch)
-    setSearch(searchQuery)
+    // console.log("SEARCH QUERY", searchQuery)
+    // console.log("CURR OPTION", currentOptions)
+    // console.log("CURR SEARCH", currentSearch)
+    setCurrentSearch(searchQuery)
     if (RA.isNotEmpty(searchQuery)) {
-      setCurrentOptions(search)
+      setCurrentOptions(searchOptions)
     }
   }
 
-  const handleSelectFeature = (event, {value}) => {
-    setSearch(value) // reset search
-    dispatch(setSelectedFeature({value})) // store
-  }
+  const handleSelectFeature = (e, {value}) => dispatch(setSelectedFeature({value}))
 
-  const resetSelectFeature = ({value}) => {
-    setSearch('')
+  const resetSelectFeature = () => {
+    setCurrentSearch('')
     setCurrentOptions([])
-    dispatch(setSelectedFeature({value}))
+    dispatch(setSelectedFeature({value: null}))
   }
-
-  // console.log("TOPEXPrESED ARR: ", topExpressedArray) 
 
   const FeatureButton = ({gene, pVal, avgLogFc, cluster}) => {
     return (
@@ -95,10 +88,6 @@ const VisualizationMenu = ({
       </Popup>
     )
   }
-
-  // console.log("AVAILABLE GROUPS:", availableGroupsArray)
-  // console.log("SELECTED GROUPS:", selectedGroup)
-
   
   return(
     <Form>
@@ -129,7 +118,7 @@ const VisualizationMenu = ({
             search
             searchQuery={currentSearch}
             selection
-            options={search}
+            options={searchOptions}
             value={selectedFeature}
             onSearchChange={ handleSearchChange}
             onChange={handleSelectFeature}
@@ -137,7 +126,7 @@ const VisualizationMenu = ({
         </Form.Field>
 
         <Form.Field width={4}>
-           <Button fluid disabled={R.isNil(selectedFeature)} icon='close' color='violet' onClick={() => resetSelectFeature({value: null})} />
+           <Button fluid disabled={R.isNil(selectedFeature)} icon='close' color='violet' onClick={() => resetSelectFeature()} />
         </Form.Field>
       </Form.Group>
 
