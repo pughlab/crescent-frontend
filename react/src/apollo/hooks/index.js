@@ -13,6 +13,7 @@ import useOncotreeSunburstQuery from './useOncotreeSunburstQuery'
 
 import useUpdateRunParameterMutation from './useUpdateRunParameterMutation'
 import useTagDatasetMutation from './useTagDatasetMutation'
+import useUploadDatasetMetadataMutation from './useUploadDatasetMetadataMutation'
 import useSubmitRunMutation from './useSubmitRunMutation'
 
 import useResultsAvailableQuery from './useResultsAvailableQuery'
@@ -30,6 +31,8 @@ import useSearchFeaturesQuery from './useSearchFeaturesQuery'
 import useViolinQuery from './useViolinQuery'
 import useCategoricalGroupsQuery from './useCategoricalGroupsQuery'
 import useCellCountsQuery from './useCellCountsQuery'
+
+
 
 import useGraphene from './useGraphene'
 
@@ -49,6 +52,7 @@ export {
 
   useUpdateRunParameterMutation,
   useTagDatasetMutation,
+  useUploadDatasetMetadataMutation,
   useSubmitRunMutation,
 
   useResultsAvailableQuery, 

@@ -16,6 +16,12 @@ module.exports = {
   client: minioClient,
 
   // METHODS
+  // Puts a file into bucket
+  putUploadIntoBucket: async (bucketName, file, objectName) => {
+    const {filename, mimetype, encoding, createReadStream} = await file
+    await minioClient.putObject(bucketName, objectName || filename, createReadStream())
+  },
+
   // Returns stream of objects list
   bucketObjectsList: async bucketName => {
     try {

@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useReducer} from 'react';
 
-import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition, Form, Popup} from 'semantic-ui-react'
+import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Menu, Form, Popup} from 'semantic-ui-react'
 
 import {Sunburst} from 'react-vis'
 
@@ -14,10 +14,13 @@ import OncotreeSunburst from './OncotreeSunburst'
 import OncotreeTree from './OncotreeTree'
 import OncotreeDirectory from './OncotreeDirectory'
 
+import UploadMetadataButton from './UploadMetadataButton'
+
 const TagOncotreeModal = ({
   datasetID,
   disabledTagging
 }) => {
+  const [activeMenu, setActiveMenu] = useState('oncotree')
   const [open, setOpen] = useState(false)
   const oncotree = useOncotreeQuery()
   const {dataset, tagDataset} = useTagDatasetMutation(datasetID)
@@ -58,50 +61,76 @@ const TagOncotreeModal = ({
         <Header icon textAlign='center'>
           <Icon name='folder open' />
           {name}
-          <Header.Subheader>
-          Tag <a target="_blank" href='http://oncotree.mskcc.org/' >Oncotree</a> tissue type using menu below
-          </Header.Subheader>
+          {/* <Header.Subheader>
+          
+          </Header.Subheader> */}
         </Header>
-        <Button.Group fluid widths={2}>
-          <Button content='Cancer'
-            disabled={disabledTagging}
-            active={cancerTag}
-            color={cancerTag ? 'blue' : undefined}
-            onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode}})}
-          />
-          <Button.Or />
-          <Button content='Non-cancer'
-            disabled={disabledTagging}
-            active={R.not(cancerTag)}
-            color={R.not(cancerTag) ? 'blue' : undefined}
-            onClick={() => tagDataset({variables: {cancerTag: false, oncotreeCode: null}})}
-          />
-        </Button.Group>
 
-        {/* <OncotreeSunburst /> */}
-        {/* <OncotreeTree /> */}
+        <Menu attached='top'>
+          <Menu.Item content='Tag Oncotree Tissue'
+            active={R.equals(activeMenu, 'oncotree')} onClick={() => setActiveMenu('oncotree')}
+          />
+          <Menu.Item content='Upload Metadata File'
+            active={R.equals(activeMenu, 'metadata')} onClick={() => setActiveMenu('metadata')}
+          />
+        </Menu>
+        <Segment attached='bottom'>
         {
-          cancerTag ?
-            <OncotreeDirectory {...{dataset, tagDataset, disabledTagging}} />
-          :
+          R.equals(activeMenu, 'oncotree') ?
             <>
-            <Divider horizontal />
-            <Dropdown fluid
-              disabled={disabledTagging}
-              selection
-              search
-              placeholder='Select tissue type'
-              options={
-                R.compose(
-                  R.map(({code, name}) => ({key: code, value: code, text: name})),
-                  R.sortBy(R.prop('name'))
-                )(tissueTypes)
-              }
-              value={oncotreeCode}
-              onChange={(e, {value}) => tagDataset({variables: {cancerTag, oncotreeCode: value}})}
-            /> 
+            <Divider horizontal>
+              Tag <a target="_blank" href='http://oncotree.mskcc.org/' >Oncotree</a> tissue type using menu below
+            </Divider>
+            <Button.Group fluid widths={2}>
+              <Button content='Cancer'
+                disabled={disabledTagging}
+                active={cancerTag}
+                color={cancerTag ? 'blue' : undefined}
+                onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode}})}
+              />
+              <Button.Or />
+              <Button content='Non-cancer'
+                disabled={disabledTagging}
+                active={R.not(cancerTag)}
+                color={R.not(cancerTag) ? 'blue' : undefined}
+                onClick={() => tagDataset({variables: {cancerTag: false, oncotreeCode: null}})}
+              />
+            </Button.Group>
+
+            {/* <OncotreeSunburst /> */}
+            {/* <OncotreeTree /> */}
+            {
+              cancerTag ?
+                <OncotreeDirectory {...{dataset, tagDataset, disabledTagging}} />
+              :
+                <>
+                <Divider horizontal />
+                <Dropdown fluid
+                  disabled={disabledTagging}
+                  selection
+                  search
+                  placeholder='Select tissue type'
+                  options={
+                    R.compose(
+                      R.map(({code, name}) => ({key: code, value: code, text: name})),
+                      R.sortBy(R.prop('name'))
+                    )(tissueTypes)
+                  }
+                  value={oncotreeCode}
+                  onChange={(e, {value}) => tagDataset({variables: {cancerTag, oncotreeCode: value}})}
+                /> 
+                </>
+            }
             </>
+          : R.equals(activeMenu, 'metadata') ?
+            <UploadMetadataButton {...{datasetID}} />
+          : null
         }
+        </Segment>
+
+        
+
+
       </Modal.Content>
     </Modal>
   )

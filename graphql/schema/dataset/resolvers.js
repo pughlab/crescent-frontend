@@ -43,14 +43,9 @@ const resolvers = {
         const {datasetID} = dataset
         const bucketName = `dataset-${datasetID}`
         await Minio.client.makeBucket(bucketName)
-        // Put files into bucket
-        const putUploadIntoBucket = async (bucketName, file) => {
-          const {filename, mimetype, encoding, createReadStream} = await file
-          await Minio.client.putObject(bucketName, filename, createReadStream())
-        }
         const files = [matrix, features, barcodes, ... R.isNil(metadata) ? [] : [metadata]]
         for (const file of files) {
-          await putUploadIntoBucket(bucketName, file)
+          await Minio.putUploadIntoBucket(bucketName, file)
         }
         console.log('Creating dataset ', datasetID)
         return dataset
@@ -79,6 +74,20 @@ const resolvers = {
         dataset.oncotreeCode = oncotreeCode
         await dataset.save()
         return dataset
+      } catch(error) {
+        console.log(error)
+      }
+    },
+
+    uploadDatasetMetadata: async (parent, {datasetID, metadata}, {Datasets, Minio}) => {
+      try {
+        const dataset = await Datasets.findOne({datasetID})
+        console.log(dataset)
+        if (RA.isNotNil(dataset)) {
+          const bucketName = `dataset-${datasetID}`
+          await Minio.putUploadIntoBucket(bucketName, metadata, 'metadata.tsv')          
+          return dataset
+        }
       } catch(error) {
         console.log(error)
       }

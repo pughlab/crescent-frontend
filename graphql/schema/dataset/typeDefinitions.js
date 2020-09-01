@@ -33,6 +33,11 @@ const typeDefs = gql`
       cancerTag: Boolean
       oncotreeCode: String
     ): Dataset
+
+    uploadDatasetMetadata(
+      datasetID: ID!
+      metadata: Upload!
+    ): Dataset
   }
 `
 
