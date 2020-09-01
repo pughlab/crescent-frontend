@@ -27,13 +27,13 @@ function OncotreeDirectoryNode ({
   // Check if current node is in path of a filtered node
   const isFilteredNode = R.ifElse(R.isNil, R.F, R.hasPath(path))(filteredOncotree)
   const isTaggedNodePath = R.includes(title, datasetOncotreeCodePath)
-  const isTaggedNode = R.equals(title, datasetOncotreeCode)
-  console.log(title, datasetOncotreeCodePath, isTaggedNodePath)
+  // const isTaggedNode = R.equals(title, datasetOncotreeCode)
 
   // Local state for expanding children
   const [expanded, setExpanded] = useState(R.or(isFilteredNode, isTaggedNodePath))
-  useEffect(() => setExpanded(isFilteredNode), [filteredOncotree])
-  useEffect(() => setExpanded(isTaggedNodePath), [datasetOncotreeCodePath])
+  // useEffect(() => setExpanded(isFilteredNode), [filteredOncotree])
+  // useEffect(() => setExpanded(isTaggedNodePath), [datasetOncotreeCodePath])
+  useEffect(() => setExpanded(R.or(isFilteredNode, isTaggedNodePath)), [filteredOncotree, datasetOncotreeCodePath])
 
   return (
     <List.Item>
