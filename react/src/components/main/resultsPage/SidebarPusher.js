@@ -53,7 +53,7 @@ const ResultsPageSidebarPusher = ({
   return (
     <Ref innerRef={stickyRef}>
     <Grid>
-      <Grid.Column width={sidebarCollapsed ? 10 : 15} stretched>
+      <Grid.Column width={sidebarCollapsed ? 15 : 10} stretched>
       {
         R.cond([
           [R.equals('parameters'), R.always(<ParametersComponent />)],
@@ -63,7 +63,7 @@ const ResultsPageSidebarPusher = ({
       </Grid.Column>
 
       {
-        sidebarCollapsed && 
+        R.not(sidebarCollapsed) && 
         <Grid.Column width={5} stretched>
           <Fade right>
           <SidebarComponent />
@@ -83,8 +83,8 @@ const ResultsPageSidebarPusher = ({
               color='black' basic
               onClick={() => dispatch(toggleSidebarCollapsed())}
             >
-              <Button.Content visible content={<Icon name={sidebarCollapsed ? 'right arrow' : 'left arrow'} />} />
-              <Button.Content hidden content={<Icon name={sidebarCollapsed ? 'eye slash' : 'eye'} />} />
+              <Button.Content visible content={<Icon name={sidebarCollapsed ? 'left arrow' : 'right arrow' } />} />
+              <Button.Content hidden content={<Icon name={sidebarCollapsed ? 'eye' : 'eye slash'} />} />
             </Button>
           }
           content={sidebarCollapsed ? 'Hide menu to show all plots' : 'Show menu to change plot queries'}

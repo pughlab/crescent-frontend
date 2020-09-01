@@ -44,7 +44,8 @@ const CrescentPlotCaption = ({
   } = plotQuery
 
   return (
-    <Label.Group>
+    <Label.Group color='violet'>
+      <Label ribbon content={`Plot ${R.inc(plotQueryIndex)}`} />
       <Label content={activeResult} />
     </Label.Group>
   )
@@ -88,7 +89,7 @@ const VisualizationsComponent = ({
       : (
         <>
         {
-          sidebarCollapsed ?
+          R.not(sidebarCollapsed) ?
             <Segment style={{height: '75vh'}} color='violet'>
               <CrescentPlot plotQueryIndex={activePlot} />
             </Segment>
@@ -98,10 +99,11 @@ const VisualizationsComponent = ({
               R.addIndex(R.map)(
                 (plotQuery, idx) => (
                   <Grid.Column key={idx}>
+                  
                   <Segment style={{height: '60vh'}} color='violet' attached='top'>
                     <CrescentPlot plotQueryIndex={idx} />
                   </Segment>
-                  <Segment attached='bottom'>
+                  <Segment attached='bottom' compact>
                     <CrescentPlotCaption plotQueryIndex={idx} />
                   </Segment>
                   </Grid.Column>
