@@ -92,7 +92,7 @@ def get_groups(runID, datasetID):
                 metadata_groups += get_first_line(bucket, metadata["object"], minio_client)[1:]
         else:
             metadata_groups = get_first_line(metadata["bucket"], metadata["object"], minio_client)[1:]
-        available_groups = list(set(available_groups) | set(metadata_groups))
+        available_groups = available_groups + metadata_groups
     
     return available_groups
 
