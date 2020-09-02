@@ -91,10 +91,10 @@ class Query(ObjectType):
     def resolve_qc_metrics(parent, info, runID, datasetID):
         return get_qc_metrics(runID, datasetID)
     
-    qc_scatter = Field(QCScatter, qc_type=String(), runID=ID()) # , datasetID=ID()
+    qc_scatter = Field(QCScatter, qc_type=String(), runID=ID(), datasetID=ID())
     @staticmethod
-    def resolve_qc_scatter(parent, info, qc_type, runID): # , datasetID
-        return get_qc_scatter_data(qc_type, runID) # , datasetID
+    def resolve_qc_scatter(parent, info, qc_type, runID, datasetID):
+        return get_qc_scatter_data(qc_type, runID, datasetID)
     
     qc_violin = List(NonNull(QCViolinData), runID=ID(), datasetID=ID())
     @staticmethod
