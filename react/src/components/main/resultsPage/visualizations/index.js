@@ -47,15 +47,21 @@ const CrescentPlotCaption = ({
 
   } = plotQuery
 
+  const labels = R.compose(
+    R.reject(R.where({detail: R.isNil}))
+  )([
+    {content: 'Plot', detail: R.toUpper(activeResult)},
+    {content: 'Dataset', detail: selectedDiffExpression},
+    {content: 'Colour by', detail: selectedGroup},
+    {content: 'Feature', detail: selectedFeature},
+  ])
+
   return (
     <Label.Group color='violet'>
       <Label ribbon content={`${R.inc(plotQueryIndex)}`} />
-      <Label content={`Plot: ${R.toUpper(activeResult)}`} />
-      <Label content={`Dataset: ${selectedDiffExpression}`} />
-      <Label content={`Colour By: ${selectedGroup}`} />
-      <Label content={`Feature: ${selectedFeature}`} />
-
-
+      {
+        R.map(({content, detail}) => <Label {...{content, detail}} />, labels)
+      }
     </Label.Group>
   )
 }
