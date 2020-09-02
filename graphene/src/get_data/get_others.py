@@ -13,16 +13,16 @@ from get_data.minio_functions import (
 )
 from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name
 
-def get_paths(runID, keys):
+def get_paths(runID, keys, datasetID=""):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    return set_IDs(paths, runID, keys)
+    return set_IDs(paths, runID, keys, datasetID=datasetID)
 
 def get_top_expressed_data(runID, datasetID):
     """ given a runID get the top 10 expressed genes + their avg log fold change and p-value """
 
-    paths = get_paths(runID, ["top_expressed"])
+    paths = get_paths(runID, ["top_expressed"], datasetID=datasetID)
     paths["top_expressed"] = set_name_multi(paths["top_expressed"], datasetID, "top_expressed")
     minio_client = get_minio_client()
 
@@ -57,7 +57,7 @@ def get_available_qc_data(runID, datasetID):
         dropdown_plots = json.load(dropdown_plots_file)
     
     minio_client = get_minio_client()
-    paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_data"])
+    paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_data"], datasetID=datasetID)
     paths = set_name(paths, datasetID, ["before_filtering", "after_filtering", "qc_data"])
 
     available_plots = []
@@ -141,7 +141,7 @@ def get_plots(runID):
 
 def get_qc_metrics(runID, datasetID):
     minio_client = get_minio_client()
-    paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_metrics"])
+    paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_metrics"], datasetID=datasetID)
     paths= set_name(paths, datasetID, ["before_filtering", "after_filtering", "qc_metrics"])
 
     metrics = {
