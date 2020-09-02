@@ -13,6 +13,8 @@ import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
 import QCPlot from './QCPlot'
 
+import CrescentPlotCaption from './PlotCaption'
+
 import Tada from 'react-reveal/Tada'
 import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
@@ -27,42 +29,6 @@ const CrescentPlot = ({
     isActiveResult('qc') ? <QCPlot {...{plotQueryIndex}} />
     : isActiveResult('violin') ? <ViolinPlot {...{plotQueryIndex}} />
     : (isActiveResult('tsne') || isActiveResult('umap')) && <ScatterPlot {...{plotQueryIndex}} />
-  )
-}
-
-const CrescentPlotCaption = ({
-  plotQueryIndex
-}) => {
-  const plotQuery = useResultsPagePlotQuery(plotQueryIndex)
-  const {
-    activeResult,
-    // selectedQC: 'Before_After_Filtering',
-    // selectedFeature: null,
-    // selectedGroup: null,
-    // selectedDiffExpression: 'All',
-    // selectedQCDataset: null,
-    selectedDiffExpression,
-    selectedGroup,
-    selectedFeature
-
-  } = plotQuery
-
-  const labels = R.compose(
-    R.reject(R.where({detail: R.isNil}))
-  )([
-    {content: 'Plot', detail: R.toUpper(activeResult)},
-    {content: 'Dataset', detail: selectedDiffExpression},
-    {content: 'Colour by', detail: selectedGroup},
-    {content: 'Feature', detail: selectedFeature},
-  ])
-
-  return (
-    <Label.Group color='violet'>
-      <Label ribbon content={`${R.inc(plotQueryIndex)}`} />
-      {
-        R.map(({content, detail}) => <Label {...{key: content, content, detail}} />, labels)
-      }
-    </Label.Group>
   )
 }
 
