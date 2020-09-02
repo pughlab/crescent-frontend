@@ -60,7 +60,7 @@ const CrescentPlotCaption = ({
     <Label.Group color='violet'>
       <Label ribbon content={`${R.inc(plotQueryIndex)}`} />
       {
-        R.map(({content, detail}) => <Label {...{content, detail}} />, labels)
+        R.map(({content, detail}) => <Label {...{key: content, content, detail}} />, labels)
       }
     </Label.Group>
   )

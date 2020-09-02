@@ -53,7 +53,11 @@ export default function useOpacity(vis, feature, group, runID, datasetID) {
     skip: R.isNil(feature, group)
   })
 
-  useEffect(() => error && refetch(), [error])
+  useEffect(() => {
+    if (error) {
+      refetch()
+    }
+  }, [error])
 
   return opacity
 }

@@ -55,7 +55,11 @@ export default function useViolin(feature, group, runID, datasetID) {
     skip: R.isNil(feature, group)
   })
 
-  useEffect(() => error && refetch(), [error])
+  useEffect(() => {
+    if (error) {
+      refetch()
+    }
+  }, [error])
 
   return violin
 }
