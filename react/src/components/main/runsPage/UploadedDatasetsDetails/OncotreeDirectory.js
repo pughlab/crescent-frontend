@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useReducer} from 'react';
 
-import {Segment, List, Button, Form, Input, Popup, Icon, Header, Label} from 'semantic-ui-react'
+import {Segment, List, Button, Form, Input, Popup, Icon, Header, Label, Grid} from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import * as R_ from 'ramda-extension'
@@ -58,7 +58,7 @@ function OncotreeDirectoryNode ({
             />
           }
           content={
-            <Button color='blue' content={`Set dataset as '${name} (${title})' `}
+            <Button color='blue' content={`Tag dataset as '${name} (${title})' `}
               onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode: title}})}
             
             />
@@ -79,6 +79,17 @@ function OncotreeDirectoryNode ({
                     (sortedChildren, node) => R.call(R.includes(node.title, datasetOncotreeCodePath) ? R.prepend : R.append, node, sortedChildren),
                     []
                   ), 
+                // Bubble up if is in filtered results
+                R.isNil(filteredOncotree) ? R.identity :
+                  R.compose(
+                    ({filtered, unfiltered}) => [...filtered, ...unfiltered],
+                    R.reduce(
+                      (nodes, node) => R.evolve({
+                        [R.hasPath(node.path, filteredOncotree) ? 'filtered' : 'unfiltered']: R.append(node)
+                      })(nodes),
+                      {filtered: [], unfiltered: []}
+                    )
+                  )
               )(children)
               
             }
@@ -177,7 +188,7 @@ export default function OncotreeDirectory ({
         // If dataset has non null oncotreeCode then bubble that parent tissue to top 
         R.isNil(oncotreeCode) ? R.identity :
           R.reduce(
-            (sortedTissues, node) => R.call(R.includes(node.title, oncotreeCodePath) ? R.prepend : R.append, node, sortedTissues),
+            (nodes, node) => R.call(R.includes(node.title, oncotreeCodePath) ? R.prepend : R.append, node, nodes),
             []
           ),
           
