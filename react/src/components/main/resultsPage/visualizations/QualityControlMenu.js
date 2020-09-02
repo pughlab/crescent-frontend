@@ -58,7 +58,7 @@ const QualityControlMenu = ({
         ({cellcounts: {Before, After}, qcSteps}) => (
           <>
           <Divider horizontal content='QC Metrics' />
-          <Segment basic textAlign='center' style={{padding: '0rem'}}>
+          <Segment basic textAlign='center'>
           <Label basic color={'blue'} size={'medium'}
             content='Cells Before QC:'
             detail={Before}
@@ -71,11 +71,11 @@ const QualityControlMenu = ({
           {
             R.addIndex(R.map)(
               ({filtertype, numRemoved, min, max}, index) => (
-                <Segment compact key={index} style={{padding: '0.77rem'}} >
+                <Segment key={index}>
                   <Label attached='top' content={filtertype}/>
-                  <Label basic size={'small'} style={{margin: '0.25rem'}} content={`Filter Min: ${min}`} color='grey' />
-                  <Label basic size={'small'} style={{margin: '0.25rem'}} content={`Filter Max: ${max}`} color='grey' />
-                  <Label basic size={'small'} style={{margin: '0.25rem'}} content={`Cells Removed: ${numRemoved}`} color={R.ifElse(R.equals(0),R.always('grey'),R.always('red'))(numRemoved)} />
+                  <Label basic size={'small'} content={`Filter Min: ${min}`} color='grey' />
+                  <Label basic size={'small'} content={`Filter Max: ${max}`} color='grey' />
+                  <Label basic size={'small'} content={`Cells Removed: ${numRemoved}`} color={R.ifElse(R.equals(0),R.always('grey'),R.always('red'))(numRemoved)} />
                 </Segment>
               ),
               qcSteps

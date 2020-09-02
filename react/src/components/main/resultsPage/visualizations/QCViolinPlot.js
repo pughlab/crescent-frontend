@@ -36,14 +36,6 @@ const QCViolinPlot = ({
   }
   
   return (
-    // // Empty qc data => loading
-    // R.isEmpty(qcViolinData) ?
-    //   <Segment basic placeholder style={{height: '100%'}}>
-    //     <Header textAlign='center' icon>
-    //       <ClimbingBoxLoader color='#6435c9' />
-    //     </Header>
-    //   </Segment>
-    // :
     <>
     <Header textAlign='center' content={R.isNil(selectedQC) ? '' : `Metrics Before and After QC (Violins) for ${name}`} />
     <Plot
