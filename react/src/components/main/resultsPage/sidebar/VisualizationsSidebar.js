@@ -25,7 +25,7 @@ const MultiPlotSelector = ({
       {
         R.compose(
           R.addIndex(R.map)((plot, idx) => (
-            <Menu.Item active={R.equals(activePlot, idx)} content={R.inc(idx)}
+            <Menu.Item key={idx} active={R.equals(activePlot, idx)} content={R.inc(idx)}
               onClick={() => dispatch(setActivePlot({value: idx}))}
             />
           ))
