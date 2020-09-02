@@ -20,7 +20,7 @@ def get_heatmap_data(runID):
     es = paths['enrichment_scores']
     minio_client = get_minio_client()
 
-    if not object_exists(es['bucket'], es['object'], minio_client):
+    if not object_exists(es, minio_client):
         return_error('Heatmap scores file not found')    
     
     reader = get_obj_as_2dlist(es['bucket'], es['object'], minio_client)

@@ -112,39 +112,42 @@ def set_name(paths, datasetID, keys):
         paths[key]["object"] = paths[key]["object"]["prefix"] + name + "_" + paths[key]["object"]["suffix"]
     return paths
 
-def set_IDs(paths, runID, keys, findDatasetID=False):
+def set_IDs(paths, runID, keys, datasetID=""):
     paths_required = {}
 
-    if findDatasetID:
-        # Currently set to getting the first dataset associated with run. Basically assumes there is only 1 dataset
-        client = get_mongo_client()
-        db = client['crescent']
-        runs = db['runs']
-
-        run_metadata = runs.find_one({'runID': ObjectId(runID)}) # Find run's metadata from runID
-        datasetID = str(
-            run_metadata
-            ['datasetIDs'] # Get datasetIDs
-            [0] # Get the first one
-        ) # Get a string from the returned ObjectID
-        datasetid_pattern = re.compile(r"(?P<pre>.*)(?P<run>dataset-)(?P<post>.*)")
-
     runid_pattern = re.compile(r"(?P<pre>.*)(?P<run>run-)(?P<post>.*)")
+    datasetid_pattern = re.compile(r"(?P<pre>.*)(?P<dataset>dataset-)(?P<post>.*)")
 
     for key in keys:
-        if ("bucket" in paths[key]):
+        if (key == "normalised_counts"):
+            paths_required[key] = paths[key]["prefix"] + runID + paths[key]["suffix"]
+        elif (key == "metadata"):
+            match = datasetid_pattern.match(paths[key]["bucket"])
+            if (datasetID == ""):
+                return_error("Blank Dataset ID given for metadata")
+            elif match is None:
+                return_error("Metadata bucket name does not match expected datasetid_pattern")
+            elif (datasetID.lower() == "all"):
+                group_dict = match.groupdict()
+
+                # Get datasetIDs for this run
+                client = get_mongo_client()
+                db = client["crescent"]
+                runs = db["runs"]
+                run_metadata = runs.find_one({"runID": ObjectId(runID)}) # Find run's metadata from runID
+
+                paths[key]["buckets"] = ["{0}{1}{2}{3}".format(group_dict["pre"], group_dict["dataset"], str(dID), group_dict["post"]) for dID in run_metadata['datasetIDs']] # Get a string from the returned ObjectIDs
+            else:
+                group_dict = match.groupdict()
+                paths[key]["bucket"] = "{0}{1}{2}{3}".format(group_dict["pre"], group_dict["dataset"], datasetID, group_dict["post"])
+            
+            paths_required[key] = paths[key]
+
+        else:
             match = runid_pattern.match(paths[key]["bucket"])
             if match is not None:
                 groups = match.groupdict()
-                paths[key]["bucket"] = "{0}run-{1}{2}".format(groups["pre"], runID, groups["post"])
+                paths[key]["bucket"] = "{0}{1}{2}{3}".format(groups["pre"], groups["run"], runID, groups["post"])
                 paths_required[key] = paths[key]
-            elif findDatasetID:
-                match = datasetid_pattern.match(paths[key]["bucket"])
-                if match is not None:
-                    groups = match.groupdict()
-                    paths[key]["bucket"] = "{0}dataset-{1}{2}".format(groups["pre"], datasetID, groups["post"])
-                    paths_required[key] = paths[key]
-    if "normalised_counts" in keys:
-        paths_required["normalised_counts"] = paths["normalised_counts"]["prefix"] + runID + paths["normalised_counts"]["suffix"]
     return paths_required
     

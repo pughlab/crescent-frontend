@@ -6,10 +6,21 @@ import gzip
 from minio import Minio
 from minio import ResponseError
 
-def object_exists(bucket, objct, minio_client, recurse=True):
-    if (minio_client.bucket_exists(bucket)):
-        for obj in minio_client.list_objects(bucket, recursive=recurse):
-            if (obj.object_name == objct):
+def object_exists(path, minio_client, recurse=True):
+    if("buckets" in path):
+        for bucket in path["buckets"]:
+            check = False
+            if (minio_client.bucket_exists(bucket)):
+                # If a bucket exists in our potential buckets then check if object exists
+                for obj in minio_client.list_objects(path["bucket"], recursive=recurse):
+                    if (obj.object_name == path["object"]):
+                        check = True
+                if (not check):
+                    return False
+        return True
+    elif (minio_client.bucket_exists(path["bucket"])):
+        for obj in minio_client.list_objects(path["bucket"], recursive=recurse):
+            if (obj.object_name == path["object"]):
                 return True
     return False
 
@@ -57,6 +68,16 @@ def get_obj_as_2dlist(bucket, objct, minio_client, include_header=True, gzipped=
             obj.readline()
         _2dlist = [format_line_as_string_list(line) for line in obj]
     return _2dlist
+
+def get_objs_as_2dlist(path, minio_client, include_header=True, gzipped=False):
+    obj_list = []
+    if ("buckets" in path):
+        for bucket in path["buckets"]:
+            if(minio_client.bucket_exists(bucket)):
+                obj_list += get_obj_as_2dlist(bucket, path["object"], minio_client, include_header=True, gzipped=False)
+    else:
+       return get_obj_as_2dlist(path["bucket"], path["object"], minio_client, include_header=True, gzipped=False) 
+    return obj_list
 
 def count_lines(bucket, objct, minio_client):
     obj = minio_client.get_object(bucket, objct)

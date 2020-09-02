@@ -6,7 +6,7 @@ import loompy
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces
-from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
+from get_data.minio_functions import get_first_line, get_obj_as_2dlist, get_objs_as_2dlist, object_exists
 
 colour_dict = {}
 
@@ -61,7 +61,7 @@ def sort_barcodes(opacities, group, paths, minio_client):
     metadata = paths["metadata"]
     groups = paths["groups"]
 
-    metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
+    metadata_exists = object_exists(metadata, minio_client)
 
     if (group in get_first_line(groups["bucket"], groups["object"], minio_client)):
         groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
@@ -89,7 +89,7 @@ def sort_barcodes(opacities, group, paths, minio_client):
             return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
     elif (metadata_exists and (group in get_first_line(metadata["bucket"], metadata["object"], minio_client))):
         # use the metadata
-        metadata_tsv = get_obj_as_2dlist(metadata["bucket"], metadata["object"], minio_client)
+        metadata_tsv = get_objs_as_2dlist(metadata, minio_client)
 
         label_idx = metadata_tsv[0].index(str(group))
         group_type = metadata_tsv[1][label_idx]
@@ -153,7 +153,7 @@ def get_opacity_data(feature, group, runID, datasetID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], datasetID=datasetID)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()

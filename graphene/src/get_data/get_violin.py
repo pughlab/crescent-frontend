@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from get_data.get_client import get_minio_client
 from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces
-from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
+from get_data.minio_functions import get_first_line, get_obj_as_2dlist, get_objs_as_2dlist, object_exists
 
 colour_counter = 0
 
@@ -90,7 +90,7 @@ def categorize_barcodes(group, expression_values, paths, minio_client):
     metadata = paths["metadata"]
     groups = paths["groups"]
 
-    metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
+    metadata_exists = object_exists(metadata, minio_client)
 
     plotly_obj = {}
     if (group in get_first_line(groups["bucket"], groups["object"], minio_client)):
@@ -101,7 +101,7 @@ def categorize_barcodes(group, expression_values, paths, minio_client):
          (group in get_first_line(metadata["bucket"], metadata["object"], minio_client))):
         # it's defined in the metadata
         label_with_groups(plotly_obj, expression_values, group, 
-            get_obj_as_2dlist(metadata["bucket"], metadata["object"], minio_client))
+            get_objs_as_2dlist(metadata, minio_client))
     else:
         return_error(group + " is not an available group in groups.tsv or metadata.tsv")
 
@@ -132,7 +132,7 @@ def get_violin_data(feature, group, runID, datasetID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], datasetID=datasetID)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()
