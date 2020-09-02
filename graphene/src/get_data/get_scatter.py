@@ -170,7 +170,7 @@ def label_barcodes(barcode_coords, group, paths, minio_client):
     groups = paths["groups"]
     
     groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
-    num_cells = count_lines(groups["bucket"], groups["object"], minio_client) - 2
+    num_cells = count_lines(groups["bucket"], groups["all"], minio_client) - 2
     metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
     
     if group in groups_tsv[0]:

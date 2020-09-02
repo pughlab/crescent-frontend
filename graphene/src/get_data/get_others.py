@@ -96,7 +96,7 @@ def get_cellcount(runID):
     minio_client = get_minio_client()
     paths = get_paths(runID, ["groups"])
 
-    return count_lines(paths["groups"]["bucket"], paths["groups"]["object"], minio_client) - 2
+    return count_lines(paths["groups"]["bucket"], paths["groups"]["all"], minio_client) - 2
 
 def get_plots(runID):
     minio_client = get_minio_client()

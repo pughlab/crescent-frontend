@@ -23,7 +23,7 @@ def get_qc_scatter_data(qc_type, runID, datasetID):
 
     barcode_coords = get_coordinates("UMAP", paths["frontend_coordinates"], minio_client)
     traces = {}
-    num_cells = count_lines(paths["groups"]["bucket"], paths["groups"]["object"], minio_client) - 2
+    num_cells = count_lines(paths["groups"]["bucket"], paths["groups"]["all"], minio_client) - 2
 
     if not object_exists(paths["qc_data"]["bucket"], paths["qc_data"]["object"], minio_client):
         return_error("qc_data.tsv file not found")

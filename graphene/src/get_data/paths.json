@@ -30,7 +30,8 @@
         "object": {
             "prefix": "SEURAT/CRESCENT_CLOUD/frontend_groups/",
             "suffix": "groups.tsv"
-        }
+        },
+        "all": "SEURAT/CRESCENT_CLOUD/frontend_groups/groups.tsv"
     },
     "metadata": {
         "bucket": "dataset-",
