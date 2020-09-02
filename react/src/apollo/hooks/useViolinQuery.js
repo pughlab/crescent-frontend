@@ -3,7 +3,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import {createUploadLink} from 'apollo-upload-client'
 
 
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
@@ -22,24 +22,9 @@ const client = new ApolloClient({
   link
 })
 
-
-// export default function useGraphene() {
-//   const {loading, data, error} = useQuery(gql`
-//     query {
-//       test {
-//         testField
-//       }
-//     }
-//   `, {
-//     client,
-//   })
-//   console.log(data)
-//   return 
-// }
-
 export default function useViolin(feature, group, runID, datasetID) {
   const [violin, setViolin] = useState(null)
-  const {loading, data, error} = useQuery(gql`
+  const {loading, data, error, refetch} = useQuery(gql`
     query Violin($feature: String, $group: String, $runID: ID, $datasetID: ID) {
       violin(feature: $feature, group: $group, runID: $runID, datasetID: $datasetID) {
         name
@@ -69,6 +54,8 @@ export default function useViolin(feature, group, runID, datasetID) {
     },
     skip: R.isNil(feature, group)
   })
+
+  useEffect(() => error && refetch(), [error])
 
   return violin
 }
