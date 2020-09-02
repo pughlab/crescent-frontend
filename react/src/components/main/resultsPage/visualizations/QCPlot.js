@@ -21,30 +21,21 @@ const QCPlot = ({
   plotQueryIndex
 }) => { 
   const {runID} = useCrescentContext()
-  const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
+  const {selectedQC, selectedQCDataset} = useResultsPagePlotQuery(plotQueryIndex)
 
   const run = useRunDatasetsQuery(runID)
   if (R.isNil(run)) {
     return null
   }
-
-  const isSingleSample = R.compose(R.equals(1), R.length, R.prop('datasets'))(run)
-
+  
+  const name = R.compose(R.prop('name'), R.find(R.propEq('datasetID', selectedQCDataset)))(run.datasets)
   return (
     <> 
     {
-      R.compose(
-        R.map(({datasetID, name}) => 
-          <Segment style={isSingleSample ? {height: '70vh'} : {height: '35vh'}} key={datasetID}>
-          {
-            R.equals(selectedQC, 'Before_After_Filtering') ? 
-              <QCViolinPlot {...{runID, datasetID, name, plotQueryIndex}} /> : <QCScatterPlot {...{runID, datasetID, plotQueryIndex}} />
-          }       
-          </Segment>
-        ),
-        R.prop('datasets')
-      )(run)
-    }
+      R.equals(selectedQC, 'Before_After_Filtering') ? 
+        <QCViolinPlot {...{runID, datasetID: selectedQCDataset, name, plotQueryIndex}} />
+      : <QCScatterPlot {...{runID, datasetID: selectedQCDataset, plotQueryIndex}} />
+    } 
     </>
   )
 }
