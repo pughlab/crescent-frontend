@@ -41,12 +41,21 @@ const CrescentPlotCaption = ({
     // selectedGroup: null,
     // selectedDiffExpression: 'All',
     // selectedQCDataset: null,
+    selectedDiffExpression,
+    selectedGroup,
+    selectedFeature
+
   } = plotQuery
 
   return (
     <Label.Group color='violet'>
-      <Label ribbon content={`Plot ${R.inc(plotQueryIndex)}`} />
-      <Label content={activeResult} />
+      <Label ribbon content={`${R.inc(plotQueryIndex)}`} />
+      <Label content={`Plot: ${R.toUpper(activeResult)}`} />
+      <Label content={`Dataset: ${selectedDiffExpression}`} />
+      <Label content={`Colour By: ${selectedGroup}`} />
+      <Label content={`Feature: ${selectedFeature}`} />
+
+
     </Label.Group>
   )
 }
