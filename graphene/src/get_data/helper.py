@@ -136,7 +136,14 @@ def set_IDs(paths, runID, keys, datasetID=""):
                 runs = db["runs"]
                 run_metadata = runs.find_one({"runID": ObjectId(runID)}) # Find run's metadata from runID
 
-                paths[key]["buckets"] = ["{0}{1}{2}{3}".format(group_dict["pre"], group_dict["dataset"], str(dID), group_dict["post"]) for dID in run_metadata['datasetIDs']] # Get a string from the returned ObjectIDs
+                paths[key]["buckets"] = [
+                    "{0}{1}{2}{3}".format(
+                        group_dict["pre"], 
+                        group_dict["dataset"], 
+                        str(dID),
+                        group_dict["post"]
+                    ) for dID in run_metadata['datasetIDs']
+                ] # Get a string from the returned ObjectIDs
             else:
                 group_dict = match.groupdict()
                 paths[key]["bucket"] = "{0}{1}{2}{3}".format(group_dict["pre"], group_dict["dataset"], datasetID, group_dict["post"])

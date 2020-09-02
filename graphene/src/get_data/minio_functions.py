@@ -12,7 +12,7 @@ def object_exists(path, minio_client, recurse=True):
             check = False
             if (minio_client.bucket_exists(bucket)):
                 # If a bucket exists in our potential buckets then check if object exists
-                for obj in minio_client.list_objects(path["bucket"], recursive=recurse):
+                for obj in minio_client.list_objects(bucket, recursive=recurse):
                     if (obj.object_name == path["object"]):
                         check = True
                 if (not check):
