@@ -34,7 +34,7 @@ const QCPlot = ({
     {
       R.equals(selectedQC, 'Before_After_Filtering') ? 
         <QCViolinPlot {...{runID, datasetID: selectedQCDataset, name, plotQueryIndex}} />
-      : <QCScatterPlot {...{runID, datasetID: selectedQCDataset, plotQueryIndex}} />
+      : <QCScatterPlot {...{runID, datasetID: selectedQCDataset, name, plotQueryIndex}} />
     } 
     </>
   )
