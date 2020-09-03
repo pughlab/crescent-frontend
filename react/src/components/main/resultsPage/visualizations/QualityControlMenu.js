@@ -37,18 +37,18 @@ const QualityControlMenu = ({
 
   return (
     <>
-    <Divider horizontal content='QC Plot Type' />
-    <Dropdown selection fluid labeled
-      options={availableQc}
-      value={selectedQC}
-      onChange={(e, {value}) => dispatch(setSelectedQC({value}))}
-    />
     <Divider horizontal content='Datasets' />
     <Dropdown selection fluid labeled search
       loading={R.isNil(datasetsOptions)}
       options={datasetsOptions || []}
       value={selectedQCDataset}
       onChange={(e, {value}) => dispatch(setSelectedQCDataset({value}))}
+    />
+    <Divider horizontal content='QC Plot Type' />
+    <Dropdown selection fluid labeled
+      options={availableQc}
+      value={selectedQC}
+      onChange={(e, {value}) => dispatch(setSelectedQC({value}))}
     />
 
     {
