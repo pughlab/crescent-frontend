@@ -9,7 +9,7 @@ import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useDiffExpressionQuery, useDiffExpressionGroupsQuery, useAvailableGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useCategoricalGroupsQuery} from '../../../../apollo/hooks'
+import {useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery} from '../../../../apollo/hooks'
 import {setSelectedFeature, setSelectedGroup, setSelectedDiffExpression} from '../../../../redux/actions/resultsPage'
 
 const VisualizationMenu = ({
@@ -23,8 +23,8 @@ const VisualizationMenu = ({
 
   // console.log("use results: ", useResultsPage())
   const {activePlot} = useResultsPage()
-  const {selectedFeature, selectedGroup, selectedDiffExpression } = useResultsPagePlotQuery(activePlot)
-
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPagePlotQuery(activePlot)
+  const isActiveResult = R.equals(activeResult)
 
   //available groups & top expressed must be queries
   const diffExpression = useDiffExpressionQuery(runID)
@@ -32,6 +32,7 @@ const VisualizationMenu = ({
   // const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
 
   const groups = useDiffExpressionGroupsQuery(runID, selectedDiffExpression)
+  const categoricalGroups = useDiffExpressionCategoricalGroupsQuery(runID, selectedDiffExpression)
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
 
   const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression)
@@ -42,7 +43,7 @@ const VisualizationMenu = ({
     setCurrentSearch(selectedFeature || '')
   }, [selectedFeature])
 
-  if (R.any(R.isNil, [diffExpression, groups, topExpressed, searchOptions])) {
+  if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, topExpressed, searchOptions])) {
     return null
   }
 
@@ -88,6 +89,8 @@ const VisualizationMenu = ({
       </Popup>
     )
   }
+
+  const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
   
   return(
     <Form>
@@ -105,7 +108,8 @@ const VisualizationMenu = ({
           <Form.Dropdown fluid selection labeled
             // All groups! assumes that first group is categorical (might not be true in the future)
             value={selectedGroup}
-            options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
+            options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
+            // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
             onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
           />
         </Form.Field>
@@ -120,7 +124,7 @@ const VisualizationMenu = ({
             selection
             options={searchOptions}
             value={selectedFeature}
-            onSearchChange={ handleSearchChange}
+            onSearchChange={handleSearchChange}
             onChange={handleSelectFeature}
           />
         </Form.Field>
