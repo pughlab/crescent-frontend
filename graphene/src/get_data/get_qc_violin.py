@@ -64,7 +64,8 @@ def get_qc_violin_data(runID, datasetID):
 
     for qc_file in qc_files:
         path = paths[qc_file]
-        if (not object_exists(path["bucket"], path["object"], minio_client)):
+        # if (not object_exists(path["bucket"], path["object"], minio_client)):
+        if (not object_exists(path, minio_client)):
             return_error("${file}.tsv file not found"
                 .format(file=paths["object"].split('/')[-1]))
         

@@ -25,7 +25,8 @@ def get_qc_scatter_data(qc_type, runID, datasetID):
     traces = {}
     num_cells = count_lines(paths["groups"]["bucket"], paths["groups"]["all"], minio_client) - 2
 
-    if not object_exists(paths["qc_data"]["bucket"], paths["qc_data"]["object"], minio_client):
+    # if not object_exists(paths["qc_data"]["bucket"], paths["qc_data"]["object"], minio_client):
+    if not object_exists(paths["qc_data"], minio_client):
         return_error("qc_data.tsv file not found")
     qc_data = get_obj_as_2dlist(paths["qc_data"]["bucket"], paths["qc_data"]["object"], minio_client)
 

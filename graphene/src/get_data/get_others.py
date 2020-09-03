@@ -1,5 +1,6 @@
 import json
 import re
+from collections import OrderedDict
 
 from get_data.get_client import get_minio_client
 from get_data.minio_functions import (
@@ -92,8 +93,9 @@ def get_groups(runID, datasetID):
                 metadata_groups += get_first_line(bucket, metadata["object"], minio_client)[1:]
         else:
             metadata_groups = get_first_line(metadata["bucket"], metadata["object"], minio_client)[1:]
-        available_groups = available_groups + metadata_groups
-    
+        available_groups = list(OrderedDict.fromkeys(available_groups))+list(OrderedDict.fromkeys(metadata_groups))
+        # available_groups = list(set(available_groups) | set(metadata_groups))
+
     return available_groups
 
 def get_cellcount(runID):
@@ -189,7 +191,9 @@ def get_available_categorical_groups(runID, datasetID):
             metadata_tsv = get_first_n_lines(2, metadata["bucket"], metadata["object"], minio_client)
         metadata_types = list(zip(metadata_tsv[0], metadata_tsv[1]))[1:]
         metadata_groups = [group for group, grouptype in metadata_types if grouptype == 'group']
-        return list(set(groups) | set(metadata_groups))
+        # return list(set(groups) | set(metadata_groups))
+        return list(OrderedDict.fromkeys(groups))+list(OrderedDict.fromkeys(metadata_groups))
+
     return groups
 
 def total_size(runID):
