@@ -176,11 +176,21 @@ def label_barcodes(barcode_coords, group, paths, minio_client):
     if group in groups_tsv[0]:
         # groups tsv definition supercedes metadata
         label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv)
-    elif (metadata_exists and (group in get_first_line(metadata["bucket"], metadata["object"], minio_client))):
-        # it's defined in the metadata, need to merge with groups_tsv
-        label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv,
-            get_objs_as_2dlist(metadata, minio_client)
-        )
+    elif metadata_exists:
+        if ("buckets" in metadata):
+            available_groups = []
+            for bucket in metadata["buckets"]:
+                available_groups += get_first_line(bucket, metadata["object"], minio_client)
+            if (group in available_groups):
+                # it's defined in the metadata, need to merge with groups_tsv
+                label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv,
+                    get_objs_as_2dlist(metadata, minio_client)
+                )
+        elif (group in get_first_line(metadata["bucket"], metadata["object"], minio_client)):
+            # it's defined in the metadata, need to merge with groups_tsv
+            label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv,
+                get_objs_as_2dlist(metadata, minio_client)
+            )
     else:
         return_error(group + " is not an available group in groups.tsv or metadata.tsv")
     return list(plotly_obj.values())

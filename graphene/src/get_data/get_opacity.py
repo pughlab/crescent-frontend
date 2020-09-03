@@ -87,39 +87,49 @@ def sort_barcodes(opacities, group, paths, minio_client):
             add_barcodes(plotly_obj, barcode_values, group, opacities)
         else:
             return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
-    elif (metadata_exists and (group in get_first_line(metadata["bucket"], metadata["object"], minio_client))):
-        # use the metadata
-        metadata_tsv = get_objs_as_2dlist(metadata, minio_client)
+    elif metadata_exists:
+        use_metadata = False
+        if ("buckets" in metadata):
+            available_groups = []
+            for bucket in metadata["buckets"]:
+                available_groups += get_first_line(bucket, metadata["object"], minio_client)
+            if (group in available_groups):
+                use_metadata = True
+        elif (group in get_first_line(metadata["bucket"], metadata["object"], minio_client)):
+            use_metadata = True
 
-        label_idx = metadata_tsv[0].index(str(group))
-        group_type = metadata_tsv[1][label_idx]
+        if use_metadata:
+            metadata_tsv = get_objs_as_2dlist(metadata, minio_client)
 
-        if group_type == 'group':
-            all_barcodes = {key: True for key in opacities}
-            for row in metadata_tsv[2:]:
-                barcode = str(row[0])
-                if all_barcodes.pop(barcode, None):
-                    # exists in all barcodes, ok to add (skipped otherwise)
-                    label = str(row[label_idx])
+            label_idx = metadata_tsv[0].index(str(group))
+            group_type = metadata_tsv[1][label_idx]
+
+            if group_type == 'group':
+                all_barcodes = {key: True for key in opacities}
+                for row in metadata_tsv[2:]:
+                    barcode = str(row[0])
+                    if all_barcodes.pop(barcode, None):
+                        # exists in all barcodes, ok to add (skipped otherwise)
+                        label = str(row[label_idx])
+                        add_barcode(plotly_obj, barcode, label, opacities)
+                # add remaining barcodes that weren't defined in the metadata file
+                for barcode in all_barcodes.keys():
+                    label = 'unlabelled'
                     add_barcode(plotly_obj, barcode, label, opacities)
-            # add remaining barcodes that weren't defined in the metadata file
-            for barcode in all_barcodes.keys():
-                label = 'unlabelled'
-                add_barcode(plotly_obj, barcode, label, opacities)
-        elif group_type == 'numeric':
-            # colour by gradient
-            barcode_values = []
-            all_ints = True
-            for row in metadata_tsv[2:]:
-                num_value = float(row[label_idx])
-                all_ints = False if not num_value.is_integer() else all_ints
-                barcode_values.append((str(row[0]),num_value))
-            barcode_values = sorted(barcode_values, key=lambda x: x[1])
-            barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
-            add_barcodes(plotly_obj, barcode_values, group, opacities)
-        else:
-            return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
-        pass
+            elif group_type == 'numeric':
+                # colour by gradient
+                barcode_values = []
+                all_ints = True
+                for row in metadata_tsv[2:]:
+                    num_value = float(row[label_idx])
+                    all_ints = False if not num_value.is_integer() else all_ints
+                    barcode_values.append((str(row[0]),num_value))
+                barcode_values = sorted(barcode_values, key=lambda x: x[1])
+                barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
+                add_barcodes(plotly_obj, barcode_values, group, opacities)
+            else:
+                return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
+            pass
     else:
         return_error(group + " is not an available group in groups.tsv or metadata.tsv")
 

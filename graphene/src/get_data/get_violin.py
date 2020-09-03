@@ -97,11 +97,15 @@ def categorize_barcodes(group, expression_values, paths, minio_client):
         # groups tsv definition supercedes metadata
         label_with_groups(plotly_obj, expression_values, group, 
             get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client))
-    elif (metadata_exists and 
-         (group in get_first_line(metadata["bucket"], metadata["object"], minio_client))):
-        # it's defined in the metadata
-        label_with_groups(plotly_obj, expression_values, group, 
-            get_objs_as_2dlist(metadata, minio_client))
+    elif metadata_exists:
+        if ("buckets" in metadata):
+            available_groups = []
+            for bucket in metadata["buckets"]:
+                available_groups += get_first_line(bucket, metadata["object"], minio_client)
+            if (group in available_groups):
+                label_with_groups(plotly_obj, expression_values, group, get_objs_as_2dlist(metadata, minio_client))
+        elif (group in get_first_line(metadata["bucket"], metadata["object"], minio_client)):
+            label_with_groups(plotly_obj, expression_values, group, get_objs_as_2dlist(metadata, minio_client))
     else:
         return_error(group + " is not an available group in groups.tsv or metadata.tsv")
 
