@@ -85,7 +85,7 @@ const QCViolinPlot = ({
           {
             "x": 0.63,
             "y": 1,
-            "text": "Percentage of Mitochondrial Genes",
+            "text": "Mitochondrial Genes (%) ",
             "xref": "paper",
             "yref": "paper",
             "xanchor": "center",
@@ -95,7 +95,7 @@ const QCViolinPlot = ({
           {
             "x": 0.89,
             "y": 1,
-            "text": "Percentage of Ribosomal Protein Genes",
+            "text": "  Ribosomal Protein Genes (%)",
             "xref": "paper",
             "yref": "paper",
             "xanchor": "center",
