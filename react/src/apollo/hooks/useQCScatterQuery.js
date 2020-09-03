@@ -37,11 +37,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useQCScatter(qcType, runID) {
+export default function useQCScatter(qcType, runID, datasetID) {
   const [qcScatter, setQCScatter] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query QCScatter($qcType: String, $runID: ID) {
-      qcScatter(qcType: $qcType, runID: $runID) {
+    query QCScatter($qcType: String, $runID: ID, $datasetID: ID) {
+      qcScatter(qcType: $qcType, runID: $runID, datasetID: $datasetID) {
         mode
         text
         hovertext
@@ -57,7 +57,7 @@ export default function useQCScatter(qcType, runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {qcType, runID},
+    variables: {qcType, runID, datasetID},
     onCompleted: ({qcScatter}) => {
       R.compose(
         setQCScatter,
