@@ -21,16 +21,16 @@ const client = new ApolloClient({
 })
 
 
-export default function useCategoricalGroups(runID) {
+export default function useCategoricalGroups(runID, datasetID) {
   const [categoricalGroups, setCategoricalGroups] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query CategoricalGroups($runID: ID) {
-      categoricalGroups(runID: $runID)
+    query CategoricalGroups($runID: ID, $datasetID: ID) {
+      categoricalGroups(runID: $runID, datasetID: $datasetID)
     }
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID},
+    variables: {runID, datasetID},
     onCompleted: ({categoricalGroups}) => {
       setCategoricalGroups(categoricalGroups)
     }
