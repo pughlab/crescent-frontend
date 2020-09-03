@@ -17,6 +17,8 @@ import {useQCScatterQuery} from '../../../../apollo/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
  
 const QCScatterPlot = ({
+  datasetID,
+  name,
   plotQueryIndex
 }) => { 
 
@@ -24,7 +26,7 @@ const QCScatterPlot = ({
   const dispatch = useDispatch()
   const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
 
-  const qcScatter = useQCScatterQuery(selectedQC, runID)
+  const qcScatter = useQCScatterQuery(selectedQC, runID, datasetID)
 
   if (R.any(R.isNil, [qcScatter])) {
     return (
@@ -41,7 +43,7 @@ const QCScatterPlot = ({
   
   return (
     <>
-      <Header textAlign='center' content={R.isNil(selectedQC) ? '' : (selectedQC.replace(/_/g," ")+" (UMAP)")} />
+      <Header textAlign='center' content={R.isNil(selectedQC) ? '' : (selectedQC.replace(/_/g," ")+" (UMAP) for "+name)} />
       <Plot
         config={{showTips: false}}
         data={qcScatterData}
