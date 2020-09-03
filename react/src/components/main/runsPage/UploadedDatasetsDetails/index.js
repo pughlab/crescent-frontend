@@ -123,7 +123,12 @@ const TagOncotreeModal = ({
             }
             </>
           : R.equals(activeMenu, 'metadata') ?
+            <>
+            <Divider horizontal>
+              Upload/Replace Metadata for this dataset in this <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-2' >format.</a> 
+            </Divider>
             <UploadMetadataButton {...{datasetID}} />
+            </>
           : null
         }
         </Segment>
@@ -149,7 +154,7 @@ export default function UploadedDatasetsDetails ({
   return (
     <Segment attached>
       <Divider horizontal>
-        <Header content={'Uploaded Datasets'} />
+        <Header content={'Uploaded Dataset Metadata'} />
       </Divider>
       <Label.Group size='large'>
       {
