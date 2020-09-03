@@ -23,6 +23,7 @@ import useQCViolinQuery from './useQCViolinQuery'
 import useQCScatterQuery from './useQCScatterQuery'
 import useDiffExpressionQuery from './useDiffExpressionQuery'
 import useDiffExpressionGroupsQuery from './useDiffExpressionGroupsQuery'
+import useDiffExpressionCategoricalGroupsQuery from './useDiffExpressionCategoricalGroupsQuery'
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
@@ -71,6 +72,7 @@ export {
   useCellCountsQuery,
 
   useDiffExpressionGroupsQuery,
+  useDiffExpressionCategoricalGroupsQuery,
 
   useGraphene,
 }
