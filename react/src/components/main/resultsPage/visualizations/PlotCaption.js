@@ -39,8 +39,8 @@ export default function CrescentPlotCaption ({
     R.reject(R.where({detail: R.isNil}))
   )([
     {content: 'Plot', detail: R.toUpper(activeResult)},
-    {content: 'Quality control', detail: R.equals('qc', activeResult) ? selectedQC : null},
     {content: 'Dataset', detail: dataset},
+    {content: 'Quality Control', detail: R.equals('qc', activeResult) ? selectedQC : null},
     {content: 'Colour by', detail: selectedGroup},
     {content: 'Feature', detail: selectedFeature},
   ])
