@@ -46,7 +46,7 @@ const ViolinPlot = ({
         <Shake forever duration={10000}>
         <Header textAlign='center' icon>
           <Icon name='right arrow' />
-          Select a feature to initialize violin plot kllkkl
+          Select a feature to initialize violin plot
         </Header>  
         </Shake>      
       </Segment>
