@@ -13,7 +13,7 @@ console.log(process.env.REACT_APP_GRAPHENE_URL_DEV)
 const link = createUploadLink({uri: process.env.NODE_ENV === 'development'
 ? process.env.REACT_APP_GRAPHENE_URL_DEV
 // TODO :prod url
-: process.env.REACT_APP_GRAPHENE_URL_DEV})
+: process.env.REACT_APP_GRAPHENE_URL_PROD})
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
