@@ -40,9 +40,9 @@ def label_with_groups(plotly_obj, expression_values, group, labels_tsv):
                 label = str(row[label_idx])
                 add_barcode(plotly_obj, label, barcode, expression_values)
         # now add the remaining barcodes without a label
-        for barcode in all_barcodes.keys():
-            label = 'unlabeled'
-            add_barcode(plotly_obj, label, barcode, expression_values)
+        # for barcode in all_barcodes.keys():
+        #     label = 'unlabeled'
+        #     add_barcode(plotly_obj, label, barcode, expression_values)
     elif group_type == 'numeric':
         # can't do this for violins
         return_error(group + " is numeric data, not viewable in violin plots")
