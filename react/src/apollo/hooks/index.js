@@ -27,10 +27,12 @@ import useDiffExpressionCategoricalGroupsQuery from './useDiffExpressionCategori
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
+import useScatterNumericQuery from './useScatterNumericQuery'
 import useOpacityQuery from './useOpacityQuery'
 import useSearchFeaturesQuery from './useSearchFeaturesQuery'
 import useViolinQuery from './useViolinQuery'
 import useCategoricalGroupsQuery from './useCategoricalGroupsQuery'
+import useNumericGroupsQuery from './useNumericGroupsQuery'
 import useCellCountsQuery from './useCellCountsQuery'
 
 
@@ -62,6 +64,7 @@ export {
   useQCViolinQuery,
   useQCScatterQuery,
   useScatterQuery,
+  useScatterNumericQuery,
   useOpacityQuery,
   useDiffExpressionQuery,
   useAvailableGroupsQuery,
@@ -69,6 +72,7 @@ export {
   useSearchFeaturesQuery,
   useViolinQuery,
   useCategoricalGroupsQuery,
+  useNumericGroupsQuery,
   useCellCountsQuery,
 
   useDiffExpressionGroupsQuery,
