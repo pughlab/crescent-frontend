@@ -90,7 +90,7 @@ const DirectoryUploadSegment = ({
   newProjectState, newProjectDispatch,
 }) => {
   // GQL mutation to create a dataset on mount
-  const [createDataset, {}] = useMutation(gql`
+  const [createDataset, {loading}] = useMutation(gql`
     mutation CreateDataset(
       $name: String!
       $matrix: Upload!
@@ -169,7 +169,7 @@ const DirectoryUploadSegment = ({
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
   return (
     <div {...getRootProps()}>
-    <Segment placeholder>
+    <Segment placeholder loading={loading}>
       <Header textAlign='center' content='Drag and drop single-cell sample dataset directory' />
       <Card.Group itemsPerRow={4}>
       {
