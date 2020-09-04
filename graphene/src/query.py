@@ -7,6 +7,7 @@ from get_data.get_qc_scatter import get_qc_scatter_data
 from get_data.get_qc_violin import get_qc_violin_data
 from get_data.get_others import (
     get_available_categorical_groups,
+    get_available_numeric_groups,
     get_available_qc_data,
     get_cellcount,
     get_diff_expression,
@@ -41,6 +42,11 @@ class Query(ObjectType):
     @staticmethod
     def resolve_categorical_groups(parent, info, runID, datasetID):
         return get_available_categorical_groups(runID, datasetID)
+    
+    numeric_groups = List(String, runID=ID(), datasetID=ID())
+    @staticmethod
+    def resolve_numeric_groups(parent, info, runID, datasetID):
+        return get_available_numeric_groups(runID, datasetID)
     
     cellcount = Int(runID=ID())
     @staticmethod
