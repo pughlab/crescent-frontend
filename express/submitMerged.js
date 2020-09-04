@@ -73,7 +73,7 @@ const makeCWLJobJSON = async (
       pca_dimensions,
       // normalization_method,
       return_threshold,
-      dge_comparisons: R.join(',', dge_comparisons),
+      dge_comparisons: R.gt(R.length(dge_comparisons), 1) ? R.join(',', dge_comparisons) : dge_comparisons,
       save_unfiltered_data,
       save_filtered_data,
       save_r_object,
