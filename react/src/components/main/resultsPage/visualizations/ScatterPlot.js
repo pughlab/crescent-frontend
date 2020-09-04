@@ -12,7 +12,7 @@ import * as R from 'ramda'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useResultsAvailableQuery, useScatterQuery, useOpacityQuery} from '../../../../apollo/hooks'
+import {useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery, useNumericGroupsQuery} from '../../../../apollo/hooks'
 
 const ScatterPlot = ({
   plotQueryIndex
@@ -26,9 +26,11 @@ const ScatterPlot = ({
 
   const plots = useResultsAvailableQuery(runID)
   const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
+  const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression)
-  
-  if (R.any(R.isNil, [plots])) {
+  const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
+
+  if (R.any(R.isNil, [plots, numericGroups])) {
     return null
   }
 
@@ -51,6 +53,33 @@ const ScatterPlot = ({
       </Segment>
     )
   }
+
+  const isSelectedDiffExpressionNumeric = R.includes(selectedGroup)(numericGroups)
+  
+  
+  const scatterData = isFeatureNotSelected ? 
+    isSelectedDiffExpressionNumeric ? 
+      scatterNumeric
+    :
+      scatter
+    :
+      opacity
+  
+  // const scatterData = isFeatureNotSelected ? 
+  //   isSelectedDiffExpressionNumeric ? 
+  //     // scatter
+  //     1
+  //   :
+  //     // scatterNumeric
+  //     2
+  //   :
+  //   isSelectedDiffExpressionNumeric ?
+  //     // opacityCategoric
+  //     3
+  //   :
+  //     // opacityNumeric
+  //     4
+
 
   // const scatterData = R.compose(
   //   R.evolve({
@@ -143,7 +172,8 @@ const ScatterPlot = ({
       <Plot
         config={{showTips: false}}
         // data={opacity}
-        data={isFeatureNotSelected ? scatter : opacity}
+        // data={isFeatureNotSelected ? scatter : opacity}
+        data={scatterData}
         useResizeHandler
         style={{width: '100%', height:'90%'}}
         layout={{
