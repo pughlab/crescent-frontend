@@ -196,6 +196,34 @@ def get_available_categorical_groups(runID, datasetID):
 
     return groups
 
+def get_available_numeric_groups(runID, datasetID):
+    """ given a runID, fetches the available groups (of numeric type) to label cell barcodes by """
+    minio_client = get_minio_client()
+    paths = get_paths(runID, ["groups", "metadata"], datasetID=datasetID)
+    paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
+
+    groups_tsv = get_first_n_lines(2, paths["groups"]["bucket"], paths["groups"]["object"], minio_client)
+    group_types = list(zip(groups_tsv[0], groups_tsv[1]))[1:]
+    groups = [group for group, grouptype in group_types if grouptype == 'numeric']
+
+    metadata = paths["metadata"]
+    
+    if object_exists(metadata, minio_client):
+        metadata_tsv = [[], []]
+        if "buckets" in metadata:
+            for bucket in metadata["buckets"]:
+                first_2_lines = get_first_n_lines(2, bucket, metadata["object"], minio_client)
+                metadata_tsv[0] += first_2_lines[0]
+                metadata_tsv[1] += first_2_lines[1]
+        else:
+            metadata_tsv = get_first_n_lines(2, metadata["bucket"], metadata["object"], minio_client)
+        metadata_types = list(zip(metadata_tsv[0], metadata_tsv[1]))[1:]
+        metadata_groups = [group for group, grouptype in metadata_types if grouptype == 'numeric']
+        return list(OrderedSet(groups) | OrderedSet(metadata_groups))
+        # return list(OrderedDict.fromkeys(groups))+list(OrderedDict.fromkeys(metadata_groups))
+
+    return numeric
+
 def total_size(runID):
     minio_client = get_minio_client()
     return get_size('run-'+str(runID), minio_client)
