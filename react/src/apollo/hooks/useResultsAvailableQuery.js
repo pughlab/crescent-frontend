@@ -51,7 +51,8 @@ export default function useResultsAvailable(runID) {
     variables: {runID},
     onCompleted: ({plots}) => {
       setPlots(plots)
-    }
+    },
+    skip: R.isNil(runID)
   })
 
   return plots
