@@ -215,7 +215,7 @@ const TOOLS = {
               {key: 'global_all', value: '1', text: '1 = using global cell clusers, compares each cell cluster vs. the rest of cells'},
               {key: 'global_dataset_all', value: '2', text: '2 = using global cell clusers, for each dataset, compares each cell cluster vs. the rest of cells'},
               // {key: 'global_dataset_same_cluster', value: '3', text: '3: using global cell clusers, for each dataset, compares each cell cluster vs. the same cluster from other datasets. Needs `-v 1`'},
-              {key: 'global_type_all', value: '4', text: '4 = using global cell clusers, for each dataset type, compares each cell cluster vs. the rest of cells'},
+              // {key: 'global_type_all', value: '4', text: '4 = using global cell clusers, for each dataset type, compares each cell cluster vs. the rest of cells'},
               // {key: 'global_type_same_cluster', value: '5', text: '5: using global cell clusers, for each dataset type, compares each cell cluster vs. the same cluster from other dataset types. Needs `-v 1`'},
               // {key: 'reclustered_dataset_all', value: '6', text: '6: using re-clustered cells, for each dataset, compares each cell cluster vs. the rest of cells. Needs `-v 2`'},
               // {key: 'reclustered_type_all', value: '7', text: '7: using re-clustered cells, for each dataset type, compares each cell cluster vs. the rest of cells. Needs `-v 3`'},
