@@ -13,7 +13,7 @@ DEFAULT_VIOLIN = {
     "jitter": 0.85,
     "text": [],
     "hoverinfo": "text+y",
-    "points": "all",
+    "points": "outliers",
     "meanline": {"visible": "true", "color":"black"},
     "x": [],
     "y": [],
