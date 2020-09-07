@@ -34,10 +34,10 @@ class ScatterData(ObjectType):
     def resolve_marker(parent, info):
         return parent["marker"]
 
-    hovertext = List(String)
-    @staticmethod
-    def resolve_hovertext(parent, info):
-        return parent["hovertext"]
+    # hovertext = List(String)
+    # @staticmethod
+    # def resolve_hovertext(parent, info):
+    #     return parent["hovertext"]
     
     type = String()
     @staticmethod

@@ -44,7 +44,7 @@ export default function useScatterNumeric(vis, group, runID, datasetID) {
       scatter(vis: $vis, group: $group, runID: $runID, datasetID: $datasetID) {
         mode
         text
-        hovertext
+        # hovertext
         x
         y
         marker {
