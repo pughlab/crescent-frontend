@@ -32,7 +32,7 @@ const RunsPageComponent = ({
 }) => {
   const dispatch = useDispatch()
   const {userID: currentUserID, projectID} = useCrescentContext()
-  useEffect(() => {dispatch(resetRunsPage())}, [projectID])
+  useEffect(() => () => dispatch(resetRunsPage()), [projectID])
   const project = useProjectDetailsQuery(projectID)
 
   if (R.isNil(project)) {
