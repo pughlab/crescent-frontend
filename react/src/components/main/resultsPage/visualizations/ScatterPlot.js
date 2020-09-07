@@ -28,9 +28,9 @@ const ScatterPlot = ({
   const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression)
-  const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
+  // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
 
-  if (R.any(R.isNil, [plots, numericGroups])) {
+  if (R.any(R.isNil, [plots])) {
     return null
   }
 
@@ -54,16 +54,16 @@ const ScatterPlot = ({
     )
   }
 
-  const isSelectedDiffExpressionNumeric = R.includes(selectedGroup)(numericGroups)
+  // const isSelectedDiffExpressionNumeric = R.includes(selectedGroup)(numericGroups)
   
   
-  const scatterData = isFeatureNotSelected ? 
-    isSelectedDiffExpressionNumeric ? 
-      scatterNumeric
-    :
-      scatter
-    :
-      opacity
+  // const scatterData = isFeatureNotSelected ? 
+  //   isSelectedDiffExpressionNumeric ? 
+  //     scatterNumeric
+  //   :
+  //     scatter
+  //   :
+  //     opacity
   
   // const scatterData = isFeatureNotSelected ? 
   //   isSelectedDiffExpressionNumeric ? 
@@ -172,8 +172,8 @@ const ScatterPlot = ({
       <Plot
         config={{showTips: false}}
         // data={opacity}
-        // data={isFeatureNotSelected ? scatter : opacity}
-        data={scatterData}
+        data={isFeatureNotSelected ? scatter : opacity}
+        // data={scatterData}
         useResizeHandler
         style={{width: '100%', height:'90%'}}
         layout={{
