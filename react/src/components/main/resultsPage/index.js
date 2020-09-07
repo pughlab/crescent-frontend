@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react'
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 import { Segment, Transition, Grid, Image, Message, Header, Label } from 'semantic-ui-react'
 
@@ -8,9 +9,10 @@ import ParametersComponent from './parameters'
 import VisualizationsComponent from './visualizations'
 
 import {useResultsPage} from '../../../redux/hooks'
-import {resetResultsPage} from '../../../redux/actions/resultsPage'
+import {resetResultsPage, setActiveSidebarTab} from '../../../redux/actions/resultsPage'
 import {useCrescentContext} from '../../../redux/hooks'
 import {useDispatch} from 'react-redux'
+import {useRunDetailsQuery} from '../../../apollo/hooks'
 
 import Fade from 'react-reveal/Fade'
 
@@ -21,22 +23,23 @@ const ResultsPageComponent = ({
 }) => {
   const dispatch = useDispatch()
   const {runID} = useCrescentContext()
-  useEffect(() => {dispatch(resetResultsPage())}, [runID])
-  const {activeSidebarTab} = useResultsPage()
+  useEffect(() => () => dispatch(resetResultsPage()), [runID])
+  const run = useRunDetailsQuery(runID)
+  useEffect(() => {
+    if (RA.isNotNil(run)) {
+      const {status} = run
+      const runIsIncomplete = R.includes(status, ['pending', 'submitted'])
+      const sidebarTab = runIsIncomplete ? 'parameters' : 'visualizations'
+      dispatch(setActiveSidebarTab({sidebarTab}))
+    }
+  }, [run])
+  if (R.isNil(run)) {
+    return null
+  }
+
   return (
     <Fade duration={2000}>
     <Segment basic style={{minHeight: 'calc(100vh - 10rem)'}} as={Grid} stretched columns={1}>
-      {/* <Grid.Column width={11}>
-        {
-          R.cond([
-            [R.equals('parameters'), R.always(<ParametersComponent />)],
-            [R.equals('visualizations'), R.always(<VisualizationsComponent />)]
-          ])(activeSidebarTab)
-        }
-      </Grid.Column>
-      <Grid.Column width={5}>
-          <SidebarComponent />
-      </Grid.Column> */}
       <Grid.Column>
         <ResultsPageSidebarPusher />
       </Grid.Column>
