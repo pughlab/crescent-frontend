@@ -39,26 +39,27 @@ const ResultsPageSidebarPusher = ({
   const stickyRef = useRef()
 
   // const [showScroll, setShowScroll] = useState(false)
-  // Resets plot zooming on scroll
-  // window.addEventListener('scroll', 
-  //   () => {
-  //     if (!showScroll && window.pageYOffset > 200){
-  //       setShowScroll(true)
-  //     } else if (showScroll && window.pageYOffset <= 200){
-  //       setShowScroll(false)
-  //     }
+  // const handleScroll = () => {
+  //   if (!showScroll && window.pageYOffset > 200){
+  //     setShowScroll(true)
+  //   } else if (showScroll && window.pageYOffset <= 200){
+  //     setShowScroll(false)
   //   }
-  // )
+  // }
+  // // Resets plot zooming on scroll
+  // useEffect(() => {
+  //   window.addEventListener('scroll', handleScroll)
+  //   return () => window.removeEventListener('scroll', handleScroll)
+  // }, [])
 
+  const activeSidebarTabIs = R.equals(activeSidebarTab)
   return (
     <Ref innerRef={stickyRef}>
     <Grid>
       <Grid.Column width={sidebarCollapsed ? 15 : 10} stretched>
       {
-        R.cond([
-          [R.equals('parameters'), R.always(<ParametersComponent />)],
-          [R.equals('visualizations'), R.always(<VisualizationsComponent />)]
-        ])(activeSidebarTab)
+        activeSidebarTabIs('parameters') ? <ParametersComponent />
+        : activeSidebarTabIs('visualizations') && <VisualizationsComponent />
       }
       </Grid.Column>
 
@@ -87,11 +88,16 @@ const ResultsPageSidebarPusher = ({
               <Button.Content hidden content={<Icon name={sidebarCollapsed ? 'eye' : 'eye slash'} />} />
             </Button>
           }
-          content={sidebarCollapsed ? 'Hide menu to show all plots' : 'Show menu to change plot queries'}
+          content={
+            activeSidebarTabIs('visualizations') ?
+              (sidebarCollapsed ? 'Show menu to change plot queries' : 'Hide menu to show all plots')
+            : sidebarCollapsed ? 'Show menu' : 'Hide menu'
+          }
         />
 
         <Divider horizontal />
         {/* {
+          showScroll &&
           <Popup
             position='bottom center'
             inverted
