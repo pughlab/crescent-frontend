@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 import {Button} from 'semantic-ui-react'
 
@@ -14,7 +14,9 @@ const DownloadResultsButton = ({
 }) => {
   const {runID} = useCrescentContext()
   const run = useRunDetailsQuery(runID)
-  
+  const [clicked, setClicked] = useState(false)
+
+
   if (R.any(R.isNil, [run])) {
     return null
   }
@@ -31,13 +33,20 @@ const DownloadResultsButton = ({
       })}
       disabled={
         // R.or(R.either(R.equals('pending'), R.equals('submitted'))(runStatus)),(RA.isFalse(downloadable))
-        R.either(R.equals('pending'), R.equals('submitted'))(runStatus)
-      }
+        // R.either(R.equals('pending'), R.equals('submitted'))(runStatus)
+        R.any(RA.isTrue, [
+          R.either(R.equals('pending'), R.equals('submitted'))(runStatus),
+          clicked,
+          // R.not(downloadable)
+        ])}
       download
       target='_blank'
       // Should only work with nginx reverse proxy
       // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
       href={`/express/download/${runID}`}
+      onClick={() => {
+        setClicked(true)
+      }}
     />
   )
 }
