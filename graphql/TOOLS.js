@@ -109,7 +109,7 @@ const TOOLS = {
           input: {
             type: 'range',
             step: 1,
-            defaultValue: {min: 1, max: 8000},
+            defaultValue: {min: 1, max: 80000},
           },
           disabled: false,
           singleDataset: true,
