@@ -58,6 +58,7 @@ const makeCWLJobJSON = async (
 
     const {
       sc_input_type,
+      apply_cell_filters,
       percent_mito: {min: minPercentMito, max: maxPercentMito},
       percent_ribo: {min: minPercentRibo, max: maxPercentRibo},
       number_genes: {min: minNumberGenes, max: maxNumberGenes},
@@ -79,7 +80,7 @@ const makeCWLJobJSON = async (
       return_threshold,
 
       // add to db schema later 
-      // apply_cell_filters: applyCellFilters,
+      apply_cell_filters,
 
       percent_mito: `${minPercentMito},${maxPercentMito}`,
       percent_ribo: `${minPercentRibo},${maxPercentRibo}`,
