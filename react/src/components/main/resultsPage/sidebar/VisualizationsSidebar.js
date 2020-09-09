@@ -105,7 +105,7 @@ const VisualizationsSidebar = ({
                   <Dropdown fluid selection labeled
                     value={activeResult}
                     options={R.compose(
-                      R.map(({result, label, description}) => ({key: result, value: result, text: description}))
+                      R.map(({result, label, description}) => ({key: result, value: result, text: label}))
                     )(plots)}
                     onChange={(e, {value}) => dispatch(setActiveResult({result: value}))}
                   />
