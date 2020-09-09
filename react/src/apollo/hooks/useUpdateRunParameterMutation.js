@@ -27,16 +27,16 @@ export default function useUpdateRunParameterMutation({
   `, {
     fetchPolicy: 'network-only',
     variables: {runID},
-    onCompleted: ({run}) => {
-      if (RA.isNotNil(run)) {
-        console.log('query', run)
-        R.compose(
-          setParameterValue,
-          parameterValuePath
-        )(run)
-      }
-    }
   })
+  useEffect(() => {
+    if (RA.isNotNil(data)) {
+      const {run} = data
+      R.compose(
+        setParameterValue,
+        parameterValuePath
+      )(run)
+    }
+  }, [data])
   const [updateRunParameterValue, {loading: loadingMutation}] = useMutation(gql`
     mutation UpdateRunParameterValue(
       $runID: ID!

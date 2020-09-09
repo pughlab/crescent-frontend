@@ -7,65 +7,36 @@ import {Divider, Menu, Segment, List, Popup, Grid, Button, Header, Icon, Message
 
 import PipelineParameter from './PipelineParameter'
 
-import {useRunDatasetsQuery, useToolStepsQuery} from '../../../../apollo/hooks'
+import {useRunDatasetsQuery, useToolStepsQuery, useRunParametersDownloadUploadMutation} from '../../../../apollo/hooks'
 import {useCrescentContext} from '../../../../redux/hooks'
+
+import {useDropzone} from 'react-dropzone'
+
 
 const QualityControlTemplateDownloadUploadSegment = ({
 
-}) => {
+}) => {  
+  const {runID} = useCrescentContext()
+  const {templateDownloadLink, onDrop} = useRunParametersDownloadUploadMutation(runID)
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
   return (
-    <Popup
-      wide='very'
-      trigger={
-        <Step.Group fluid widths={2} size='mini'>
-          <Step as='a'>
-            <Icon name='download' />
-            Download
-          </Step>
-          <Step as='a'>
-            <Icon name='upload' />
-            Upload
-          </Step>
-
-          {/* Download button */}
-          {/* <Step as='a'
-            disabled={R.isNil(templateDownloadLink)}
-            as='a'
-            download='test.csv'
-            href={templateDownloadLink}
-          >
-            <Icon name='download' />
-            Download
-          </Step> */}
-          
-          {/* Upload button */}
-          {/* <Step as='a' {...getRootProps()}>
-            <input {...getInputProps()} />
-            <Icon name='upload' />
-            Upload
-          </Step> */}
-          
-        </Step.Group>
-      }
-    >
-      <Popup.Header content='To change multiple dataset QC:' />
-      <Popup.Content>
-        <List size='large'>
-          <List.Item>
-            <Icon name='download' />
-            Download a template CSV file with current parameters
-          </List.Item>
-          <List.Item>
-            <Icon name='edit' />
-            Modify QC parameter CSV and save
-          </List.Item>
-          <List.Item>
-            <Icon name='upload' />
-            Upload modified template CSV
-          </List.Item>
-        </List>
-      </Popup.Content>
-    </Popup>
+    <Step.Group fluid widths={2} size='mini'>
+      {/* Download button */}
+      <Step as='a'
+        disabled={R.isNil(templateDownloadLink)}
+        download='crescent_qcparameters.csv'
+        href={templateDownloadLink}
+      >
+        <Icon name='download' />
+        Download
+      </Step>
+      {/* Upload button */}
+      <Step as='a' {...getRootProps()}>
+        <input {...getInputProps()} />
+        <Icon name='upload' />
+        Upload
+      </Step>
+    </Step.Group>
   )
 }
 
@@ -112,8 +83,25 @@ const QualityControlParametersComponent = ({
       <Grid.Column width={6}>
         <Segment.Group>
           <Segment color='blue' inverted>
-            <Header textAlign='center' sub size='large' content={`Dataset QC`} />
-            {/* <QualityControlTemplateDownloadUploadSegment /> */}
+            <Header textAlign='center' sub size='large' content={`Dataset(s) Quality Control`} />
+            <QualityControlTemplateDownloadUploadSegment />
+          </Segment>
+
+          <Segment>
+            <List size='large'>
+              <List.Item>
+                <Icon name='download' />
+                Download a template CSV file with current parameters
+              </List.Item>
+              <List.Item>
+                <Icon name='edit' />
+                Modify QC parameter CSV and save
+              </List.Item>
+              <List.Item>
+                <Icon name='upload' />
+                Upload modified template CSV
+              </List.Item>
+            </List>
           </Segment>
 
           <Segment>

@@ -8,7 +8,6 @@ const typeDefs = gql`
     createdOn: Date
     createdBy: User
     name: String
-    # params: String
     parameters: RunParameters
     projectID: ID
     project: Project
@@ -44,9 +43,13 @@ const typeDefs = gql`
       value: ToolParameterValue!
     ): Run
 
+    bulkUpdateRunParameterValues(
+      runID: ID!
+      parameters: RunParameters!
+    ): Run
+
     submitRun(
       runID: ID,
-      # params: String
     ): Run
 
     deleteRun(

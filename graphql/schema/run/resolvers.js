@@ -16,7 +16,7 @@ const resolvers = {
     },
     run: async (parent, {runID}, {Runs}) => {
       const run = await Runs.findOne({runID})
-      console.log(run)
+      // console.log(run)
       return run
     },
   },
@@ -74,13 +74,28 @@ const resolvers = {
         } else {
           newParameters = R.assocPath([step, parameter], value, parameters)
         }
-        console.log(newParameters)
+        // console.log(newParameters)
         run.parameters = newParameters
         await run.save()
-        console.log(run.runID, run.name, run.parameters)
+        // console.log(run.runID, run.name, run.parameters)
         return run
       } catch (err) {
         console.log(err)
+      }
+    },
+
+    bulkUpdateRunParameterValues: async (
+      parent,
+      {runID, parameters},
+      {Runs}
+    ) => {
+      try {
+        const run = await Runs.findOne({runID})
+        run.parameters = parameters
+        await run.save()
+        return run
+      } catch (err) {
+        console.log('bulkUpdateRunQCParameterValues', err)
       }
     },
 
@@ -90,7 +105,7 @@ const resolvers = {
       try {
         const run = await Runs.findOne({runID})
         const {name, datasetIDs} = run
-        console.log('Submitting run', runID, datasetIDs)
+        // console.log('Submitting run', runID, datasetIDs)
         // run.params = params
         run.status = 'submitted'
         await run.save()
