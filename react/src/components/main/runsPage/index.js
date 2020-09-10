@@ -126,8 +126,9 @@ const RunsPageComponent = ({
         {/* CREATE NEW RUN MODAL */}
         <NewRunModal {...{project}} />
         {/* SHOW RUNS BY STATUS */}
-        {isUploadedProject && <RunsStatusLegend />}
-        
+        {/* {isUploadedProject && <RunsStatusLegend />} */}
+        { <RunsStatusLegend />}
+
         <ProjectRunsList />
 
       </Segment>
