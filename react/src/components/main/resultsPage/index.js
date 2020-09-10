@@ -28,7 +28,7 @@ const ResultsPageComponent = ({
   useEffect(() => {
     if (RA.isNotNil(run)) {
       const {status} = run
-      const runIsIncomplete = R.includes(status, ['pending', 'submitted'])
+      const runIsIncomplete = R.includes(status, ['pending'])
       const sidebarTab = runIsIncomplete ? 'parameters' : 'visualizations'
       dispatch(setActiveSidebarTab({sidebarTab}))
     }
