@@ -194,7 +194,6 @@ const submitMergedCWL = async (
         --maxLogFileSize \
         0 \
         --singularity \
-        --debug \
         /usr/src/app/crescent/integrate-seurat-v3.cwl \
         frontend_seurat_inputs.json \ 
     `,
