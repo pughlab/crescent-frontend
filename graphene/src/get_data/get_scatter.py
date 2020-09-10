@@ -14,19 +14,17 @@ from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces
 from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, get_objs_as_2dlist, object_exists
 
-colour_dict = {}
 
-def add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells):
+def add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells, colours):
     """ add a new barcode to the plotly object and add its label group if it doesn't exist yet """
-    global colour_dict
     if (label in plotly_obj):
         plotly_obj[label]['text'].append(barcode)
         plotly_obj[label]['x'].append(barcode_coords[barcode][0])
         plotly_obj[label]['y'].append(barcode_coords[barcode][1])
-        plotly_obj[label]['marker']['color'].append(colour_dict[label])
+        plotly_obj[label]['marker']['color'].append(colours[label])
     else:
         # group not seen yet
-        colour_dict[label] = COLOURS[len(colour_dict.keys())%len(COLOURS)]
+        colours[label] = COLOURS[len(colours.keys())%len(COLOURS)]
         template_obj = {
             "name": label,
             "mode": "markers",
@@ -34,7 +32,7 @@ def add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells):
             "x": [barcode_coords[barcode][0]],
             "y": [barcode_coords[barcode][1]],
             "marker": {
-                'color': [colour_dict[label]],
+                'color': [colours[label]],
             },
         }
         if num_cells > 20000:
@@ -99,13 +97,13 @@ def label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv):
     label_idx = groups_tsv[0].index(str(group)) # column index of group
     group_type = groups_tsv[1][label_idx] # datatype
     # construction of plotly object depends on group_type
-    global colour_dict
     if group_type == 'group':
         # colour by discrete label
+        colours = {}
         for row in groups_tsv[2:]:
             barcode = str(row[0])
             label = str(row[label_idx])
-            add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells)
+            add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells, colours)
     elif group_type == 'numeric':
         # colour by gradient, grab all data and sort it
         barcode_values = []
@@ -120,29 +118,27 @@ def label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv):
         barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
         add_barcodes(plotly_obj, group, barcode_values, barcode_coords, num_cells, all_zeros)
     else:
-        colour_dict = {}
         return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
-    colour_dict = {}
 
 def label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv, metadata_tsv):
     # the requested group is in the user-defined metadata.tsv
     label_idx = metadata_tsv[0].index(str(group)) # column index of group
     group_type = metadata_tsv[1][label_idx] # datatype
     # master dictionary of all barcodes with x,y coordinates for the selected scatterplot
-    global colour_dict
     all_barcodes = {key: True for key in barcode_coords.keys()}
     if group_type == 'group':
         # colour by discrete label, for any barcode that doesn't have a label, give "NA"
+        colours = {}
         for row in metadata_tsv[2:]:
             barcode = str(row[0])
             if all_barcodes.pop(barcode, None):
                 # exists in all barcodes, ok to add (will be skipped otherwise)
                 label = str(row[label_idx])
-                add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells)
+                add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells, colours)
         # remaining keys in the dictionary weren't defined in metadata file
         for barcode in all_barcodes.keys():
             label = 'unlabelled'
-            add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells)
+            add_barcode(plotly_obj, barcode, label, barcode_coords, num_cells, colours)
     elif group_type == 'numeric':
         # colour by gradient, grab all data and sort it
         barcode_values = []
@@ -159,9 +155,7 @@ def label_with_metadata(plotly_obj, barcode_coords, num_cells, group, groups_tsv
         barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
         add_barcodes(plotly_obj, group, barcode_values, barcode_coords, num_cells, False)
     else:
-        colour_dict = {}
         return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
-    colour_dict = {}
 
 def label_barcodes(barcode_coords, group, paths, minio_client):
     """ given the coordinates for the barcodes, sorts them into the specified groups and returns a plotly object """
