@@ -127,7 +127,16 @@ const TagOncotreeModal = ({
             <Divider horizontal>
               Upload/Replace Metadata for this dataset in this <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-2' >format.</a> 
             </Divider>
+            {
+            disabledTagging ? 
+              <Segment placeholder>
+                <Header textAlign='center'
+                  content={'You do not have permissions to upload metadata for this dataset'}
+                />
+              </Segment>
+            :
             <UploadMetadataButton {...{datasetID}} />
+            }
             </>
           : null
         }
