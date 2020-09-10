@@ -59,16 +59,23 @@ const VisualizationsSidebar = ({
         <Segment placeholder>
           <Header icon>
             <Icon name='exclamation' />
-            This run is not submitted yet
+            This run is not submitted yet.
           </Header>
         </Segment>
       : R.equals('submitted', runStatus) ?
         <Segment placeholder>
           <Header icon>
             <Icon name='exclamation' />
-            The pipeline is currently running. 
+            The pipeline is currently running.
           </Header>
         </Segment>
+      : R.equals('failed', runStatus) ?
+      <Segment placeholder>
+        <Header icon>
+          <Icon name='times circle' />
+          The pipeline has failed.
+        </Header>
+      </Segment>
       :
         // runStatus is 'completed'
         R.ifElse(

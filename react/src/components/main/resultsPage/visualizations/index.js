@@ -58,6 +58,17 @@ const VisualizationsComponent = ({
             </Tada>
           </Segment>
         </Segment>
+
+      : R.equals('failed', runStatus) ?
+      <Segment color='violet' placeholder>
+        <Shake forever duration={10000}>
+        <Header textAlign='center' icon>
+          <Icon name='right arrow' />
+          Download and review failed run logs
+        </Header>  
+        </Shake>      
+      </Segment>
+
       : R.isNil(activeResult) ?
         <Segment color='violet' placeholder>
           <Shake forever duration={10000}>
