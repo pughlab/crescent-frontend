@@ -33,3 +33,8 @@ class QCScatter(ObjectType):
     @staticmethod
     def resolve_marker(parent, info):
         return parent["marker"]
+
+    type = String()
+    @staticmethod
+    def resolve_type(parent, info):
+        return parent["type"]

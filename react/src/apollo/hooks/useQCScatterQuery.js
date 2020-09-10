@@ -52,6 +52,7 @@ export default function useQCScatter(qcType, runID, datasetID) {
           colorscale
           showscale
         }
+        type
       }
     }
     `, {
