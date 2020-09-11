@@ -28,6 +28,7 @@ const ProjectCard = ({
     name,
     createdOn,
     createdBy: {name: creatorName},
+    allDatasets,
   },
   newProjectState, newProjectDispatch
 }) => {  
@@ -35,6 +36,8 @@ const ProjectCard = ({
     R.includes(projectID),
     R.prop('mergedProjectIDs')
   )(newProjectState)
+
+  const uniqueOncotreeCodesArray = R.compose(R.uniq, R.reject(R.isNil), R.pluck('oncotreeCode'))(allDatasets)
 
   return (
     <Transition visible animation='fade up' duration={1000} unmountOnHide={true} transitionOnMount={true}>
@@ -50,7 +53,7 @@ const ProjectCard = ({
             <Icon name={isSelectedForMerge ? 'folder open' : 'folder outline'} size='large' />
           </Button>
         }
-        content={'Click to merge into your project'}
+        content={'Click to integrate into your project'}
       />
     <Card.Content extra>
       <Header size='small'>
@@ -63,7 +66,13 @@ const ProjectCard = ({
       <Label.Group>
         <Label content={<Icon style={{margin: 0}} name='user' />} detail={creatorName} />
         <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
-        <Label content={<Icon style={{margin: 0}} name='file archive' />} detail={'#'} />
+        <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(allDatasets)} dataset(s)`} />
+        {
+          R.map(
+            oncotreeCode => <Label key={oncotreeCode} content={<Icon style={{margin: 0}} name='paperclip' />} detail={oncotreeCode} />,
+            uniqueOncotreeCodesArray
+            )
+        }
       </Label.Group>
     </Card.Content>
     </Card>
@@ -85,6 +94,9 @@ const PublicProjects = ({
         createdBy {
           name
           userID
+        }
+        allDatasets {
+          oncotreeCode
         }
       }
     }
@@ -131,6 +143,9 @@ const UploadedProjects = ({
         createdBy {
           name
           userID
+        }
+        allDatasets {
+          oncotreeCode
         }
       }
     }
