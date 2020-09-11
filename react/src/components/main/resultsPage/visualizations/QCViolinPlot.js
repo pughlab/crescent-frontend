@@ -37,7 +37,7 @@ const QCViolinPlot = ({
   
   return (
     <>
-    <Header textAlign='center' content={R.isNil(selectedQC) ? '' : `Metrics Before and After QC (Violins) for ${name}`} />
+    <Header textAlign='center' content={R.isNil(selectedQC) ? '' : `Metrics Before and After QC for ${name} (Violins)`} />
     <Plot
       config={{showTips: false}}
       data={qcViolin}
@@ -75,7 +75,7 @@ const QCViolinPlot = ({
           {
             "x": 0.37,
             "y": 1,
-            "text": "Number of Reads",
+            "text": "Number of UMI Counts",
             "xref": "paper",
             "yref": "paper",
             "xanchor": "center",
@@ -85,7 +85,7 @@ const QCViolinPlot = ({
           {
             "x": 0.63,
             "y": 1,
-            "text": "Mitochondrial Genes (%) ",
+            "text": "Mitochondrial Gene Counts (%) ",
             "xref": "paper",
             "yref": "paper",
             "xanchor": "center",
@@ -95,7 +95,7 @@ const QCViolinPlot = ({
           {
             "x": 0.89,
             "y": 1,
-            "text": "  Ribosomal Protein Genes (%)",
+            "text": "  Ribosomal Protein Gene Counts (%)",
             "xref": "paper",
             "yref": "paper",
             "xanchor": "center",

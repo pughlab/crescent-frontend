@@ -11,17 +11,17 @@
     },
     "Number_of_Reads": {
         "key": "Number_of_Reads",
-        "text": "Number of Reads (UMAP)",
+        "text": "Number of UMI Counts (UMAP)",
         "value": "Number_of_Reads"
     },
     "Mitochondrial_Genes_Percentage": {
         "key": "Mitochondrial_Genes_Percentage",
-        "text": "Mitochondrial Genes Percentage (UMAP)",
+        "text": "Mitochondrial Gene Counts Percentage (UMAP)",
         "value": "Mitochondrial_Genes_Percentage"
     },
     "Ribosomal_Protein_Genes_Percentage": {
         "key": "Ribosomal_Protein_Genes_Percentage",
-        "text": "Ribosomal Protein Genes Percentage (UMAP)",
+        "text": "Ribosomal Protein Gene Counts Percentage (UMAP)",
         "value": "Ribosomal_Protein_Genes_Percentage"
     }
 }

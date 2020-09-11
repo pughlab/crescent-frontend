@@ -43,7 +43,7 @@ const QCScatterPlot = ({
   
   return (
     <>
-      <Header textAlign='center' content={R.isNil(selectedQC) ? '' : (selectedQC.replace(/_/g," ")+" (UMAP) for "+name)} />
+      <Header textAlign='center' content={R.isNil(selectedQC) ? '' : R.equals(selectedQC)('Number_of_Reads') ? "Number of UMI Counts for "+name+" (UMAP)" : (selectedQC.replace(/_/g," ")+" for "+name+" (UMAP)")} />
       <Plot
         config={{showTips: false}}
         data={qcScatterData}
