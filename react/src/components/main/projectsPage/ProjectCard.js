@@ -4,6 +4,8 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import * as R_ from 'ramda-extension'
 import moment from 'moment'
+import {PulseLoader} from 'react-spinners'
+
 
 import filesize from 'filesize'
 
@@ -23,7 +25,14 @@ const ProjectCard = ({
   const project = useProjectDetailsQuery(projectID)
 
   if (R.isNil(project)) {
-    return null
+    // return null
+    return (
+      <Card color='grey'>
+         <Header textAlign='center' icon>
+          <PulseLoader size='8'/>
+         </Header>
+      </Card>
+      )
   }
 
   const {
@@ -39,6 +48,8 @@ const ProjectCard = ({
 
     allDatasets
   } = project
+
+  const uniqueOncotreeCodesArray = R.compose(R.uniq, R.reject(R.isNil), R.pluck('oncotreeCode'))(allDatasets)
 
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
@@ -85,7 +96,7 @@ const ProjectCard = ({
                       RA.isNotEmpty(mergedProjects) &&
                       <Label>
                         <Icon name='folder open' />
-                        {'Merged Projects'}
+                        {'Integrated Projects'}
                         <Label.Detail content={R.length(mergedProjects)} />
                       </Label>
                     }
@@ -122,10 +133,21 @@ const ProjectCard = ({
         <Card.Content>
           <Card.Header>
             <Header size='small'>
-              <Header.Content>
-              {name}
-              </Header.Content>
+              <Marquee text={name} />
             </Header>
+            <Label.Group>
+              <Label content={<Icon style={{margin: 0}} name='user' />}  detail={creatorName} />
+              <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={`${moment(createdOn).format('D MMMM YYYY')}`} />
+              <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(allDatasets)} dataset(s)`} />
+            </Label.Group>
+            <Label.Group>
+              {
+                R.map(
+                  oncotreeCode => <Label key={oncotreeCode} content={<Icon style={{margin: 0}} name='paperclip' />} detail={oncotreeCode} />,
+                  uniqueOncotreeCodesArray
+                 )
+              }
+            </Label.Group>
           </Card.Header>
         </Card.Content>
         {
