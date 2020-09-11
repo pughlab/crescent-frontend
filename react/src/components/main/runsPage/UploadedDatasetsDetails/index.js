@@ -6,6 +6,7 @@ import {Sunburst} from 'react-vis'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import {PulseLoader} from 'react-spinners'
 
 import {useProjectDetailsQuery, useOncotreeQuery, useOncotreeSunburstQuery, useTagDatasetMutation} from '../../../../apollo/hooks'
 import {useCrescentContext} from '../../../../redux/hooks'
@@ -25,7 +26,15 @@ const TagOncotreeModal = ({
   const oncotree = useOncotreeQuery()
   const {dataset, tagDataset} = useTagDatasetMutation(datasetID)
   if (R.any(R.isNil, [oncotree, dataset])) {
-    return null
+
+    // return null
+    return (
+      <Label>
+         <Header textAlign='center' icon>
+          <PulseLoader size='4'/>
+         </Header>
+      </Label>
+      )
   }
 
   const {tissue: tissueTypes} = oncotree
@@ -40,7 +49,7 @@ const TagOncotreeModal = ({
           flowing
           on='hover'
           trigger={
-            <Label as={Button} onClick={() => setOpen(true)}>
+          <Label as={Button} onClick={() => setOpen(true)}>
               {name}
               {/* {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
               {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
