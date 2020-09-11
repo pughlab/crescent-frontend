@@ -42,7 +42,7 @@ const TOOLS = {
           parameter: 'apply_cell_filters',
           label: 'Apply QC Filters',
           prompt: 'Indicate whether you would like to apply QC filters or skip',
-          description: 'Indicates if QC filters (number of genes, number of reads, mitochondrial fraction, ribosomal protein gene fraction) should be applied. Default is "Yes".',
+          description: 'Indicates if QC filters (number of genes, number of UMI counts, mitochondrial fraction, ribosomal protein gene fraction) should be applied. Default is "Yes".',
           input: {
             type: 'select',
             defaultValue: 'Y',
@@ -103,12 +103,12 @@ const TOOLS = {
         {
           step: 'quality',
           parameter: 'number_reads',
-          label: 'Number of Reads',
-          prompt: 'Specify range for number of reads',
-          description: 'The minimum and maximum number of unique gene counts in a cell to be included in normalization and clustering analyses. Default is 50 to 8000.',
+          label: 'Number of UMI Counts',
+          prompt: 'Specify range for number of UMI Counts',
+          description: 'The minimum and maximum number of unique UMI counts in a cell to be included in normalization and clustering analyses. Default is 50 to 8000.',
           input: {
             type: 'range',
-            step: 1,
+            step: 1000,
             defaultValue: {min: 1, max: 80000},
           },
           disabled: false,
@@ -208,14 +208,14 @@ const TOOLS = {
           label: 'Differential Gene Expression Comparisons',
           prompt: 'Select differential gene expression comparisons',
           // description: '"LogNormalize", "SCTransform", or "Skip Normalization" (Input MTX is already normalized). If "Skip Normalization" is used, data should be in log scale, low quality cells should already be removed, and option "No" should be selected in the Quality Control "Apply QC Filters" parameter. Default is "SCTransform". ',
-          description: "1-12",
+          description: "Select one or more options. Options other than the default will significantly increase runtime, depending on number of datasets. Default is 1 = using global cell clusters, compares each cell cluster vs. the rest of cells.",
           input: {
             type: 'multiSelect',
             defaultValue: '1',
             options: [
               // {key: 'no_deg', value: '0', text: '0: no differentially expressed genes are computed'},
-              {key: 'global_all', value: '1', text: '1 = using global cell clusers, compares each cell cluster vs. the rest of cells'},
-              {key: 'global_dataset_all', value: '2', text: '2 = using global cell clusers, for each dataset, compares each cell cluster vs. the rest of cells'},
+              {key: 'global_all', value: '1', text: '1 = using global cell clusters, compares each cell cluster vs. the rest of cells'},
+              {key: 'global_dataset_all', value: '2', text: '2 = using global cell clusters, for each dataset, compares each cell cluster vs. the rest of cells'},
               // {key: 'global_dataset_same_cluster', value: '3', text: '3: using global cell clusers, for each dataset, compares each cell cluster vs. the same cluster from other datasets. Needs `-v 1`'},
               // {key: 'global_type_all', value: '4', text: '4 = using global cell clusers, for each dataset type, compares each cell cluster vs. the rest of cells'},
               // {key: 'global_type_same_cluster', value: '5', text: '5: using global cell clusers, for each dataset type, compares each cell cluster vs. the same cluster from other dataset types. Needs `-v 1`'},
