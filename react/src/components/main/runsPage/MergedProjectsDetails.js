@@ -63,7 +63,7 @@ const MergedProjectsDetails = ({
   return (
     <Segment attached>
       <Divider horizontal>
-        <Header content={'Merged Projects'} />
+        <Header content={'Integrated Projects'} />
       </Divider>
       <Label.Group size='large'>
       {

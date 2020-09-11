@@ -83,9 +83,9 @@ const CreateProjectButton = ({
       <Message>
       {
         noMergedProjects ?
-          'You did not select any projects to merge'
+          'You did not select any public or prior projects to integrate'
         :
-          `${R.length(mergedProjectIDs)} Project${R.equals(1, R.length(mergedProjectIDs)) ? '' : 's'} Selected ${R.equals(1, R.length(mergedProjectIDs)) ? '' : 'To Merge'}`
+          `${R.length(mergedProjectIDs)} Project${R.equals(1, R.length(mergedProjectIDs)) ? '' : 's'} selected ${R.equals(1, R.length(mergedProjectIDs)) ? '' : 'to integrate'}`
       }
       </Message>
 
