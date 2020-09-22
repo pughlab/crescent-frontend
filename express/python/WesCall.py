@@ -48,4 +48,4 @@ clientObject = util.WESClient(
 # All workflow related files must be passed as attachments here, excluding files in minio
 # To generalize to pipeline builder take all the arguments as inputs into the resolver
 req = clientObject.run(
-    pathToCWL + "seurat-workflow.cwl", job, [pathToScript + "Runs_Seurat_v3.R", pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
+    pathToCWL + "seurat-workflow.cwl", job, [pathToScript + "Runs_Seurat_v3_SingleDataset.R", pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])

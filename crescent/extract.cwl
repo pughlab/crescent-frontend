@@ -22,7 +22,7 @@ outputs:
   input_dir:
     type: Directory
     outputBinding:
-      glob: ["inputs/"]
+      glob: ["dataset-*/"]
 arguments:
   - position: 1
     prefix: ''
@@ -35,4 +35,4 @@ arguments:
   - position: 3
     prefix: ''
     separate: false
-    valueFrom: "inputs/"
+    valueFrom: "."
