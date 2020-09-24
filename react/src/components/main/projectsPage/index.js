@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Header, Button, Segment, Divider, Checkbox} from 'semantic-ui-react'
+import {Header, Button, Segment, Divider, Checkbox, Message} from 'semantic-ui-react'
 
 import Fade from 'react-reveal/Fade'
 
@@ -57,14 +57,24 @@ const ProjectsPageComponent = ({
         </Button>
       </Button.Group>
       {
-        R.equals(activeProjectKind, 'uploaded') &&
+        R.equals(activeProjectKind, 'uploaded') ?
         <Fade down>
           <Segment attached>
             <NewProjectModal />
           </Segment>
         </Fade>
+        :
+        // <Fade down>
+        <Segment attached>
+          <Message size='medium' error>
+            <Message.Content>
+              Due to refactoring of CReSCENT pipelines to integrate multiple datasets, access to some public data is currently unavailable. If you are interested in a particular cancer dataset to be indexed please send us an email at <a href='mailto:crescent@uhnresearch.ca'>crescent@uhnresearch.ca</a>. 
+            </Message.Content>
+          </Message>   
+        </Segment>
+      // </Fade>
       }
-      <ProjectSearchInput />
+      <ProjectSearchInput/>
       <Divider hidden horizontal />
       {
         isActiveProjectKind('uploaded') ?
