@@ -2,18 +2,21 @@ from graphene import Schema, Mutation, String, Field, ID, List
 
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from os import environ
+from os import environ, remove
 
 import sys
 import json
 from wes_client import util
 from wes_client.util import modify_jsonyaml_paths
 
+from minio import Minio
+from minio.error import ResponseError
+
 mongo_client = MongoClient(environ.get('MONGO_URL'))
 db = mongo_client['crescent']
 
 def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
-    # Job creation from mongo run data
+    # Job creation from mongo run data, specific to Runs_Seurat_v3_SingleDataset.R
     job = {
         "R_script": {
             "class": "File",
@@ -43,10 +46,32 @@ def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
         "access_key": environ["MINIO_ACCESS_KEY"],
         "secret_key": environ["MINIO_SECRET_KEY"],
         "minio_domain": "host.docker.internal",
-        "minio_port": "9000"
+        "minio_port": environ["MINIO_HOST_PORT"]
     }
-    job = json.dumps(job)
+
+    # Return the json object, not a string
     return job
+
+def minioUpload(scriptPath: str, jsonPath: str, runId: str):
+    try:
+        # Connect to minio
+        minioEndpoint = 'host.docker.internal:' + environ["MINIO_HOST_PORT"]
+        minioClient = Minio(minioEndpoint, environ["MINIO_ACCESS_KEY"], environ["MINIO_SECRET_KEY"], secure=False)
+
+        # Upload R script and json inputs to minio
+        bucket = "run-" + runId
+        minioClient.fput_object(bucket, 'Runs_Seurat_v3_SingleDataset.R', scriptPath)
+        minioClient.fput_object(bucket, 'frontend_seurat_inputs.json', jsonPath)
+        
+        # Check if both files were sent corretly 
+        if minioClient.stat_object(bucket, "frontend_seurat_inputs.json") == None or minioClient.stat_object(bucket, "Runs_Seurat_v3_SingleDataset.R") == None:
+            return False
+        return True
+    except:
+        # Catch connection and response errors
+        e = sys.exc_info()[1]
+        print(format(e))
+        return False
 
 
 class SubmitRun(Mutation):
@@ -65,6 +90,8 @@ class SubmitRun(Mutation):
             if run is None:
                 print("Run not found")
                 return "Run not found"
+            
+            # Parse datasetId to get the input files
             datasetId = str(run['datasetIDs'][0])
 
             # Get the name of the dataset for the run from mongo
@@ -72,15 +99,30 @@ class SubmitRun(Mutation):
             if name is None:
                 print("dataset not found")
                 return "dataset not found"
-            # print(run)
+            
+            # Make the json input to the CWL workflow
             job = makeJob(runId = runId, datasetId = datasetId, run = run, dataName = name)
-            print(job)
+
     #   # Uncomment when this resolver is connected to the frontend
     #   # Each run should only result in one submission, so this perserves idempotency
-            if run['wesID'] is not None:
-                print("A workflow has already been submitted for this run")
-                return "A workflow has already been submitted for this run"
+            # if run['wesID'] is not None:
+            #     print("A workflow has already been submitted for this run")
+            #     return "A workflow has already been submitted for this run"
 
+            # Create temp json file
+            fileName = "frontend_seurat_inputs_" + runId + ".json"
+            with open(fileName, 'w') as outfile:
+                json.dump(job, outfile)
+                outfile.close()
+            
+            # Upload R script and temp json file to the minio run bucket
+            minioWorked = minioUpload(scriptPath= "/app/crescent/Script/Runs_Seurat_v3_SingleDataset.R", jsonPath= fileName, runId= runId)
+            # Delete temp json file
+            remove(fileName)
+            # Check for errors in connecting/accessing minio
+            if minioWorked == False:
+                print("minio upload failed in submit_run.py")
+                return "minio upload failed"
     
     #   # Get input paths
     #   pathToCWL = "/app/crescent/"
