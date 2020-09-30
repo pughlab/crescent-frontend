@@ -53,7 +53,7 @@ inputs:
     default: N
 
   - id: minioInputPath
-    type: string
+    type: string[]
 
   - id: destinationPath
     type: string

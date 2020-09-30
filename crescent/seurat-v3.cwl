@@ -16,7 +16,7 @@ inputs:
     type: Directory
 
   sc_input:
-    type: Directory
+    type: Directory[]
     inputBinding:
       position: 1
       prefix: -i

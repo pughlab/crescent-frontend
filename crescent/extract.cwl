@@ -9,7 +9,7 @@ hints:
 baseCommand: cp
 inputs:
   - id: minioInputPath
-    type: string
+    type: string[]
   - id: access
     type: string
   - id: secret
@@ -20,7 +20,7 @@ inputs:
     type: string
 outputs:
   input_dir:
-    type: Directory
+    type: Directory[]
     outputBinding:
       glob: ["dataset-*/"]
 arguments:

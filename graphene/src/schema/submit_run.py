@@ -42,7 +42,7 @@ def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
         "save_filtered_data": run['parameters']['save']['save_filtered_data'],
         "save_r_object": run['parameters']['save']['save_r_object'],
     
-        "minioInputPath": "minio/dataset-" + datasetId,
+        "minioInputPath": ["minio/dataset-" + datasetId],
         "destinationPath": "minio/run-" + runId, 
         "access_key": environ["MINIO_ACCESS_KEY"],
         "secret_key": environ["MINIO_SECRET_KEY"],
