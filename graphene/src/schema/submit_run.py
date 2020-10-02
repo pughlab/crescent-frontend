@@ -47,7 +47,7 @@ def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
     return job
 
 def makeMultiJob(runId: str, run: dict):
-    # Job creation for multiple dataset run
+    # Job creation for multiple dataset run, specific to Runs_Seurat_MultiDatasets.R
     # Parse dge
     dge = run['parameters']['expression']['dge_comparisons']
     if len(run['parameters']['expression']['dge_comparisons']) > 1:
@@ -59,8 +59,8 @@ def makeMultiJob(runId: str, run: dict):
         minioInputPaths.append("minio/dataset-" + str(id))
     # This must also be read from to retrieve datasets.csv and script
     minioInputPaths.append("minio/run-" + runId)
-    # minioInputPaths = a list of strings of datasetIDs prepended with minio/dataset- and run
     
+    # Filling in structure
     job = {
         "resolution": run['parameters']['clustering']['resolution'],
         "project_id": "crescent",
@@ -81,14 +81,16 @@ def makeMultiJob(runId: str, run: dict):
     return job
 
 def minioUpload(scriptPath: str, jsonPath: str, runId: str, csvPath = None):
+    # Attempting to upload all relevant files neccesary for this run to the run bucket
     try:
         # Connect to minio
         minioEndpoint = 'host.docker.internal:' + environ["MINIO_HOST_PORT"]
         minioClient = Minio(minioEndpoint, environ["MINIO_ACCESS_KEY"], environ["MINIO_SECRET_KEY"], secure=False)
 
-        # Upload R script and json inputs to minio
+        # Upload files to bucket
         bucket = "run-" + runId
         minioClient.fput_object(bucket, 'frontend_seurat_inputs.json', jsonPath)
+        # Multi vs Single dataset
         if csvPath is not None:
             minioClient.fput_object(bucket, 'datasets.csv', csvPath)
             minioClient.fput_object(bucket, 'Runs_Seurat_v3_MultiDatasets.R', scriptPath)
@@ -106,6 +108,7 @@ def minioUpload(scriptPath: str, jsonPath: str, runId: str, csvPath = None):
         return False
 
 def makeCSV(run: dict, datasetIDs: list, fileName: str):
+    # Create datasets.csv locally with a fileName that doesn't cause race conditions
     with open(fileName, mode = 'w') as csvfile:
         csvWriter = csv.writer(csvfile, delimiter=',')
         # First row
@@ -122,6 +125,7 @@ def makeCSV(run: dict, datasetIDs: list, fileName: str):
                             "nreads_min",
                             "nreads_max"])
         # Fill in each row for each dataset
+        # I can't believe this worked so nicely :)
         for dataset in run['parameters']['quality']:
             csvWriter.writerow(["dataset-" + dataset,
                                 db.datasets.find_one({'datasetID': ObjectId(dataset)})['name'],
@@ -157,7 +161,8 @@ class SubmitRun(Mutation):
             
             # Find out if we are dealing with multiple data sets
             isMulti = len(run['datasetIDs']) > 1
-
+            
+            # Make job json depending on # datasets
             # Single dataset version
             if not isMulti:
                 # Parse datasetId to get the input files
@@ -175,15 +180,15 @@ class SubmitRun(Mutation):
             else:
                 datasetIds = run['datasetIDs']
                 job = makeMultiJob(runId= runId, run= run)
-            # print (job)
 
-    #   # Uncomment when this resolver is connected to the frontend
-    #   # Each run should only result in one submission, so this perserves idempotency
-            # if run['wesID'] is not None:
-            #     print("A workflow has already been submitted for this run")
-            #     return "A workflow has already been submitted for this run"
+            # Uncomment when this resolver is connected to the frontend
+            # Each run should only result in one submission, so this perserves idempotency
+            if run['wesID'] is not None:
+                print("A workflow has already been submitted for this run")
+                return "A workflow has already been submitted for this run"
 
-            # Create temp json file
+            # Sending files to minio
+            # Create temp json file to send to minio
             fileName = "frontend_seurat_inputs_" + runId + ".json"
             with open(fileName, 'w') as outfile:
                 json.dump(job, outfile)
@@ -209,24 +214,26 @@ class SubmitRun(Mutation):
                 print("minio upload failed in submit_run.py")
                 return "minio upload failed"
     
-    #   # Get input paths
+            # Get input paths
             pathToCWL = "/app/crescent/"
 
-    #   # make request to wes
+            # Set up WESClient object
             clientObject = util.WESClient(
                 {'auth': '', 'proto': 'http', 'host': "wes-server:" + environ['WES_PORT']}) # should come from env var
       
-    #   # use seurat-workflow.cwl
-    #   # All workflow related files must be passed as attachments here, excluding files in minio
-    #   # To generalize to pipeline builder take all the arguments as inputs into the resolver, ie the cwl workflow, the job, and the attachments
+            # Sending request to WES container
+            # All workflow related files must be passed as attachments here, excluding files in minio such as the script and datasets
             job = json.dumps(job)
             if not isMulti:
+                # Run single dataset CWL Workflow
                 req = clientObject.run(
                     pathToCWL + "seurat-workflow.cwl", job, [pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
             else:
+                # Run multiple dataset CWL Workflow
                 req = clientObject.run(
                     pathToCWL + "seurat-workflow-multi.cwl", job, [pathToCWL + "extract-multi.cwl", pathToCWL + "integrate-seurat-v3-wes.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
-
+            
+            # Update wesID and submitted on in mongo
             db.runs.find_one_and_update({'runID': ObjectId(runId)},{'$set': {'wesID': req["run_id"], 'submittedOn': datetime.datetime.now()}})
             return SubmitRun(wesId = req["run_id"])
             # return SubmitRun(wesId = 'test')
