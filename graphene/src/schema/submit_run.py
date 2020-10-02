@@ -20,14 +20,6 @@ db = mongo_client['crescent']
 def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
     # Job creation from mongo run data, specific to Runs_Seurat_v3_SingleDataset.R
     job = {
-        "R_script": {
-            "class": "File",
-            "path": "Script/Runs_Seurat_v3_SingleDataset.R"
-        },
-        "R_dir": {
-            "class": "Directory",
-            "path": "Script"
-        },
         "sc_input_type": run['parameters']['quality'][datasetId]['sc_input_type'],
         "resolution": run['parameters']['clustering']['resolution'],
         "project_id": dataName,
@@ -42,8 +34,8 @@ def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
         "save_unfiltered_data": run['parameters']['save']['save_unfiltered_data'],
         "save_filtered_data": run['parameters']['save']['save_filtered_data'],
         "save_r_object": run['parameters']['save']['save_r_object'],
-    
-        "minioInputPath": ["minio/dataset-" + datasetId],
+        # Must also read from run bucket for script
+        "minioInputPath": ["minio/dataset-" + datasetId, "minio/run-" + runId],
         "destinationPath": "minio/run-" + runId, 
         "access_key": environ["MINIO_ACCESS_KEY"],
         "secret_key": environ["MINIO_SECRET_KEY"],
@@ -65,15 +57,11 @@ def makeMultiJob(runId: str, run: dict):
     minioInputPaths = []
     for id in run['datasetIDs']:
         minioInputPaths.append("minio/dataset-" + str(id))
-    # This must also be read from to retrieve datasets.csv
+    # This must also be read from to retrieve datasets.csv and script
     minioInputPaths.append("minio/run-" + runId)
     # minioInputPaths = a list of strings of datasetIDs prepended with minio/dataset- and run
     
     job = {
-        "R_script": {
-            "class": "File",
-            "path": "Script/Runs_Seurat_v3_MultiDatasets.R"
-        },
         "resolution": run['parameters']['clustering']['resolution'],
         "project_id": "crescent",
         "pca_dimensions": run['parameters']['reduction']['pca_dimensions'],
@@ -223,7 +211,6 @@ class SubmitRun(Mutation):
     
     #   # Get input paths
             pathToCWL = "/app/crescent/"
-            pathToScript = "/app/crescent/Script/"
 
     #   # make request to wes
             clientObject = util.WESClient(
@@ -235,10 +222,10 @@ class SubmitRun(Mutation):
             job = json.dumps(job)
             if not isMulti:
                 req = clientObject.run(
-                    pathToCWL + "seurat-workflow.cwl", job, [pathToScript + "Runs_Seurat_v3_SingleDataset.R", pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
+                    pathToCWL + "seurat-workflow.cwl", job, [pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
             else:
                 req = clientObject.run(
-                    pathToCWL + "seurat-workflow-multi.cwl", job, [pathToScript + "Runs_Seurat_v3_MultiDatasets.R", pathToCWL + "extract-multi.cwl", pathToCWL + "integrate-seurat-v3-wes.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
+                    pathToCWL + "seurat-workflow-multi.cwl", job, [pathToCWL + "extract-multi.cwl", pathToCWL + "integrate-seurat-v3-wes.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
 
             db.runs.find_one_and_update({'runID': ObjectId(runId)},{'$set': {'wesID': req["run_id"], 'submittedOn': datetime.datetime.now()}})
             return SubmitRun(wesId = req["run_id"])

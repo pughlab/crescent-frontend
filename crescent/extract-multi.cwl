@@ -27,6 +27,10 @@ outputs:
     type: File
     outputBinding:
       glob: ["run-*/datasets.csv"]
+  R_file:
+    type: File
+    outputBinding:
+      glob: ["run-*/Runs*"]
 arguments:
   - position: 1
     prefix: ''

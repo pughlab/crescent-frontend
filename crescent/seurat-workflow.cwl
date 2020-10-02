@@ -2,9 +2,6 @@ class: Workflow
 cwlVersion: v1.0
 
 inputs:
-  - id: R_script
-    type: File
-
   - id: sc_input_type
     type: string
 
@@ -87,14 +84,12 @@ steps:
         source: minio_port
     out:
       - id: input_dir
+      - id: R_file
     run: ./extract.cwl
   - id: seurat-v3
     in:
       - id: R_script
-        source: R_script
-
-      - id: R_dir
-        source: R_dir
+        source: extract/R_file
 
       - id: sc_input
         source: extract/input_dir

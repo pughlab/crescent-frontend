@@ -2,9 +2,6 @@ class: Workflow
 cwlVersion: v1.0
 
 inputs:
-  - id: R_script
-    type: File
-
   - id: resolution
     type: float?
 
@@ -70,11 +67,12 @@ steps:
     out:
       - id: input_dir
       - id: datasets
+      - id: R_file
     run: ./extract-multi.cwl
   - id: seurat-v3
     in:
       - id: R_script
-        source: R_script
+        source: extract/R_file
 
       - id: sc_input
         source: extract/datasets
