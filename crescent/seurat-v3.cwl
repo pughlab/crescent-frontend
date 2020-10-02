@@ -11,9 +11,8 @@ baseCommand: [Rscript]
 inputs:
   R_script:
     type: File
-  
-  R_dir:
-    type: Directory
+    inputBinding:
+      position: 0
 
   sc_input:
     type: Directory[]
@@ -137,7 +136,3 @@ outputs:
     type: Directory
     outputBinding:
       glob: ["SEURAT/"]
-
-arguments:
-  - position: 0
-    valueFrom: $(inputs.R_dir.dirname)/Script/$(inputs.R_script.basename)

@@ -4,9 +4,6 @@ cwlVersion: v1.0
 inputs:
   - id: R_script
     type: File
-  
-  - id: R_dir
-    type: Directory
 
   - id: sc_input_type
     type: string
