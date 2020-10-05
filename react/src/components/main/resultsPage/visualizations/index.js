@@ -13,6 +13,7 @@ import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
 import QCPlot from './QCPlot'
 import LogsComponent from './LogsComponent'
+import DotPlot from './DotPlot'
 
 import CrescentPlotCaption from './PlotCaption'
 
@@ -30,6 +31,7 @@ const CrescentPlot = ({
   return (
     isActiveResult('qc') ? <QCPlot {...{plotQueryIndex}} />
     : isActiveResult('violin') ? <ViolinPlot {...{plotQueryIndex}} />
+    : isActiveResult('dot') ? <DotPlot {...{plotQueryIndex}} />
     : (isActiveResult('tsne') || isActiveResult('umap')) && <ScatterPlot {...{plotQueryIndex}} />
   )
 }
