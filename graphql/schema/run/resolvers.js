@@ -5,6 +5,11 @@ const axios = A.create({
   timeout: 10000,
 });
 
+const axiosWes = A.create({
+  baseURL: `http://host.docker.internal:${process.env.WES_PORT}`,
+  timeout: 10000,
+});
+
 const resolvers = {
   Query: {
     allRuns: async (parent, variables, {Runs}) => {
@@ -159,6 +164,33 @@ const resolvers = {
           $in: datasetIDs
         }
       })
+    },
+    status: async({wesID, status}, variables, {Runs}) => {
+      // If it has not been submitted yet
+      if (wesID == null)
+        return status;
+      
+      // Make request to wes and figure out status
+      var ret = status;
+      
+      await axiosWes.get(
+        `/ga4gh/wes/v1/runs/${wesID}/status`,
+      ).then((response) => {
+        // Translate WES status to Run status
+        if (response.data.state == "COMPLETE")
+          ret = "completed";
+        else if (response.data.state == "EXECUTION ERROR")
+          ret = "failed";
+        else if (response.data.state == "RUNNING")
+          ret = "submitted";
+      }, (error) => {
+        console.log(error);
+      })
+
+      // Update status in mongo to conform with status from wes
+      Runs.findOneAndUpdate({"wesID": wesID}, {$set: {"status": ret}});
+
+      return ret;
     }
   }
 }
