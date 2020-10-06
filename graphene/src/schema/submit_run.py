@@ -234,7 +234,7 @@ class SubmitRun(Mutation):
                     pathToCWL + "seurat-workflow-multi.cwl", job, [pathToCWL + "extract-multi.cwl", pathToCWL + "integrate-seurat-v3-wes.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
             
             # Update wesID and submitted on in mongo
-            db.runs.find_one_and_update({'runID': ObjectId(runId)},{'$set': {'wesID': req["run_id"], 'submittedOn': datetime.datetime.now()}})
+            db.runs.find_one_and_update({'runID': ObjectId(runId)},{'$set': {'wesID': req["run_id"], 'submittedOn': datetime.datetime.now(), 'status': 'submitted'}})
             return SubmitRun(wesId = req["run_id"])
             # return SubmitRun(wesId = 'test')
         except:
