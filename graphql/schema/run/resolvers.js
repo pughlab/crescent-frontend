@@ -172,20 +172,22 @@ const resolvers = {
       
       // Make request to wes and figure out status
       var ret = status;
-      
-      await axiosWes.get(
-        `/ga4gh/wes/v1/runs/${wesID}/status`,
-      ).then((response) => {
-        // Translate WES status to Run status
-        if (response.data.state == "COMPLETE")
-          ret = "completed";
-        else if (response.data.state == "EXECUTOR_ERROR")
-          ret = "failed";
-        else if (response.data.state == "RUNNING")
-          ret = "submitted";
-      }, (error) => {
-        console.log(error);
-      })
+      // Assuming run status can never change from completed, we don't need to ask wes
+      if (status != 'completed') {
+        await axiosWes.get(
+          `/ga4gh/wes/v1/runs/${wesID}/status`,
+        ).then((response) => {
+          // Translate WES status to Run status
+          if (response.data.state == "COMPLETE")
+            ret = "completed";
+          else if (response.data.state == "EXECUTOR_ERROR")
+            ret = "failed";
+          else if (response.data.state == "RUNNING")
+            ret = "submitted";
+        }, (error) => {
+          console.log(error);
+        })
+      }
 
       // Update status in mongo to conform with status from wes
       Runs.findOneAndUpdate({"wesID": wesID}, {$set: {"status": ret}});
