@@ -1,5 +1,6 @@
 const R = require('ramda')
 const A = require('axios')
+const fs = require('fs')
 const axios = A.create({
   baseURL: `http://localhost:${process.env.EXPRESS_PORT}`,
   timeout: 10000,
@@ -165,7 +166,7 @@ const resolvers = {
         }
       })
     },
-    status: async({wesID, status}, variables, {Runs}) => {
+    status: async({wesID, status, runID}, variables, {Runs,  Minio}) => {
       // If it has not been submitted yet
       if (wesID == null)
         return status;
@@ -186,6 +187,56 @@ const resolvers = {
             ret = "submitted";
         }, (error) => {
           console.log(error);
+        })
+      }
+
+      // Adding logfile to minio if it's not there
+      // Check if run failed or succeded, in which case there should be a log
+      if (ret == 'failed'){
+        // Check if log file is already there
+        Minio.client.statObject("run-" + runID, 'runLog.txt', function(err, stat) {
+          // If the file is there we are done
+          if (!err){
+            return;
+          }
+          // Put file there, no await because statObject is not async
+          axiosWes.get(
+            `/ga4gh/wes/v1/runs/${wesID}`,
+          ).then((response) => {
+            // Send response.data.run_log.stderr to minio via buffer
+            console.log("Sending runLog for " + runID + " to minio");
+            Minio.client.putObject("run-" + runID, 'runLog.txt', response.data.run_log.stderr);
+            // Probably delete file now
+          }, (error) => {
+            console.log(error);
+          })
+        })
+      }
+      else if (ret == "completed"){
+        // Check if log file is already there
+        Minio.client.statObject("run-" + runID, 'runLog.txt', function(err, stat) {
+          // If the file is there we are done
+          if (!err){
+            return;
+          }
+          // Put file there, no await because statObject is not async
+          axiosWes.get(
+            `/ga4gh/wes/v1/runs/${wesID}`,
+          ).then((response) => {
+            // Find log file and send it to minio
+            // Parse response to find name of log file in wes/logs
+            var logFilePrefix = "file:---" + response.data.request.workflow_attachment.substring(8).split('/').join('-');
+            // Filtering by including 'seurat' accounts for both single and multi-dataset runs
+            // Expand on this to calculate completedOn
+            var file = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
+            console.log(file);
+            console.log("Sending runLog for run " + runID + " to minio");
+            // Send to minio
+            Minio.client.fPutObject("run-" + runID, 'runLog.txt', file);
+            // Probably delete file now
+          }, (error) => {
+            console.log(error);
+          })
         })
       }
 
