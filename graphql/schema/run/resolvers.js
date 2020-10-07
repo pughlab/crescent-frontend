@@ -179,7 +179,7 @@ const resolvers = {
         // Translate WES status to Run status
         if (response.data.state == "COMPLETE")
           ret = "completed";
-        else if (response.data.state == "EXECUTION ERROR")
+        else if (response.data.state == "EXECUTOR_ERROR")
           ret = "failed";
         else if (response.data.state == "RUNNING")
           ret = "submitted";
