@@ -240,9 +240,13 @@ const resolvers = {
         })
       }
 
-      // Update status in mongo to conform with status from wes
-      Runs.findOneAndUpdate({"wesID": wesID}, {$set: {"status": ret}});
-
+      // Update status in mongo to conform with status from wes, unless the run is already completed
+      if (status != "completed") {
+        var thing = Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
+          if (err)
+            console.log(err);
+        });
+      }
       return ret;
     }
   }
