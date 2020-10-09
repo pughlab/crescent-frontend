@@ -11,6 +11,8 @@ const axiosWes = A.create({
   timeout: 10000,
 });
 
+const execSync = require('child_process').execSync
+
 const resolvers = {
   Query: {
     allRuns: async (parent, variables, {Runs}) => {
@@ -188,66 +190,88 @@ const resolvers = {
         }, (error) => {
           console.log(error);
         })
-      }
-
-      // Adding logfile to minio if it's not there
-      // Check if run failed or succeded, in which case there should be a log
-      if (ret == 'failed'){
-        // Check if log file is already there
-        Minio.client.statObject("run-" + runID, 'runLog.txt', function(err, stat) {
-          // If the file is there we are done
-          if (!err){
-            return;
-          }
-          // Put file there, no await because statObject is not async
-          axiosWes.get(
-            `/ga4gh/wes/v1/runs/${wesID}`,
-          ).then((response) => {
-            // Send response.data.run_log.stderr to minio via buffer
-            console.log("Sending runLog for " + runID + " to minio");
-            Minio.client.putObject("run-" + runID, 'runLog.txt', response.data.run_log.stderr);
-            // Probably delete file now
-          }, (error) => {
-            console.log(error);
-          })
-        })
-      }
-      else if (ret == "completed"){
-        // Check if log file is already there
-        Minio.client.statObject("run-" + runID, 'runLog.txt', function(err, stat) {
-          // If the file is there we are done
-          if (!err){
-            return;
-          }
-          // Put file there, no await because statObject is not async
-          axiosWes.get(
-            `/ga4gh/wes/v1/runs/${wesID}`,
-          ).then((response) => {
-            // Find log file and send it to minio
-            // Parse response to find name of log file in wes/logs
-            var logFilePrefix = "file:---" + response.data.request.workflow_attachment.substring(8).split('/').join('-');
-            // Filtering by including 'seurat' accounts for both single and multi-dataset runs
-            // Expand on this to calculate completedOn
-            var file = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
-            console.log(file);
-            console.log("Sending runLog for run " + runID + " to minio");
-            // Send to minio
-            Minio.client.fPutObject("run-" + runID, 'runLog.txt', file);
-            // Probably delete file now
-          }, (error) => {
-            console.log(error);
-          })
-        })
-      }
-
-      // Update status in mongo to conform with status from wes, unless the run is already completed
-      if (status != "completed") {
-        var thing = Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
+        // Update status in mongo to conform with status from wes, unless the run is already completed
+        Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
           if (err)
             console.log(err);
         });
       }
+
       return ret;
+    },
+    completedOn: async({wesID, status, runID, completedOn, submittedOn}, variables, {Runs, Minio}) => {
+      // I am assuming/hoping this runs after the status resolver, because the status field in mongo needs
+      // to be up to date, so far it seems that this is true
+
+      // If we have already found completedOn, we don't want to recalculate it
+      if (completedOn != null){
+        return completedOn;
+      }
+      // Otherwise we now find completedOn and upload log file:
+
+      // Default value for completedOn, if you see a running time that is increasing on frontend, it is because something below broke
+      var completionDate = Date.now();
+      // Adding logfile to minio if it's not there
+      // Check if run failed or succeded, in which case there should be a log
+      if (status == 'failed'){
+        // Put log file in minio
+        await axiosWes.get(
+          `/ga4gh/wes/v1/runs/${wesID}`,
+        ).then((response) => {
+          // Send response.data.run_log.stderr to minio via buffer
+          console.log("Sending runLog for " + runID + " to minio");
+          Minio.client.putObject("run-" + runID, 'runLog.txt', response.data.run_log.stderr);
+        }, (error) => {
+          console.log(error);
+        })
+        // Need to somehow get and update completedOn??
+      }
+      else if (status == "completed"){
+        
+        // Put log file in minio and update completedOn
+        await axiosWes.get(
+          `/ga4gh/wes/v1/runs/${wesID}`,
+        ).then((response) => {
+          // Find log file and send it to minio
+          // Parse response to find name of log file in wes/logs
+          var logFilePrefix = "file:---" + response.data.request.workflow_attachment.substring(8).split('/').join('-');
+          var logFile = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
+          console.log("Sending runLog for run " + runID + " to minio");
+          // Send to minio
+          Minio.client.fPutObject("run-" + runID, 'runLog.txt', logFile);
+          // If logfile space is an issue, the log file can be deleted at the end of this else if
+
+          // Sum running times of each job and add to submittedOn
+          var files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
+          var totalSeconds = parseFloat('0');
+          files.forEach(element => {
+            // Sum the timing information from these files by spawning processes that tail the last line
+            // Processes are expensive, but so are js alternatives I have looked into
+            // I spent like 3 hours trying to find a js way to only read last line of a file, to no avail
+            
+            var line = execSync('tail -1 wes/logs/' + element, {encoding: 'utf-8'});
+            line = line.toString().split(' ');
+            totalSeconds += parseFloat(line[line.length - 2]);
+            
+          });
+          // Now do date math with submittedOn
+          completionDate = new Date(submittedOn.getTime() + totalSeconds*1000);
+        }, (error) => {
+          console.log(error);
+        })
+      }
+      else {
+        // If status is not completed or failed, there is no need for a completedOn date
+        return null;
+      }
+      
+      // Finally upload date to mongo and return it
+      Runs.updateOne({"wesID": wesID}, {$set: {"completedOn": completionDate}}, function(err, res) {
+        if (err)
+          console.log(err);
+      });
+      console.log("Setting completedOn for " + runID + " to " + completionDate);
+      return completionDate;
     }
   }
 }
