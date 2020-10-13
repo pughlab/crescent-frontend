@@ -85,3 +85,4 @@ services:
       - --opt=extra=--writeLogsFromAllJobs
       - --opt=extra=--maxLogFileSize=0 
       - --opt=extra=--realTimeLogging
+      - --opt=extra=--retryCount=0
