@@ -209,22 +209,42 @@ const resolvers = {
       }
       // Otherwise we now find completedOn and upload log file:
 
-      // Default value for completedOn, if you see a running time that is increasing on frontend, it is because something below broke
-      var completionDate = Date.now();
-      // Adding logfile to minio if it's not there
+      // Default value for completedOn, if you see a running time that is increasing on frontend, it is because this was never changed below
+      var completionDate = null;
+
       // Check if run failed or succeded, in which case there should be a log
       if (status == 'failed'){
-        // Put log file in minio
+        // Put log file in minio and check completedOn from mtime of log file
         await axiosWes.get(
           `/ga4gh/wes/v1/runs/${wesID}`,
         ).then((response) => {
           // Send response.data.run_log.stderr to minio via buffer
           console.log("Sending runLog for " + runID + " to minio");
           Minio.client.putObject("run-" + runID, 'runLog.txt', response.data.run_log.stderr);
+
+          // Now update completedOn by checking lastModified date of failed log file
+          var logFilePrefix = "failed_file:---" + response.data.request.workflow_attachment.substring(8).split('/').join('-');
+          
+          // We check for multiple failed log files in case retryCount for jobs is set to > 1
+          var logFiles = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
+          // Try to get mtime of failed log file
+          var latestLogDate = null;
+          try {
+            // Find the latest log file and record it's last modified date
+            logFiles.forEach(element => {
+              const logFileStats = fs.statSync("wes/logs/" + element);
+              if (logFileStats.mtime > latestLogDate)
+                latestLogDate = logFileStats.mtime;
+            })
+            completionDate = latestLogDate;
+          } catch (error) {
+            console.log("Issue finding failed log file for run " + runID);
+          }
+
         }, (error) => {
           console.log(error);
         })
-        // Need to somehow get and update completedOn??
+
       }
       else if (status == "completed"){
         
@@ -239,20 +259,15 @@ const resolvers = {
           console.log("Sending runLog for run " + runID + " to minio");
           // Send to minio
           Minio.client.fPutObject("run-" + runID, 'runLog.txt', logFile);
-          // If logfile space is an issue, the log file can be deleted at the end of this else if
 
           // Sum running times of each job and add to submittedOn
           var files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
           var totalSeconds = parseFloat('0');
           files.forEach(element => {
             // Sum the timing information from these files by spawning processes that tail the last line
-            // Processes are expensive, but so are js alternatives I have looked into
-            // I spent like 3 hours trying to find a js way to only read last line of a file, to no avail
-            
             var line = execSync('tail -1 wes/logs/' + element, {encoding: 'utf-8'});
             line = line.toString().split(' ');
             totalSeconds += parseFloat(line[line.length - 2]);
-            
           });
           // Now do date math with submittedOn
           completionDate = new Date(submittedOn.getTime() + totalSeconds*1000);
@@ -261,16 +276,18 @@ const resolvers = {
         })
       }
       else {
-        // If status is not completed or failed, there is no need for a completedOn date
+        // If status is not completed or failed, there is no need for a completedOn date or log file
         return null;
       }
+
+      // If logfile space is an issue, the log files can be deleted here
       
       // Finally upload date to mongo and return it
       Runs.updateOne({"wesID": wesID}, {$set: {"completedOn": completionDate}}, function(err, res) {
         if (err)
           console.log(err);
       });
-      console.log("Setting completedOn for " + runID + " to " + completionDate);
+      
       return completionDate;
     }
   }
