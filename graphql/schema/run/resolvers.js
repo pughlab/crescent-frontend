@@ -175,8 +175,8 @@ const resolvers = {
       
       // Make request to wes and figure out status
       var ret = status;
-      // Assuming run status can never change from completed, we don't need to ask wes
-      if (status != 'completed') {
+      // Assuming run status can never change from completed or failed, we don't need to ask wes
+      if (status != 'completed' && status != 'failed') {
         await axiosWes.get(
           `/ga4gh/wes/v1/runs/${wesID}/status`,
         ).then((response) => {
