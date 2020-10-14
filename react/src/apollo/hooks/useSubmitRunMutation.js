@@ -45,14 +45,15 @@ export default function useSubmitRunMutation(runID) {
   const [submitRun, {loading: loadingSubmitRun}] = useMutation(gql`
     mutation SubmitRun($runID: ID) {
       submitRun(runId: $runID) {
-        wesId
+        wesID
       }
     }
   `, {
     client,
     variables: {runID},    
-    onCompleted: ({submitRun: {status}}) => {
-      setRunStatus(status)
+    onCompleted: ({submitRun: {wesID}}) => {
+      if (wesID != null)
+        setRunStatus('submitted')
     }
   })
 

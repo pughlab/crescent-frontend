@@ -17,7 +17,7 @@ const typeDefs = gql`
     submittedOn: Date
     completedOn: Date
 
-    wesID: String
+    wesID: ID
 
     datasets: [Dataset]
   }

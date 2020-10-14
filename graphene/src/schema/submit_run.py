@@ -148,7 +148,7 @@ class SubmitRun(Mutation):
         runId = ID()
 
     # WES ID Output
-    wesId = ID()
+    wesID = ID()
 
     # Resolver function with arguments
     def mutate(root, info, runId):
@@ -235,8 +235,8 @@ class SubmitRun(Mutation):
             
             # Update wesID and submitted on in mongo
             db.runs.find_one_and_update({'runID': ObjectId(runId)},{'$set': {'wesID': req["run_id"], 'submittedOn': datetime.datetime.now(), 'status': 'submitted'}})
-            return SubmitRun(wesId = req["run_id"])
-            # return SubmitRun(wesId = 'test')
+            return SubmitRun(wesID = req["run_id"])
+            # return SubmitRun(wesID = 'test')
         except:
             e = sys.exc_info()[1]
             print(format(e))
