@@ -29,6 +29,7 @@ import useDiffExpressionCategoricalGroupsQuery from './useDiffExpressionCategori
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
+import useDotPlotQuery from './useDotPlotQuery'
 import useScatterNumericQuery from './useScatterNumericQuery'
 import useOpacityQuery from './useOpacityQuery'
 import useSearchFeaturesQuery from './useSearchFeaturesQuery'
@@ -68,6 +69,7 @@ export {
   useQCViolinQuery,
   useQCScatterQuery,
   useScatterQuery,
+  useDotPlotQuery,
   useScatterNumericQuery,
   useOpacityQuery,
   useDiffExpressionQuery,
