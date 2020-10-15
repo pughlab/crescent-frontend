@@ -1,4 +1,4 @@
-from graphene import Boolean, Int, List, ObjectType
+from graphene import Boolean, Int, List, ObjectType, NonNull, String
 """
 Run these if you need to run this file directly
 Refer to https://chrisyeh96.github.io/2017/08/08/definitive-guide-python-imports.html#case-2-syspath-could-change
@@ -55,7 +55,17 @@ class Marker(ObjectType):
             return None
         return parent["showscale"]
     
-    opacity = UnitInterval()
+    opacity = List(UnitInterval)
     @staticmethod
     def resolve_opacity(parent, info):
         return parent["opacity"]
+
+    size = List(NonNull(Int))
+    @staticmethod
+    def resolve_size(parent, info):
+        return parent["size"]
+
+    symbol = String()
+    @staticmethod
+    def resolve_symbol(parent, info):
+        return parent["symbol"]
