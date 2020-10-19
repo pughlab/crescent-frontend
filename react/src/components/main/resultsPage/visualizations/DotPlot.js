@@ -25,7 +25,7 @@ const DotPlot = ({
 
 
   const plots = useResultsAvailableQuery(runID)
-  const dotPlots = useDotPlotQuery(runID)
+  const dotPlot = useDotPlotQuery(runID)
   // const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   // const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   // const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression)
@@ -35,8 +35,8 @@ const DotPlot = ({
     return null
   }
 
-  if (R.any(R.isNil, [dotPlots])) {
-    console.log(dotPlots)
+  if (R.any(R.isNil, [dotPlot])) {
+    console.log(dotPlot)
     return (
       <Segment basic style={{height: '100%'}} placeholder>
         <Tada forever duration={1000}>
@@ -161,7 +161,7 @@ const cluster = [
         // data={opacity}
         // data={isFeatureNotSelected ? scatter : opacity}
         // data={[trace1, trace2 ,trace3, trace4, trace5]}
-        data={dotPlots}
+        data={dotPlot}
         useResizeHandler
         style={{width: '100%', height:'90%'}}
         layout={{

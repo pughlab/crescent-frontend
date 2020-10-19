@@ -5,7 +5,7 @@ from get_data.get_violin import get_violin_data
 from get_data.get_opacity import get_opacity_data
 from get_data.get_qc_scatter import get_qc_scatter_data
 from get_data.get_qc_violin import get_qc_violin_data
-from get_data.get_dot_plots import get_dot_plots_data
+from get_data.get_dot_plot import get_dot_plot_data
 from get_data.get_others import (
     get_available_categorical_groups,
     get_available_numeric_groups,
@@ -119,10 +119,10 @@ class Query(ObjectType):
     def resolve_scatter(parent, info, vis, group, runID, datasetID):
         return get_scatter_data(vis, group, runID, datasetID)
 
-    dot_plots = List(NonNull(DotPlotData), runID=ID())
+    dot_plot = List(NonNull(DotPlotData), runID=ID())
     @staticmethod
-    def resolve_dot_plots(parent, info, runID):
-        return get_dot_plots_data(runID)
+    def resolve_dot_plot(parent, info, runID):
+        return get_dot_plot_data(runID)
 
     size = Int(runID=ID())
     @staticmethod

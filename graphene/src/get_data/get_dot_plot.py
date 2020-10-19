@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 # from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, get_objs_as_2dlist, object_exists
 
 
-def get_dot_plots_data(runID):
+def get_dot_plot_data(runID):
     """ given a runID: returns a dot plot plotly object """
     # paths = {}
     # with open('get_data/paths.json') as paths_file:
