@@ -228,7 +228,8 @@ const resolvers = {
             if (logFileStats.mtime > latestLogDate)
               latestLogDate = logFileStats.mtime;
           })
-          completionDate = latestLogDate;
+          // If no log files were found on fail, set time to time of refresh
+          completionDate = latestLogDate != null ? latestLogDate : Date.now();
         } catch (error) {
           console.log("Issue finding failed log file for run " + runID);
         }
