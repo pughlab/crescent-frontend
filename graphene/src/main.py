@@ -4,6 +4,7 @@ from starlette.graphql import GraphQLApp
 from fastapi.middleware.cors import CORSMiddleware
 from graphene import Schema
 from query import Query
+from mutation import Mutation
 
 app = FastAPI()
 app.add_middleware(
@@ -15,4 +16,4 @@ app.add_middleware(
   allow_headers=["*"]
 )
 # For Playground
-app.add_route("/", GraphQLApp(schema=Schema(query=Query)))
+app.add_route("/", GraphQLApp(schema=Schema(query=Query, mutation=Mutation)))

@@ -23,6 +23,10 @@ outputs:
     type: Directory[]
     outputBinding:
       glob: ["dataset-*/"]
+  datasets:
+    type: File
+    outputBinding:
+      glob: ["run-*/datasets.csv"]
   R_file:
     type: File
     outputBinding:

@@ -17,6 +17,7 @@ const ToolStepSchema = require('./schema/toolStep')
 const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema, OncotreeSchema, ToolStepSchema]
 
 const Minio = require('./minio')
+const WesModule = require('./WesAPI')
 
 // GQL server requires type definitions and resolvers for those types
 const server = new ApolloServer({
@@ -28,6 +29,11 @@ const server = new ApolloServer({
     mergeResolvers,
     R.map(R.prop('resolvers'))
   )(schemas),
+  dataSources: () => {
+    return {
+      wesAPI: new WesModule.WesAPI(),
+    }
+  },
   context: () => {
     return {
       // TODO: use DataSource rather than putting connection into context

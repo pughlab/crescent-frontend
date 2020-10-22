@@ -1,9 +1,12 @@
 const R = require('ramda')
 const A = require('axios')
+const fs = require('fs')
 const axios = A.create({
   baseURL: `http://localhost:${process.env.EXPRESS_PORT}`,
   timeout: 10000,
 });
+
+const execSync = require('child_process').execSync
 
 const resolvers = {
   Query: {
@@ -159,6 +162,118 @@ const resolvers = {
           $in: datasetIDs
         }
       })
+    },
+    status: async({wesID, status}, variables, {Runs, dataSources}) => {
+      // If it has not been submitted yet
+      if (wesID == null)
+        return status;
+      
+      // Make request to wes and figure out status
+      let ret = status;
+      // Assuming run status can never change from completed or failed, we don't need to ask wes
+      if (status != 'completed' && status != 'failed') {
+        response = await dataSources.wesAPI.getStatus(wesID);
+        // Translate WES status to Run status
+        if (response.state == "COMPLETE")
+          ret = "completed";
+        else if (response.state == "EXECUTOR_ERROR")
+          ret = "failed";
+        else if (response.state == "RUNNING")
+          ret = "submitted";
+        // Update status in mongo to conform with status from wes, unless the run is already completed
+        Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
+          if (err)
+            console.log(err);
+        });
+      }
+
+      return ret;
+    },
+    completedOn: async({wesID, runID, completedOn, submittedOn}, variables, {Runs, Minio, dataSources}) => {
+      // If we have already found completedOn, we don't want to recalculate it
+      if (completedOn != null){
+        return completedOn;
+      }
+      // If the run has not been submitted yet
+      if (wesID == null){
+        return completedOn;
+      }
+
+      // Otherwise we now find completedOn and upload log file:
+
+      // Default value for completedOn, if you see a running time that is increasing on frontend, it is because this was never changed below
+      let completionDate = null;
+      response = await dataSources.wesAPI.getRunData(wesID);
+
+      // Check if run failed or succeded, in which case there should be a log
+      if (response.state == 'EXECUTOR_ERROR'){
+        // Put log file in minio and check completedOn from mtime of log file
+        // response = await dataSources.wesAPI.getRunData(wesID);
+        // Send response.data.run_log.stderr to minio via buffer
+        console.log("Sending runLog for " + runID + " to minio");
+        Minio.client.putObject("run-" + runID, 'runLog-' + runID + '.txt', response.run_log.stderr);
+
+        // Now update completedOn by checking lastModified date of failed log file
+        let logFilePrefix = "failed_file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
+        
+        try {
+          // We check for multiple failed log files in case retryCount for jobs is set to > 1
+          let logFiles = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
+          // Try to get mtime of failed log file
+          let latestLogDate = null;
+        
+          // Find the latest log file and record it's last modified date
+          logFiles.forEach(element => {
+            const logFileStats = fs.statSync("wes/logs/" + element);
+            if (logFileStats.mtime > latestLogDate)
+              latestLogDate = logFileStats.mtime;
+          })
+          // If no log files were found on fail, set time to time of refresh
+          completionDate = latestLogDate != null ? latestLogDate : Date.now();
+        } catch (error) {
+          console.log("Issue finding failed log file for run " + runID);
+        }
+
+      }
+      else if (response.state == "COMPLETE"){
+        
+        // Put log file in minio and update completedOn
+        response = await dataSources.wesAPI.getRunData(wesID);
+        // Find log file and send it to minio
+        // Parse response to find name of log file in wes/logs
+        let logFilePrefix = "file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
+        let logFile = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
+        console.log("Sending runLog for run " + runID + " to minio");
+        // Send to minio
+        Minio.client.fPutObject("run-" + runID, 'runLog-' + runID + '.txt', logFile);
+
+        // Sum running times of each job and add to submittedOn
+        let files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
+        
+        let totalSeconds = parseFloat('0');
+        files.forEach(element => {
+          // Sum the timing information from these files by spawning processes that tail the last line
+          let line = execSync('tail -1 wes/logs/' + element, {encoding: 'utf-8'});
+          line = line.toString().split(' ');
+          totalSeconds += parseFloat(line[line.length - 2]);
+        });
+        // Now do date math with submittedOn
+        completionDate = new Date(submittedOn.getTime() + totalSeconds*1000);
+      }
+      else {
+        // If status is not completed or failed, there is no need for a completedOn date or log file
+        return null;
+      }
+
+      // If logfile space is an issue, the log files can be deleted here
+      
+      // Finally upload date to mongo and return it
+      Runs.updateOne({"wesID": wesID}, {$set: {"completedOn": completionDate}}, function(err, res) {
+        if (err)
+          console.log(err);
+      });
+      
+      return completionDate;
     }
   }
 }

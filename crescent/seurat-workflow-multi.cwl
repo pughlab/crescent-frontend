@@ -2,35 +2,17 @@ class: Workflow
 cwlVersion: v1.0
 
 inputs:
-  - id: sc_input_type
-    type: string
-
   - id: resolution
     type: float?
 
   - id: project_id
     type: string
 
-  - id: summary_plots
-    type: string?
-
-  - id: colour_tsne_discrete
-    type: File?
-
   - id: list_genes
     type: string?
 
-  - id: opacity
-    type: float?
-
   - id: pca_dimensions
     type: int?
-
-  - id: percent_mito
-    type: string?
-
-  - id: number_genes
-    type: string?
 
   - id: return_threshold
     type: float?
@@ -84,18 +66,16 @@ steps:
         source: minio_port
     out:
       - id: input_dir
+      - id: datasets
       - id: R_file
-    run: ./extract.cwl
+    run: ./extract-multi.cwl
   - id: seurat-v3
     in:
       - id: R_script
         source: extract/R_file
 
       - id: sc_input
-        source: extract/input_dir
-
-      - id: sc_input_type
-        source: sc_input_type
+        source: extract/datasets
 
       - id: resolution
         source: resolution
@@ -103,26 +83,11 @@ steps:
       - id: project_id
         source: project_id
 
-      - id: summary_plots
-        source: summary_plots
-
-      - id: colour_tsne_discrete
-        source: colour_tsne_discrete
-
       - id: list_genes
         source: list_genes
 
-      - id: opacity
-        source: opacity
-
       - id: pca_dimensions
         source: pca_dimensions
-
-      - id: percent_mito
-        source: percent_mito
-
-      - id: number_genes
-        source: number_genes
 
       - id: return_threshold
         source: return_threshold
@@ -135,9 +100,12 @@ steps:
 
       - id: outs_dir
         source: outs_dir
+
+      - id: minio_path
+        source: extract/input_dir
     out:
       - id: seurat_output
-    run: ./seurat-v3.cwl
+    run: ./integrate-seurat-v3-wes.cwl
   - id: upload
     in:
       - id: SEURAT

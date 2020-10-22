@@ -17,6 +17,8 @@ minio/upload/
 SEURAT/
 frontend_seurat_inputs.json
 # results/
+wes/logs/
+wes/workflows/
 
 .env
 nginx/certs/

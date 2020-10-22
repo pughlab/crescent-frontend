@@ -17,6 +17,8 @@ const typeDefs = gql`
     submittedOn: Date
     completedOn: Date
 
+    wesID: ID
+
     datasets: [Dataset]
   }
   type Query {

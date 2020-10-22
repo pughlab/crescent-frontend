@@ -4,19 +4,18 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerPull: crescentdev/crescent-seurat:latest
+    dockerPull: crescentdev/crescent-seurat-droplet-gsva:latest
 
 baseCommand: [Rscript]
 
 inputs:
   R_script:
     type: File
-  
-  R_dir:
-    type: Directory
+    inputBinding:
+      position: 0
 
   sc_input:
-    type: Directory
+    type: Directory[]
     inputBinding:
       position: 1
       prefix: -i
@@ -137,7 +136,3 @@ outputs:
     type: Directory
     outputBinding:
       glob: ["SEURAT/"]
-
-arguments:
-  - position: 0
-    valueFrom: $(inputs.R_dir.dirname)/Script/$(inputs.R_script.basename)
