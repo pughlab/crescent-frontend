@@ -169,7 +169,7 @@ const resolvers = {
         return status;
       
       // Make request to wes and figure out status
-      var ret = status;
+      let ret = status;
       // Assuming run status can never change from completed or failed, we don't need to ask wes
       if (status != 'completed' && status != 'failed') {
         response = await dataSources.wesAPI.getStatus(wesID);
@@ -202,7 +202,7 @@ const resolvers = {
       // Otherwise we now find completedOn and upload log file:
 
       // Default value for completedOn, if you see a running time that is increasing on frontend, it is because this was never changed below
-      var completionDate = null;
+      let completionDate = null;
       response = await dataSources.wesAPI.getRunData(wesID);
 
       // Check if run failed or succeded, in which case there should be a log
@@ -211,16 +211,16 @@ const resolvers = {
         // response = await dataSources.wesAPI.getRunData(wesID);
         // Send response.data.run_log.stderr to minio via buffer
         console.log("Sending runLog for " + runID + " to minio");
-        Minio.client.putObject("run-" + runID, 'runLog.txt', response.run_log.stderr);
+        Minio.client.putObject("run-" + runID, 'runLog-' + runID + '.txt', response.run_log.stderr);
 
         // Now update completedOn by checking lastModified date of failed log file
-        var logFilePrefix = "failed_file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
+        let logFilePrefix = "failed_file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
         
         try {
           // We check for multiple failed log files in case retryCount for jobs is set to > 1
-          var logFiles = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
+          let logFiles = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
           // Try to get mtime of failed log file
-          var latestLogDate = null;
+          let latestLogDate = null;
         
           // Find the latest log file and record it's last modified date
           logFiles.forEach(element => {
@@ -241,19 +241,19 @@ const resolvers = {
         response = await dataSources.wesAPI.getRunData(wesID);
         // Find log file and send it to minio
         // Parse response to find name of log file in wes/logs
-        var logFilePrefix = "file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
-        var logFile = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
+        let logFilePrefix = "file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
+        let logFile = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
         console.log("Sending runLog for run " + runID + " to minio");
         // Send to minio
-        Minio.client.fPutObject("run-" + runID, 'runLog.txt', logFile);
+        Minio.client.fPutObject("run-" + runID, 'runLog-' + runID + '.txt', logFile);
 
         // Sum running times of each job and add to submittedOn
-        var files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
+        let files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
         
-        var totalSeconds = parseFloat('0');
+        let totalSeconds = parseFloat('0');
         files.forEach(element => {
           // Sum the timing information from these files by spawning processes that tail the last line
-          var line = execSync('tail -1 wes/logs/' + element, {encoding: 'utf-8'});
+          let line = execSync('tail -1 wes/logs/' + element, {encoding: 'utf-8'});
           line = line.toString().split(' ');
           totalSeconds += parseFloat(line[line.length - 2]);
         });
