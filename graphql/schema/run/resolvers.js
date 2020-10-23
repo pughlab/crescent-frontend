@@ -172,7 +172,13 @@ const resolvers = {
       let ret = status;
       // Assuming run status can never change from completed or failed, we don't need to ask wes
       if (status != 'completed' && status != 'failed') {
-        response = await dataSources.wesAPI.getStatus(wesID);
+        try {
+          response = await dataSources.wesAPI.getStatus(wesID);
+        }
+        catch (error){
+          console.log("Error geting status of " + wesID + " from wes");
+          return ret;
+        }
         // Translate WES status to Run status
         if (response.state == "COMPLETE")
           ret = "completed";
@@ -203,8 +209,13 @@ const resolvers = {
 
       // Default value for completedOn, if you see a running time that is increasing on frontend, it is because this was never changed below
       let completionDate = null;
-      response = await dataSources.wesAPI.getRunData(wesID);
-
+      try {
+        response = await dataSources.wesAPI.getRunData(wesID);
+      }
+      catch (error){
+        console.log("Error getting response from wes")
+        return completedOn;
+      }
       // Check if run failed or succeded, in which case there should be a log
       if (response.state == 'EXECUTOR_ERROR'){
         // Put log file in minio and check completedOn from mtime of log file
@@ -238,7 +249,13 @@ const resolvers = {
       else if (response.state == "COMPLETE"){
         
         // Put log file in minio and update completedOn
-        response = await dataSources.wesAPI.getRunData(wesID);
+        try {
+          response = await dataSources.wesAPI.getRunData(wesID);
+        }
+        catch (error) {
+          console.log("Error getting response from wes")
+          return completedOn;
+        }
         // Find log file and send it to minio
         // Parse response to find name of log file in wes/logs
         let logFilePrefix = "file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
