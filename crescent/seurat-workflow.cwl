@@ -85,9 +85,13 @@ steps:
     out:
       - id: input_dir
       - id: R_file
+      - id: runs_dir
     run: ./extract.cwl
   - id: seurat-v3
     in:
+      - id: runs_dir
+        source: extract/runs_dir
+        
       - id: R_script
         source: extract/R_file
 
