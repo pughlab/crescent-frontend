@@ -34,6 +34,7 @@ services:
       - "${GRAPHQL_PORT}:${GRAPHQL_PORT}"
     volumes:
       - .:/usr/src/app
+      - /var/run/docker.sock:/var/run/docker.sock:rw
     depends_on:
       - minio 
       - mongo
