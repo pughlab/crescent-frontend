@@ -18,6 +18,7 @@ const typeDefs = gql`
     completedOn: Date
 
     wesID: ID
+    logs: String
 
     datasets: [Dataset]
   }

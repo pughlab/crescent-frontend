@@ -163,7 +163,15 @@ const resolvers = {
         }
       })
     },
-    status: async({wesID, status}, variables, {Runs, dataSources}) => {
+    logs: async({runID}, variables, {Docker}) => {
+      let containerID = await Docker.getContainerId(runID);
+      if (containerID == null)
+        return "The run does not have an active container";
+      return await Docker.getLogs(containerID);
+    },
+    status: async({wesID, status}, variables, {Runs, dataSources, Docker}) => {
+      
+      
       // If it has not been submitted yet
       if (wesID == null)
         return status;
