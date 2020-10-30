@@ -166,7 +166,7 @@ const resolvers = {
     logs: async({runID}, variables, {Docker}) => {
       let containerID = await Docker.getContainerId(runID);
       if (containerID == null)
-        return "The run does not have an active container";
+        return null;
       return await Docker.getLogs(containerID);
     },
     status: async({wesID, status}, variables, {Runs, dataSources, Docker}) => {
