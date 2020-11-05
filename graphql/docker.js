@@ -39,5 +39,11 @@ module.exports = {
     if (Id != null) {
       return (await docker.getContainer(Id).logs({ 'stdout': '1' })).toString()
     }
+  },
+
+  killContainer: async Id => {
+    if (Id != null){
+      return (await docker.getContainer(Id).kill()).toString()
+    }
   }
 }
