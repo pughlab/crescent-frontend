@@ -58,6 +58,10 @@ const typeDefs = gql`
     deleteRun(
       runID: ID
     ): Run
+
+    cancelRun(
+      runID: ID
+    ): ID
   }
 `
 
