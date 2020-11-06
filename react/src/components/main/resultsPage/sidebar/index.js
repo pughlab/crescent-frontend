@@ -5,6 +5,7 @@ import {Segment, Transition, Button} from 'semantic-ui-react'
 import ParametersSidebar from './ParametersSidebar'
 import VisualizationsSidebar from './VisualizationsSidebar'
 import SubmitRunButton from './SubmitRunButton'
+import CancelRunButton from './CancelRunButton'
 import RefreshRunButton from './RefreshRunButton'
 import DownloadResultsButton from './DownloadResultsButton'
 
@@ -75,6 +76,13 @@ const SidebarComponent = ({
         ])(activeSidebarTab)
       }
       </Segment>
+      {
+       R.and(R.and(enableSubmit), R.equals('submitted', runStatus)) ? 
+          <Segment attached='bottom'> 
+            <CancelRunButton />
+          </Segment>
+        : <></>
+      }
     </Segment>
   )
 }
