@@ -8,6 +8,7 @@ import { gql } from 'apollo-boost'
 
 export default function useCancelRunMutation(runID) {
   const [runStatus, setRunStatus] = useState(null)
+  const [cancelFailed, setCancelFailed] = useState(null)
 
   const { loading, data, error } = useQuery(gql`
     query RunStatus($runID: ID) {
@@ -31,11 +32,16 @@ export default function useCancelRunMutation(runID) {
   `, {
     variables: { runID },
     onCompleted: ({cancelRun}) => {
-      if (cancelRun == "failed")
+      if (cancelRun == "failed"){
         setRunStatus('canceled')
+        setCancelFailed(null)
+      }
+      else {
+        setCancelFailed('failed')
+      }
     }
   })
 
 
-  return { cancelRun, runStatus, loadingCancelRun }
+  return { cancelRun, runStatus, loadingCancelRun, cancelFailed }
 }

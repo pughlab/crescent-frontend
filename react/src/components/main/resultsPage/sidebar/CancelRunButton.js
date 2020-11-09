@@ -11,7 +11,7 @@ const CancelRunButton = ({}) => {
 
   const {userID, runID} = useCrescentContext()
   // let cancelRun, runStatus, loadingCancelRun;
-  const {cancelRun, runStatus, loadingCancelRun} = useCancelRunMutation(runID)
+  const {cancelRun, runStatus, loadingCancelRun, cancelFailed} = useCancelRunMutation(runID)
 
   if (runStatus == null){
     return null;
@@ -21,7 +21,7 @@ const CancelRunButton = ({}) => {
 
   return (
     <Button fluid color='red'
-      content={loadingCancelRun ? 'ATTEMPTING TO CANCEL' : runIsSubmitted ? "CANCEL PIPELINE" : "PIPELINE CANCELED"}
+      content={loadingCancelRun ? 'ATTEMPTING TO CANCEL' : cancelFailed ? "CANCEL FAILED, TRY AGAIN?" : runIsSubmitted ? "CANCEL PIPELINE" : "PIPELINE CANCELED"}
       disabled={R.any(RA.isTrue, [R.not(runIsSubmitted), loadingCancelRun])}
       onClick={() => {
         cancelRun()
