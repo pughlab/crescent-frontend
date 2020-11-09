@@ -61,7 +61,7 @@ const typeDefs = gql`
 
     cancelRun(
       runID: ID
-    ): ID
+    ): String
   }
 `
 

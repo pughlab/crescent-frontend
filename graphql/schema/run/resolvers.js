@@ -149,7 +149,7 @@ const resolvers = {
         if (containerID == null)
           return null;
         await Docker.killContainer(containerID);
-        return runID
+        return "failed"
       } catch (error) {
         console.log(error)
         return null;

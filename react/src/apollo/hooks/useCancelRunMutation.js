@@ -30,8 +30,9 @@ export default function useCancelRunMutation(runID) {
     }
   `, {
     variables: { runID },
-    onCompleted: () => {
-      setRunStatus('canceled')
+    onCompleted: ({cancelRun}) => {
+      if (cancelRun == "failed")
+        setRunStatus('canceled')
     }
   })
 

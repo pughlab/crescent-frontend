@@ -21,7 +21,7 @@ const CancelRunButton = ({}) => {
 
   return (
     <Button fluid color='red'
-      content={runIsSubmitted ? 'CANCEL PIPELINE' : 'CANCELED PIPELINE'}
+      content={loadingCancelRun ? 'ATTEMPTING TO CANCEL' : runIsSubmitted ? "CANCEL PIPELINE" : "PIPELINE CANCELED"}
       disabled={R.any(RA.isTrue, [R.not(runIsSubmitted), loadingCancelRun])}
       onClick={() => {
         cancelRun()
