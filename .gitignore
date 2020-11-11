@@ -24,3 +24,5 @@ wes/workflows/
 nginx/certs/
 
 **/.vscode
+
+graphene/src/schema/minioIP.txt

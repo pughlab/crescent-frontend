@@ -15,6 +15,9 @@ Copy `sample.env` to `.env` and `react/sample.env` to `react/.env` and customize
 
 `npm install` to install server dependencies.
 `docker-compose up` to start the server backend.
+`docker network connect bridge minio` to connect minio to the deafult network
+`docker network inspect minio` to retreive the IP of the container
+`echo "the ip" > graphene/src/schema/minioIP.txt` to give graphene the IP
 
 In the `react` folder, `npm install` for frontend dependencies and then `npm start` to start a React development server.
 
@@ -25,6 +28,12 @@ cp sample.env .env
 cp react/sample.env react/.env
 npm i
 docker-compose up -d
+docker network connect bridge minio
+docker network inspect minio
+```
+Now copy the `IPAddress` under `Networks: bridge` NOT `Networks: crescent_frontend_default` near the bottom. Excluding the quotations.
+```
+echo "the ip" > graphene/src/schema/minioIP.txt
 cd react
 npm i
 npm start
@@ -54,5 +63,10 @@ npm ci
 npm run build
 cd ..
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d 
-# or npm start 
+docker network connect bridge minio
+docker network inspect minio
+```
+Now copy the `IPAddress` under `Networks: bridge` NOT `Networks: crescent_frontend_default` near the bottom. Excluding the quotations.
+```
+echo "the ip" > graphene/src/schema/minioIP.txt
 ```

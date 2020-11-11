@@ -8,7 +8,6 @@ services:
       - "${MONGO_HOST_PORT}:27017"
     volumes:
       - ./mongodb:/data/db
-    network_mode: bridge
 
   minio: 
     image: minio/minio:latest
@@ -21,7 +20,6 @@ services:
     volumes:
       - ./minio/upload:/export
     command: server /export
-    network_mode: bridge
 
   server: 
     image: crescentdev/crescent-conglomerate
@@ -39,12 +37,6 @@ services:
     depends_on:
       - minio 
       - mongo
-    network_mode: bridge
-    links:
-      - minio:minio
-      - mongo:mongo
-      - graphene-server:graphene-server
-      - wes-server:wes-server
 
   graphene-server: 
     # image: crescentdev/graphene-server
@@ -70,11 +62,6 @@ services:
       - minio 
       - mongo      
     command: uvicorn main:app --host 0.0.0.0 --port ${GRAPHENE_PORT} --reload
-    network_mode: bridge
-    links:
-      - mongo:mongo
-      - minio:minio
-      - wes-server:wes-server
 
   wes-server:
     image: candig/wes-server:${WES_VERSION}
@@ -99,4 +86,3 @@ services:
       - --opt=extra=--maxLogFileSize=0 
       - --opt=extra=--realTimeLogging
       - --opt=extra=--retryCount=0
-    network_mode: bridge

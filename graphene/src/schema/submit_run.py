@@ -21,6 +21,8 @@ db = mongo_client['crescent']
 
 def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
     # Job creation from mongo run data, specific to Runs_Seurat_v3_SingleDataset.R
+    with open('/app/src/schema/minioIP.txt', 'r') as file:
+        minioIP = file.read().replace('\n', '')
     job = {
         "sc_input_type": run['parameters']['quality'][datasetId]['sc_input_type'],
         "resolution": run['parameters']['clustering']['resolution'],
@@ -41,15 +43,15 @@ def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
         "destinationPath": "minio/run-" + runId, 
         "access_key": environ["MINIO_ACCESS_KEY"],
         "secret_key": environ["MINIO_SECRET_KEY"],
-        "minio_domain": socket.gethostbyname('minio'),
+        "minio_domain": minioIP,
         "minio_port": environ["MINIO_HOST_PORT"]
     }
-    print(socket.gethostbyname('minio'))
-
     # Return the json object, not a string
     return job
 
 def makeMultiJob(runId: str, run: dict):
+    with open('/app/src/schema/minioIP.txt', 'r') as file:
+        minioIP = file.read().replace('\n', '')
     # Job creation for multiple dataset run, specific to Runs_Seurat_MultiDatasets.R
     # Parse dge
     dge = run['parameters']['expression']['dge_comparisons']
@@ -78,7 +80,7 @@ def makeMultiJob(runId: str, run: dict):
         "destinationPath": "minio/run-" + runId, 
         "access_key": environ["MINIO_ACCESS_KEY"],
         "secret_key": environ["MINIO_SECRET_KEY"],
-        "minio_domain": "17.20.0.1",
+        "minio_domain": minioIP,
         "minio_port": environ["MINIO_HOST_PORT"]
     }
     return job
