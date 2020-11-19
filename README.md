@@ -29,7 +29,7 @@ cp react/sample.env react/.env
 npm i
 docker-compose up -d
 docker network connect bridge minio
-docker network inspect minio
+docker inspect minio
 ```
 Now copy the `IPAddress` under `Networks: bridge` NOT `Networks: crescent_frontend_default` near the bottom. Excluding the quotations.
 ```
@@ -64,7 +64,7 @@ npm run build
 cd ..
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d 
 docker network connect bridge minio
-docker network inspect minio
+docker inspect minio
 ```
 Now copy the `IPAddress` under `Networks: bridge` NOT `Networks: crescent_frontend_default` near the bottom. Excluding the quotations.
 ```
