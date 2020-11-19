@@ -14,11 +14,15 @@ from wes_client.util import modify_jsonyaml_paths
 from minio import Minio
 from minio.error import ResponseError
 
+import socket
+
 mongo_client = MongoClient(environ.get('MONGO_URL'))
 db = mongo_client['crescent']
 
 def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
     # Job creation from mongo run data, specific to Runs_Seurat_v3_SingleDataset.R
+    with open('/app/src/schema/minioIP.txt', 'r') as file:
+        minioIP = file.read().replace('\n', '')
     job = {
         "sc_input_type": run['parameters']['quality'][datasetId]['sc_input_type'],
         "resolution": run['parameters']['clustering']['resolution'],
@@ -39,14 +43,15 @@ def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
         "destinationPath": "minio/run-" + runId, 
         "access_key": environ["MINIO_ACCESS_KEY"],
         "secret_key": environ["MINIO_SECRET_KEY"],
-        "minio_domain": "host.docker.internal",
+        "minio_domain": minioIP,
         "minio_port": environ["MINIO_HOST_PORT"]
     }
-
     # Return the json object, not a string
     return job
 
 def makeMultiJob(runId: str, run: dict):
+    with open('/app/src/schema/minioIP.txt', 'r') as file:
+        minioIP = file.read().replace('\n', '')
     # Job creation for multiple dataset run, specific to Runs_Seurat_MultiDatasets.R
     # Parse dge
     dge = run['parameters']['expression']['dge_comparisons']
@@ -75,7 +80,7 @@ def makeMultiJob(runId: str, run: dict):
         "destinationPath": "minio/run-" + runId, 
         "access_key": environ["MINIO_ACCESS_KEY"],
         "secret_key": environ["MINIO_SECRET_KEY"],
-        "minio_domain": "host.docker.internal",
+        "minio_domain": minioIP,
         "minio_port": environ["MINIO_HOST_PORT"]
     }
     return job
@@ -84,7 +89,7 @@ def minioUpload(scriptPath: str, jsonPath: str, runId: str, csvPath = None):
     # Attempting to upload all relevant files neccesary for this run to the run bucket
     try:
         # Connect to minio
-        minioEndpoint = 'host.docker.internal:' + environ["MINIO_HOST_PORT"]
+        minioEndpoint = 'minio:' + environ["MINIO_HOST_PORT"]
         minioClient = Minio(minioEndpoint, environ["MINIO_ACCESS_KEY"], environ["MINIO_SECRET_KEY"], secure=False)
 
         # Upload files to bucket
