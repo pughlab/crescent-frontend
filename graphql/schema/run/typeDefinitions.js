@@ -18,6 +18,7 @@ const typeDefs = gql`
     completedOn: Date
 
     wesID: ID
+    logs: String
 
     datasets: [Dataset]
   }
@@ -57,6 +58,10 @@ const typeDefs = gql`
     deleteRun(
       runID: ID
     ): Run
+
+    cancelRun(
+      runID: ID
+    ): String
   }
 `
 

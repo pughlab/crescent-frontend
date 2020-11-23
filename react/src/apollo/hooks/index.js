@@ -16,6 +16,7 @@ import useTagDatasetMutation from './useTagDatasetMutation'
 import useUploadDatasetMetadataMutation from './useUploadDatasetMetadataMutation'
 import useSubmitRunMutation from './useSubmitRunMutation'
 import useRunParametersDownloadUploadMutation from './useRunParametersDownloadUploadMutation'
+import useCancelRunMutation from './useCancelRunMutation'
 
 import useResultsAvailableQuery from './useResultsAvailableQuery'
 import useQCAvailableQuery from './useQCAvailableQuery'
@@ -59,6 +60,7 @@ export {
   useUploadDatasetMetadataMutation,
   useSubmitRunMutation,
   useRunParametersDownloadUploadMutation,
+  useCancelRunMutation,
 
   useResultsAvailableQuery, 
   useQCAvailableQuery,

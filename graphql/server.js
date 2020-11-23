@@ -18,6 +18,7 @@ const schemas = [UserSchema, ProjectSchema, RunSchema, DatasetSchema, OncotreeSc
 
 const Minio = require('./minio')
 const WesModule = require('./WesAPI')
+const Docker = require('./docker.js')
 
 // GQL server requires type definitions and resolvers for those types
 const server = new ApolloServer({
@@ -46,6 +47,7 @@ const server = new ApolloServer({
 
       // MINIO
       Minio,
+      Docker,
     }
   }
 })

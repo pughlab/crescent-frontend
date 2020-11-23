@@ -9,6 +9,9 @@ requirements:
 baseCommand: [Rscript]
 
 inputs:
+  runs_dir:
+    type: Directory
+
   R_script:
     type: File
     inputBinding:

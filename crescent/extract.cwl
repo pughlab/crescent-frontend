@@ -27,6 +27,10 @@ outputs:
     type: File
     outputBinding:
       glob: ["run-*/Runs*"]
+  runs_dir:
+    type: Directory
+    outputBinding:
+      glob: ["run-*/"]
 arguments:
   - position: 1
     prefix: ''

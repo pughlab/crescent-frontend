@@ -143,6 +143,18 @@ const resolvers = {
         console.error(error)
       }
     },
+    cancelRun: async(parent, {runID}, {Docker}) => {
+      try {
+        let containerID = await Docker.getContainerId(runID);
+        if (containerID == null)
+          return null;
+        await Docker.killContainer(containerID);
+        return "failed"
+      } catch (error) {
+        console.log(error)
+        return null;
+      }
+    }
   },
   Run: {
     createdBy: async({createdBy}, variables, {Users}) => {
@@ -163,7 +175,19 @@ const resolvers = {
         }
       })
     },
-    status: async({wesID, status}, variables, {Runs, dataSources}) => {
+    logs: async({runID}, variables, {Docker}) => {
+      try {
+        let containerID = await Docker.getContainerId(runID);
+        if (containerID == null)
+          return null;
+        return await Docker.getLogs(containerID);
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    status: async({wesID, status}, variables, {Runs, dataSources, Docker}) => {
+      
+      
       // If it has not been submitted yet
       if (wesID == null)
         return status;

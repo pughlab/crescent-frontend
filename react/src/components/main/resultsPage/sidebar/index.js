@@ -5,6 +5,7 @@ import {Segment, Transition, Button} from 'semantic-ui-react'
 import ParametersSidebar from './ParametersSidebar'
 import VisualizationsSidebar from './VisualizationsSidebar'
 import SubmitRunButton from './SubmitRunButton'
+import CancelRunButton from './CancelRunButton'
 import RefreshRunButton from './RefreshRunButton'
 import DownloadResultsButton from './DownloadResultsButton'
 
@@ -30,6 +31,7 @@ const SidebarComponent = ({
   const {status: runStatus, createdBy: {userID: creatorUserID}} = run
   const disableResults = R.equals('pending', runStatus)
   const enableSubmit = R.equals(currentUserID, creatorUserID)
+  const runIsSubmitted = R.equals('submitted', runStatus)
   return (
     
     <Segment basic style={{padding: 0, display: 'flex', flexDirection: 'column'}}>
@@ -67,6 +69,7 @@ const SidebarComponent = ({
       {
         R.cond([
           [R.compose(R.and(enableSubmit), R.equals('parameters')), R.always(<SubmitRunButton />)],
+          [R.compose(R.and(runIsSubmitted), R.equals('visualizations')), R.always(<CancelRunButton />)],
           [R.equals('visualizations'), R.always(
             // R.equals('submitted', runStatus) ? <RefreshRunButton /> : 
             <DownloadResultsButton />
