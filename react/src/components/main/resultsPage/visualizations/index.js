@@ -12,6 +12,7 @@ import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/h
 import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
 import QCPlot from './QCPlot'
+import LogsComponent from './LogsComponent'
 
 import CrescentPlotCaption from './PlotCaption'
 
@@ -53,9 +54,7 @@ const VisualizationsComponent = ({
       R.equals('submitted', runStatus) ?
         <Segment style={{height: '100%'}} color='violet'>
           <Segment style={{height: '100%'}} basic placeholder>
-            <Tada forever duration={1000}>
-              <Image src={Logo} centered size='medium' />
-            </Tada>
+            <LogsComponent/>
           </Segment>
         </Segment>
 
