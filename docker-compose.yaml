@@ -54,6 +54,7 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MONGO_URL=${MONGO_URL}
       - WES_PORT=${WES_PORT}
+      - GRAPHENE_DEV=${GRAPHENE_DEV}
     volumes:
       - ./graphene/src:/app/src
       - ./minio:/app/minio

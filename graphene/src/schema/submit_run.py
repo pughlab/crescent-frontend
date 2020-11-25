@@ -21,8 +21,11 @@ db = mongo_client['crescent']
 
 def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
     # Job creation from mongo run data, specific to Runs_Seurat_v3_SingleDataset.R
-    with open('/app/src/schema/minioIP.txt', 'r') as file:
-        minioIP = file.read().replace('\n', '')
+    if (environ["GRAPHENE_DEV"] == "False"):
+        with open('/app/src/schema/minioIP.txt', 'r') as file:
+            minioIP = file.read().replace('\n', '')
+    else:
+        minioIP = "host.docker.internal"
     job = {
         "sc_input_type": run['parameters']['quality'][datasetId]['sc_input_type'],
         "resolution": run['parameters']['clustering']['resolution'],
@@ -50,8 +53,11 @@ def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
     return job
 
 def makeMultiJob(runId: str, run: dict):
-    with open('/app/src/schema/minioIP.txt', 'r') as file:
-        minioIP = file.read().replace('\n', '')
+    if (environ["GRAPHENE_DEV"] == "False"):
+        with open('/app/src/schema/minioIP.txt', 'r') as file:
+            minioIP = file.read().replace('\n', '')
+    else:
+        minioIP = "host.docker.internal"
     # Job creation for multiple dataset run, specific to Runs_Seurat_MultiDatasets.R
     # Parse dge
     dge = run['parameters']['expression']['dge_comparisons']

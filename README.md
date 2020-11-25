@@ -28,12 +28,6 @@ cp sample.env .env
 cp react/sample.env react/.env
 npm i
 docker-compose up -d
-docker network connect bridge minio
-docker inspect minio
-```
-Now copy the `IPAddress` under `Networks: bridge` NOT `Networks: crescent_frontend_default` near the bottom. Excluding the quotations.
-```
-echo "the ip" > graphene/src/schema/minioIP.txt
 cd react
 npm i
 npm start
@@ -43,7 +37,7 @@ npm start
 Clone this repo and create folders `minio/download` and `minio/upload` (BUG TO FIX).
 
 Copy the SSL certificate files specified in `nginx/conf/default.conf` to `nginx/certs/`.
-Copy `sample.env` to `.env` and `react/sample.env` to `react/.env` and customize as needed.
+Copy `sample.env` to `.env` and `react/sample.env` to `react/.env` and customize as needed. The `GRAPHENE_DEV` variable should be set to `False`.
 
 `npm install` to install server dependencies.
 In the `react` folder, `npm install` for frontend dependencies and then `npm build` to compile a release version of the frontend in `build`.
