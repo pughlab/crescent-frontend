@@ -16,7 +16,7 @@ import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../../utils'
 import useRunLogsQuery from '../../../../apollo/hooks/useRunLogsQuery';
 
-import Typewriter from 'typewriter-effect';
+import Fade from 'react-reveal/Fade';
 
 
 
@@ -31,32 +31,19 @@ const LogsComponent = ({
   const {logs} = useRunLogsQuery(runID)
   const splitByNewLine = R.compose(R.map(R.trim), R.split('\n'))
   const filterByHasAsterisks = R.filter(R.includes('***'))
-  const trimUnicode = str => {return str.substring(R.indexOf('*')(str))}
+  const trimUnicode = str => str.substring(R.indexOf('*')(str))
   const mapToParagraph = R.addIndex(R.map)((comment, index) => <p key={index}>{comment}</p>)
-  const mapToTypewriter = R.addIndex(R.map)((comment, index) => 
-    <Typewriter key={index}
-      options={{
-        strings: comment,
-        autoStart: true,
-        loop: false,
-    }}
-    />
-  );
+
+  // R.compose(R.join('<br>'), R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs)
+  
   if (R.any(R.isNil, [logs])) {
     return null
   }
 
   return (
-     /* <Typewriter
-    options={{
-      strings: R.compose(R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs),
-      autoStart: true,
-      loop: true,
-    }}
-    /> */
-    <>
-      {R.compose(mapToTypewriter, R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs)}
-    </>
+    <Fade left>
+      {R.compose(mapToParagraph, R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs)}
+    </Fade>
   )
 }
 
