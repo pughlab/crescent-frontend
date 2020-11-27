@@ -16,7 +16,7 @@ import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../../utils'
 import useRunLogsQuery from '../../../../apollo/hooks/useRunLogsQuery';
 
-// import Typewriter from 'typewriter-effect';
+import Typewriter from 'typewriter-effect';
 
 
 
@@ -33,20 +33,29 @@ const LogsComponent = ({
   const filterByHasAsterisks = R.filter(R.includes('***'))
   const trimUnicode = str => {return str.substring(R.indexOf('*')(str))}
   const mapToParagraph = R.addIndex(R.map)((comment, index) => <p key={index}>{comment}</p>)
+  const mapToTypewriter = R.addIndex(R.map)((comment, index) => 
+    <Typewriter key={index}
+      options={{
+        strings: comment,
+        autoStart: true,
+        loop: false,
+    }}
+    />
+  );
   if (R.any(R.isNil, [logs])) {
     return null
   }
 
   return (
-    // <Typewriter
-    //   options={{
-    //     strings: R.compose(mapToParagraph, R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs),
-    //     autoStart: true,
-    //     loop: false,
-    //   }}
-    // />
+     /* <Typewriter
+    options={{
+      strings: R.compose(R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs),
+      autoStart: true,
+      loop: true,
+    }}
+    /> */
     <>
-      {R.compose(mapToParagraph, R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs)}
+      {R.compose(mapToTypewriter, R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs)}
     </>
   )
 }
