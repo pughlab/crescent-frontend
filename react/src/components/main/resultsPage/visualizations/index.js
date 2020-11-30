@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect, useRef} from 'react';
 import * as R from 'ramda'
 import * as R_ from 'ramda-extension'
 import {Segment, Icon, Header, Image, Grid, Label} from 'semantic-ui-react'
@@ -20,6 +20,7 @@ import Tada from 'react-reveal/Tada'
 import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
+import {Button} from 'semantic-ui-react'
 
 const CrescentPlot = ({
   plotQueryIndex
@@ -41,6 +42,7 @@ const VisualizationsComponent = ({
 
   const dispatch = useDispatch()
   const {activeResult, activePlot, plotQueries, sidebarCollapsed} = useResultsPage()
+  const [showLogs, setShowLogs] = useState(false)
 
   if (R.any(R.isNil, [run])) {
     return null
@@ -51,13 +53,27 @@ const VisualizationsComponent = ({
   return (
     <>
     {
-      R.equals('submitted', runStatus) ?
-        <Segment style={{height: '100%'}} color='violet'>
-          <Segment style={{height: '100%'}} basic placeholder>
-            <LogsComponent/>
-          </Segment>
+      R.and(R.equals('submitted', runStatus), R.equals(true, showLogs)) ?
+      <Segment style={{height: '100%', overflow: 'auto'}} color='violet'>
+        <Segment style={{height: '100%'}} basic placeholder>
+          <LogsComponent/>
         </Segment>
-
+      </Segment>
+      : R.equals('submitted', runStatus) ?
+      <Segment style={{height: '100%'}} color='violet'>
+        <Segment style={{height: '65%'}} basic placeholder>
+          <Tada forever duration={1000}>
+            <Image src={Logo} centered size='medium' />
+          </Tada>
+        </Segment><Segment style={{width: '40%', margin: 'auto'}} basic>
+          <Button fluid color='yellow' centered
+            content='View Run Logs'
+            onClick={() => {
+              setShowLogs(true)
+            }}
+          />
+        </Segment>
+      </Segment>
       : R.equals('failed', runStatus) ?
       <Segment color='violet' placeholder>
         <Shake forever duration={10000}>

@@ -24,10 +24,6 @@ const LogsComponent = ({
 }) => {
   const {userID, runID} = useCrescentContext()
 
-  // const dispatch = useDispatch()
-  // const {isSubmitted} = useResultsPage()
-
-  // const run = useRunDetailsQuery(runID)
   const {logs} = useRunLogsQuery(runID)
   const splitByNewLine = R.compose(R.map(R.trim), R.split('\n'))
   const filterByHasAsterisks = R.filter(R.includes('***'))
