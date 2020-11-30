@@ -24,5 +24,5 @@ export default function useRunLogsQuery(runID) {
     }
   })
 
-  return {logs}
+  return {logs, loading}
 }

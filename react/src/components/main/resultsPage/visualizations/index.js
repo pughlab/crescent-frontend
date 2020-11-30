@@ -54,8 +54,13 @@ const VisualizationsComponent = ({
     <>
     {
       R.and(R.equals('submitted', runStatus), R.equals(true, showLogs)) ?
-      <Segment style={{height: '100%', overflow: 'auto'}} color='violet'>
-        <Segment style={{height: '100%'}} basic placeholder>
+      <Segment style={{height: '60%', overflow: 'auto', maxheight: '100%'}} color='violet'>
+        <Segment style={{height: '5%'}} basic>
+          <Header textAlign='center'>
+            Logs
+          </Header>  
+        </Segment>
+        <Segment style={{height: '50%', overflow: 'auto', maxheight: '50%'}} basic>
           <LogsComponent/>
         </Segment>
       </Segment>
