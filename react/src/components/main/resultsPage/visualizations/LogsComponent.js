@@ -52,8 +52,7 @@ const LogsComponent = ({
         R.either(R.isNil, R.isEmpty)(logs) ? (
           <>No Logs Available</>
         ) : (
-          <Fade left>
-            <>
+          <>
           {
             R.compose(
               mapToParagraph,
@@ -63,7 +62,6 @@ const LogsComponent = ({
             )(logs)
           }
           </>
-          </Fade>
         )
       }
       </Segment>
