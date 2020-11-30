@@ -28,7 +28,7 @@ const DownloadResultsButton = ({
       content={R.prop(runStatus, {
         pending: 'RESULTS UNAVAILABLE',
         // missing 'submitted' because RefreshRunButton rendered if run status is so
-        completed: 'DOWNLOAD RESULTS',
+        completed: 'DOWNLOAD RESULTS AND LOGS',
         failed: 'DOWNLOAD RUN LOGS'
       })}
       disabled={
