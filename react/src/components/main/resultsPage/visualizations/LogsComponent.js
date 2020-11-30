@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-import { Loader, Segment, Button, Transition, Divider, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
+import { Loader, Segment, Button, Transition, Divider, Step, Menu, Header, Accordion, Dropdown, Checkbox } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -22,28 +22,52 @@ import Fade from 'react-reveal/Fade';
 
 const LogsComponent = ({
 }) => {
+  const [showVerbose, setShowVerbose] = useState(false)
+
   const { userID, runID } = useCrescentContext()
 
   const { logs, loading } = useRunLogsQuery(runID)
+
+
   const splitByNewLine = R.compose(R.map(R.trim), R.split('\n'))
-  const filterByHasAsterisks = R.filter(R.includes('***'))
+  const includesNumOfAsterisks  = R.compose(R.includes, RA.concatAll, R.repeat('*'))
   const trimUnicode = str => str.substring(R.indexOf('*')(str))
   const mapToParagraph = R.addIndex(R.map)((comment, index) => <p key={index}>{comment}</p>)
 
   // R.compose(R.join('<br>'), R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs)
-
+  if (loading) return '...';
   return (
-    loading ?
-      <Fade>
-      </Fade>
-    : R.equals(null, logs) ?
-      <Fade left>
-        No Logs Available
-      </Fade> 
-    :
-      <Fade left>
-        {R.compose(mapToParagraph, R.map(trimUnicode), filterByHasAsterisks, splitByNewLine)(logs)}
-      </Fade> 
+    <>
+      <Divider horizontal>
+        <Header>
+          Logs
+          <Header.Subheader>
+            <Checkbox label='Show verbose logs' onClick={() => setShowVerbose(!showVerbose)} />
+          </Header.Subheader>
+        </Header>
+      </Divider>
+      <Segment style={{height: '100%', overflowY: 'auto', maxHeight: '60vh'}}>
+        
+      {
+        R.either(R.isNil, R.isEmpty)(logs) ? (
+          <>No Logs Available</>
+        ) : (
+          <Fade left>
+            <>
+          {
+            R.compose(
+              mapToParagraph,
+              R.map(trimUnicode),
+              R.filter(includesNumOfAsterisks(showVerbose ? 3 : 5)),
+              splitByNewLine
+            )(logs)
+          }
+          </>
+          </Fade>
+        )
+      }
+      </Segment>
+    </>
   )
 }
 
