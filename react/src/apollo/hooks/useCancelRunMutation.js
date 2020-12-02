@@ -6,7 +6,10 @@ import { useState, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 
+import * as RA from 'ramda-adjunct'
+
 export default function useCancelRunMutation(runID) {
+  const [cancellable, setCancellable] = useState(false)
   const [runStatus, setRunStatus] = useState(null)
   const [cancelFailed, setCancelFailed] = useState(null)
 
@@ -14,16 +17,23 @@ export default function useCancelRunMutation(runID) {
     query RunStatus($runID: ID) {
       run(runID: $runID) {
         status
+        logs
       }
     }
   `, {
     variables: {
       runID
     },
-    onCompleted: ({ run: { status } }) => {
-      setRunStatus(status)
-    }
+    pollInterval: 1000,
   })
+  
+  useEffect(() => {
+    if (RA.isNotNil(data)) {
+      const {run: {status, logs}} = data
+      setRunStatus(status)
+      setCancellable(RA.isNotNil(logs)) // if logs is not null then set cancellable to true
+    }
+  }, [data])
 
   const [cancelRun, { loading: loadingCancelRun }] = useMutation(gql`
     mutation cancelRun($runID: ID) {
@@ -43,5 +53,5 @@ export default function useCancelRunMutation(runID) {
   })
 
 
-  return { cancelRun, runStatus, loadingCancelRun, cancelFailed }
+  return { cancelRun, runStatus, loadingCancelRun, cancelFailed, cancellable }
 }

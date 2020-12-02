@@ -143,13 +143,16 @@ const resolvers = {
         console.error(error)
       }
     },
-    cancelRun: async(parent, {runID}, {Docker}) => {
+    cancelRun: async(parent, {runID}, {Docker, Runs}) => {
       try {
-        let containerID = await Docker.getContainerId(runID);
-        if (containerID == null)
-          return null;
-        await Docker.killContainer(containerID);
-        return "failed"
+        const containerID = await Docker.getContainerId(runID);
+        if (R.isNil(containerID)) {
+          return null
+        } else {
+          await Docker.killContainer(containerID);
+          await Runs.updateOne({runID}, {$set: {"status": 'failed'}})
+          return "failed"
+        }
       } catch (error) {
         console.log(error)
         return null;
@@ -211,7 +214,7 @@ const resolvers = {
         else if (response.state == "RUNNING")
           ret = "submitted";
         // Update status in mongo to conform with status from wes, unless the run is already completed
-        Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
+        await Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
           if (err)
             console.log(err);
         });

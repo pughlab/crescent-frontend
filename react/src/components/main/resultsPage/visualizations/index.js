@@ -1,7 +1,7 @@
-import React from 'react'
+import React, {useState, useEffect, useRef} from 'react';
 import * as R from 'ramda'
 import * as R_ from 'ramda-extension'
-import {Segment, Icon, Header, Image, Grid, Label} from 'semantic-ui-react'
+import {Segment, Icon, Header, Image, Grid, Label, Divider} from 'semantic-ui-react'
 import Shake from 'react-reveal/Shake'
 
 import {useDispatch} from 'react-redux'
@@ -12,6 +12,7 @@ import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/h
 import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
 import QCPlot from './QCPlot'
+import LogsComponent from './LogsComponent'
 
 import CrescentPlotCaption from './PlotCaption'
 
@@ -19,6 +20,7 @@ import Tada from 'react-reveal/Tada'
 import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
+import {Button} from 'semantic-ui-react'
 
 const CrescentPlot = ({
   plotQueryIndex
@@ -40,6 +42,7 @@ const VisualizationsComponent = ({
 
   const dispatch = useDispatch()
   const {activeResult, activePlot, plotQueries, sidebarCollapsed} = useResultsPage()
+  const [showLogs, setShowLogs] = useState(false)
 
   if (R.any(R.isNil, [run])) {
     return null
@@ -50,24 +53,25 @@ const VisualizationsComponent = ({
   return (
     <>
     {
-      R.equals('submitted', runStatus) ?
+      R.equals('submitted', runStatus) ? (
         <Segment style={{height: '100%'}} color='violet'>
-          <Segment style={{height: '100%'}} basic placeholder>
+          <Segment basic placeholder>
             <Tada forever duration={1000}>
               <Image src={Logo} centered size='medium' />
             </Tada>
+            <Divider horizontal hidden />
+            <LogsComponent />
           </Segment>
+        </Segment> 
+      ) : R.equals('failed', runStatus) ? 
+        <Segment color='violet' placeholder>
+          <Shake forever duration={10000}>
+          <Header textAlign='center' icon>
+            <Icon name='right arrow' />
+            Download and review failed run logs
+          </Header>  
+          </Shake>      
         </Segment>
-
-      : R.equals('failed', runStatus) ?
-      <Segment color='violet' placeholder>
-        <Shake forever duration={10000}>
-        <Header textAlign='center' icon>
-          <Icon name='right arrow' />
-          Download and review failed run logs
-        </Header>  
-        </Shake>      
-      </Segment>
 
       : R.isNil(activeResult) ?
         <Segment color='violet' placeholder>
