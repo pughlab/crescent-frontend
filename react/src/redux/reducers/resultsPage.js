@@ -6,6 +6,7 @@ const initialPlotQuery = {
   activeResult: null,
   selectedQC: 'Before_After_Filtering',
   selectedFeature: null,
+  selectedFeatures: [],
   selectedGroup: null,
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
@@ -99,6 +100,24 @@ export default createReducer(
       return R.evolve({
         // selectedFeature: R.always(value)
         plotQueries: evolveAtIndex({selectedFeature: R.always(value)}, activePlot)
+      })(state)
+    },
+    // for plot
+    'resultsPage/addSelectedFeature': (state, payload) => {
+      const {value} = payload
+      const {activePlot} = state
+      return R.evolve({
+        // selectedFeature: R.always(value)
+        plotQueries: evolveAtIndex({selectedFeatures: R.append(value)}, activePlot)
+      })(state)
+    },
+    // for plot
+    'resultsPage/removeSelectedFeature': (state, payload) => {
+      const {value} = payload
+      const {activePlot} = state
+      return R.evolve({
+        // selectedFeature: R.always(value)
+        plotQueries: evolveAtIndex({selectedFeatures: R.without([value])}, activePlot)
       })(state)
     },
     // for plot

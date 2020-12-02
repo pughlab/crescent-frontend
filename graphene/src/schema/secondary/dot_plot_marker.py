@@ -19,8 +19,8 @@ def isArrayNotNumerical(color_array):
             return True
     return False
 
-class Marker(ObjectType):
-    color = List(MarkerColor)
+class DotPlotMarker(ObjectType):
+    color = MarkerColor()
     @staticmethod
     def resolve_color(parent, info):
         return parent["color"]
@@ -55,7 +55,8 @@ class Marker(ObjectType):
             return None
         return parent["showscale"]
     
-    opacity = UnitInterval()
+    # added list to opacity
+    opacity = List(UnitInterval)
     @staticmethod
     def resolve_opacity(parent, info):
         return parent["opacity"]

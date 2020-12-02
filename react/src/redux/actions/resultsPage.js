@@ -42,6 +42,20 @@ const setSelectedFeature = ({value}) => ({
   }
 })
 
+const addSelectedFeature = ({value}) => ({
+  type: 'resultsPage/addSelectedFeature',
+  payload: {
+    value
+  }
+})
+
+const removeSelectedFeature = ({value}) => ({
+  type: 'resultsPage/removeSelectedFeature',
+  payload: {
+    value
+  }
+})
+
 const setSelectedGroup = ({value}) => ({
   type: 'resultsPage/setSelectedGroup',
   payload: {
@@ -80,6 +94,8 @@ export {
   setSelectedQC,
   setSelectedQCDataset,
   setSelectedFeature,
+  addSelectedFeature,
+  removeSelectedFeature,
   setSelectedGroup,
   setSelectedDiffExpression,
   resetResultsPage,

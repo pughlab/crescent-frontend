@@ -37,15 +37,17 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useDotPlot(runID) {
+export default function useDotPlot(features, runID) {
   const [dotPlot, setDotPlot] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query DotPlot($runID: ID) {
-      dotPlot(runID: $runID) {
+    query DotPlot($features: [String], $runID: ID) {
+      dotPlot(features: $features, runID: $runID) {
         type
         mode
         x
         y
+        hovertemplate
+        text
         marker {
             color
             symbol
@@ -57,7 +59,7 @@ export default function useDotPlot(runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID},
+    variables: {features, runID},
     onCompleted: ({dotPlot}) => {
       R.compose(
         setDotPlot,
@@ -66,7 +68,6 @@ export default function useDotPlot(runID) {
     },
     // skip: R.isNil(group)
   })
-
   return dotPlot
 }
 

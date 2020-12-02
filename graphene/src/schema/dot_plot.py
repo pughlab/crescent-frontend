@@ -1,6 +1,6 @@
 from graphene import Field, Float, ID, List, NonNull, ObjectType, String
 
-from schema.secondary.marker import Marker
+from schema.secondary.dot_plot_marker import DotPlotMarker
 from schema.secondary.mode import Mode
 
 class DotPlotData(ObjectType):
@@ -20,15 +20,20 @@ class DotPlotData(ObjectType):
     def resolve_y(parent, info):
         return parent["y"]  
     
-    marker = Field(Marker)
+    marker = Field(DotPlotMarker)
     @staticmethod
     def resolve_marker(parent, info):
         return parent["marker"]
 
-    # hovertext = List(String)
-    # @staticmethod
-    # def resolve_hovertext(parent, info):
-    #     return parent["hovertext"]
+    hovertemplate = String()
+    @staticmethod
+    def resolve_hovertemplate(parent, info):
+        return parent["hovertemplate"]
+    
+    text = List(List(String))
+    @staticmethod
+    def resolve_text(parent, info):
+        return parent["text"]
     
     type = String()
     @staticmethod
