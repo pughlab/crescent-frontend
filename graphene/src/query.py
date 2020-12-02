@@ -5,6 +5,7 @@ from get_data.get_violin import get_violin_data
 from get_data.get_opacity import get_opacity_data
 from get_data.get_qc_scatter import get_qc_scatter_data
 from get_data.get_qc_violin import get_qc_violin_data
+from get_data.get_dot_plot import get_dot_plot_data
 from get_data.get_others import (
     get_available_categorical_groups,
     get_available_numeric_groups,
@@ -28,6 +29,7 @@ from schema.qc_metrics import QCMetrics
 from schema.qc_scatter import QCScatter
 from schema.qc_violin import QCViolinData
 from schema.scatter import ScatterData
+from schema.dot_plot import DotPlotData
 from schema.search_result import SearchResult
 from schema.top_expressed import TopExpression
 from schema.violin import ViolinData
@@ -116,6 +118,11 @@ class Query(ObjectType):
     @staticmethod
     def resolve_scatter(parent, info, vis, group, runID, datasetID):
         return get_scatter_data(vis, group, runID, datasetID)
+
+    dot_plot = List(NonNull(DotPlotData), features=List(String), runID=ID())
+    @staticmethod
+    def resolve_dot_plot(parent, info, features, runID):
+        return get_dot_plot_data(features, runID)
 
     size = Int(runID=ID())
     @staticmethod

@@ -18,5 +18,10 @@
     "label": "QC",
     "result": "qc",
     "description": "Quality Control Plots"
+  },
+  "DOT": {
+    "label": "Dot Plot",
+    "result": "dot",
+    "description": "Gene Expression Dot Plot"
   }
 }

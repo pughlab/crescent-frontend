@@ -10,6 +10,7 @@ import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/h
 import {setActiveResult, addPlot, setActivePlot} from '../../../../redux/actions/resultsPage'
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
+import DotPlotVisualizationMenu from '../../resultsPage/visualizations/DotPlotVisualizationMenu'
 import QualityControlMenu from '../../resultsPage/visualizations/QualityControlMenu'
 
 const MultiPlotSelector = ({
@@ -120,11 +121,11 @@ const VisualizationsSidebar = ({
               </Segment>
               <Segment attached='bottom'>
                 {
-                  R.ifElse(
-                    R.equals('qc'),
-                    R.always(<QualityControlMenu />),
-                    R.always(<VisualizationMenu/>)
-                  )(activeResult)
+                  R.cond([
+                    [R.equals('qc'),   R.always(<QualityControlMenu/>)],
+                    [R.equals('dot'), R.always(<DotPlotVisualizationMenu/>)],
+                    [R.T,            R.always(<VisualizationMenu/>)]
+                  ])(activeResult)
                 }
               </Segment>
             </>

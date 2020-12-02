@@ -113,7 +113,7 @@ def get_plots(runID):
         DESC = json.load(desc_file)
 
     # violin always available
-    available_plots = ["VIOLIN"]
+    available_plots = ["VIOLIN", "DOT"]
 
     coordinates_pattern = re.compile(r".*frontend_coordinates/(?P<vis>.*)Coordinates.tsv")
     qc_pattern = re.compile(r".*frontend_qc.*")
@@ -128,7 +128,7 @@ def get_plots(runID):
         elif ("QC" not in available_plots) and (qc_pattern.match(object_name) is not None):
             available_plots.append("QC")
     
-    hardcoded_order = ["QC", "TSNE", "UMAP", "VIOLIN"]
+    hardcoded_order = ["QC", "TSNE", "UMAP", "VIOLIN", "DOT"]
     available_plots_with_data = []
 
     for vis in hardcoded_order:

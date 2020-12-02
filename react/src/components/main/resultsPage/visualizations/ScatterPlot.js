@@ -54,6 +54,7 @@ const ScatterPlot = ({
     )
   }
 
+  console.log(scatter)
   // const isSelectedDiffExpressionNumeric = R.includes(selectedGroup)(numericGroups)
   
   
