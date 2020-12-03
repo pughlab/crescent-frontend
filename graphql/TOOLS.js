@@ -143,6 +143,44 @@ const TOOLS = {
       ]
     },
     {
+      label: 'Integration',
+      step: 'integration',
+      parameters: [
+        {
+          step: 'integration',
+          parameter: 'anchors_function',
+          label: 'Integration Anchors Method',
+          prompt: 'Select integration anchors method',
+          description: '"Seurat" or "STACAS". "Seurat" anchoring uses FindIntegrationAnchors function from the Seurat R library and "STACAS" anchoring uses FindAnchors function from the STACAS R library. Default is "Seurat".',
+          input: {
+            type: 'select',
+            defaultValue: 'Seurat',
+            options: [
+              {key: 'seurat', value: 'Seurat', text: 'Seurat'},
+              {key: 'stacas', value: 'STACAS', text: 'STACAS'},
+            ]
+          },
+          disabled: false,
+          singleDataset: false,
+          multiDataset: true,
+        },
+        {
+          step: 'integration',
+          parameter: 'reference_datasets',
+          label: 'Reference Datasets for Anchoring Method',
+          prompt: 'Select reference datasets',
+          description: 'Select up to 3 datasets to be used as references to obtain anchors (these datasets are expected to cover most expected cell types, with better QC, etc.).',
+          input: {
+            type: 'multiSelect',
+            defaultValue: 'NA',
+          },
+          disabled: true,
+          singleDataset: false,
+          multiDataset: true,
+        }
+      ]
+    },
+    {
       label: 'Dimension Reduction',
       step: 'reduction',
       parameters: [
