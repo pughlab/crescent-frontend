@@ -19,6 +19,10 @@ const ProjectSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  accession: {
+    type: String,
+    required: false
+  },
   externalUrls: {
     type: [mongoose.Schema.Types.Mixed],
     default: []
