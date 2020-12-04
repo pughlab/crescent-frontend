@@ -48,6 +48,7 @@ const RunsPageComponent = ({
     },
     createdOn: projectCreatedOn,
     description,
+    accession,
     externalUrls,
 
     uploadedDatasets,
@@ -74,6 +75,10 @@ const RunsPageComponent = ({
         <Divider horizontal>
           <Header content={'Project Details'} />
         </Divider>
+        {
+            RA.isNotNil(accession) &&
+            <Label as='a' ribbon content='ID' detail={accession} />
+        }
         <Header
           content={projectName}
           subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
