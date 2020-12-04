@@ -11,25 +11,32 @@ inputs:
   - id: project_id
     type: string
 
-  - id: summary_plots
-    type: string?
-
   - id: colour_tsne_discrete
     type: File?
 
   - id: list_genes
     type: string?
 
-  - id: opacity
-    type: float?
-
   - id: pca_dimensions
     type: int?
 
+  - id: normalization_method
+    type: string?
+  
+  - id: apply_cell_filters
+    type: string
+    default: Y
+
   - id: percent_mito
+    type: string?
+  
+  - id: percent_ribo
     type: string?
 
   - id: number_genes
+    type: string?
+  
+  - id: number_reads
     type: string?
 
   - id: return_threshold
@@ -43,6 +50,18 @@ inputs:
     default: Y
 
   - id: outs_dir
+    type: string
+    default: N
+
+  - id: save_filtered_data
+    type: string
+    default: N
+
+  - id: save_r_object
+    type: string
+    default: N
+
+  - id: save_unfiltered_data
     type: string
     default: N
 
@@ -107,26 +126,32 @@ steps:
       - id: project_id
         source: project_id
 
-      - id: summary_plots
-        source: summary_plots
-
       - id: colour_tsne_discrete
         source: colour_tsne_discrete
 
       - id: list_genes
         source: list_genes
 
-      - id: opacity
-        source: opacity
-
       - id: pca_dimensions
         source: pca_dimensions
 
+      - id: normalization_method
+        source: normalization_method
+
+      - id: apply_cell_filters
+        source: apply_cell_filters
+
       - id: percent_mito
         source: percent_mito
+      
+      - id: percent_ribo
+        source: percent_ribo
 
       - id: number_genes
         source: number_genes
+
+      - id: number_reads
+        source: number_reads
 
       - id: return_threshold
         source: return_threshold
@@ -139,6 +164,16 @@ steps:
 
       - id: outs_dir
         source: outs_dir
+
+      - id: save_filtered_data
+        source: save_filtered_data
+
+      - id: save_r_object
+        source: save_r_object
+
+      - id: save_unfiltered_data
+        source: save_unfiltered_data
+      
     out:
       - id: seurat_output
     run: ./seurat-v3.cwl

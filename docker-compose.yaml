@@ -39,7 +39,7 @@ services:
       - minio 
       - mongo
 
-  graphene-server: 
+  graphene: 
     # image: crescentdev/graphene-server
     privileged: true
     build: graphene

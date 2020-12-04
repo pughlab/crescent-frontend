@@ -22,6 +22,8 @@ wes/workflows/
 
 .env
 nginx/certs/
+nginx/errors/
+old_builds/*
 
 **/.vscode
 

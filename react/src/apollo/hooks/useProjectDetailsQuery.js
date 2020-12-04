@@ -11,6 +11,7 @@ export default function useProjectDetailsQuery(projectID) {
         name
         kind
         description
+        accession
         externalUrls {
           label
           link

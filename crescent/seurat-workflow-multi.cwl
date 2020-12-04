@@ -2,14 +2,17 @@ class: Workflow
 cwlVersion: v1.0
 
 inputs:
+  - id: anchors_function
+    type: string?
+
+  - id: reference_datasets
+    type: string?
+        
   - id: resolution
     type: float?
 
   - id: project_id
     type: string
-
-  - id: list_genes
-    type: string?
 
   - id: pca_dimensions
     type: int?
@@ -17,8 +20,23 @@ inputs:
   - id: return_threshold
     type: float?
 
+  - id: dge_comparisons
+    type: string?
+
   - id: number_cores
     type: string?
+
+  - id: save_filtered_data
+    type: string
+    default: N
+
+  - id: save_r_object
+    type: string
+    default: N
+
+  - id: save_unfiltered_data
+    type: string
+    default: N
 
   - id: runs_cwl
     type: string
@@ -81,14 +99,17 @@ steps:
       - id: sc_input
         source: extract/datasets
 
+      - id: anchors_function
+        source: anchors_function
+
+      - id: reference_datasets
+        source: reference_datasets
+
       - id: resolution
         source: resolution
 
       - id: project_id
         source: project_id
-
-      - id: list_genes
-        source: list_genes
 
       - id: pca_dimensions
         source: pca_dimensions
@@ -96,8 +117,20 @@ steps:
       - id: return_threshold
         source: return_threshold
 
+      - id: dge_comparisons
+        source: dge_comparisons
+
       - id: number_cores
         source: number_cores
+
+      - id: save_filtered_data
+        source: save_filtered_data
+
+      - id: save_r_object
+        source: save_r_object
+
+      - id: save_unfiltered_data
+        source: save_unfiltered_data
 
       - id: runs_cwl
         source: runs_cwl

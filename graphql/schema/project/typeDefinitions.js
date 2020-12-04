@@ -12,6 +12,7 @@ const typeDefs = gql`
     kind: String #'uploaded', 'curated'
     name: String
     description: String
+    accession: String
     externalUrls: [Url]
     sharedWith: [User]
     createdBy: User

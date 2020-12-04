@@ -102,17 +102,19 @@ const DotPlotVisualizationMenu = ({
           value={selectedDiffExpression}
           options={diffExpression}
           onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value}))}
+          disabled
         />
       </Form.Field>
 
-      {/* <Divider horizontal content='Datasets Type' />
+      <Divider horizontal content='Datasets Type' />
       <Form.Field>
         <Form.Dropdown fluid selection labeled
-          value="normalized"
+          value="raw"
           options={[{key: "raw", text: "Raw", value: "raw"}, {key: "normalized", text: "Normalized", value: "normalized"}]}
           onChange={(e, {value}) => {}}
+          disabled
         />
-      </Form.Field> */}
+      </Form.Field>
 
       <Divider horizontal content='Colour By' />
       <Form.Field>
@@ -122,6 +124,7 @@ const DotPlotVisualizationMenu = ({
           options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
           // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
           onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
+          disabled
         />
       </Form.Field>
 
