@@ -11,6 +11,9 @@ services:
       - ./react/build:/var/www
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/errors:/var/log/nginx
+
     depends_on:
       - server
+      - graphene
     command: nginx -g "daemon off;"
