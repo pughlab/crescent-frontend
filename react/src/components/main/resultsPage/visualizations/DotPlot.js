@@ -160,7 +160,8 @@ const DotPlot = ({
       />
       <Plot
         config={{showTips: false}}
-        data={addColorScale(dotPlot)}
+        // data={addColorScale(dotPlot)}
+        data={dotPlot}
         useResizeHandler
         style={{width: '100%', height:'85%'}}
         layout={{
