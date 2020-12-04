@@ -67,6 +67,8 @@
 ###    while keeping comparisons with zero reasonably close to the range of potential logGER values (Innes and Bader, 2018, F1000 Research)
 ####################################
 
+writeLines("\n***** Setting up your run *****\n")
+
 ####################################
 ### Required libraries
 ####################################
@@ -618,6 +620,9 @@ StopWatchEnd$CreateSeuratObject  <- Sys.time()
 ####################################
 ### Get mitochondrial genes
 ####################################
+
+writeLines("\n***** Quality Control *****\n")
+
 writeLines("\n*** Get  mitochondrial genes ***\n")
 
 StopWatchStart$GetMitoGenes  <- Sys.time()
@@ -1025,6 +1030,9 @@ rm(seurat.object.subset)
 ####################################
 ### Normalize data (if applicable)
 ####################################
+
+writeLines("\n***** Normalization *****\n")
+
 if (NormalizeAndScale == 1) {
   
   writeLines("\n*** Normalize data using NormalizeData() ***\n")
@@ -1127,6 +1135,9 @@ StopWatchEnd$ScaleData  <- Sys.time()
 ####################################
 ### Perform linear dimensional reduction by PCA
 ####################################
+
+writeLines("\n***** Dimension Reduction *****\n")
+
 writeLines("\n*** Perform linear dimensional reduction by PCA ***\n")
 
 StopWatchStart$RunPCA  <- Sys.time()
@@ -1165,6 +1176,9 @@ StopWatchEnd$GetSignificantPCs  <- Sys.time()
 ####################################
 ### Cluster the cells
 ####################################
+
+writeLines("\n***** Cell Clustering *****\n")
+
 writeLines("\n*** Cluster the cells ***\n")
 
 StopWatchStart$ClusterCells  <- Sys.time()
@@ -1364,6 +1378,9 @@ for (dim_red_method in names(DimensionReductionMethods)) {
 ####################################
 ### Finding differentially expressed genes for each cell cluster
 ####################################
+
+writeLines("\n***** Differential Gene Expression *****\n")
+
 writeLines("\n*** Finding differentially expressed genes for each cell cluster ***\n")
 
 print(paste0("NumberOfClusters=", NumberOfClusters))
@@ -1392,6 +1409,8 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
 ####################################
 ### Saving the R object
 ####################################
+
+writeLines("\n***** Saving Data *****\n")
 
 if (regexpr("^Y$", SaveRObject, ignore.case = T)[1] == 1) {
   
@@ -1530,6 +1549,9 @@ options(warn = oldw)
 ####################################
 ### Finish
 ####################################
+
+writeLines("\n***** Run completed successfully! *****\n")
+
 OutfileCPUtimes <- gsub(x = OutfileCPUtimes, pattern = Tempdir, replacement = paste0(Outdir, "/", ProgramOutdir))
 writeLines(paste0("END - All done!!! See:\n", OutfileCPUtimes, "\nfor computing times report"))
 

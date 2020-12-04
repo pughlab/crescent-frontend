@@ -97,6 +97,8 @@
 ### Tested with R v4.0.2
 ####################################
 
+writeLines("\n***** Setting up your run *****\n")
+
 ####################################
 ### Required libraries
 ####################################
@@ -847,6 +849,9 @@ for (dataset in rownames(InputsTable)) {
     ####################################
     ### Get mitochondrial genes
     ####################################
+
+    writeLines(paste0("\n***** Quality Control for ", dataset, " *****\n"))
+
     writeLines(paste0("\n*** Get  mitochondrial genes for ", dataset, " ***\n"))
 
     StopWatchStart$GetMitoGenes[[dataset]]  <- Sys.time()
@@ -1295,6 +1300,9 @@ StopWatchEnd$MergeSeuratObjectsFilteredRNA  <- Sys.time()
 ####################################
 ### Running SCTransform
 ####################################
+
+writeLines("\n***** Normalization *****\n")
+
 writeLines("\n*** Running SCTransform ***\n")
 
 StopWatchStart$SCTransform  <- Sys.time()
@@ -1334,6 +1342,8 @@ StopWatchEnd$SCTransform  <- Sys.time()
 ### HERE ARE THE FUNCTIONS TO INTEGRATE DATASETS
 ################################################################################################################################################
 ################################################################################################################################################
+
+writeLines("\n***** Integration *****\n")
 
 ####################################
 ### Get correlation between datasets using pseudo-bulk
@@ -1616,6 +1626,9 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
 ####################################
 ### Obtaining principal components
 ####################################
+
+writeLines("\n***** Dimension Reduction *****\n")
+
 writeLines("\n*** Obtaining principal components ***\n")
 
 StopWatchStart$RunPCA  <- Sys.time()
@@ -1682,6 +1695,9 @@ for (dim_red_method in names(DimensionReductionMethods)) {
 ####################################
 ### Globally cluster cells using integrated data
 ####################################
+
+writeLines("\n***** Cell Clustering *****\n")
+
 writeLines("\n*** Globally cluster cells using integrated data ***\n")
 
 StopWatchStart$ClusterAllCells  <- Sys.time()
@@ -2006,6 +2022,8 @@ StopWatchEnd$AverageGeneExpressionGlobalClusters  <- Sys.time()
 ####################################
 ### Finding differentially expressed genes (1): using global cell clusers, compares each cell cluster vs. the rest of cells
 ####################################
+
+writeLines("\n***** Differential Gene Expression *****\n")
 
 if (1 %in% RequestedDiffGeneExprComparisons == T) {
 
@@ -3386,6 +3404,8 @@ if ((8 %in% RequestedDiffGeneExprComparisons == T) |
 ### Saving the full R object
 ####################################
 
+writeLines("\n***** Saving Data *****\n")
+
 if (regexpr("^Y$", SaveRObject, ignore.case = T)[1] == 1) {
 
   writeLines("\n*** Saving the full R object ***\n")
@@ -3495,6 +3515,9 @@ options(warn = oldw)
 ####################################
 ### Finish
 ####################################
+
+writeLines("\n***** Run completed successfully! *****\n")
+
 OutfileCPUtimes <- gsub(x = OutfileCPUtimes, pattern = Tempdir, replacement = paste0(Outdir, "/", ProgramOutdir))
 writeLines(paste0("END - All done!!! See:\n", OutfileCPUtimes, "\nfor computing times report"))
 
