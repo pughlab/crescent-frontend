@@ -38,6 +38,7 @@ const ProjectCard = ({
   const {
     name,
     description,
+    accession,
     createdBy: {name: creatorName},
     createdOn,
 
@@ -136,11 +137,15 @@ const ProjectCard = ({
               <Marquee text={name} />
             </Header>
             <Label.Group>
+              {
+                RA.isNotNil(accession) &&
+                <Label content={<Icon style={{margin: 0}} name='info circle' />}  detail={accession} />
+              }
               <Label content={<Icon style={{margin: 0}} name='user' />}  detail={creatorName} />
               <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={`${moment(createdOn).format('D MMMM YYYY')}`} />
-              <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(allDatasets)} dataset(s)`} />
             </Label.Group>
             <Label.Group>
+              <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(allDatasets)} dataset(s)`} />
               {
                 R.map(
                   oncotreeCode => <Label key={oncotreeCode} content={<Icon style={{margin: 0}} name='paperclip' />} detail={oncotreeCode} />,
