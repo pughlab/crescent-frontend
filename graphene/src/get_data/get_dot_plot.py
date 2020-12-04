@@ -195,8 +195,12 @@ def get_dot_plot_data(features, runID):
     if(features == ["none"]):
         return plotly_obj
     elif(len(features) == 0):
-        features_to_display = get_top_per_cluster(
-            runID)
+        # limit the num of default genes to 10
+        tops = get_top_per_cluster(runID)
+        if(len(tops) <= 10):
+            features_to_display = tops
+        else:
+            features_to_display = tops[:10]
     else:
         features_to_display = features
     feature_list = get_barcodes(normalised_counts_path, features_to_display)
