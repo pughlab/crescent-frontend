@@ -6,7 +6,15 @@ withCallingHandlers(
 )
 setRepositories(ind = 1:2)
 withCallingHandlers(
-    install.packages(c('fmsb','optparse','staplr','devtools'),repos='https://cloud.r-project.org/'),
+    install.packages(c('fmsb','optparse','staplr','devtools', 'GSA'),repos='https://cloud.r-project.org/'),
+    warning = stop
+)
+withCallingHandlers(
+    devtools::install_version("mnormt", version = "1.5-5", repos = "http://cran.us.r-project.org"),
+    warning = stop
+)
+withCallingHandlers(
+    BiocManager::install(c('GSVA', 'qvalue', 'DropletUtils')), 
     warning = stop
 )
 withCallingHandlers(
@@ -14,10 +22,14 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    devtools::install_github("satijalab/seurat@v3.1.1"),
+    devtools::install_github("satijalab/seurat@v3.2.1"),
     warning = stop
 )
 withCallingHandlers(
     devtools::install_github(c('hhoeflin/hdf5r', 'mojaveazure/loomR@develop')),
+    warning = stop
+)
+withCallingHandlers(
+    devtools::install_github(c('carmonalab/STACAS')),
     warning = stop
 )
