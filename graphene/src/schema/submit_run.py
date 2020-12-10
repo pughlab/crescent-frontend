@@ -232,7 +232,7 @@ class SubmitRun(Mutation):
                 remove(fileName2)
             else:
                 # Upload files
-                minioWorked = minioUpload(scriptPath= "/app/crescent/Script/Runs_Seurat_v3_SingleDataset.R", jsonPath= fileName, runId= runId)
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_SingleDataset.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_SingleDataset.R", jsonPath= fileName, runId= runId)
             # Delete temp json file
             remove(fileName)
 
