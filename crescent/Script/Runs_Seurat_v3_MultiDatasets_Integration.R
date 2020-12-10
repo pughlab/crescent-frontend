@@ -418,15 +418,34 @@ writeLines("\n*** Load each dataset R object ***\n")
 
 StopWatchStart$LoadRDSEachDataset  <- Sys.time()
 
-InputRObjects.tab <- read.table(InputRObjects, header = F, row.names = 1, stringsAsFactors = F)
-colnames(InputRObjects.tab)<-c("PathToRObject")
+if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+  RObjects <- list.files(InputRObjects, pattern="*.rds", full.names=TRUE)
 
-seurat.object.list <- list()
-for (dataset in rownames(InputRObjects.tab)) {
-  print(dataset)
-  DatasetIndexInInputsTable <- which(x = rownames(InputsTable) == dataset)
-  InputRobject <- InputRObjects.tab[dataset,"PathToRObject"]
-  seurat.object.list[[DatasetIndexInInputsTable]] <- readRDS(InputRobject)
+  seurat.object.list <- list()
+  for (object in RObjects) {
+    for (dataset in rownames(InputsTable)) {
+      if (grepl(dataset, object, fixed=TRUE)) {
+        DatasetIndexInInputsTable <- which(x = rownames(InputsTable) == dataset)
+        seurat.object.list[[DatasetIndexInInputsTable]] <- readRDS(object)
+
+
+      }
+    }
+  }
+  writeLines("\n*** check this list: ***\n")
+  head(seurat.object.list)
+} else {
+
+  InputRObjects.tab <- read.table(InputRObjects, header = F, row.names = 1, stringsAsFactors = F)
+  colnames(InputRObjects.tab)<-c("PathToRObject")
+
+  seurat.object.list <- list()
+  for (dataset in rownames(InputRObjects.tab)) {
+    print(dataset)
+    DatasetIndexInInputsTable <- which(x = rownames(InputsTable) == dataset)
+    InputRobject <- InputRObjects.tab[dataset,"PathToRObject"]
+    seurat.object.list[[DatasetIndexInInputsTable]] <- readRDS(InputRobject)
+  }
 }
 
 StopWatchEnd$LoadRDSEachDataset  <- Sys.time()
