@@ -286,10 +286,16 @@ const resolvers = {
         // Find log file and send it to minio
         // Parse response to find name of log file in wes/logs
         let logFilePrefix = "file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
-        let logFile = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
+        // let logFile = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
         console.log("Sending runLog for run " + runID + " to minio");
-        // Send to minio
-        Minio.client.fPutObject("run-" + runID, 'runLog-' + runID + '.txt', logFile);
+        let usefulLogFiles = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => { return !fn.includes('clean') && !fn.includes('extract') && !fn.includes('upload') });
+
+        usefulLogFiles.forEach(file => {
+          let removePrefix = file.replace(logFilePrefix, '')
+          let name = removePrefix.substring(0, removePrefix.indexOf('.'))
+          // Send to minio
+          Minio.client.fPutObject("run-" + runID, 'runLog-' + name + "-" + runID + '.txt', "wes/logs/" + file);
+        })
 
         // Sum running times of each job and add to submittedOn
         let files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
