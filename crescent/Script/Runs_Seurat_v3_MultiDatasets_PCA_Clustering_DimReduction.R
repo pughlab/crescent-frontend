@@ -227,6 +227,7 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   ### Using `-w Y` will make Tempdir, which takes the value of ProgramOutdir, and it will be the final out-directory
   Tempdir         <- ProgramOutdir
   dir.create(file.path(Tempdir), showWarnings = F) 
+  dir.create(file.path("R_OBJECTS_CWL"), showWarnings = F) 
   
   FILE_TYPE_OUT_DIRECTORIES = c(
     "CRESCENT_CLOUD",
@@ -1663,7 +1664,11 @@ if (regexpr("^Y$", SaveRObject, ignore.case = T)[1] == 1) {
   
   StopWatchStart$SaveRDSFull  <- Sys.time()
   
-  OutfileRDS<-paste0(Tempdir, "/R_OBJECTS/", PrefixOutfiles, ".", ProgramOutdir, "_PcaClusteringDimReduction", ".rds")
+  if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+    OutfileRDS<-paste0("R_OBJECTS_CWL/", PrefixOutfiles, ".", ProgramOutdir, "_PcaClusteringDimReduction", ".rds")
+  } else {
+    OutfileRDS<-paste0(Tempdir, "/R_OBJECTS/", PrefixOutfiles, ".", ProgramOutdir, "_PcaClusteringDimReduction", ".rds")
+  }
   saveRDS(seurat.object.integrated, file = OutfileRDS)
   
   StopWatchEnd$SaveRDSFull  <- Sys.time()
