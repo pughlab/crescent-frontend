@@ -44,7 +44,7 @@ def group_by_cluster(barcode_exp_dict, minio_client, groups_path, group, runID):
     """ given all the barcodes for a feature({barcode: exp}), return the barcodes grouped by cluster
     @rtype: {cluster: {barcode: exp}} """
     barcode_group_list = get_obj_as_2dlist(
-        groups_path["bucket"] + runID, groups_path["all"], minio_client)
+        groups_path["bucket"], groups_path["all"], minio_client)
     cluster_dict = {}
     group_header = barcode_group_list[0]
     group_column_idx = group_header.index(group) if group in group_header else 1
@@ -194,8 +194,9 @@ def get_dot_plot_data(features, group, runID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    normalised_counts_path = paths["normalised_counts"]["prefix"] + \
-        runID + paths["normalised_counts"]["suffix"]
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], datasetID="all")
+    # paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
+
     minio_client = get_minio_client()
 
     plotly_obj = []
@@ -214,7 +215,7 @@ def get_dot_plot_data(features, group, runID):
             features_to_display = tops[:10]
     else:
         features_to_display = features
-    feature_list = get_barcodes(normalised_counts_path, features_to_display)
+    feature_list = get_barcodes(paths["normalised_counts"], features_to_display)
 
     for l in feature_list:
         cluster_dict = group_by_cluster(
