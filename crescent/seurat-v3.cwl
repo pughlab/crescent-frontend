@@ -4,7 +4,7 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerPull: crescentdev/crescent-seurat-droplet-gsva:latest
+    dockerPull: crescentdev/crescent-seurat-droplet-gsva-stacas:latest
 
 baseCommand: [Rscript]
 
@@ -41,12 +41,6 @@ inputs:
       position: 5
       prefix: -p
 
-  summary_plots:
-    type: string?
-    inputBinding:
-      position: 6
-      prefix: -s
-
   colour_tsne_discrete:
     type: File?
     inputBinding:
@@ -58,12 +52,6 @@ inputs:
     inputBinding:
       position: 8
       prefix: -g
-
-  opacity:
-    type: float?
-    inputBinding:
-      position: 9
-      prefix: -a
 
   pca_dimensions:
     type: int?
@@ -133,6 +121,27 @@ inputs:
     inputBinding:
       position: 20
       prefix: -o 
+
+  save_filtered_data:
+    type: string
+    default: N
+    inputBinding:
+      position: 21
+      prefix: -k
+
+  save_r_object:
+    type: string
+    default: N
+    inputBinding:
+      position: 22
+      prefix: -s
+
+  save_unfiltered_data:
+    type: string
+    default: N
+    inputBinding:
+      position: 23
+      prefix: -l
 
 outputs:
   seurat_output:

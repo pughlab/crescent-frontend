@@ -73,6 +73,8 @@ def makeMultiJob(runId: str, run: dict):
     
     # Filling in structure
     job = {
+        "anchors_function": run['parameters']['integration']['anchors_function'],
+        # "reference_datasets": ref,
         "resolution": run['parameters']['clustering']['resolution'],
         "project_id": "crescent",
         "pca_dimensions": run['parameters']['reduction']['pca_dimensions'],

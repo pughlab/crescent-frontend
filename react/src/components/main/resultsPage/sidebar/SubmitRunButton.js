@@ -53,7 +53,7 @@ const SubmitRunButton = ({
   // const currentUserIsNotCreator = R.not(R.equals(creatorUserID, userID))
   return (
     <Button fluid color='blue'
-      content={runIsPending ? 'SUBMIT RUN' : 'ALREADY SUBMITTED'}
+      content={runIsPending ? 'SUBMIT RUN' : 'SUBMITTED, REFRESH PAGE'}
       // Check redux state of submit button, the status in run in redux, or if graphql mutation has been called
       // disabled={R.any(RA.isTrue, [currentUserIsNotCreator, isSubmitted, runIsNotPending, runSubmitted])}
       disabled={R.any(RA.isTrue, [R.not(runIsPending), loadingSubmitRun])}
