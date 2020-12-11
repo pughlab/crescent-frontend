@@ -104,4 +104,4 @@ outputs:
   r_object_output:
     type: File
     outputBinding:
-      glob: ["SEURAT/R_OBJECTS/*_Integration.rds"]
+      glob: ["R_OBJECTS_CWL/*_Integration.rds"]

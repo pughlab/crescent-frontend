@@ -94,4 +94,4 @@ outputs:
   r_object_output:
     type: Directory
     outputBinding:
-      glob: ["SEURAT/R_OBJECTS"]
+      glob: ["R_OBJECTS_CWL"]
