@@ -40,16 +40,18 @@ def get_barcodes(normalised_counts_path, feature_list):
                     zip(barcodes, ds[feature_idx, :]))})
         return feature_barcodes
 
-def group_by_cluster(barcode_exp_dict, minio_client, groups_path, runID):
+def group_by_cluster(barcode_exp_dict, minio_client, groups_path, group, runID):
     """ given all the barcodes for a feature({barcode: exp}), return the barcodes grouped by cluster
     @rtype: {cluster: {barcode: exp}} """
     barcode_group_list = get_obj_as_2dlist(
         groups_path["bucket"] + runID, groups_path["all"], minio_client)
     cluster_dict = {}
+    group_header = barcode_group_list[0]
+    group_column_idx = group_header.index(group) if group in group_header else 1
     for i in range(len(barcode_group_list)):
         if i > 2: # headers takes up 2 rows
             line = barcode_group_list[i]
-            cluster = line[1]
+            cluster = line[group_column_idx]
             if cluster not in cluster_dict:
                 cluster_dict[cluster] = {line[0]: barcode_exp_dict[line[0]]}
             else:
@@ -58,10 +60,19 @@ def group_by_cluster(barcode_exp_dict, minio_client, groups_path, runID):
 
 def sort_clusters(clusters):
     """ given a list of clusters, return a sorted list of clusters"""
-    num_list = list(map(int, clusters))
-    num_list.sort()
-    str_list = list(map(str, num_list))
-    return str_list
+    isStr = False
+    for cluster in clusters:
+        if(not cluster.isnumeric()):
+            isStr = True
+            break
+    if(isStr):
+        clusters.sort()
+        return clusters
+    else:
+        num_list = list(map(int, clusters))
+        num_list.sort()
+        str_list = list(map(str, num_list))
+        return str_list
 
 def duplicate_element(element, num):
     """ given an string, create a list with n copies of the string """
@@ -121,7 +132,7 @@ def count_cells(barcode_exp_dict):
         count += 1
     return count
 
-def get_trace(cluster_dict, feature):
+def get_trace(cluster_dict, feature, group):
     """ given a cluster barcode dict, return a template trace object for one feature
     """
     sorted_clusters = sort_clusters(list(cluster_dict.keys()))
@@ -151,7 +162,7 @@ def get_trace(cluster_dict, feature):
         cluster_exp_dict[cluster] = avg_exp
         abundance = calculate_abundance(cluster_dict[cluster])
         cluster_abundance_dict[cluster] = abundance
-        template["text"].append([abundance*100, avg_exp, count_cells(cluster_dict[cluster])])
+        template["text"].append([abundance*100, avg_exp, count_cells(cluster_dict[cluster]), group])
     
     max_exp = find_max_exp(cluster_exp_dict)
     template["marker"]["opacity"] = calculate_opacities(
@@ -178,7 +189,7 @@ def get_top_per_cluster(runID):
             top_genes.append(gene_data["gene"])
     return top_genes
 
-def get_dot_plot_data(features, runID):
+def get_dot_plot_data(features, group, runID):
     """ given a runID: returns a dot plot plotly object """
     paths = {}
     with open('get_data/paths.json') as paths_file:
@@ -200,10 +211,10 @@ def get_dot_plot_data(features, runID):
     else:
         features_to_display = features
     feature_list = get_barcodes(normalised_counts_path, features_to_display)
-    
+
     for l in feature_list:
         cluster_dict = group_by_cluster(
-            l["barcode_exp"], minio_client, paths["groups"], runID)
-        trace = get_trace(cluster_dict, l["feature"])
+            l["barcode_exp"], minio_client, paths["groups"], group, runID)
+        trace = get_trace(cluster_dict, l["feature"], group)
         plotly_obj.append(trace)
     return plotly_obj
