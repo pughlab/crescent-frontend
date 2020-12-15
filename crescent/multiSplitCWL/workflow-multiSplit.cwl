@@ -347,10 +347,3 @@ steps:
     out:
       - id: SEURAT_dir
     run: ./upload.cwl
-    
-  - id: clean
-    in:
-      - id: SEURAT
-        source: upload-DGE/SEURAT_dir
-    out: []
-    run: ./clean.cwl
