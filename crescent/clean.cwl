@@ -9,4 +9,6 @@ inputs:
 outputs: []
 arguments:
   - position: 1
-    valueFrom: $((inputs.SEURAT).split('/').slice(2,8).join('/') + '/') # This will need to be updated for HPC to conform with whatever intermediary path is used there
+    valueFrom: $((inputs.SEURAT).split('/').slice(2,8).join('/') + '/') 
+# The index 2 is used for parsing, index 8 is used to get the tmpdir. 
+# Change 8 -> 7 to have the workflow commit suicide, cleaning everything including toil logs
