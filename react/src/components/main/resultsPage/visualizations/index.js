@@ -12,7 +12,6 @@ import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/h
 import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
 import QCPlot from './QCPlot'
-import LogsComponent from './LogsComponent'
 import DotPlot from './DotPlot'
 
 import CrescentPlotCaption from './PlotCaption'
@@ -41,41 +40,49 @@ const VisualizationsComponent = ({
 }) => {
   const {runID} = useCrescentContext()
   const run = useRunDetailsQuery(runID)
+  const plots = useResultsAvailableQuery(runID)
+
 
   const dispatch = useDispatch()
-  const {activeResult, activePlot, plotQueries, sidebarCollapsed} = useResultsPage()
+  const {activeResult, activePlot, plotQueries, sidebarCollapsed, activeSidebarTab} = useResultsPage()
   const [showLogs, setShowLogs] = useState(false)
 
-  if (R.any(R.isNil, [run])) {
+  if (R.any(R.isNil, [run, plots])) {
     return null
   }
 
   const {status: runStatus} = run
+  const runStatusEquals = R.equals(runStatus)
+
+  if (runStatusEquals('failed')) {
+    return (
+      <Segment color='violet' placeholder>
+        <Shake forever duration={10000}>
+        <Header textAlign='center' icon>
+          <Icon name='right arrow' />
+          Download and review failed run logs
+        </Header>  
+        </Shake>      
+      </Segment>
+    )
+  }
+
+  if (R.isEmpty(plots)) {
+    return (
+      <Segment style={{height: '100%'}} color='violet'>
+        <Segment basic placeholder>
+          <Tada forever duration={1000}>
+            <Image src={Logo} centered size='medium' />
+          </Tada>
+        </Segment>
+      </Segment> 
+    )
+  }
 
   return (
     <>
     {
-      R.equals('submitted', runStatus) ? (
-        <Segment style={{height: '100%'}} color='violet'>
-          <Segment basic placeholder>
-            <Tada forever duration={1000}>
-              <Image src={Logo} centered size='medium' />
-            </Tada>
-            <Divider horizontal hidden />
-            <LogsComponent />
-          </Segment>
-        </Segment> 
-      ) : R.equals('failed', runStatus) ? 
-        <Segment color='violet' placeholder>
-          <Shake forever duration={10000}>
-          <Header textAlign='center' icon>
-            <Icon name='right arrow' />
-            Download and review failed run logs
-          </Header>  
-          </Shake>      
-        </Segment>
-
-      : R.isNil(activeResult) ?
+      R.isNil(activeResult) ?
         <Segment color='violet' placeholder>
           <Shake forever duration={10000}>
           <Header textAlign='center' icon>
@@ -97,7 +104,6 @@ const VisualizationsComponent = ({
               R.addIndex(R.map)(
                 (plotQuery, idx) => (
                   <Grid.Column key={idx}>
-                  
                   <Segment style={{height: '60vh'}} color='violet' attached='top'>
                     <CrescentPlot plotQueryIndex={idx} />
                   </Segment>

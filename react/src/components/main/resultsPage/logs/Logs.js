@@ -20,7 +20,7 @@ import Fade from 'react-reveal/Fade';
 
 
 
-const LogsComponent = ({
+const Logs = ({
 }) => {
   const [showVerbose, setShowVerbose] = useState(false)
 
@@ -69,4 +69,4 @@ const LogsComponent = ({
   )
 }
 
-export default LogsComponent
+export default Logs
