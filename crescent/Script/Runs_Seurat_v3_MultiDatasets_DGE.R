@@ -263,7 +263,8 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
     "CRESCENT_CLOUD",
     "CRESCENT_CLOUD/frontend_markers",
     "DIFFERENTIAL_GENE_EXPRESSION_TABLES",
-    "LOG_FILES"
+    "LOG_FILES",
+    "R_OBJECTS"
   )
 
 }else{
@@ -286,7 +287,8 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
 
   FILE_TYPE_OUT_DIRECTORIES = c(
     "DIFFERENTIAL_GENE_EXPRESSION_TABLES",
-    "LOG_FILES"
+    "LOG_FILES",
+    "R_OBJECTS"
   )
 }
 
