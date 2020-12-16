@@ -98,4 +98,4 @@ outputs:
   r_object_output:
     type: File
     outputBinding:
-      glob: ["R_OBJECTS_CWL/*_PcaClusteringDimReduction.rds"]
+      glob: ["R_OBJECTS_CWL/*_PCA_Clustering_DimReduction.rds"]
