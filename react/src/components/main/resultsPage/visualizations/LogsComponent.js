@@ -57,7 +57,7 @@ const LogsComponent = ({
             R.compose(
               mapToParagraph,
               R.map(trimUnicode),
-              R.filter(includesNumOfAsterisks(showVerbose ? 3 : 5)),
+              R.filter(includesNumOfAsterisks(showVerbose ? 3 : 4)),
               splitByNewLine
             )(logs)
           }
