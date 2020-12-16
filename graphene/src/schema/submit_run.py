@@ -255,11 +255,11 @@ class SubmitRun(Mutation):
             if not isMulti:
                 # Run single dataset CWL Workflow
                 req = clientObject.run(
-                    pathToCWL + "seurat-workflow.cwl", job, [pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
+                    pathToCWL + "seurat-workflow.cwl", job, [pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl"])
             else:
                 # # Run multiple dataset CWL Workflow
                 # req = clientObject.run(
-                #     pathToCWL + "seurat-workflow-multi.cwl", job, [pathToCWL + "extract-multi.cwl", pathToCWL + "integrate-seurat-v3-wes.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
+                #     pathToCWL + "seurat-workflow-multi.cwl", job, [pathToCWL + "extract-multi.cwl", pathToCWL + "integrate-seurat-v3-wes.cwl", pathToCWL + "upload.cwl"])
                 
                 # Run multiSPLIT CWL Workflow
                 req = clientObject.run(
@@ -269,7 +269,7 @@ class SubmitRun(Mutation):
                     pathToMultiSplitCWL + "Integration-multiSplit.cwl",
                     pathToMultiSplitCWL + "PCA-Clustering-multiSplit.cwl", 
                     pathToMultiSplitCWL + "DGE-multiSplit.cwl",  
-                    pathToMultiSplitCWL + "upload.cwl", pathToMultiSplitCWL + "clean.cwl"])
+                    pathToMultiSplitCWL + "upload.cwl"])
 
 
             # Update wesID and submitted on in mongo

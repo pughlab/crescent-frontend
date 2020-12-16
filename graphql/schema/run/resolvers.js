@@ -1,12 +1,31 @@
 const R = require('ramda')
 const A = require('axios')
 const fs = require('fs')
+var rimraf = require("rimraf");
 const axios = A.create({
   baseURL: `http://localhost:${process.env.EXPRESS_PORT}`,
   timeout: 10000,
 });
 
 const execSync = require('child_process').execSync
+
+// Cleans the temp dirs created by a run
+async function cleanTempDir(wesID, wesAPI, response=null) {
+  try {
+    let mount = "/var/lib/toil/"
+    if (response == null)
+      response = await wesAPI.getRunData(wesID);
+    let start = response.run_log.stderr.indexOf(mount)
+    let end = response.run_log.stderr.indexOf("/", start + mount.length)
+    let dir = response.run_log.stderr.substring(start, end)
+    console.log("Removing " + dir)
+    rimraf.sync(dir);
+    
+  }
+  catch (err){
+    console.log("Unable to clean for " + wesID + " because of " + err)
+  }
+}
 
 const resolvers = {
   Query: {
@@ -272,6 +291,8 @@ const resolvers = {
           console.log("Issue finding failed log file for run " + runID);
         }
 
+        await cleanTempDir(wesID, dataSources.wesAPI, response)
+
       }
       else if (response.state == "COMPLETE"){
         
@@ -309,6 +330,8 @@ const resolvers = {
         });
         // Now do date math with submittedOn
         completionDate = new Date(submittedOn.getTime() + totalSeconds*1000);
+
+        await cleanTempDir(wesID, dataSources.wesAPI, response)
       }
       else {
         // If status is not completed or failed, there is no need for a completedOn date or log file
