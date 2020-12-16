@@ -7,7 +7,8 @@ const axios = A.create({
   timeout: 10000,
 });
 
-const execSync = require('child_process').execSync
+const execSync = require('child_process').execSync;
+const { async } = require('ramda-adjunct');
 
 // Cleans the temp dirs created by a run
 async function cleanTempDir(wesID, wesAPI, response=null) {
@@ -207,6 +208,17 @@ const resolvers = {
         console.log(error)
       }
     },
+
+    hasResults: async ({runID}, variables, {Minio}) => {
+      try {
+        const runBucketObjects = await Minio.bucketObjectsList(`run-${runID}`)
+        const hasResultsDir = R.any(R.propEq('prefix', 'SEURAT/'))
+        return hasResultsDir(runBucketObjects)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     status: async({wesID, status}, variables, {Runs, dataSources, Docker}) => {
       
       
