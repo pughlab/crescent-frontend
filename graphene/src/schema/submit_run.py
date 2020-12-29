@@ -82,7 +82,7 @@ def makeMultiJob(runId: str, run: dict):
         "dge_comparisons": dge,
         "save_unfiltered_data": run['parameters']['save']['save_unfiltered_data'],
         "save_filtered_data": run['parameters']['save']['save_filtered_data'],
-        # "save_r_object": run['parameters']['save']['save_r_object'],
+        "save_r_object": run['parameters']['save']['save_r_object'],
 
         "minioInputPath": minioInputPaths,
         "destinationPath": "minio/run-" + runId, 
