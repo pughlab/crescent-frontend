@@ -53,6 +53,13 @@ inputs:
       position: 9
       prefix: -u
 
+  save_r_object:
+    type: string
+    default: Y
+    inputBinding:
+      position: 11
+      prefix: -s
+
   runs_cwl:
     type: string
     default: Y

@@ -113,7 +113,8 @@ steps:
         source: save_filtered_data
 
       - id: save_r_object
-        source: save_r_object
+        # source: save_r_object
+        default: Y
 
       - id: save_unfiltered_data
         source: save_unfiltered_data
@@ -184,7 +185,8 @@ steps:
         source: number_cores
 
       - id: save_r_object
-        source: save_r_object
+        # source: save_r_object
+        default: Y
 
       - id: runs_cwl
         source: runs_cwl
@@ -249,7 +251,8 @@ steps:
         source: number_cores
 
       - id: save_r_object
-        source: save_r_object
+        # source: save_r_object
+        default: Y
 
       - id: runs_cwl
         source: runs_cwl
@@ -312,6 +315,9 @@ steps:
 
       - id: number_cores
         source: number_cores
+
+      - id: save_r_object
+        source: save_r_object
 
       - id: runs_cwl
         source: runs_cwl
