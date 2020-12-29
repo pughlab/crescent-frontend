@@ -316,8 +316,8 @@ const TOOLS = {
           step: 'save',
           parameter: 'save_r_object',
           label: 'R Object',
-          prompt: 'Save R Object',
-          description: 'Indicates if R Object (data and analyses) from the run should be saved as RDS. Default is "No". ',
+          prompt: 'Save Final R Object',
+          description: 'Indicates if final R Object (data and analyses) from the run should be saved as RDS. Default is "No". ',
           input: {
             type: 'select',
             defaultValue: 'N',
