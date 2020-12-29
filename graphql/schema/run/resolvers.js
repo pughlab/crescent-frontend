@@ -1,12 +1,32 @@
 const R = require('ramda')
 const A = require('axios')
 const fs = require('fs')
+var rimraf = require("rimraf");
 const axios = A.create({
   baseURL: `http://localhost:${process.env.EXPRESS_PORT}`,
   timeout: 10000,
 });
 
-const execSync = require('child_process').execSync
+const execSync = require('child_process').execSync;
+const { async } = require('ramda-adjunct');
+
+// Cleans the temp dirs created by a run
+async function cleanTempDir(wesID, wesAPI, response=null) {
+  try {
+    let mount = "/var/lib/toil/"
+    if (response == null)
+      response = await wesAPI.getRunData(wesID);
+    let start = response.run_log.stderr.indexOf(mount)
+    let end = response.run_log.stderr.indexOf("/", start + mount.length)
+    let dir = response.run_log.stderr.substring(start, end)
+    console.log("Removing " + dir)
+    rimraf.sync(dir);
+    
+  }
+  catch (err){
+    console.log("Unable to clean for " + wesID + " because of " + err)
+  }
+}
 
 const resolvers = {
   Query: {
@@ -188,6 +208,17 @@ const resolvers = {
         console.log(error)
       }
     },
+
+    hasResults: async ({runID}, variables, {Minio}) => {
+      try {
+        const runBucketObjects = await Minio.bucketObjectsList(`run-${runID}`)
+        const hasResultsDir = R.any(R.propEq('prefix', 'SEURAT/'))
+        return hasResultsDir(runBucketObjects)
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
     status: async({wesID, status}, variables, {Runs, dataSources, Docker}) => {
       
       
@@ -272,6 +303,8 @@ const resolvers = {
           console.log("Issue finding failed log file for run " + runID);
         }
 
+        await cleanTempDir(wesID, dataSources.wesAPI, response)
+
       }
       else if (response.state == "COMPLETE"){
         
@@ -286,10 +319,16 @@ const resolvers = {
         // Find log file and send it to minio
         // Parse response to find name of log file in wes/logs
         let logFilePrefix = "file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
-        let logFile = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
+        // let logFile = "wes/logs/" + fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => fn.toLowerCase().includes('seurat'))[0];
         console.log("Sending runLog for run " + runID + " to minio");
-        // Send to minio
-        Minio.client.fPutObject("run-" + runID, 'runLog-' + runID + '.txt', logFile);
+        let usefulLogFiles = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix)).filter(fn => { return !fn.includes('clean') && !fn.includes('extract') && !fn.includes('upload') });
+
+        usefulLogFiles.forEach(file => {
+          let removePrefix = file.replace(logFilePrefix, '')
+          let name = removePrefix.substring(0, removePrefix.indexOf('.'))
+          // Send to minio
+          Minio.client.fPutObject("run-" + runID, 'runLog-' + name + "-" + runID + '.txt', "wes/logs/" + file);
+        })
 
         // Sum running times of each job and add to submittedOn
         let files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
@@ -303,6 +342,8 @@ const resolvers = {
         });
         // Now do date math with submittedOn
         completionDate = new Date(submittedOn.getTime() + totalSeconds*1000);
+
+        await cleanTempDir(wesID, dataSources.wesAPI, response)
       }
       else {
         // If status is not completed or failed, there is no need for a completedOn date or log file

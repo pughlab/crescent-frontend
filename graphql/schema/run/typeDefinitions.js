@@ -11,8 +11,10 @@ const typeDefs = gql`
     parameters: RunParameters
     projectID: ID
     project: Project
+
     status: String
     downloadable: Boolean
+    hasResults: Boolean
 
     submittedOn: Date
     completedOn: Date

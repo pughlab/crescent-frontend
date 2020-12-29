@@ -35,6 +35,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /var/lib/toil:/var/lib/toil:rw
     depends_on:
       - minio 
       - mongo

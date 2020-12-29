@@ -53,87 +53,65 @@ const VisualizationsSidebar = ({
     return null
   }
   const {status: runStatus} = run
-  return (
-    <>
-    {
-      R.equals('pending', runStatus) ?
-        <Segment placeholder>
-          <Header icon>
-            <Icon name='exclamation' />
-            This run is not submitted yet.
-          </Header>
-        </Segment>
-      : R.equals('submitted', runStatus) ?
-        <Segment placeholder>
-          <Header icon>
-            <Icon name='exclamation' />
-            The pipeline is currently running.
-          </Header>
-        </Segment>
-      : R.equals('failed', runStatus) ?
+  const runStatusEquals = R.equals(runStatus)
+  if (runStatusEquals('failed')) {
+    return (
       <Segment placeholder>
         <Header icon>
           <Icon name='times circle' />
           The pipeline has failed.
         </Header>
       </Segment>
-      :
-        // runStatus is 'completed'
-        R.ifElse(
-          R.isNil,
-          R.always(
-            <Step.Group vertical fluid size='small'>
-            {
-              R.ifElse(
-                R.isEmpty,
-                R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Please run the pipeline to view results"}/></Step>),
-                R.addIndex(R.map)(
-                  ({result, label, description}, index) => (
-                    // (result, index) => (
-                    <Step key={index} onClick={() => dispatch(setActiveResult({result}))} >
-                      {
-                        isActiveResult(result)
-                        && <Icon name='eye' color='violet'/>
-                      }
-                      <Step.Content title={label} description={description} />
-                    </Step>
-                  )
-                )
-              )(plots)
-            }
-            </Step.Group>
-          ),
-          R.always(
-            <>
-              <MultiPlotSelector />
-
-              <Segment as={Form} attached>
-                <Divider horizontal content='Plots' />
-                <Form.Field>
-                  <Dropdown fluid selection labeled
-                    value={activeResult}
-                    options={R.compose(
-                      R.map(({result, label, description}) => ({key: result, value: result, text: label}))
-                    )(plots)}
-                    onChange={(e, {value}) => dispatch(setActiveResult({result: value}))}
-                  />
-                </Form.Field>
-              </Segment>
-              <Segment attached='bottom'>
-                {
-                  R.cond([
-                    [R.equals('qc'),   R.always(<QualityControlMenu/>)],
-                    [R.equals('dot'), R.always(<DotPlotVisualizationMenu/>)],
-                    [R.T,            R.always(<VisualizationMenu/>)]
-                  ])(activeResult)
-                }
-              </Segment>
-            </>
-          )
-        )(activeResult)
-      }
-      </>
     )
+  }
+
+  return (
+    <>
+    {
+      R.isNil(activeResult) ? (
+        <Step.Group vertical fluid size='small'>
+        {
+          R.ifElse(
+            R.isEmpty,
+            R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Results will show up here as they become available"}/></Step>),
+            R.addIndex(R.map)(
+              ({result, label, description}, index) => (
+                <Step key={index} onClick={() => dispatch(setActiveResult({result}))} >
+                  {isActiveResult(result) && <Icon name='eye' color='violet'/>}
+                  <Step.Content title={label} description={description} />
+                </Step>
+              )
+            )
+          )(plots)
+        }
+        </Step.Group>
+      ) : (
+        <>
+          <MultiPlotSelector />
+          <Segment as={Form} attached>
+            <Divider horizontal content='Plots' />
+            <Form.Field>
+              <Dropdown fluid selection labeled
+                value={activeResult}
+                options={R.compose(R.map(({result, label, description}) => ({key: result, value: result, text: label})))(plots)}
+                onChange={(e, {value}) => dispatch(setActiveResult({result: value}))}
+              />
+            </Form.Field>
+          </Segment>
+          <Segment attached='bottom'>
+            {
+              R.cond([
+                [R.equals('qc'),   R.always(<QualityControlMenu/>)],
+                [R.equals('dot'), R.always(<DotPlotVisualizationMenu/>)],
+                [R.T,            R.always(<VisualizationMenu/>)]
+              ])(activeResult)
+            }
+          </Segment>
+        </>
+      )
+    }
+    </>
+  )
 }
 
 export default VisualizationsSidebar

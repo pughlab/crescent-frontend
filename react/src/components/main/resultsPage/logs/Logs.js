@@ -20,7 +20,7 @@ import Fade from 'react-reveal/Fade';
 
 
 
-const LogsComponent = ({
+const Logs = ({
 }) => {
   const [showVerbose, setShowVerbose] = useState(false)
 
@@ -57,7 +57,7 @@ const LogsComponent = ({
             R.compose(
               mapToParagraph,
               R.map(trimUnicode),
-              R.filter(includesNumOfAsterisks(showVerbose ? 3 : 5)),
+              R.filter(includesNumOfAsterisks(showVerbose ? 3 : 4)),
               splitByNewLine
             )(logs)
           }
@@ -69,4 +69,4 @@ const LogsComponent = ({
   )
 }
 
-export default LogsComponent
+export default Logs

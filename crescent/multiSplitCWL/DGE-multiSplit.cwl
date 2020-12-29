@@ -4,11 +4,14 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerImageId: /usr/src/app/crescent-seurat-droplet-gsva.simg
+    dockerPull: crescentdev/crescent-seurat-droplet-gsva-stacas:latest
 
 baseCommand: [Rscript]
 
 inputs:
+  runs_dir:
+    type: Directory
+
   R_script:
     type: File
     inputBinding:
@@ -20,35 +23,17 @@ inputs:
       position: 1
       prefix: -i
 
-  reference_datasets:
-    type: string?
+  r_object_input:
+    type: File
     inputBinding:
       position: 2
-      prefix: -z
-
-  resolution:
-    type: float?
-    inputBinding:
-      position: 3
-      prefix: -r
+      prefix: -j
 
   project_id:
     type: string
     inputBinding:
-      position: 4
-      prefix: -p
-
-  list_genes:
-    type: string?
-    inputBinding:
       position: 5
-      prefix: -g
-
-  pca_dimensions:
-    type: int?
-    inputBinding:
-      position: 6
-      prefix: -d
+      prefix: -p
 
   return_threshold:
     type: float?
@@ -67,27 +52,6 @@ inputs:
     inputBinding:
       position: 9
       prefix: -u
-
-  save_filtered_data:
-    type: string
-    default: N
-    inputBinding:
-      position: 10
-      prefix: -k
-
-  save_r_object:
-    type: string
-    default: N
-    inputBinding:
-      position: 11
-      prefix: -s
-
-  save_unfiltered_data:
-    type: string
-    default: N
-    inputBinding:
-      position: 12
-      prefix: -l
 
   runs_cwl:
     type: string

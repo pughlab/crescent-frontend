@@ -4,9 +4,10 @@ import * as R from 'ramda'
 import {Segment, Transition, Button} from 'semantic-ui-react'
 import ParametersSidebar from './ParametersSidebar'
 import VisualizationsSidebar from './VisualizationsSidebar'
+import LogsSidebar from './LogsSidebar'
+
 import SubmitRunButton from './SubmitRunButton'
 import CancelRunButton from './CancelRunButton'
-import RefreshRunButton from './RefreshRunButton'
 import DownloadResultsButton from './DownloadResultsButton'
 
 import {useDispatch} from 'react-redux'
@@ -43,12 +44,20 @@ const SidebarComponent = ({
         } */}
       </Segment>
       <Segment attached>
-        <Button.Group fluid widths={2}>
+        <Button.Group fluid widths={runIsSubmitted ? 3 : 2}>
           <Button compact content='PIPELINE' 
             color={isActiveSidebarTab('parameters') ? 'blue' : undefined}
             active={isActiveSidebarTab('parameters')}
             onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'parameters'}))}
           />
+          {
+            runIsSubmitted &&
+            <Button compact content='LOGS'
+              color={isActiveSidebarTab('logs') ? 'red' : undefined}
+              active={isActiveSidebarTab('logs')}
+              onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'logs'}))}
+            />
+          }
           <Button compact content='RESULTS'
             disabled={disableResults}
             color={isActiveSidebarTab('visualizations') ? 'violet' : undefined}
@@ -62,22 +71,21 @@ const SidebarComponent = ({
         R.cond([
           [R.equals('parameters'), R.always(<ParametersSidebar />)],
           [R.equals('visualizations'), R.always(<VisualizationsSidebar />)],
+          [R.equals('logs'), R.always(<LogsSidebar />)],
         ])(activeSidebarTab)
       }
       </Segment>
       <Segment attached='bottom'>
       {
         R.cond([
+          [R.compose(R.and(runIsSubmitted), R.equals('logs')), R.always(<CancelRunButton />)],
           [R.compose(R.and(enableSubmit), R.equals('parameters')), R.always(<SubmitRunButton />)],
-          [R.compose(R.and(runIsSubmitted), R.equals('visualizations')), R.always(<CancelRunButton />)],
-          [R.equals('visualizations'), R.always(
-            // R.equals('submitted', runStatus) ? <RefreshRunButton /> : 
-            <DownloadResultsButton />
-          )],
+          [R.equals('visualizations'), R.always(<DownloadResultsButton />)],
           [R.T, R.always(null)]
         ])(activeSidebarTab)
       }
       </Segment>
+
     </Segment>
   )
 }

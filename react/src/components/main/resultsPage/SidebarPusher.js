@@ -18,6 +18,7 @@ import { Segment, Transition, Grid, Image, Message, Label,   Checkbox,
 import SidebarComponent from './sidebar'
 import ParametersComponent from './parameters'
 import VisualizationsComponent from './visualizations'
+import LogsComponent from './logs'
 
 import {useResultsPage} from '../../../redux/hooks'
 import {resetResultsPage, toggleSidebarCollapsed} from '../../../redux/actions/resultsPage'
@@ -59,7 +60,8 @@ const ResultsPageSidebarPusher = ({
       <Grid.Column width={sidebarCollapsed ? 15 : 10} stretched>
       {
         activeSidebarTabIs('parameters') ? <ParametersComponent />
-        : activeSidebarTabIs('visualizations') && <VisualizationsComponent />
+        : activeSidebarTabIs('visualizations') ? <VisualizationsComponent />
+        : activeSidebarTabIs('logs') && <LogsComponent />
       }
       </Grid.Column>
 

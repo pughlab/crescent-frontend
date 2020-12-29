@@ -15,11 +15,11 @@ export default function useProjectRunsQuery(projectID) {
           name
         }
         name
-        # params
 
         parameters
         
         status
+        hasResults
 
         submittedOn
         completedOn

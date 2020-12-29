@@ -82,7 +82,7 @@ def makeMultiJob(runId: str, run: dict):
         "dge_comparisons": dge,
         "save_unfiltered_data": run['parameters']['save']['save_unfiltered_data'],
         "save_filtered_data": run['parameters']['save']['save_filtered_data'],
-        "save_r_object": run['parameters']['save']['save_r_object'],
+        # "save_r_object": run['parameters']['save']['save_r_object'],
 
         "minioInputPath": minioInputPaths,
         "destinationPath": "minio/run-" + runId, 
@@ -93,7 +93,7 @@ def makeMultiJob(runId: str, run: dict):
     }
     return job
 
-def minioUpload(scriptPath: str, jsonPath: str, runId: str, csvPath = None):
+def minioUpload(scriptName: str, scriptPath: str, jsonPath: str, runId: str, csvPath = None):
     # Attempting to upload all relevant files neccesary for this run to the run bucket
     try:
         # Connect to minio
@@ -103,10 +103,17 @@ def minioUpload(scriptPath: str, jsonPath: str, runId: str, csvPath = None):
         # Upload files to bucket
         bucket = "run-" + runId
         minioClient.fput_object(bucket, 'frontend_seurat_inputs.json', jsonPath)
+
         # Multi vs Single dataset
+        # if csvPath is not None:
+        #     minioClient.fput_object(bucket, 'datasets.csv', csvPath)
+        #     minioClient.fput_object(bucket, 'Runs_Seurat_v3_MultiDatasets.R', scriptPath)
+
+        # MultiSplit 
         if csvPath is not None:
             minioClient.fput_object(bucket, 'datasets.csv', csvPath)
-            minioClient.fput_object(bucket, 'Runs_Seurat_v3_MultiDatasets.R', scriptPath)
+            minioClient.fput_object(bucket, scriptName, scriptPath)
+
         else:
             minioClient.fput_object(bucket, 'Runs_Seurat_v3_SingleDataset.R', scriptPath)
         
@@ -212,13 +219,20 @@ class SubmitRun(Mutation):
                 fileName2 = "datasets_" + runId + ".csv"
                 csv = makeCSV(run= run, datasetIDs= datasetIds, fileName= fileName2)
                 
-                # Upload files
-                minioWorked = minioUpload(scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
+                # # Upload files
+                # minioWorked = minioUpload(scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
+
+                # Upload files for MultiSplit
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_MultiDatasets_QC_Normalization.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets_QC_Normalization.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_MultiDatasets_Integration.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets_Integration.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_MultiDatasets_PCA_Clustering_DimReduction.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets_PCA_Clustering_DimReduction.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_MultiDatasets_DGE.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets_DGE.R", jsonPath= fileName, runId= runId, csvPath= fileName2)                
+                
                 # Delete temp csv
                 remove(fileName2)
             else:
                 # Upload files
-                minioWorked = minioUpload(scriptPath= "/app/crescent/Script/Runs_Seurat_v3_SingleDataset.R", jsonPath= fileName, runId= runId)
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_SingleDataset.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_SingleDataset.R", jsonPath= fileName, runId= runId)
             # Delete temp json file
             remove(fileName)
 
@@ -229,6 +243,7 @@ class SubmitRun(Mutation):
     
             # Get input paths
             pathToCWL = "/app/crescent/"
+            pathToMultiSplitCWL = "/app/crescent/multiSplitCWL/"
 
             # Set up WESClient object
             clientObject = util.WESClient(
@@ -240,12 +255,23 @@ class SubmitRun(Mutation):
             if not isMulti:
                 # Run single dataset CWL Workflow
                 req = clientObject.run(
-                    pathToCWL + "seurat-workflow.cwl", job, [pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
+                    pathToCWL + "seurat-workflow.cwl", job, [pathToCWL + "extract.cwl", pathToCWL + "seurat-v3.cwl", pathToCWL + "upload.cwl"])
             else:
-                # Run multiple dataset CWL Workflow
+                # # Run multiple dataset CWL Workflow
+                # req = clientObject.run(
+                #     pathToCWL + "seurat-workflow-multi.cwl", job, [pathToCWL + "extract-multi.cwl", pathToCWL + "integrate-seurat-v3-wes.cwl", pathToCWL + "upload.cwl"])
+                
+                # Run multiSPLIT CWL Workflow
                 req = clientObject.run(
-                    pathToCWL + "seurat-workflow-multi.cwl", job, [pathToCWL + "extract-multi.cwl", pathToCWL + "integrate-seurat-v3-wes.cwl", pathToCWL + "upload.cwl", pathToCWL + "clean.cwl"])
-            
+                    pathToMultiSplitCWL + "workflow-multiSplit.cwl", job, 
+                    [pathToMultiSplitCWL + "extract-multiSplit.cwl", 
+                    pathToMultiSplitCWL + "QC-Normalization-multiSplit.cwl", 
+                    pathToMultiSplitCWL + "Integration-multiSplit.cwl",
+                    pathToMultiSplitCWL + "PCA-Clustering-multiSplit.cwl", 
+                    pathToMultiSplitCWL + "DGE-multiSplit.cwl",  
+                    pathToMultiSplitCWL + "upload.cwl"])
+
+
             # Update wesID and submitted on in mongo
             db.runs.find_one_and_update({'runID': ObjectId(runId)},{'$set': {'wesID': req["run_id"], 'submittedOn': datetime.datetime.now(), 'status': 'submitted'}})
             return SubmitRun(wesID = req["run_id"])

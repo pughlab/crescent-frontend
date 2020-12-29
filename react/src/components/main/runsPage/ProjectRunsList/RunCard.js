@@ -71,10 +71,12 @@ const RunCard = ({
       userID: runCreatorUserID,
       name: creatorName
     },
-    status, createdOn, submittedOn, completedOn
+    status, hasResults, createdOn, submittedOn, completedOn
   } = run
 
   const cellcount = useCellCountsQuery(runID)
+
+  if (R.isNil(cellcount)) {return null}
 
   const color = R.prop(status, {
     pending: 'orange',
@@ -130,6 +132,10 @@ const RunCard = ({
             {
               RA.isNotNil(submittedOn) &&
                 <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(R.keys(quality))} dataset(s)`}/>
+            }
+            {
+              hasResults &&
+                <Label content={<Icon style={{margin: 0}} name='exclamation circle' />} detail={'Results available'} />
             }
             {
               RA.isNotNil(submittedOn) &&

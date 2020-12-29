@@ -27,7 +27,7 @@ const DownloadResultsButton = ({
     <Button fluid color='violet'
       content={R.prop(runStatus, {
         pending: 'RESULTS UNAVAILABLE',
-        // missing 'submitted' because RefreshRunButton rendered if run status is so
+        submitted: 'DOWNLOAD AVAILABLE ON COMPLETE',
         completed: 'DOWNLOAD RESULTS AND LOGS',
         failed: 'DOWNLOAD RUN LOGS'
       })}
