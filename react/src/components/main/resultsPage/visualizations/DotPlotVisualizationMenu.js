@@ -1,4 +1,4 @@
-import React, {useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
 import { Button, Form, Divider, Segment, Popup, Label } from 'semantic-ui-react'
@@ -6,28 +6,28 @@ import { Button, Form, Divider, Segment, Popup, Label } from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {useDispatch} from 'react-redux'
-import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery} from '../../../../apollo/hooks'
-import {addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedDiffExpression} from '../../../../redux/actions/resultsPage'
+import { useDispatch } from 'react-redux'
+import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
+import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
+import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery } from '../../../../apollo/hooks'
+import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedDiffExpression } from '../../../../redux/actions/resultsPage'
 
 const DotPlotVisualizationMenu = ({
-}) => { 
+}) => {
   // const {changeActiveGroup, changeSelectedFeature} = reduxThunks
   const [currentSearch, setCurrentSearch] = useState('')
   const [currentOptions, setCurrentOptions] = useState([])
-  
-  const {runID} = useCrescentContext()
+
+  const { runID } = useCrescentContext()
   const dispatch = useDispatch()
 
-  const {activePlot} = useResultsPage()
-  const {activeResult, selectedFeatures, selectedGroup, selectedDiffExpression} = useResultsPagePlotQuery(activePlot)
+  const { activePlot } = useResultsPage()
+  const { activeResult, selectedFeatures, selectedGroup, selectedDiffExpression } = useResultsPagePlotQuery(activePlot)
   const isActiveResult = R.equals(activeResult)
 
   //available groups & top expressed must be queries
   const diffExpression = useDiffExpressionQuery(runID)
-  
+
   // const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
 
   const groups = useDiffExpressionGroupsQuery(runID, selectedDiffExpression)
@@ -47,7 +47,7 @@ const DotPlotVisualizationMenu = ({
     return null
   }
 
-  const handleSearchChange = (event, {searchQuery}) => {
+  const handleSearchChange = (event, { searchQuery }) => {
     // console.log("SEARCH QUERY", searchQuery)
     // console.log("CURR OPTION", currentOptions)
     // console.log("CURR SEARCH", currentSearch)
@@ -57,16 +57,16 @@ const DotPlotVisualizationMenu = ({
     }
   }
 
-  const handleSelectFeature = (e, {value}) => {
-    if (R.not(R.includes(value, selectedFeatures))){
-      if(R.length(selectedFeatures) < maxNumGenes){
-        dispatch(addSelectedFeature({value}))
+  const handleSelectFeature = (e, { value }) => {
+    if (R.not(R.includes(value, selectedFeatures))) {
+      if (R.length(selectedFeatures) < maxNumGenes) {
+        dispatch(addSelectedFeature({ value }))
       }
-        
+
     }
   }
 
-  const FeatureButton = ({gene, pVal, avgLogFc, cluster}) => {
+  const FeatureButton = ({ gene, pVal, avgLogFc, cluster }) => {
     return (
       <Popup
         size={'tiny'}
@@ -75,7 +75,7 @@ const DotPlotVisualizationMenu = ({
           <Button value={gene} size='tiny'
             onClick={handleSelectFeature}
             color='violet'
-            style={{margin: '0.25rem'}}
+            style={{ margin: '0.25rem' }}
             basic={R.not(R.includes(gene, selectedFeatures))}
             disabled={R.length(selectedFeatures) >= maxNumGenes}
           >
@@ -84,24 +84,24 @@ const DotPlotVisualizationMenu = ({
         }
       >
         <Popup.Content>
-          {'p-value: '+pVal}<br></br>
-          {'avg. log fold change: '+avgLogFc}<br></br>
-          {'cluster: '+cluster}
+          {'p-value: ' + pVal}<br></br>
+          {'avg. log fold change: ' + avgLogFc}<br></br>
+          {'cluster: ' + cluster}
         </Popup.Content>
       </Popup>
     )
   }
 
-  const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
+  const formatList = R.addIndex(R.map)((val, index) => ({ key: index, text: val, value: val }))
 
-  return(
+  return (
     <Form>
       <Divider horizontal content='Datasets' />
       <Form.Field>
         <Form.Dropdown fluid selection labeled
           value={selectedDiffExpression}
           options={diffExpression}
-          onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value}))}
+          onChange={(e, { value }) => dispatch(setSelectedDiffExpression({ value }))}
           disabled
         />
       </Form.Field>
@@ -110,8 +110,8 @@ const DotPlotVisualizationMenu = ({
       <Form.Field>
         <Form.Dropdown fluid selection labeled
           value="raw"
-          options={[{key: "raw", text: "Raw", value: "raw"}, {key: "normalized", text: "Normalized", value: "normalized"}]}
-          onChange={(e, {value}) => {}}
+          options={[{ key: "raw", text: "Raw", value: "raw" }, { key: "normalized", text: "Normalized", value: "normalized" }]}
+          onChange={(e, { value }) => { }}
           disabled
         />
       </Form.Field>
@@ -121,10 +121,9 @@ const DotPlotVisualizationMenu = ({
         <Form.Dropdown fluid selection labeled
           // All groups! assumes that first group is categorical (might not be true in the future)
           value={selectedGroup}
-          options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
+          options={isActiveResult('dot') ? formatList(categoricalGroups) : formatList(groups)}
           // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
-          onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
-          disabled
+          onChange={(e, { value }) => dispatch(setSelectedGroup({ value }))}
         />
       </Form.Field>
 
@@ -134,36 +133,37 @@ const DotPlotVisualizationMenu = ({
       <Segment size='small' >
         {
           R.map(
-            (feature) => { 
-              if(R.equals(feature, "none")) return <></>
-              return(
-              <Button 
-                key={feature}
-                content={feature} 
-                style={{margin: '0.25rem'}} 
-                icon='close' 
-                size='tiny' 
-                labelPosition='right'
-                color='violet' 
-                basic
-                onClick={()=> {
-                  dispatch(removeSelectedFeature({value: feature}))
-                }}
-              />
-              )},(selectedFeatures)
+            (feature) => {
+              if (R.equals(feature, "none")) return <></>
+              return (
+                <Button
+                  key={feature}
+                  content={feature}
+                  style={{ margin: '0.25rem' }}
+                  icon='close'
+                  size='tiny'
+                  labelPosition='right'
+                  color='violet'
+                  basic
+                  onClick={() => {
+                    dispatch(removeSelectedFeature({ value: feature }))
+                  }}
+                />
+              )
+            }, (selectedFeatures)
           )
         }
-        <Button 
-          content="Unselect all" 
+        <Button
+          content="Unselect all"
           fluid
-          style={{margin: '0.25rem'}} 
-          size="small" 
+          style={{ margin: '0.25rem' }}
+          size="small"
           color='violet'
-          onClick={()=> {
-            R.forEach((feature)=>{
-              dispatch(removeSelectedFeature({value: feature}))
+          onClick={() => {
+            R.forEach((feature) => {
+              dispatch(removeSelectedFeature({ value: feature }))
             }, selectedFeatures)
-            dispatch(addSelectedFeature({value: "none"}))
+            dispatch(addSelectedFeature({ value: "none" }))
           }}
         />
       </Segment>
@@ -189,7 +189,7 @@ const DotPlotVisualizationMenu = ({
       {
         RA.isNotEmpty(topExpressed) &&
         <Segment basic
-          style={{maxHeight: '30vh', overflowY: 'scroll'}}
+          style={{ maxHeight: '30vh', overflowY: 'scroll' }}
         >
           {
             R.compose(
@@ -202,7 +202,7 @@ const DotPlotVisualizationMenu = ({
                     }
                   </Segment>
                 )
-             ),
+              ),
               R.toPairs,
               R.groupBy(R.prop('cluster'))
             )(topExpressed)
@@ -214,4 +214,4 @@ const DotPlotVisualizationMenu = ({
 }
 
 
- export default DotPlotVisualizationMenu 
+export default DotPlotVisualizationMenu 

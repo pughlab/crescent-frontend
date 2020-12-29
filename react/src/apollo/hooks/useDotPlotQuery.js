@@ -1,9 +1,9 @@
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import {createUploadLink} from 'apollo-upload-client'
+import { createUploadLink } from 'apollo-upload-client'
 
 
-import {useState} from 'react'
+import { useState } from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
@@ -12,10 +12,12 @@ import * as R from 'ramda'
 require('dotenv').config()
 console.log(process.env.REACT_APP_GRAPHENE_URL_DEV)
 
-const link = createUploadLink({uri: process.env.NODE_ENV === 'development'
-? process.env.REACT_APP_GRAPHENE_URL_DEV
-// TODO :prod url
-: process.env.REACT_APP_GRAPHENE_URL_PROD})
+const link = createUploadLink({
+  uri: process.env.NODE_ENV === 'development'
+    ? process.env.REACT_APP_GRAPHENE_URL_DEV
+    // TODO :prod url
+    : process.env.REACT_APP_GRAPHENE_URL_PROD
+})
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
@@ -37,11 +39,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useDotPlot(features, runID) {
+export default function useDotPlot(features, group, runID) {
   const [dotPlot, setDotPlot] = useState(null)
-  const {loading, data, error} = useQuery(gql`
-    query DotPlot($features: [String], $runID: ID) {
-      dotPlot(features: $features, runID: $runID) {
+  const { loading, data, error } = useQuery(gql`
+    query DotPlot($features: [String], $group: String, $runID: ID) {
+      dotPlot(features: $features, group: $group, runID: $runID) {
         type
         mode
         x
@@ -59,11 +61,11 @@ export default function useDotPlot(features, runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {features, runID},
-    onCompleted: ({dotPlot}) => {
+    variables: { features, group, runID },
+    onCompleted: ({ dotPlot }) => {
       R.compose(
         setDotPlot,
-        R.map(R.evolve({mode: R.join('+')})),
+        R.map(R.evolve({ mode: R.join('+') })),
       )(dotPlot)
     },
     // skip: R.isNil(group)
