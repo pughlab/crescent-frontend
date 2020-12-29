@@ -59,7 +59,7 @@
         "bucket": "run-",
         "object": {
             "prefix": "SEURAT/CRESCENT_CLOUD/frontend_markers/",
-            "suffix": "TopTwoMarkersPerCluster.tsv"
+            "suffix": "TopMarkersPerCluster.tsv"
         }
     }
 }
