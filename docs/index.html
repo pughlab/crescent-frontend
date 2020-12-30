@@ -399,6 +399,12 @@
 								<p>You can quickly toggle from t-SNE/UMAP to violin plots to get a better understanding of the expression of a gene!</p>
 							</div><!--//content-->
 						</div><!--//callout-block-->
+						<h3>Dot plots</h3>
+						<p>Gene expression can also be visualized as dot plots. Multiple genes (up to 20) can be selected through the top DEGs menu or by searching genes of interest. The x-axis displays the selected genes and the y-axis displays the groups (cell clusters determined by the CReSCENT pipeline or uploaded cell metadata). The size of the dots refer to the percentage of cells within a cluster that express a specific gene (i.e., cells expressing counts of a gene greater than 1 are included in this calculation). The opacity of the dots refer to the average expression of a specific gene across all clusters (i.e., the opacity is scaled based on the highest expression from all clusters for that gene). Hovering over a dot provides the total number of cells per cluster, the percentage of cells within the cluster expressing a gene, and the average gene expression across clusters.</p>
+						<figure class="figure docs-figure py-3">
+							<a href="assets/images/dot_plot.png" data-title="Dot Plots" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/dot_plot.png" alt="" style="width: 800px;"></a>
+							<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Dot plots showing percentage of cells expressed per cluster (size) and average expression across clusters (opacity).</figcaption>
+						</figure>
 					</section><!--//section-->
 			    </article><!--//docs-article-->
 			    
