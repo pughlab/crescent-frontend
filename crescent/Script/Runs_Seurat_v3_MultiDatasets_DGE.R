@@ -559,7 +559,7 @@ if (1 %in% RequestedDiffGeneExprComparisons == T) {
 
     top_genes_by_cluster<-(seurat.object.integrated.markers %>% group_by(cluster) %>% top_n(DefaultParameters$TopDGEForFrontEnd, avg_logFC))
     globalMarkersFile <- top_genes_by_cluster[,c("gene","cluster","p_val","avg_logFC")]
-    write.table(globalMarkersFile, paste0(Tempdir, "/CRESCENT_CLOUD/frontend_markers/","TopMarkersPerCluster.tsv"), row.names = F, sep="\t", quote = F)
+    write.table(globalMarkersFile, paste0(Tempdir, "/CRESCENT_CLOUD/frontend_markers/","TopTwoMarkersPerCluster.tsv"), row.names = F, sep="\t", quote = F)
 
     StopWatchEnd$OutTopDiffMarkersGlobalClustersVsRestOfCells  <- Sys.time()
 
@@ -614,7 +614,7 @@ if (2 %in% RequestedDiffGeneExprComparisons == T) {
       # top markers per dataset
       top_genes_by_cluster<-(seurat.object.each_dataset.markers %>% group_by(cluster) %>% top_n(DefaultParameters$TopDGEForFrontEnd, avg_logFC))
       datasetMarkersFile <- top_genes_by_cluster[,c("gene","cluster","p_val","avg_logFC")]
-      write.table(datasetMarkersFile, paste0(Tempdir,"/","CRESCENT_CLOUD/frontend_markers/",dataset,"_TopMarkersPerCluster.tsv"), row.names = F, sep="\t", quote = F)
+      write.table(datasetMarkersFile, paste0(Tempdir,"/","CRESCENT_CLOUD/frontend_markers/",dataset,"_TopTwoMarkersPerCluster.tsv"), row.names = F, sep="\t", quote = F)
 
       # groups.tsv per dataset
       OutfileClustersPerDatasetDataframe  <- data.frame(NAME = rownames(seurat.object.each_dataset@meta.data), Seurat_Dataset_Clusters = seurat.object.each_dataset@meta.data$seurat_clusters)
