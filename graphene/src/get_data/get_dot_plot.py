@@ -22,7 +22,7 @@ from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces
 from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, get_objs_as_2dlist, object_exists
-from get_data.get_others import get_top_expressed_data
+from get_data.get_others import get_top_expressed_data, get_paths
 
 def get_barcodes(normalised_counts_path, feature_list):
     """ given a list of features, return all the barcodes for the features
@@ -36,6 +36,7 @@ def get_barcodes(normalised_counts_path, feature_list):
             feature_idx = next(
                 (i for i in range(len(features)) if features[i] == feature), -1)
             if feature_idx >= 0:
+                # ds[feature_idx, :] is taking 0.2s to calculate
                 feature_barcodes.append({"feature": feature, "barcode_exp": dict(
                     zip(barcodes, ds[feature_idx, :]))})
         return feature_barcodes
@@ -172,22 +173,37 @@ def get_trace(cluster_dict, feature, group):
 
     return template
 
+def get_top_ten_expressed_genes(runID, minio_client):
+    
+    """ given a runID get the top 10 expressed genes + their avg log fold change and p-value """
+    paths = get_paths(runID, ["top_expressed"], datasetID="all")
+    paths["top_expressed"] = set_name_multi(paths["top_expressed"], "all", "top_expressed")
 
-def get_top_per_cluster(runID):
-    """ given a list of top expressed gene [{gene: str, cluster: str, p_val: str, avg_logFC: str}], 
-    return the one with the highest avg_logFC per cluster """
-    genes = get_top_expressed_data(runID, "all")
-    for gene_data in genes:
-        gene_data["num_avg_logFC"] = float(gene_data["avg_logFC"])
-    sorted_genes = sorted(
-        genes, key=lambda k: k["num_avg_logFC"], reverse=True)
-    top_genes = []
-    clusters = []
-    for gene_data in sorted_genes:
-        if(gene_data["cluster"] not in clusters):
-            clusters.append(gene_data["cluster"])
-            top_genes.append(gene_data["gene"])
-    return top_genes
+    result = []
+    # open and parse
+    try: 
+        top_two_markers = get_obj_as_2dlist(paths["top_expressed"]["bucket"], paths["top_expressed"]["object"], minio_client)
+    except: # file not found
+        return []
+    header = top_two_markers[0]
+    top_two_markers = top_two_markers[1:]
+    genes_data = [] #[{gene: __, avg_logFC: __},]
+    for row in top_two_markers:
+        gene_data = {}
+        for i in range(len(header)):
+            value = row[i]
+            if header[i] == 'avg_logFC':
+                value = round(float(value),3)
+                gene_data['avg_logFC'] = value
+            elif header[i] == 'gene':
+                gene_data['gene'] = value
+        genes_data.append(gene_data)
+    
+    # sort all the genes
+    sorted_genes_data = sorted(
+        genes_data, key=lambda k: k["avg_logFC"], reverse=True)
+    sorted_genes = [data["gene"] for data in sorted_genes_data][0:10]
+    return sorted_genes
 
 def get_dot_plot_data(features, group, runID):
     """ given a runID: returns a dot plot plotly object """
@@ -208,15 +224,11 @@ def get_dot_plot_data(features, group, runID):
         return plotly_obj
     elif(len(features) == 0):
         # limit the num of default genes to 10
-        tops = get_top_per_cluster(runID)
-        if(len(tops) <= 10):
-            features_to_display = tops
-        else:
-            features_to_display = tops[:10]
+        features_to_display = get_top_ten_expressed_genes(runID, minio_client)
     else:
         features_to_display = features
     feature_list = get_barcodes(paths["normalised_counts"], features_to_display)
-
+    
     for l in feature_list:
         cluster_dict = group_by_cluster(
             l["barcode_exp"], minio_client, paths["groups"], group, runID)
