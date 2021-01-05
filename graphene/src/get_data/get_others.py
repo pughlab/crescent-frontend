@@ -29,7 +29,10 @@ def get_top_expressed_data(runID, datasetID):
 
     result = []
     # open and parse
-    top_two_markers = get_obj_as_2dlist(paths["top_expressed"]["bucket"], paths["top_expressed"]["object"], minio_client)
+    try:
+        top_two_markers = get_obj_as_2dlist(paths["top_expressed"]["bucket"], paths["top_expressed"]["object"], minio_client)
+    except: 
+        return[]
     header = top_two_markers[0]
     top_two_markers = top_two_markers[1:]
     for row in top_two_markers:

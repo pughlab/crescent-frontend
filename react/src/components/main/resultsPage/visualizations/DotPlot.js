@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Image, Container, Header, Segment, Dimmer, Icon } from 'semantic-ui-react'
+import { Image, Container, Header, Segment, Dimmer, Icon, Popup } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
@@ -68,22 +68,8 @@ const DotPlot = ({
     return null
   }
 
-  //if no feature is selected, ask the user to select one 
-  if (R.equals(selectedFeatures, ["none"])) {
-    return (
-      <Segment basic style={{ height: '100%' }} placeholder>
-        <Shake forever duration={10000}>
-          <Header textAlign='center' icon>
-            <Icon name='right arrow' />
-            Select a feature to initialize dot plot
-          </Header>
-        </Shake>
-      </Segment>
-    )
-  }
-
   //plot is rendering
-  if (R.isEmpty(dotPlot)) {
+  if (R.isNil(queryResult)) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
@@ -91,7 +77,19 @@ const DotPlot = ({
         </Tada>
       </Segment>)
   }
-
+//if no feature is selected, ask the user to select one 
+  if (R.equals(selectedFeatures, ["none"])|| R.isEmpty(selectedFeatures)) {
+    return (
+      <Segment basic style={{ height: '100%' }} placeholder>
+        <Shake forever duration={10000}>
+          <Header textAlign='center' icon>
+            <Icon name='right arrow' />
+            Select a gene to initialize dot plot
+          </Header>
+        </Shake>
+      </Segment>
+    )
+  }
   const isLoading = false
 
   //cache plot data to dotPlotData
@@ -132,7 +130,16 @@ const DotPlot = ({
     // </Dimmer>
     // <Segment style={{height: '100%'}}>
     <>
-      <Header textAlign='center' content={currentScatterPlotType} />
+    <Header textAlign='center'>
+      {currentScatterPlotType}
+      <Popup
+        content="Dot plot can be used to compare expression between different genes and cluster groups. Each dot has 2 properties: opacity and size. Size represents the precentage of cells expressed a specific gene in a cluster group. The opacity shows the average gene expression across the cluster group."
+        position="bottom center"
+        wide
+        trigger={<Icon color="yellow" size="mini" name='info circle' style={{marginLeft: "10px", fontSize: "1em" }}/>}
+        
+      />
+    </Header>
       <Plot
         data={sizeLegend}
         style={{ width: '100%', height: 60 }}
