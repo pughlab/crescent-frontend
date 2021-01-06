@@ -1,9 +1,7 @@
 FROM r-base:4.0.2
 
 RUN apt-get update && \
-    apt-get install -y libcurl4-openssl-dev libhdf5-dev libssl-dev libxml2-dev r-cran-rjava \
-        imagemagick pdftk-java && \
-    rm /etc/ImageMagick-6/policy.xml
+    apt-get install -y libcurl4-openssl-dev libhdf5-dev libssl-dev libxml2-dev libgit2-dev
 
 COPY install-base.R .
 RUN Rscript install-base.R

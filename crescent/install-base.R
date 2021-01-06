@@ -6,7 +6,7 @@ withCallingHandlers(
 )
 setRepositories(ind = 1:2)
 withCallingHandlers(
-    install.packages(c('fmsb','optparse','staplr','devtools', 'GSA'),repos='https://cloud.r-project.org/'),
+    install.packages(c('fmsb','optparse','devtools', 'GSA'),repos='https://cloud.r-project.org/'),
     warning = stop
 )
 withCallingHandlers(
@@ -31,5 +31,9 @@ withCallingHandlers(
 )
 withCallingHandlers(
     devtools::install_github(c('carmonalab/STACAS')),
+    warning = stop
+)
+withCallingHandlers(
+    devtools::install_github(c('jmw86069/jamba')),
     warning = stop
 )
