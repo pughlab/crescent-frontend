@@ -29,12 +29,12 @@ def crawler(idx, query, _list):
     # Finds 3 more strings that also have the same prefix either above or below the index
     final_list = [idx]
     last_idx = len(_list) - 1
-    for i in range(1, 3):
+    for i in range(1, 399):
         prev_idx = idx - i
 
         if ((prev_idx >= 0) and _list[prev_idx].lower().startswith(query.lower())):
             final_list.append(prev_idx)
-        if(len(final_list) == 4):
+        if(len(final_list) == 400):
             final_list.sort()
             return final_list
         
@@ -42,7 +42,7 @@ def crawler(idx, query, _list):
 
         if ((next_idx <= last_idx) and _list[next_idx].lower().startswith(query.lower())):
             final_list.append(next_idx)
-        if(len(final_list) == 4):
+        if(len(final_list) == 400):
             final_list.sort()
             return final_list
     final_list.sort()
@@ -79,6 +79,7 @@ def run_search(query, runID):
     minio_client = get_minio_client()
 
     features_list = get_all_lines(paths["features"]["bucket"], paths["features"]["object"], minio_client)
+    features_list.sort()
 
     search = binary_search(query, features_list)
     if (search >= 0):
