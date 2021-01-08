@@ -69,7 +69,7 @@ const DotPlot = ({
   }
 
   //plot is rendering
-  if (R.isNil(queryResult)) {
+  if (R.isNil(queryResult) || (R.not(R.equals(queryGenes, ["none"])) && R.isEmpty(dotPlot) && addedFeatures )) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
@@ -122,6 +122,18 @@ const DotPlot = ({
       color: '#f5527b'
     }
   }];
+  
+  // stringify y values. (When there's only one y value, 
+  // if the value is a number, there will be a rendering error)
+  dotPlot = dotPlot.map(trace => {
+    return {...trace, y: trace.y.map(yValue => yValue + " ")}
+  })
+
+  // make the plot smaller when there's less groups
+  let plotHeight = "85%"
+  if(R.not(R.isEmpty(dotPlot)) && dotPlot[0]["y"].length <= 5){
+    plotHeight = "60%"
+  }
 
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
@@ -162,7 +174,7 @@ const DotPlot = ({
         config={{ showTips: false }}
         data={dotPlot}
         useResizeHandler
-        style={{ width: '100%', height: '85%' }}
+        style={{ width: '100%', height: plotHeight }}
         layout={{
           autosize: true,
           hovermode: 'closest',
