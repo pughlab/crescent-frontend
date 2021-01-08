@@ -76,7 +76,7 @@ const RunCard = ({
 
   const cellcount = useCellCountsQuery(runID)
 
-  if (R.isNil(cellcount)) {return null}
+  // if (R.isNil(cellcount)) {return null}
 
   const color = R.prop(status, {
     pending: 'orange',
