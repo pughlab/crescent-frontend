@@ -73,7 +73,7 @@ const VisualizationsSidebar = ({
         {
           R.ifElse(
             R.isEmpty,
-            R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Results will show up here as they become available"}/></Step>),
+            R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Check logs above to see progress. Refresh to see available results."}/></Step>),
             R.addIndex(R.map)(
               ({result, label, description}, index) => (
                 <Step key={index} onClick={() => dispatch(setActiveResult({result}))} >
