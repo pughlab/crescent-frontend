@@ -15,6 +15,7 @@ import {setRun} from '../../../../redux/actions/context'
 import {useRunDetailsQuery, useCellCountsQuery} from '../../../../apollo/hooks'
 
 const ParameterPopoverContent = ({
+  datasets,
   normalization,
   reduction,
   clustering,
@@ -36,6 +37,19 @@ const ParameterPopoverContent = ({
   return (
     <Message>
       <Message.Content>
+      <Divider horizontal content='Datasets' />
+        <Label.Group>
+        {
+          R.map(
+            ({datasetID, name}) => (
+              <Label key={datasetID}>
+                {name}
+              </Label>
+            ),
+            datasets
+          )
+        }
+        </Label.Group>
         <Divider horizontal content='Parameters' />
         <Label.Group>
         {
@@ -71,7 +85,8 @@ const RunCard = ({
       userID: runCreatorUserID,
       name: creatorName
     },
-    status, hasResults, createdOn, submittedOn, completedOn
+    status, hasResults, createdOn, submittedOn, completedOn,
+    datasets
   } = run
 
   const cellcount = useCellCountsQuery(runID)
@@ -106,7 +121,7 @@ const RunCard = ({
           </Button>
         }
       >
-        <ParameterPopoverContent {...{normalization,reduction,clustering,expression}} />
+        <ParameterPopoverContent {...{datasets, normalization,reduction,clustering,expression}} />
       </Popup>
 
       <Card.Content>
@@ -130,8 +145,7 @@ const RunCard = ({
                 <Label content={<Icon style={{margin: 0}} name='clock' />} detail={`${moment(RA.isNotNil(completedOn) ? completedOn : new Date()).diff(moment(submittedOn), 'minutes')} minutes`}/>
             }
             {
-              RA.isNotNil(submittedOn) &&
-                <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(R.keys(quality))} dataset(s)`}/>
+                <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(datasets)} dataset(s)`}/>
             }
             {
               hasResults &&
