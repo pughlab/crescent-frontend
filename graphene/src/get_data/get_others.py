@@ -115,10 +115,11 @@ def get_plots(runID):
         DESC = json.load(desc_file)
 
     # violin always available
-    available_plots = ["VIOLIN", "DOT"]
+    available_plots = []
 
     coordinates_pattern = re.compile(r".*frontend_coordinates/(?P<vis>.*)Coordinates.tsv")
     qc_pattern = re.compile(r".*frontend_qc.*")
+    loom_pattern = re.compile(r".*frontend_normalized.*")
     object_names = get_list_of_object_names(paths["frontend_coordinates"]["bucket"], minio_client)
 
     for object_name in object_names:
@@ -129,6 +130,9 @@ def get_plots(runID):
                 available_plots.append(vis)
         elif ("QC" not in available_plots) and (qc_pattern.match(object_name) is not None):
             available_plots.append("QC")
+        elif ("VIOLIN" not in available_plots) and (loom_pattern.match(object_name) is not None):
+            available_plots.append("VIOLIN")
+            available_plots.append("DOT")       
     
     hardcoded_order = ["QC", "TSNE", "UMAP", "VIOLIN", "DOT"]
     available_plots_with_data = []
