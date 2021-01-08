@@ -70,12 +70,12 @@ const VisualizationsComponent = ({
   if (R.isEmpty(plots)) {
     return (
       <Segment style={{height: '100%'}} color='violet'>
-        <Segment basic placeholder>
+        <Segment style={{height: '100%'}} basic placeholder>
           <Tada forever duration={1000}>
             <Image src={Logo} centered size='medium' />
           </Tada>
         </Segment>
-      </Segment> 
+      </Segment>
     )
   }
 
