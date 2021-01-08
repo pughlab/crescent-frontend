@@ -42,7 +42,7 @@ const Logs = ({
         <Header>
           Logs
           <Header.Subheader>
-            <Checkbox label='Show verbose logs' onClick={() => setShowVerbose(!showVerbose)} />
+            <Checkbox label='Show full verbose logs' onClick={() => setShowVerbose(!showVerbose)} />
           </Header.Subheader>
         </Header>
       </Divider>
