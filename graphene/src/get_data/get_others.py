@@ -102,8 +102,10 @@ def get_cellcount(runID):
     """ count the lines of the barcode groups file to determine the cellcount """
     minio_client = get_minio_client()
     paths = get_paths(runID, ["groups"])
-
-    return count_lines(paths["groups"]["bucket"], paths["groups"]["all"], minio_client) - 2
+    try: 
+        return count_lines(paths["groups"]["bucket"], paths["groups"]["all"], minio_client) - 2
+    except:
+        return None
 
 def get_plots(runID):
     minio_client = get_minio_client()
