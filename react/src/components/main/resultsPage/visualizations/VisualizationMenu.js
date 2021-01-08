@@ -43,7 +43,7 @@ const VisualizationMenu = ({
     setCurrentSearch(selectedFeature || '')
   }, [selectedFeature])
 
-  if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, topExpressed, searchOptions])) {
+  if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, searchOptions])) {
     return null
   }
 
