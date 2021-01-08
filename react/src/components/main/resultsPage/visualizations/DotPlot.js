@@ -142,16 +142,17 @@ const DotPlot = ({
     // </Dimmer>
     // <Segment style={{height: '100%'}}>
     <>
-    <Header textAlign='center'>
-      {currentScatterPlotType}
-      <Popup
-        content="Dot plot can be used to compare expression between different genes and cluster groups. Each dot has 2 properties: opacity and size. Size represents the precentage of cells expressed a specific gene in a cluster group. The opacity shows the average gene expression across the cluster group."
-        position="bottom center"
-        wide
-        trigger={<Icon color="yellow" size="mini" name='info circle' style={{marginLeft: "10px", fontSize: "1em" }}/>}
-        
-      />
-    </Header>
+      <Header textAlign='center' content={currentScatterPlotType} />
+      {/* <Header textAlign='center'>
+        {currentScatterPlotType}
+        <Popup
+          content="Dot plot can be used to compare expression between different genes and cluster groups. Each dot has 2 properties: opacity and size. Size represents the precentage of cells expressed a specific gene in a cluster group. The opacity shows the average gene expression across the cluster group."
+          position="bottom center"
+          wide
+          trigger={<Icon color="yellow" size="mini" name='info circle' style={{marginLeft: "10px", fontSize: "1em" }}/>}
+          
+        />
+      </Header> */}
       <Plot
         data={sizeLegend}
         style={{ width: '100%', height: 60 }}
