@@ -59,21 +59,15 @@ def group_by_cluster(barcode_exp_dict, minio_client, groups_path, group, runID):
                 cluster_dict[cluster][line[0]] = barcode_exp_dict[line[0]]
     return cluster_dict
 
-def sort_clusters(clusters):
-    """ given a list of clusters, return a sorted list of clusters"""
-    isStr = False
-    for cluster in clusters:
-        if(not cluster.isnumeric()):
-            isStr = True
-            break
-    if(isStr):
-        clusters.sort()
-        return clusters
-    else:
-        num_list = list(map(int, clusters))
-        num_list.sort()
-        str_list = list(map(str, num_list))
-        return str_list
+def to_float(text):
+    try:
+        result = float(text)
+    except ValueError:
+        result = text
+    return result
+
+def natural_keys(text):
+    return [ to_float(c) for c in re.split(r'[+-]?([0-9]+(?:[.][0-9]*)?|[.][0-9]+)', text) ]
 
 def duplicate_element(element, num):
     """ given an string, create a list with n copies of the string """
@@ -136,7 +130,7 @@ def count_cells(barcode_exp_dict):
 def get_trace(cluster_dict, feature, group):
     """ given a cluster barcode dict, return a template trace object for one feature
     """
-    sorted_clusters = sort_clusters(list(cluster_dict.keys()))
+    sorted_clusters = sorted(list(cluster_dict.keys()), key=natural_keys)
     template = {
         "type": 'scatter',
         "x": duplicate_element(feature, len(cluster_dict.keys())),
