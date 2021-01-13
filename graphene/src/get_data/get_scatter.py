@@ -162,10 +162,6 @@ def label_barcodes(barcode_coords, group, paths, minio_client):
     plotly_obj = {}
     metadata = paths["metadata"]
     groups = paths["groups"]
-
-    print("HELLOOOO")
-    print(metadata)
-    print(groups)
     
     groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
     num_cells = count_lines(groups["bucket"], groups["all"], minio_client) - 2

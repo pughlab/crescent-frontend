@@ -186,7 +186,6 @@ def get_available_categorical_groups(runID, datasetID):
     """ given a runID, fetches the available groups (of non-numeric type) to label cell barcodes by """
     minio_client = get_minio_client()
     paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
-    print(paths)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     groups_tsv = get_first_n_lines(2, paths["groups"]["bucket"], paths["groups"]["object"], minio_client)
