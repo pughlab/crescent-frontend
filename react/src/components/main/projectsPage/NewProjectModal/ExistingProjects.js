@@ -13,7 +13,7 @@ import {queryIsNotNil} from '../../../../utils'
 
 import {useDropzone} from 'react-dropzone'
 
-import {Form, Card, Header, Menu, Button, Transition, Modal, Label, Divider, Icon, Image, Popup, Grid, Step, Segment} from 'semantic-ui-react'
+import {Form, Card, Header, Menu, Button, Message, Transition, Modal, Label, Divider, Icon, Image, Popup, Grid, Step, Segment} from 'semantic-ui-react'
 
 
 import filesize from 'filesize'
@@ -21,6 +21,29 @@ import Marquee from 'react-marquee'
 
 import {useCrescentContext} from '../../../../redux/hooks'
 
+const DatasetsPopoverContent = ({
+  allDatasets
+}) => {
+  return (
+    <Message>
+      <Message.Content>
+      <Divider horizontal content='Datasets' />
+        <Label.Group>
+        {
+          R.map(
+            ({datasetID, name}) => (
+              <Label key={datasetID}>
+                {name}
+              </Label>
+            ),
+            allDatasets
+          )
+        }
+        </Label.Group>
+      </Message.Content>
+    </Message>
+  )
+}
 
 const ProjectCard = ({
   project: {
@@ -28,7 +51,7 @@ const ProjectCard = ({
     name,
     createdOn,
     createdBy: {name: creatorName},
-    allDatasets,
+    allDatasets
   },
   newProjectState, newProjectDispatch
 }) => {  
@@ -47,14 +70,14 @@ const ProjectCard = ({
     >
     <Popup
         size='large' wide='very'
-        inverted
         trigger={
           <Button attached='top' color={isSelectedForMerge ? 'blue' : 'grey'}>
             <Icon name={isSelectedForMerge ? 'folder open' : 'folder outline'} size='large' />
           </Button>
-        }
-        content={'Click to integrate into your project'}
-      />
+        }        
+      >
+        <DatasetsPopoverContent {...{allDatasets}} />
+      </Popup>
     <Card.Content extra>
       <Header size='small'>
         <Header.Content>
@@ -96,6 +119,8 @@ const PublicProjects = ({
           userID
         }
         allDatasets {
+          datasetID
+          name
           oncotreeCode
         }
       }
@@ -145,6 +170,8 @@ const UploadedProjects = ({
           userID
         }
         allDatasets {
+          datasetID
+          name
           oncotreeCode
         }
       }
