@@ -21,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces
-from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, get_objs_as_2dlist, object_exists
+from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists
 from get_data.get_others import get_top_expressed_data, get_paths
 
 def get_barcodes(normalised_counts_path, feature_list):

@@ -14,16 +14,16 @@ from get_data.minio_functions import (
 )
 from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name
 
-def get_paths(runID, keys, datasetID=""):
+def get_paths(runID, keys, findDatasetID=False):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    return set_IDs(paths, runID, keys, datasetID=datasetID)
+    return set_IDs(paths, runID, keys, findDatasetID=findDatasetID)
 
 def get_top_expressed_data(runID, datasetID):
     """ given a runID get the top 10 expressed genes + their avg log fold change and p-value """
 
-    paths = get_paths(runID, ["top_expressed"], datasetID=datasetID)
+    paths = get_paths(runID, ["top_expressed"])
     paths["top_expressed"] = set_name_multi(paths["top_expressed"], datasetID, "top_expressed")
     minio_client = get_minio_client()
 
@@ -71,18 +71,18 @@ def get_available_qc_data(runID, datasetID):
         dropdown_plots = json.load(dropdown_plots_file)
     
     minio_client = get_minio_client()
-    paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_data"], datasetID=datasetID)
+    paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_data"])
     paths = set_name(paths, datasetID, ["before_filtering", "after_filtering", "qc_data"])
 
     available_plots = []
     # if both before and after tsv files exist, can show filtering
-    if(object_exists(paths["before_filtering"], minio_client) and
-       object_exists(paths["after_filtering"], minio_client)):
+    if(object_exists(paths["before_filtering"]["bucket"], paths["before_filtering"]["object"], minio_client) and
+       object_exists(paths["after_filtering"]["bucket"], paths["after_filtering"]["object"], minio_client)):
         available_plots.append(dropdown_plots['Before_After_Filtering'])
     else:
         return_error("QC results folder not found")
     
-    if object_exists(paths["qc_data"], minio_client):
+    if object_exists(paths["qc_data"]["bucket"], paths["qc_data"]["object"], minio_client): 
         header = get_first_line(paths["qc_data"]["bucket"], paths["qc_data"]["object"], minio_client)
         for col in header:
             if col in dropdown_plots:
@@ -93,19 +93,14 @@ def get_available_qc_data(runID, datasetID):
 def get_groups(runID, datasetID):
     """ given a runID, fetches the available groups to label cell barcodes by """
     minio_client = get_minio_client()
-    paths = get_paths(runID, ["groups", "metadata"], datasetID=datasetID)
+    paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
     groups = paths["groups"]
     metadata = paths["metadata"]
 
     available_groups = get_first_line(groups["bucket"], groups["object"], minio_client)[1:]
-    if(object_exists(metadata, minio_client)):
-        metadata_groups = []
-        if "buckets" in metadata:
-            for bucket in metadata["buckets"]:
-                metadata_groups += get_first_line(bucket, metadata["object"], minio_client)[1:]
-        else:
-            metadata_groups = get_first_line(metadata["bucket"], metadata["object"], minio_client)[1:]
+    if(object_exists(metadata["bucket"], metadata["object"], minio_client)):
+        metadata_groups = get_first_line(metadata["bucket"], metadata["object"], minio_client)[1:]
         # available_groups = list(OrderedDict.fromkeys(available_groups))+list(OrderedDict.fromkeys(metadata_groups))
         available_groups = list(OrderedSet(available_groups) | OrderedSet(metadata_groups))
 
@@ -162,7 +157,7 @@ def get_plots(runID):
 
 def get_qc_metrics(runID, datasetID):
     minio_client = get_minio_client()
-    paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_metrics"], datasetID=datasetID)
+    paths = get_paths(runID, ["before_filtering", "after_filtering", "qc_metrics"])
     paths= set_name(paths, datasetID, ["before_filtering", "after_filtering", "qc_metrics"])
 
     metrics = {
@@ -190,24 +185,15 @@ def get_qc_metrics(runID, datasetID):
 def get_available_categorical_groups(runID, datasetID):
     """ given a runID, fetches the available groups (of non-numeric type) to label cell barcodes by """
     minio_client = get_minio_client()
-    paths = get_paths(runID, ["groups", "metadata"], datasetID=datasetID)
+    paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
+    print(paths)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     groups_tsv = get_first_n_lines(2, paths["groups"]["bucket"], paths["groups"]["object"], minio_client)
     group_types = list(zip(groups_tsv[0], groups_tsv[1]))[1:]
     groups = [group for group, grouptype in group_types if grouptype == 'group']
-
-    metadata = paths["metadata"]
-    
-    if object_exists(metadata, minio_client):
-        metadata_tsv = [[], []]
-        if "buckets" in metadata:
-            for bucket in metadata["buckets"]:
-                first_2_lines = get_first_n_lines(2, bucket, metadata["object"], minio_client)
-                metadata_tsv[0] += first_2_lines[0]
-                metadata_tsv[1] += first_2_lines[1]
-        else:
-            metadata_tsv = get_first_n_lines(2, metadata["bucket"], metadata["object"], minio_client)
+    if object_exists(paths["metadata"]["bucket"], paths["metadata"]["object"], minio_client):
+        metadata_tsv = get_first_n_lines(2, paths["metadata"]["bucket"], paths["metadata"]["object"], minio_client)
         metadata_types = list(zip(metadata_tsv[0], metadata_tsv[1]))[1:]
         metadata_groups = [group for group, grouptype in metadata_types if grouptype == 'group']
         return list(OrderedSet(groups) | OrderedSet(metadata_groups))

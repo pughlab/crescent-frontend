@@ -42,7 +42,7 @@ const resolvers = {
         datasetIDs = [],
       },
       {
-        Datasets,
+        Minio,
         Projects,
       }
     ) => {
@@ -53,6 +53,8 @@ const resolvers = {
           mergedProjectIDs: projectIDs,
           uploadedDatasetIDs: datasetIDs
         })
+        const {projectID} = project
+        await Minio.client.makeBucket(`project-${projectID}`)
         return project
       } catch(error) {
         console.error(error)

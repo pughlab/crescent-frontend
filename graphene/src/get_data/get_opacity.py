@@ -6,7 +6,7 @@ import loompy
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces
-from get_data.minio_functions import get_first_line, get_obj_as_2dlist, get_objs_as_2dlist, object_exists
+from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
 
 colour_dict = {}
 
@@ -63,7 +63,7 @@ def sort_barcodes(opacities, exp_values, group, paths, minio_client, global_max)
     metadata = paths["metadata"]
     groups = paths["groups"]
 
-    metadata_exists = object_exists(metadata, minio_client)
+    metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
 
     if (group in get_first_line(groups["bucket"], groups["object"], minio_client)):
         groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
@@ -89,49 +89,39 @@ def sort_barcodes(opacities, exp_values, group, paths, minio_client, global_max)
             add_barcodes(plotly_obj, barcode_values, group, opacities, global_max)
         else:
             return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
-    elif metadata_exists:
-        use_metadata = False
-        if ("buckets" in metadata):
-            available_groups = []
-            for bucket in metadata["buckets"]:
-                available_groups += get_first_line(bucket, metadata["object"], minio_client)
-            if (group in available_groups):
-                use_metadata = True
-        elif (group in get_first_line(metadata["bucket"], metadata["object"], minio_client)):
-            use_metadata = True
+    elif (metadata_exists and (group in get_first_line(metadata["bucket"], metadata["object"], minio_client))):
+        # use the metadata
+        metadata_tsv = get_obj_as_2dlist(metadata["bucket"], metadata["object"], minio_client)
 
-        if use_metadata:
-            metadata_tsv = get_objs_as_2dlist(metadata, minio_client)
+        label_idx = metadata_tsv[0].index(str(group))
+        group_type = metadata_tsv[1][label_idx]
 
-            label_idx = metadata_tsv[0].index(str(group))
-            group_type = metadata_tsv[1][label_idx]
-
-            if group_type == 'group':
-                all_barcodes = {key: True for key in opacities}
-                for row in metadata_tsv[2:]:
-                    barcode = str(row[0])
-                    if all_barcodes.pop(barcode, None):
-                        # exists in all barcodes, ok to add (skipped otherwise)
-                        label = str(row[label_idx])
-                        add_barcode(plotly_obj, barcode, label, opacities, exp_values, global_max)
-                # add remaining barcodes that weren't defined in the metadata file
-                for barcode in all_barcodes.keys():
-                    label = 'unlabelled'
+        if group_type == 'group':
+            all_barcodes = {key: True for key in opacities}
+            for row in metadata_tsv[2:]:
+                barcode = str(row[0])
+                if all_barcodes.pop(barcode, None):
+                    # exists in all barcodes, ok to add (skipped otherwise)
+                    label = str(row[label_idx])
                     add_barcode(plotly_obj, barcode, label, opacities, exp_values, global_max)
-            elif group_type == 'numeric':
-                # colour by gradient
-                barcode_values = []
-                all_ints = True
-                for row in metadata_tsv[2:]:
-                    num_value = float(row[label_idx])
-                    all_ints = False if not num_value.is_integer() else all_ints
-                    barcode_values.append((str(row[0]),num_value))
-                barcode_values = sorted(barcode_values, key=lambda x: x[1])
-                barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
-                add_barcodes(plotly_obj, barcode_values, group, opacities, global_max)
-            else:
-                return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
-            pass
+            # add remaining barcodes that weren't defined in the metadata file
+            for barcode in all_barcodes.keys():
+                label = 'unlabelled'
+                add_barcode(plotly_obj, barcode, label, opacities, exp_values, global_max)
+        elif group_type == 'numeric':
+            # colour by gradient
+            barcode_values = []
+            all_ints = True
+            for row in metadata_tsv[2:]:
+                num_value = float(row[label_idx])
+                all_ints = False if not num_value.is_integer() else all_ints
+                barcode_values.append((str(row[0]),num_value))
+            barcode_values = sorted(barcode_values, key=lambda x: x[1])
+            barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
+            add_barcodes(plotly_obj, barcode_values, group, opacities, global_max)
+        else:
+            return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
+        pass
     else:
         return_error(group + " is not an available group in groups.tsv or metadata.tsv")
 
@@ -165,7 +155,7 @@ def get_opacity_data(feature, group, runID, datasetID, expRange):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], datasetID=datasetID)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()

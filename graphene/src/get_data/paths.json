@@ -34,7 +34,7 @@
         "all": "SEURAT/CRESCENT_CLOUD/frontend_groups/groups.tsv"
     },
     "metadata": {
-        "bucket": "dataset-",
+        "bucket": "project-",
         "object": "metadata.tsv"
     },
     "normalised_counts": {
