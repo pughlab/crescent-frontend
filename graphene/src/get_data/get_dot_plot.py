@@ -127,7 +127,7 @@ def count_cells(barcode_exp_dict):
         count += 1
     return count
 
-def get_trace(cluster_dict, feature, group):
+def get_trace(cluster_dict, feature, group, scaleBy, max_avg_exp):
     """ given a cluster barcode dict, return a template trace object for one feature
     """
     sorted_clusters = sorted(list(cluster_dict.keys()), key=natural_keys)
@@ -157,11 +157,11 @@ def get_trace(cluster_dict, feature, group):
         cluster_exp_dict[cluster] = avg_exp
         abundance = calculate_abundance(cluster_dict[cluster])
         cluster_abundance_dict[cluster] = abundance
-        template["text"].append([abundance*100, avg_exp, count_cells(cluster_dict[cluster]), group])
+        template["text"].append([abundance*100, avg_exp, count_cells(cluster_dict[cluster]), group, scaleBy])
     
     max_exp = find_max_exp(cluster_exp_dict)
     template["marker"]["opacity"] = calculate_opacities(
-        cluster_exp_dict, max_exp)
+        cluster_exp_dict,max_exp if scaleBy == "gene" else max_avg_exp)
     template["marker"]["size"] = calculate_sizes(
         cluster_abundance_dict)
 
@@ -199,8 +199,9 @@ def get_top_ten_expressed_genes(runID, minio_client):
     sorted_genes = [data["gene"] for data in sorted_genes_data][0:10]
     return sorted_genes
 
-def get_dot_plot_data(features, group, runID):
+def get_dot_plot_data(features, group, runID, scaleBy):
     """ given a runID: returns a dot plot plotly object """
+    
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
@@ -221,11 +222,28 @@ def get_dot_plot_data(features, group, runID):
         features_to_display = get_top_ten_expressed_genes(runID, minio_client)
     else:
         features_to_display = features
-    feature_list = get_barcodes(paths["normalised_counts"], features_to_display)
     
+    feature_list = get_barcodes(paths["normalised_counts"], features_to_display)
+
+    if(feature_list == []):
+        return plotly_obj
+
+    # find max avg expression
+    avg_exp_list = []
+    feature_cluster_dict = {}
     for l in feature_list:
         cluster_dict = group_by_cluster(
             l["barcode_exp"], minio_client, paths["groups"], group, runID)
-        trace = get_trace(cluster_dict, l["feature"], group)
+        feature_cluster_dict[l["feature"]] = cluster_dict  
+        for cluster in list(cluster_dict.keys()):
+            avg_exp = calculate_avg_exp(cluster_dict[cluster])
+            avg_exp_list.append(avg_exp)
+    max_avg_exp = max(avg_exp_list)
+
+    # get trace for each feature
+    for feature in list(feature_cluster_dict.keys()):
+        cluster_dict = feature_cluster_dict[feature]
+        trace = get_trace(cluster_dict, feature, group, scaleBy, max_avg_exp)
         plotly_obj.append(trace)
+    
     return plotly_obj

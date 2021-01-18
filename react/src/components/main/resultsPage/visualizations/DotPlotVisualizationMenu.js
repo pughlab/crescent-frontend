@@ -106,7 +106,7 @@ const DotPlotVisualizationMenu = ({
         />
       </Form.Field>
 
-      <Divider horizontal content='Datasets Type' />
+      <Divider horizontal content='RNA Normalization' />
       <Form.Field>
         <Form.Dropdown fluid selection labeled
           value="raw"

@@ -56,7 +56,6 @@ const initialState = {
         activeResult: null, // selected plot: 'tsne', 'umap', 'violin', etc.
         activeGroup: null,
         selectedFeature: null,
-        selectedFeatures: [],
         availableGroups: [], // ways to label the data (i.e. PatientID)
         availablePlots: [], // will store objects for each of the available plots
         isLoading: false,

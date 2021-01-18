@@ -119,10 +119,10 @@ class Query(ObjectType):
     def resolve_scatter(parent, info, vis, group, runID, datasetID):
         return get_scatter_data(vis, group, runID, datasetID)
 
-    dot_plot = List(NonNull(DotPlotData), features=List(String), group=String(), runID=ID())
+    dot_plot = List(NonNull(DotPlotData), features=List(String), group=String(), runID=ID(), scaleBy=String())
     @staticmethod
-    def resolve_dot_plot(parent, info, features, group, runID):
-        return get_dot_plot_data(features, group, runID)
+    def resolve_dot_plot(parent, info, features, group, runID, scaleBy):
+        return get_dot_plot_data(features, group, runID, scaleBy)
 
     size = Int(runID=ID())
     @staticmethod

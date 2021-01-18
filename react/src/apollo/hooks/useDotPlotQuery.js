@@ -39,11 +39,11 @@ const client = new ApolloClient({
 //   return 
 // }
 
-export default function useDotPlot(features, group, runID) {
+export default function useDotPlot(features, group, runID, scaleBy) {
   const [dotPlot, setDotPlot] = useState(null)
   const { loading, data, error } = useQuery(gql`
-    query DotPlot($features: [String], $group: String, $runID: ID) {
-      dotPlot(features: $features, group: $group, runID: $runID) {
+    query DotPlot($features: [String], $group: String, $runID: ID, $scaleBy: String) {
+      dotPlot(features: $features, group: $group, runID: $runID, scaleBy:$scaleBy) {
         type
         mode
         x
@@ -61,7 +61,7 @@ export default function useDotPlot(features, group, runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: { features, group, runID },
+    variables: { features, group, runID, scaleBy },
     onCompleted: ({ dotPlot }) => {
       R.compose(
         setDotPlot,

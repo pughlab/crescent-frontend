@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Image, Container, Header, Segment, Dimmer, Icon, Popup } from 'semantic-ui-react'
+import { Image, Container, Header, Segment, Dimmer, Icon, Popup, Dropdown, Grid } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
@@ -14,7 +14,7 @@ import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
 import { useResultsAvailableQuery, useDotPlotQuery } from '../../../../apollo/hooks'
-import { addSelectedFeature } from '../../../../redux/actions/resultsPage'
+import { addSelectedFeature, setSelectedScaleBy } from '../../../../redux/actions/resultsPage'
 
 //cache dot plot data in form of { "gene": plotlyObj }
 let dotPlotData = {}
@@ -25,7 +25,7 @@ const DotPlot = ({
   const { runID } = useCrescentContext()
 
   const dispatch = useDispatch()
-  const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression } = useResultsPagePlotQuery(plotQueryIndex)
+  const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression, selectedScaleBy } = useResultsPagePlotQuery(plotQueryIndex)
 
   const plots = useResultsAvailableQuery(runID)
   const [addedFeatures, setAddedFeatures] = useState(false)
@@ -36,14 +36,17 @@ const DotPlot = ({
   // for all the selected genes, if cached and in the selected group then add to dotPlot, 
   // else need to include in query
   R.forEach((gene) => {
-    if (R.includes(gene, Object.keys(dotPlotData)) && dotPlotData[gene]["text"][0][3] === selectedGroup) {
+    if (R.includes(gene, Object.keys(dotPlotData)) 
+      && dotPlotData[gene]["text"][0][3] === selectedGroup
+      && dotPlotData[gene]["text"][0][4] === selectedScaleBy) {
       dotPlot = R.append(dotPlotData[gene], dotPlot)
     } else {
       queryGenes = R.append(gene, queryGenes)
     }
   }, selectedFeatures)
-  const queryResult = useDotPlotQuery(R.and(R.isEmpty(queryGenes), addedFeatures) ? ["none"] : queryGenes, selectedGroup, runID)
-  const result = queryResult === null ? [] : queryResult.filter(trace => trace["text"][0][3] === selectedGroup)
+  const queryResult = useDotPlotQuery(R.and(R.isEmpty(queryGenes), addedFeatures) ? ["none"] : queryGenes, selectedGroup, runID, selectedScaleBy)
+
+  const result = queryResult === null ? [] : queryResult.filter(trace => trace["text"][0][3] === selectedGroup && trace["text"][0][4] === selectedScaleBy)
   dotPlot = R.concat(dotPlot, result)
 
   useEffect(() => {
@@ -92,9 +95,12 @@ const DotPlot = ({
   }
   const isLoading = false
 
-  //cache plot data to dotPlotData
+  // cache plot data to dotPlotData
+  // cannot cache if scaleBy is "matrix" because we need to recalculate the max avg exp
   R.forEach((trace) => {
-    dotPlotData[trace.x[0]] = trace
+    if(trace["text"][0][4] === "gene"){
+      dotPlotData[trace.x[0]] = trace
+    }
   }, dotPlot)
 
   // determine proper name of active plot
@@ -153,6 +159,30 @@ const DotPlot = ({
           
         />
       </Header> */}
+      <Grid divided='vertically'>
+        <Grid.Row columns={2}>
+          <Grid.Column textAlign="center">
+            <Header size='small' style={{display: "inline", paddingRight: "10px"}}>Scale by: </Header>
+            <Dropdown
+              selection
+              defaultValue={selectedScaleBy}
+              onChange={(e, {value}) => {console.log(value);dispatch(setSelectedScaleBy({ value }))}}
+              options={[{
+                text: "gene",
+                value: "gene"
+              }, {
+                text: "matrix",
+                value: "matrix"
+              }]}
+            />
+          </Grid.Column>
+          <Grid.Column textAlign="center">
+            {/* add min-max slider here */}
+          </Grid.Column>
+        </Grid.Row>
+
+      </Grid>
+      
       <Plot
         data={sizeLegend}
         style={{ width: '100%', height: 60 }}
