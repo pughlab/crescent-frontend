@@ -63,6 +63,13 @@ const setSelectedScaleBy = ({value}) => ({
   }
 })
 
+const setSelectedExpRange = ({value}) => ({
+  type: 'resultsPage/setSelectedExpRange',
+  payload: {
+    value
+  }
+})
+
 const setSelectedGroup = ({value}) => ({
   type: 'resultsPage/setSelectedGroup',
   payload: {
@@ -104,6 +111,7 @@ export {
   addSelectedFeature,
   removeSelectedFeature,
   setSelectedScaleBy,
+  setSelectedExpRange,
   setSelectedGroup,
   setSelectedDiffExpression,
   resetResultsPage,

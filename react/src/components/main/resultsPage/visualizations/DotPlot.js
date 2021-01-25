@@ -7,6 +7,7 @@ import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Shake from 'react-reveal/Shake'
+import Slider from "@material-ui/core/Slider"
 
 import * as R from 'ramda'
 
@@ -14,10 +15,14 @@ import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
 import { useResultsAvailableQuery, useDotPlotQuery } from '../../../../apollo/hooks'
-import { addSelectedFeature, setSelectedScaleBy } from '../../../../redux/actions/resultsPage'
+import { addSelectedFeature, setSelectedScaleBy, setSelectedExpRange } from '../../../../redux/actions/resultsPage'
 
-//cache dot plot data in form of { "gene": plotlyObj }
+// cache dot plot data in form of { "gene": plotlyObj }
 let dotPlotData = {}
+
+// constants
+const violet = '#6435c9'
+const grey = '#a1a1a2'
 
 const DotPlot = ({
   plotQueryIndex
@@ -25,7 +30,7 @@ const DotPlot = ({
   const { runID } = useCrescentContext()
 
   const dispatch = useDispatch()
-  const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression, selectedScaleBy } = useResultsPagePlotQuery(plotQueryIndex)
+  const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression, selectedScaleBy, selectedExpRange } = useResultsPagePlotQuery(plotQueryIndex)
 
   const plots = useResultsAvailableQuery(runID)
   const [addedFeatures, setAddedFeatures] = useState(false)
@@ -37,16 +42,16 @@ const DotPlot = ({
   // else need to include in query
   R.forEach((gene) => {
     if (R.includes(gene, Object.keys(dotPlotData)) 
-      && dotPlotData[gene]["text"][0][3] === selectedGroup
-      && dotPlotData[gene]["text"][0][4] === selectedScaleBy) {
+      && dotPlotData[gene]["group"] === selectedGroup
+      && dotPlotData[gene]["scaleby"] === selectedScaleBy
+      && selectedScaleBy === "gene") {
       dotPlot = R.append(dotPlotData[gene], dotPlot)
     } else {
       queryGenes = R.append(gene, queryGenes)
     }
   }, selectedFeatures)
-  const queryResult = useDotPlotQuery(R.and(R.isEmpty(queryGenes), addedFeatures) ? ["none"] : queryGenes, selectedGroup, runID, selectedScaleBy)
-
-  const result = queryResult === null ? [] : queryResult.filter(trace => trace["text"][0][3] === selectedGroup && trace["text"][0][4] === selectedScaleBy)
+  const queryResult = useDotPlotQuery(R.and(R.isEmpty(queryGenes), addedFeatures) ? ["none"] : queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange)
+  const result = queryResult === null ? [] : queryResult.filter(trace => trace["group"] === selectedGroup && trace["scaleby"] === selectedScaleBy)
   dotPlot = R.concat(dotPlot, result)
 
   useEffect(() => {
@@ -61,7 +66,7 @@ const DotPlot = ({
       }, dotPlot)
     }
   }, [dotPlot])
-
+  
   // const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   // const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   // const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression)
@@ -98,7 +103,7 @@ const DotPlot = ({
   // cache plot data to dotPlotData
   // cannot cache if scaleBy is "matrix" because we need to recalculate the max avg exp
   R.forEach((trace) => {
-    if(trace["text"][0][4] === "gene"){
+    if(trace["scaleby"] === "gene"){
       dotPlotData[trace.x[0]] = trace
     }
   }, dotPlot)
@@ -141,6 +146,13 @@ const DotPlot = ({
     plotHeight = "60%"
   }
 
+  // initialize max/min value for slider
+  const possibleMinExp = 0
+  let possibleMaxExp = 100
+  if(R.not(R.isEmpty(result))){
+    possibleMaxExp = Math.ceil(result[0]["globalmax"])
+  }
+
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
     // <Dimmer active={isLoading} inverted>
@@ -161,26 +173,42 @@ const DotPlot = ({
       </Header> */}
       <Grid divided='vertically'>
         <Grid.Row columns={2}>
-          <Grid.Column textAlign="center">
-            <Header size='small' style={{display: "inline", paddingRight: "10px"}}>Scale by: </Header>
+          <Grid.Column textAlign="center" verticalAlign="middle">
+            <Header size='small' style={{display: "inline", paddingRight: "10px"}}>Scale by</Header>
             <Dropdown
               selection
               defaultValue={selectedScaleBy}
-              onChange={(e, {value}) => {console.log(value);dispatch(setSelectedScaleBy({ value }))}}
-              options={[{
-                text: "gene",
-                value: "gene"
-              }, {
-                text: "matrix",
-                value: "matrix"
-              }]}
+              onChange={(e, {value}) => dispatch(setSelectedScaleBy({ value }))}
+              options={[{text: "gene", value: "gene"}, 
+                        {text: "matrix", value: "matrix"}]}
             />
           </Grid.Column>
-          <Grid.Column textAlign="center">
-            {/* add min-max slider here */}
+          <Grid.Column verticalAlign="middle" >
+            <Header size='small' textAlign="center" style={{margin: 0}}>
+              Gene Expression Range
+            </Header>
+            <Slider
+              style={{maxWidth: "300px", display: "flex", alignSelf: "center", margin: "auto", color: selectedScaleBy === "gene" ? grey : violet}} 
+              min={possibleMinExp} 
+              max={possibleMaxExp}
+              step={0.1}
+              disabled={selectedScaleBy === "gene"}
+              marks={[
+                {
+                  value: possibleMinExp,
+                  label: possibleMinExp
+                },
+                {
+                  value: possibleMaxExp,
+                  label: possibleMaxExp
+                },
+              ]}
+              defaultValue={R.isEmpty(selectedExpRange) ? [possibleMinExp, possibleMaxExp] : selectedExpRange} 
+              valueLabelDisplay="auto"
+              onChangeCommitted={(e, value) => dispatch(setSelectedExpRange({ value }))}
+            />
           </Grid.Column>
         </Grid.Row>
-
       </Grid>
       
       <Plot

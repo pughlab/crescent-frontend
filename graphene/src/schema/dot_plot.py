@@ -39,3 +39,18 @@ class DotPlotData(ObjectType):
     @staticmethod
     def resolve_type(parent, info):
         return parent["type"]
+
+    group = String()
+    @staticmethod
+    def resolve_group(parent, info):
+        return parent["group"]
+    
+    scaleby = String()
+    @staticmethod
+    def resolve_scaleBy(parent, info):
+        return parent["scaleby"]
+    
+    globalmax = Float()
+    @staticmethod
+    def resolve_globalmax(parent, info):
+        return parent["globalmax"]

@@ -76,14 +76,24 @@ def duplicate_element(element, num):
         result.append(element)
     return result
 
-def calculate_opacities(cluster_exp_dict, max_exp):
+def calculate_opacities(cluster_exp_dict, min_max_list):
     """ given a cluster expression dict, calculate and return the opacities of each cluster 
     @cluster_exp_dict: {cluster: exp} """
     min_opac = 0.05  # no expression
     exp_values = [float(cluster_exp_dict[cluster])
                   for cluster in list(cluster_exp_dict.keys())]
-    opacities = [min_opac if val == 0.0 else round(
-        (val*0.95/max_exp + min_opac), 2) for val in exp_values]
+
+    normalised_exp_values = []
+    for value in exp_values:
+        if value > min_max_list[1]:
+            normalised_exp_values.append(min_max_list[1])
+        elif value < min_max_list[0]:
+            normalised_exp_values.append(min_max_list[0])
+        else:
+            normalised_exp_values.append(value)
+    opacities = [min_opac if val == min_max_list[0] else round(
+        (val*0.95/min_max_list[1] + min_opac), 2) for val in normalised_exp_values]
+
     return opacities
 
 def calculate_sizes(cluster_exp_dict):
@@ -96,7 +106,7 @@ def calculate_sizes(cluster_exp_dict):
         (val*40/1 + min_size), 2) for val in size_values]
     return sizes
 
-def find_max_exp(cluster_exp_dict):
+def find_max_exp_per_cluster(cluster_exp_dict):
     """ for a feature, find the max average expression value """
     max = 0.0
     for cluster in list(cluster_exp_dict.keys()):
@@ -127,7 +137,7 @@ def count_cells(barcode_exp_dict):
         count += 1
     return count
 
-def get_trace(cluster_dict, feature, group, scaleBy, max_avg_exp):
+def get_trace(cluster_dict, feature, group, scale_by, global_max_avg_exp, exp_range):
     """ given a cluster barcode dict, return a template trace object for one feature
     """
     sorted_clusters = sorted(list(cluster_dict.keys()), key=natural_keys)
@@ -148,7 +158,11 @@ def get_trace(cluster_dict, feature, group, scaleBy, max_avg_exp):
             '<br><b>Avg Expression</b>: %{text[1]: .2f}' + 
             '<br><b>Number of Cells</b>: %{text[2]}' + 
             '<extra>Cluster %{y}<br>Gene %{x}</extra>',
-        "text": []
+        "text": [],
+        "group": group,
+        "scaleby": scale_by,
+        "globalmax": global_max_avg_exp
+        
     }
     cluster_exp_dict = {}
     cluster_abundance_dict = {}
@@ -157,11 +171,18 @@ def get_trace(cluster_dict, feature, group, scaleBy, max_avg_exp):
         cluster_exp_dict[cluster] = avg_exp
         abundance = calculate_abundance(cluster_dict[cluster])
         cluster_abundance_dict[cluster] = abundance
-        template["text"].append([abundance*100, avg_exp, count_cells(cluster_dict[cluster]), group, scaleBy])
-    
-    max_exp = find_max_exp(cluster_exp_dict)
+        template["text"].append([abundance*100, avg_exp, count_cells(cluster_dict[cluster])])
+
+    if scale_by == "gene":
+        min_max_list = [0, find_max_exp_per_cluster(cluster_exp_dict)] # max avg exp per cluster
+    else:
+        if len(exp_range) == 2:
+            min_max_list = exp_range
+        else:
+            min_max_list = [0, global_max_avg_exp]
+
     template["marker"]["opacity"] = calculate_opacities(
-        cluster_exp_dict,max_exp if scaleBy == "gene" else max_avg_exp)
+        cluster_exp_dict, min_max_list)
     template["marker"]["size"] = calculate_sizes(
         cluster_abundance_dict)
 
@@ -199,9 +220,9 @@ def get_top_ten_expressed_genes(runID, minio_client):
     sorted_genes = [data["gene"] for data in sorted_genes_data][0:10]
     return sorted_genes
 
-def get_dot_plot_data(features, group, runID, scaleBy):
+def get_dot_plot_data(features, group, runID, scaleBy, expRange):
     """ given a runID: returns a dot plot plotly object """
-    
+
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
@@ -238,12 +259,12 @@ def get_dot_plot_data(features, group, runID, scaleBy):
         for cluster in list(cluster_dict.keys()):
             avg_exp = calculate_avg_exp(cluster_dict[cluster])
             avg_exp_list.append(avg_exp)
-    max_avg_exp = max(avg_exp_list)
+    global_max_exp = max(avg_exp_list)
 
     # get trace for each feature
     for feature in list(feature_cluster_dict.keys()):
         cluster_dict = feature_cluster_dict[feature]
-        trace = get_trace(cluster_dict, feature, group, scaleBy, max_avg_exp)
+        trace = get_trace(cluster_dict, feature, group, scaleBy, global_max_exp, expRange)
         plotly_obj.append(trace)
     
     return plotly_obj

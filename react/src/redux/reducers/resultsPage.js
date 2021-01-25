@@ -8,6 +8,7 @@ const initialPlotQuery = {
   selectedFeature: null,
   selectedFeatures: [],
   selectedScaleBy: "gene",
+  selectedExpRange: [],
   selectedGroup: null,
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
@@ -121,12 +122,21 @@ export default createReducer(
         plotQueries: evolveAtIndex({selectedFeatures: R.without([value])}, activePlot)
       })(state)
     },
-     // for plot
+    // for plot
      'resultsPage/setSelectedScaleBy': (state, payload) => {
       const {value} = payload
       const {activePlot} = state
       return R.evolve({
         plotQueries: evolveAtIndex({selectedScaleBy: R.always(value)}, activePlot)
+      })(state)
+    },
+    // for plot
+    'resultsPage/setSelectedExpRange': (state, payload) => {
+      const {value} = payload
+      const {activePlot} = state
+      console.log(value)
+      return R.evolve({
+        plotQueries: evolveAtIndex({selectedExpRange: R.always(value)}, activePlot)
       })(state)
     },
     // for plot
