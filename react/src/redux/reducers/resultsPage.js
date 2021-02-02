@@ -8,7 +8,7 @@ const initialPlotQuery = {
   selectedFeature: null,
   selectedFeatures: [],
   selectedScaleBy: "gene",
-  selectedExpRange: [],
+  selectedExpRange: [0, 0],
   selectedGroup: null,
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
@@ -134,7 +134,6 @@ export default createReducer(
     'resultsPage/setSelectedExpRange': (state, payload) => {
       const {value} = payload
       const {activePlot} = state
-      console.log(value)
       return R.evolve({
         plotQueries: evolveAtIndex({selectedExpRange: R.always(value)}, activePlot)
       })(state)

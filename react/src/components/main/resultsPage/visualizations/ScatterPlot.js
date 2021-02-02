@@ -1,7 +1,9 @@
-import React, {useState, useEffect, useCallback } from 'react'
+import React, { useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
-import { Image, Container, Header, Segment, Dimmer} from 'semantic-ui-react'
+import { Image, Container, Header, Segment, Dimmer } from 'semantic-ui-react'
+import Slider, { createSliderWithTooltip } from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
@@ -13,6 +15,10 @@ import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 import {useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery, useNumericGroupsQuery} from '../../../../apollo/hooks'
+import { setSelectedExpRange } from '../../../../redux/actions/resultsPage'
+
+const violet = '#6435c9'
+const lightViolet = '#c5b3eb'
 
 const ScatterPlot = ({
   plotQueryIndex
@@ -20,14 +26,15 @@ const ScatterPlot = ({
   const {runID} = useCrescentContext()
 
   const dispatch = useDispatch()
-  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPagePlotQuery(plotQueryIndex)
+  const { sidebarCollapsed } = useResultsPage()
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange} = useResultsPagePlotQuery(plotQueryIndex)
   const isFeatureNotSelected = R.or(R.isNil, R.isEmpty)(selectedFeature)
 
 
   const plots = useResultsAvailableQuery(runID)
   const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression)
+  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange)
   // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
 
   if (R.any(R.isNil, [plots])) {
@@ -161,6 +168,8 @@ const ScatterPlot = ({
   //   }
   // }, [selectedFeature])
 
+  const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
+  const globalMax = R.isNil(opacity) || opacity[0]["globalmax"] //the max of 
 
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
@@ -170,6 +179,28 @@ const ScatterPlot = ({
     // <Segment style={{height: '100%'}}>
     <>
     <Header textAlign='center' content={currentScatterPlotType} />
+      {
+        (isFeatureNotSelected || sidebarCollapsed) || (
+          <div style={{display: 'flex', justifyContent: "center", alignContent: "center"}}>
+          <Header size='small'  style={{margin: 0}}>
+            Gene Expression Range: 
+          </Header>
+          <SliderWithTooltip
+            key={`slider-${plotQueryIndex}`}
+            min={0} 
+            max={globalMax}
+            step={0.1}
+            marks={{0: 0, [globalMax]: globalMax}}
+            allowCross={false}
+            style={{maxWidth: "300px", marginLeft: "20px", marginBottom: "20px",  color: violet}}
+            trackStyle={[{ backgroundColor: violet }]}
+            handleStyle={[{ backgroundColor: violet, border: "none", boxShadow: "none"}, { backgroundColor: violet, border: "none", boxShadow: "none" }]}
+            railStyle={{ backgroundColor: lightViolet }}
+            defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, globalMax] : selectedExpRange}
+            onAfterChange={value => dispatch(setSelectedExpRange({ value }))}
+          />
+      </div>
+      )}
       <Plot
         config={{showTips: false}}
         // data={opacity}

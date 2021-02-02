@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import withRedux from '../../../../redux/hoc'
 import { Image, Container, Header, Segment, Dimmer, Icon, Popup, Dropdown, Grid } from 'semantic-ui-react'
+import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Shake from 'react-reveal/Shake'
-import Slider from "@material-ui/core/Slider"
 
 import * as R from 'ramda'
 
@@ -22,6 +22,7 @@ let dotPlotData = {}
 
 // constants
 const violet = '#6435c9'
+const lightViolet = '#c5b3eb'
 const grey = '#a1a1a2'
 
 const DotPlot = ({
@@ -31,6 +32,7 @@ const DotPlot = ({
 
   const dispatch = useDispatch()
   const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression, selectedScaleBy, selectedExpRange } = useResultsPagePlotQuery(plotQueryIndex)
+  const { sidebarCollapsed } = useResultsPage()
 
   const plots = useResultsAvailableQuery(runID)
   const [addedFeatures, setAddedFeatures] = useState(false)
@@ -85,7 +87,7 @@ const DotPlot = ({
         </Tada>
       </Segment>)
   }
-//if no feature is selected, ask the user to select one 
+  //if no feature is selected, ask the user to select one 
   if (R.equals(selectedFeatures, ["none"])|| R.isEmpty(selectedFeatures)) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
@@ -146,12 +148,12 @@ const DotPlot = ({
     plotHeight = "60%"
   }
 
-  // initialize max/min value for slider
-  const possibleMinExp = 0
   let possibleMaxExp = 100
   if(R.not(R.isEmpty(result))){
     possibleMaxExp = Math.ceil(result[0]["globalmax"])
   }
+  const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
+  const getColor = () => selectedScaleBy === "gene" ? grey : violet
 
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
@@ -171,45 +173,45 @@ const DotPlot = ({
           
         />
       </Header> */}
-      <Grid divided='vertically'>
-        <Grid.Row columns={2}>
-          <Grid.Column textAlign="center" verticalAlign="middle">
-            <Header size='small' style={{display: "inline", paddingRight: "10px"}}>Scale by</Header>
-            <Dropdown
-              selection
-              defaultValue={selectedScaleBy}
-              onChange={(e, {value}) => dispatch(setSelectedScaleBy({ value }))}
-              options={[{text: "gene", value: "gene"}, 
-                        {text: "matrix", value: "matrix"}]}
-            />
-          </Grid.Column>
-          <Grid.Column verticalAlign="middle" >
-            <Header size='small' textAlign="center" style={{margin: 0}}>
-              Gene Expression Range
-            </Header>
-            <Slider
-              style={{maxWidth: "300px", display: "flex", alignSelf: "center", margin: "auto", color: selectedScaleBy === "gene" ? grey : violet}} 
-              min={possibleMinExp} 
-              max={possibleMaxExp}
-              step={0.1}
-              disabled={selectedScaleBy === "gene"}
-              marks={[
-                {
-                  value: possibleMinExp,
-                  label: possibleMinExp
-                },
-                {
-                  value: possibleMaxExp,
-                  label: possibleMaxExp
-                },
-              ]}
-              defaultValue={R.isEmpty(selectedExpRange) ? [possibleMinExp, possibleMaxExp] : selectedExpRange} 
-              valueLabelDisplay="auto"
-              onChangeCommitted={(e, value) => dispatch(setSelectedExpRange({ value }))}
-            />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
+      { sidebarCollapsed ||
+        (
+          <Grid divided='vertically'>
+            <Grid.Row columns={2}>
+              <Grid.Column textAlign="center" verticalAlign="middle">
+                <Header size='small' style={{display: "inline", paddingRight: "10px"}}>Scale by</Header>
+                <Dropdown
+                  key={`dropdown-${plotQueryIndex}`}
+                  selection
+                  defaultValue={selectedScaleBy}
+                  onChange={(e, {value}) => dispatch(setSelectedScaleBy({ value }))}
+                  options={[{text: "gene", value: "gene"}, 
+                            {text: "matrix", value: "matrix"}]}
+                />
+              </Grid.Column>
+              <Grid.Column verticalAlign="middle" >
+                <Header size='small' textAlign="center" style={{margin: 0}}>
+                  Gene Expression Range
+                </Header>
+                      <SliderWithTooltip
+                        key={`slider-${plotQueryIndex}`}
+                        min={0} 
+                        max={possibleMaxExp}
+                        step={0.1}
+                        marks={{0: 0, [possibleMaxExp]: possibleMaxExp}}
+                        allowCross={false}
+                        disabled={selectedScaleBy === "gene"}
+                        style={{maxWidth: "300px", marginLeft: "20px", marginBottom: "20px",  color: violet}}
+                        trackStyle={[{ backgroundColor: getColor() }]}
+                        handleStyle={[{ backgroundColor: getColor(), border: "none", boxShadow: "none"}, { backgroundColor: getColor(), border: "none", boxShadow: "none" }]}
+                        railStyle={{ backgroundColor: lightViolet }}
+                        defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, possibleMaxExp] : selectedExpRange}
+                        onAfterChange={(value) => {dispatch(setSelectedExpRange({ value })); }}
+                      />
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        )
+      }
       
       <Plot
         data={sizeLegend}

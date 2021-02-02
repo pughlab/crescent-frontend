@@ -176,11 +176,11 @@ def get_trace(cluster_dict, feature, group, scale_by, global_max_avg_exp, exp_ra
     if scale_by == "gene":
         min_max_list = [0, find_max_exp_per_cluster(cluster_exp_dict)] # max avg exp per cluster
     else:
-        if len(exp_range) == 2:
-            min_max_list = exp_range
-        else:
+        if exp_range == [0, 0]:
             min_max_list = [0, global_max_avg_exp]
-
+        else: # if max of exp_range is larger than global max, use global max
+            min_max_list = [exp_range[0], min(exp_range[1], global_max_avg_exp)]
+            
     template["marker"]["opacity"] = calculate_opacities(
         cluster_exp_dict, min_max_list)
     template["marker"]["size"] = calculate_sizes(

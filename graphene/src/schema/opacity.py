@@ -70,7 +70,7 @@ class OpacityData(ObjectType):
     def resolve_name(parent, info):
         return parent["name"]
     
-    text = List(String)
+    text = List(List(String))
     @staticmethod
     def resolve_text(parent, info):
         return parent["text"]
@@ -94,3 +94,13 @@ class OpacityData(ObjectType):
     @staticmethod
     def resolve_type(parent, info):
         return parent["type"]
+
+    globalmax = Float()
+    @staticmethod
+    def resolve_globalmax(parent, info):
+        return parent["globalmax"]
+    
+    hovertemplate = String()
+    @staticmethod
+    def resolve_hovertemplate(parent, info):
+        return parent["hovertemplate"]

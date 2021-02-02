@@ -22,11 +22,11 @@ const client = new ApolloClient({
   link
 })
 
-export default function useOpacity(vis, feature, group, runID, datasetID) {
+export default function useOpacity(vis, feature, group, runID, datasetID, expRange) {
   const [opacity, setOpacity] = useState(null)
   const {loading, data, error, refetch} = useQuery(gql`
-    query Opacity($vis: String, $feature: String, $group: String, $runID: ID, $datasetID: ID) {
-      opacity(vis: $vis, feature: $feature, group: $group, runID: $runID, datasetID: $datasetID) {
+    query Opacity($vis: String, $feature: String, $group: String, $runID: ID, $datasetID: ID, $expRange: [Float]) {
+      opacity(vis: $vis, feature: $feature, group: $group, runID: $runID, datasetID: $datasetID, expRange: $expRange) {
         name
         type
         mode
@@ -37,12 +37,14 @@ export default function useOpacity(vis, feature, group, runID, datasetID) {
             opacity
             color
         }
+        hovertemplate
+        globalmax
       }
     }
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {vis, feature, group, runID, datasetID},
+    variables: {vis, feature, group, runID, datasetID, expRange},
     onCompleted: ({opacity}) => {
       R.compose(
         setOpacity,

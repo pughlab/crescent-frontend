@@ -70,16 +70,17 @@ class Query(ObjectType):
     def resolve_heatmap(parent, info, runID):
         return get_heatmap_data(runID)
 
-    opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID(), datasetID=ID())
+    opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID(), datasetID=ID(), expRange=List(Float))
     @staticmethod
-    def resolve_opacity(parent, info, vis, feature, group, runID, datasetID):
-        opacity_data = get_opacity_data(feature, group, runID, datasetID)
+    def resolve_opacity(parent, info, vis, feature, group, runID, datasetID, expRange):
+        opacity_data = get_opacity_data(feature, group, runID, datasetID, expRange)
         scatter_data = get_scatter_data(vis, group, runID, datasetID)
         length = min(len(opacity_data), len(scatter_data))
         # Now we merge each corresponding object in 
         data = [
             {
-                **opacity_data[idx], 
+                **opacity_data[idx],
+                "hovertemplate": '(%{x}, %{y})<br>%{text[0]}<br>Expression value: %{text[1]}', 
                 "x": scatter_data[idx]["x"],
                 "y": scatter_data[idx]["y"],
                 "mode": scatter_data[idx]["mode"],
