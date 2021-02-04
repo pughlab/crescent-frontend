@@ -35,24 +35,34 @@ def get_top_expressed_data(runID, datasetID):
         return[]
     header = top_two_markers[0]
     top_two_markers = top_two_markers[1:]
-    for row in top_two_markers:
+    max_values = {'avg_logFC': 0, 'p_val': 0}
+    inf_locations = [] # index and header of value "Inf" in avg_logFC or p_val columns
+    for j in range(len(top_two_markers)):
         feature_result = {}
         for i in range(len(header)):
-            value = row[i]
-            # deal with formatting for known columns
-            if header[i] == 'avg_logFC':
-                value = round(float(value),3)
-            elif header[i] == 'p_val':
-                if 'e' in value:
-                    num, exp = value.split('e')
-                    num = round(float(num),3)
-                    value = str(num)+"e"+exp
-                else:
-                    # if p-value not reported in sci. notation, format it to match
-                    value = format(float(value), ".3e")
-            feature_result[header[i]] = str(value)
+            value = top_two_markers[j][i]
+            if value == 'Inf' and header[i] in ['avg_logFC', 'p_val']:
+                inf_locations.append({"index": j, "header": header[i]})
+            else:
+                # deal with formatting for known columns
+                if header[i] == 'avg_logFC':
+                    value = round(float(value),3)
+                    if value > max_values['avg_logFC']:max_values['avg_logFC'] = value
+                elif header[i] == 'p_val':
+                    if 'e' in value:
+                        num, exp = value.split('e')
+                        num = round(float(num),3)
+                        value = str(num)+"e"+exp
+                    else:
+                        # if p-value not reported in sci. notation, format it to match
+                        value = format(float(value), ".3e")
+                    if float(value) > float(max_values['p_val']): max_values['p_val'] = value  
+                feature_result[header[i]] = str(value)
         result.append(feature_result)
-
+    # fill places with 'Inf' with max values
+    for location in inf_locations:
+            result[location['index']][location['header']] = max_values[location['header']]
+    
     return result 
 
 def get_available_qc_data(runID, datasetID):
