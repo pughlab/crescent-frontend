@@ -60,6 +60,7 @@
         "object": {
             "prefix": "SEURAT/CRESCENT_CLOUD/frontend_markers/",
             "suffix": "TopTwoMarkersPerCluster.tsv"
-        }
+        },
+        "all": "SEURAT/CRESCENT_CLOUD/frontend_markers/TopTwoMarkersPerCluster.tsv"
     }
 }

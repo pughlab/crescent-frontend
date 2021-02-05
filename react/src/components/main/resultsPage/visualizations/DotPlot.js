@@ -188,25 +188,25 @@ const DotPlot = ({
                             {text: "matrix", value: "matrix"}]}
                 />
               </Grid.Column>
-              <Grid.Column verticalAlign="middle" >
+              <Grid.Column verticalAlign="middle">
                 <Header size='small' textAlign="center" style={{margin: 0}}>
                   Gene Expression Range
                 </Header>
-                      <SliderWithTooltip
-                        key={`slider-${plotQueryIndex}`}
-                        min={0} 
-                        max={possibleMaxExp}
-                        step={0.1}
-                        marks={{0: 0, [possibleMaxExp]: possibleMaxExp}}
-                        allowCross={false}
-                        disabled={selectedScaleBy === "gene"}
-                        style={{maxWidth: "300px", marginLeft: "20px", marginBottom: "20px",  color: violet}}
-                        trackStyle={[{ backgroundColor: getColor() }]}
-                        handleStyle={[{ backgroundColor: getColor(), border: "none", boxShadow: "none"}, { backgroundColor: getColor(), border: "none", boxShadow: "none" }]}
-                        railStyle={{ backgroundColor: lightViolet }}
-                        defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, possibleMaxExp] : selectedExpRange}
-                        onAfterChange={(value) => {dispatch(setSelectedExpRange({ value })); }}
-                      />
+                <SliderWithTooltip
+                  key={`slider-${plotQueryIndex}`}
+                  min={0} 
+                  max={possibleMaxExp}
+                  step={0.1}
+                  marks={{0: 0, [possibleMaxExp]: possibleMaxExp}}
+                  allowCross={false}
+                  disabled={selectedScaleBy === "gene"}
+                  style={{maxWidth: "300px", margin: "auto", marginBottom: "10px"}}
+                  trackStyle={[{ backgroundColor: getColor() }]}
+                  handleStyle={[{ backgroundColor: getColor(), border: "none", boxShadow: "none"}, { backgroundColor: getColor(), border: "none", boxShadow: "none" }]}
+                  railStyle={{ backgroundColor: lightViolet }}
+                  defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, possibleMaxExp] : selectedExpRange}
+                  onAfterChange={(value) => {dispatch(setSelectedExpRange({ value })); }}
+                />
               </Grid.Column>
             </Grid.Row>
           </Grid>

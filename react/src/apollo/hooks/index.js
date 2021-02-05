@@ -19,6 +19,7 @@ import useRunParametersDownloadUploadMutation from './useRunParametersDownloadUp
 import useCancelRunMutation from './useCancelRunMutation'
 
 import useResultsAvailableQuery from './useResultsAvailableQuery'
+import useFilesInfoQuery from './useFilesInfoQuery'
 import useQCAvailableQuery from './useQCAvailableQuery'
 import useQCMetricsQuery from './useQCMetricsQuery'
 import useQCViolinQuery from './useQCViolinQuery'
@@ -64,6 +65,7 @@ export {
   useCancelRunMutation,
 
   useResultsAvailableQuery, 
+  useFilesInfoQuery,
   useQCAvailableQuery,
   useQCMetricsQuery,
   useQCViolinQuery,

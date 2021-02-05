@@ -1,8 +1,9 @@
 import json
+from bson import ObjectId
 import re
 from ordered_set import OrderedSet
 
-from get_data.get_client import get_minio_client
+from get_data.get_client import get_minio_client, get_mongo_client
 from get_data.minio_functions import (
     count_lines,
     get_first_line,
@@ -149,6 +150,60 @@ def get_plots(runID):
         available_plots_with_data.append(DESC[vis])
 
     return available_plots_with_data
+
+def get_files_info(runID):
+    # find the name of each dataset in this run
+    db = get_mongo_client()["crescent"]
+    runs = db["runs"]
+    datasets = db["datasets"]
+    datasetIDs = runs.find_one({'runID': ObjectId(runID)})['datasetIDs']
+    dataset_names = []
+    for datasetID in datasetIDs:
+        dataset_names.append(datasets.find_one({'datasetID': datasetID})["name"])
+    
+    # get all the objects in the run-runID bucket
+    minio_client = get_minio_client()
+    object_names = get_list_of_object_names('run-' + runID, minio_client)
+
+    PATHS = {}
+    with open('get_data/paths.json') as paths_file:
+        PATHS = json.load(paths_file)
+
+    # construct a list containing all the required file paths
+    necessary_files = ["datasets.csv"]
+    for path_key in PATHS:
+        if path_key == "normalised_counts":
+            necessary_files.append(PATHS["normalised_counts"]["suffix"].replace('/', "", 1))
+        elif PATHS[path_key]["bucket"] == "run-":
+            path_obj = PATHS[path_key]["object"]
+            if isinstance(path_obj, str):
+                necessary_files.append(path_obj)
+            # dataset-specific paths
+            elif "all" in PATHS[path_key]:
+                necessary_files.append(PATHS[path_key]["all"])
+            else:
+                for dataset_name in dataset_names:
+                    necessary_files.append(path_obj["prefix"] + dataset_name + "_" + path_obj["suffix"])
+
+    # check if all the required files exists in the bucket
+    exsiting_files = []
+    missing_files = []
+    for file_path in necessary_files:
+        if file_path in object_names:
+            exsiting_files.append(file_path.split("/")[-1])
+        elif file_path[-1] == "/":
+            folder_name = file_path.split("/")[-2] + "/"
+            pattern = re.compile(file_path + ".*")
+            if pattern.match(file_path) == None:
+                missing_files.append(folder_name)
+            else: 
+                exsiting_files.append(folder_name)
+        else:
+            missing_files.append(file_path.split("/")[-1])
+    
+    exsiting_files.sort()
+    missing_files.sort()
+    return [{"existingFiles": exsiting_files, "missingFiles": missing_files}]
 
 def get_qc_metrics(runID, datasetID):
     minio_client = get_minio_client()

@@ -7,7 +7,7 @@ import Shake from 'react-reveal/Shake'
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery, useResultsAvailableQuery, useFilesInfoQuery} from '../../../../apollo/hooks'
 
 import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
@@ -41,11 +41,25 @@ const VisualizationsComponent = ({
   const {runID} = useCrescentContext()
   const run = useRunDetailsQuery(runID)
   const plots = useResultsAvailableQuery(runID)
-
+  const filesInfoResult = useFilesInfoQuery(runID)
 
   const dispatch = useDispatch()
   const {activeResult, activePlot, plotQueries, sidebarCollapsed, activeSidebarTab} = useResultsPage()
   const [showLogs, setShowLogs] = useState(false)
+  const [filesInfoLogged, setFilesLogged] = useState(false)
+
+  // log files info into the console
+  if(R.and(R.not(R.isNil(filesInfoResult)), R.not(filesInfoLogged))){
+    const {existingFiles, missingFiles} = filesInfoResult[0]
+    const missing_files_txt = missingFiles.reduce((txt, file)=>{
+      return txt.concat(`| +- ${file}\n`)
+    }, "%c+- Missing Files\n%c")
+    const result = existingFiles.reduce((txt, file)=>{
+      return txt.concat(`| +- ${file}\n`)
+    }, missing_files_txt.concat("%c+- Existing Files\n%c"))
+    console.log(result, "font-weight: bold", "color: red", "font-weight: bold", "color: green")
+    setFilesLogged(true)
+  }
 
   if (R.any(R.isNil, [run, plots])) {
     return null

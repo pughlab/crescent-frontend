@@ -14,6 +14,7 @@ from get_data.get_others import (
     get_diff_expression,
     get_groups,
     get_plots,
+    get_files_info,
     get_qc_metrics,
     get_top_expressed_data,
     total_size
@@ -25,6 +26,7 @@ from schema.dropdown_form import DropdownForm
 from schema.heatmap import Heatmap
 from schema.opacity import OpacityData
 from schema.plots import Plot
+from schema.files_info import FilesInfo
 from schema.qc_metrics import QCMetrics
 from schema.qc_scatter import QCScatter
 from schema.qc_violin import QCViolinData
@@ -139,4 +141,9 @@ class Query(ObjectType):
     @staticmethod
     def resolve_violin(parent, info, feature, group, runID, datasetID):
         return get_violin_data(feature, group, runID, datasetID)
+    
+    files_info = List(FilesInfo, runID=ID())
+    @staticmethod
+    def resolve_files_info(parent, info, runID):
+        return get_files_info(runID)
     
