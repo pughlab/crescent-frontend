@@ -8,6 +8,7 @@ import * as RA from 'ramda-adjunct'
 import Logo from '../login/logo.jpg'
 
 import InfoModal from '../info/InfoModal'
+import ReportBugModal from '../info/ReportBugModal'
 import LoginModal from '../login/LoginModal'
 
 import ProjectHeader from './ProjectHeader'
@@ -70,7 +71,8 @@ const MenuComponent = ({
           }
         </Button.Group>
       </Grid.Column>
-      <Grid.Column width={12} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
+      <Grid.Column width={1}/>
+      <Grid.Column width={10} verticalAlign='middle' textAlign='center' style={{padding: 0}}>
       {
         isCurrentView('projects') ?
           <Header
@@ -84,9 +86,14 @@ const MenuComponent = ({
         : null
       }
       </Grid.Column>
-      <Grid.Column width={2} verticalAlign='middle'>
+      <Grid.Column width={2} verticalAlign='middle' style={{padding: 0}}>
         <Button.Group fluid widths={2} size='mini'>
+          <ReportBugModal />
           <InfoModal />
+        </Button.Group>
+      </Grid.Column>
+      <Grid.Column width={1} verticalAlign='middle' style={{padding: 0}}>
+        <Button.Group fluid widths={2} size='mini'>
           <LoginModal />
         </Button.Group>
       </Grid.Column>
