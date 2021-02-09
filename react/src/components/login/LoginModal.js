@@ -29,10 +29,15 @@ const LoginModal = ({
     <>
     <Popup inverted size='large'
       trigger={
-        <Button color='grey' inverted basic icon size='large'
+        <Button color='grey' basic inverted icon size='large' 
           onClick={() => setOpen(!open)}
         >
-          <Icon color='black' size='big' name='user circle' />
+          <Header>
+            {/* <Icon color='black' size='big' name='user circle' /> */}
+            <Header.Content color='black' size='huge'>
+              {R.prop('name', user)}
+            </Header.Content>
+          </Header>
         </Button>
       }
     >
