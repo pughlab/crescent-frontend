@@ -29,7 +29,7 @@ const ProjectSearchInput = ({
 
   
   return (
-    <Fade down appear={true} spy={activeProjectKind}>
+    // <Fade down appear={true} spy={activeProjectKind}>
     <Segment attached='bottom' as={Segment.Group} verticalAlign='middle'>
       <Segment>
         <Input fluid
@@ -96,7 +96,7 @@ const ProjectSearchInput = ({
         </Grid.Column>
       </Segment>
     </Segment>
-    </Fade>
+    // </Fade>
   )
 }
 
