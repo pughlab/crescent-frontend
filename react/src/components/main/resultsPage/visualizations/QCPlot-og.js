@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
 import { Loader, Segment, Header, Icon } from 'semantic-ui-react'
 
 import {ClimbingBoxLoader} from 'react-spinners'

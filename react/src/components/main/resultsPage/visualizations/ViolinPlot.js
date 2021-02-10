@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
 import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'

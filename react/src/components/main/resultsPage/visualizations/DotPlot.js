@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
 import { Image, Container, Header, Segment, Dimmer, Icon, Popup, Dropdown, Grid } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
