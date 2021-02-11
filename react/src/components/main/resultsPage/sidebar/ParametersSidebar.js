@@ -7,7 +7,7 @@ import Fade from 'react-reveal/Fade'
 
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks/run'
 
 import {setActivePipelineStep} from '../../../../redux/actions/resultsPage'
 

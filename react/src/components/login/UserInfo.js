@@ -14,7 +14,7 @@ import {setUser} from '../../redux/actions/context'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../redux/hooks'
-import {useUserQuery} from '../../apollo/hooks'
+import {useUserQuery} from '../../apollo/hooks/user'
 
 
 const UserInfo = ({

@@ -8,7 +8,7 @@ import * as RA from 'ramda-adjunct'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery } from '../../../../apollo/hooks'
+import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery } from '../../../../apollo/hooks/results'
 import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedDiffExpression } from '../../../../redux/actions/resultsPage'
 
 const DotPlotVisualizationMenu = ({

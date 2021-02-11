@@ -8,11 +8,10 @@ import SidebarComponent from './sidebar'
 import ParametersComponent from './parameters'
 import VisualizationsComponent from './visualizations'
 
-import {useResultsPage} from '../../../redux/hooks'
 import {resetResultsPage, setActiveSidebarTab} from '../../../redux/actions/resultsPage'
 import {useCrescentContext} from '../../../redux/hooks'
 import {useDispatch} from 'react-redux'
-import {useRunDetailsQuery} from '../../../apollo/hooks'
+import {useRunDetailsQuery} from '../../../apollo/hooks/run'
 
 import Fade from 'react-reveal/Fade'
 

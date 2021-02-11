@@ -5,7 +5,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useCrescentContext} from '../../../../redux/hooks'
-import {useToolParameterQuery, useRunDetailsQuery} from '../../../../apollo/hooks'
+import {useToolParameterQuery, useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
 import {
   IntegerParameterInput,

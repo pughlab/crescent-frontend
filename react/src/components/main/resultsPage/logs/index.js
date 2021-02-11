@@ -6,8 +6,7 @@ import Shake from 'react-reveal/Shake'
 
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
-import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
 
 import Logs from './Logs'

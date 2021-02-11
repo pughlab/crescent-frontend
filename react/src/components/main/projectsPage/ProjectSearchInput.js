@@ -7,7 +7,7 @@ import {useDispatch} from 'react-redux'
 import {useProjectsPage} from '../../../redux/hooks'
 import {setSearchFilter, setTissueFilter, setOncotreeFilter} from '../../../redux/actions/projectsPage'
 
-import {useOncotreeQuery} from '../../../apollo/hooks'
+import {useOncotreeQuery} from '../../../apollo/hooks/dataset'
 
 import Fade from 'react-reveal/Fade'
 

@@ -8,7 +8,7 @@ import {Header, Card, Segment, Icon, Transition} from 'semantic-ui-react'
 import RunCard from './RunCard'
 
 import {useCrescentContext, useRunsPage} from '../../../../redux/hooks'
-import {useProjectRunsQuery} from '../../../../apollo/hooks'
+import {useProjectRunsQuery} from '../../../../apollo/hooks/project'
 
 const ProjectRunsList = () => {
   const {projectID} = useCrescentContext()

@@ -4,7 +4,7 @@ import * as R from 'ramda'
 import {Header, Popup, Message, Label, Divider} from 'semantic-ui-react'
 
 import {useCrescentContext} from '../../redux/hooks'
-import {useRunDetailsQuery} from '../../apollo/hooks'
+import {useRunDetailsQuery} from '../../apollo/hooks/run'
 
 import moment from 'moment'
 

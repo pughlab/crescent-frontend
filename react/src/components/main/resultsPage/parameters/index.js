@@ -7,7 +7,7 @@ import PipelineParameter from './PipelineParameter'
 import QualityControlParametersComponent from './QualityControl'
 
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks/run'
 
 
 import Shake from 'react-reveal/Shake'

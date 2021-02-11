@@ -11,7 +11,7 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
-import {useQCScatterQuery} from '../../../../apollo/hooks'
+import {useQCScatterQuery} from '../../../../apollo/hooks/results'
 
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
  

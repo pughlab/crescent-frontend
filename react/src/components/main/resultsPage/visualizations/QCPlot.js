@@ -10,7 +10,7 @@ import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useRunDatasetsQuery} from '../../../../apollo/hooks'
+import {useRunDatasetsQuery} from '../../../../apollo/hooks/run'
 
 
 import QCViolinPlot from './QCViolinPlot'

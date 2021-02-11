@@ -8,10 +8,9 @@ import * as R_ from 'ramda-extension'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useRunDatasetsQuery, useQCAvailableQuery, useQCMetricsQuery} from '../../../../apollo/hooks'
 import {setSelectedQC, setSelectedQCDataset} from '../../../../redux/actions/resultsPage'
-
-import {useRunDatasetsDropdownQuery} from '../../../../apollo/hooks/useRunDatasetsQuery'
+import {useQCAvailableQuery, useQCMetricsQuery} from '../../../../apollo/hooks/results'
+import {useRunDatasetsDropdownQuery} from '../../../../apollo/hooks/run/useRunDatasetsQuery'
 
 const QualityControlMenu = ({
   

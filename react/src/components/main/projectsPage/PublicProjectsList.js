@@ -9,7 +9,7 @@ import {ClimbingBoxLoader} from 'react-spinners'
 
 import Fuse from 'fuse.js'
 
-import {useCuratedProjectsQuery} from '../../../apollo/hooks'
+import {useCuratedProjectsQuery} from '../../../apollo/hooks/project'
 import {useProjectsPage} from '../../../redux/hooks'
 
 import ProjectCard from './ProjectCard'

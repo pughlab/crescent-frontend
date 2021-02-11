@@ -10,10 +10,8 @@ import {ClimbingBoxLoader} from 'react-spinners'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {useDispatch} from 'react-redux'
-import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useQCViolinQuery} from '../../../../apollo/hooks'
+import {useQCViolinQuery} from '../../../../apollo/hooks/results'
 
 const QCViolinPlot = ({
   runID,

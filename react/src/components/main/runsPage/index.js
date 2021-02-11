@@ -20,7 +20,7 @@ import {Segment, Container, Button, Divider, Header, Popup, Label, Grid} from 's
 
 import Fade from 'react-reveal/Fade'
 
-import {useProjectDetailsQuery} from '../../../apollo/hooks'
+import {useProjectDetailsQuery} from '../../../apollo/hooks/project'
 import {useCrescentContext} from '../../../redux/hooks'
 
 import {useDispatch} from 'react-redux'

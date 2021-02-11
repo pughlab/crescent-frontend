@@ -6,7 +6,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useRunDetailsQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
 
 const DownloadResultsButton = ({

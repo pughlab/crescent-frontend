@@ -6,7 +6,8 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useResultsAvailableQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
+import {useResultsAvailableQuery} from '../../../../apollo/hooks/results'
 import {setActiveResult, addPlot, setActivePlot} from '../../../../redux/actions/resultsPage'
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'

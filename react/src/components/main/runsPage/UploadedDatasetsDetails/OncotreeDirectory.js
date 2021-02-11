@@ -7,8 +7,7 @@ import * as R_ from 'ramda-extension'
 
 import Fade from 'react-reveal/Fade'
 
-import {useProjectDetailsQuery, useOncotreeQuery, useOncotreeSunburstQuery, useTagDatasetMutation} from '../../../../apollo/hooks'
-import {useCrescentContext} from '../../../../redux/hooks'
+import {useOncotreeSunburstQuery} from '../../../../apollo/hooks/dataset'
 
 import Fuse from 'fuse.js'
 
