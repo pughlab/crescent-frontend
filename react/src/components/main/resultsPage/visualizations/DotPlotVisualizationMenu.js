@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
 import { Button, Form, Divider, Segment, Popup, Label } from 'semantic-ui-react'
 
 import * as R from 'ramda'
@@ -9,7 +8,7 @@ import * as RA from 'ramda-adjunct'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery } from '../../../../apollo/hooks'
+import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery } from '../../../../apollo/hooks/results'
 import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedDiffExpression } from '../../../../redux/actions/resultsPage'
 
 const DotPlotVisualizationMenu = ({

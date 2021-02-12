@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
 import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
@@ -14,8 +13,7 @@ import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useViolinQuery} from '../../../../apollo/hooks'
-import {setSelectedQC} from '../../../../redux/actions/resultsPage'
+import {useViolinQuery} from '../../../../apollo/hooks/results'
 
 const ViolinPlot = ({
   plotQueryIndex

@@ -9,8 +9,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 
-import {useProjectDetailsQuery, useOncotreeQuery, useOncotreeSunburstQuery, useTagDatasetMutation} from '../../../../apollo/hooks'
-import {useCrescentContext} from '../../../../redux/hooks'
+import {useOncotreeSunburstQuery} from '../../../../apollo/hooks/dataset'
 
 // https://github.com/uber/react-vis/blob/premodern/showcase/sunbursts/basic-sunburst.js
 function getKeyPath(node) {

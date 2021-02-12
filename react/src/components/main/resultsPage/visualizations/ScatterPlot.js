@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
 import { Image, Container, Header, Segment, Dimmer } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import 'rc-slider/assets/index.css';
@@ -14,7 +13,7 @@ import * as R from 'ramda'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery, useNumericGroupsQuery} from '../../../../apollo/hooks'
+import {useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery} from '../../../../apollo/hooks/results'
 import { setSelectedExpRange } from '../../../../redux/actions/resultsPage'
 
 const violet = '#6435c9'

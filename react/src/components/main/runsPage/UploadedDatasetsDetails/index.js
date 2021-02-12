@@ -2,13 +2,12 @@ import React, {useState, useEffect, useReducer} from 'react';
 
 import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Menu, Form, Popup} from 'semantic-ui-react'
 
-import {Sunburst} from 'react-vis'
-
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {PulseLoader} from 'react-spinners'
 
-import {useProjectDetailsQuery, useOncotreeQuery, useOncotreeSunburstQuery, useTagDatasetMutation} from '../../../../apollo/hooks'
+import {useProjectDetailsQuery} from '../../../../apollo/hooks/project'
+import {useOncotreeQuery, useTagDatasetMutation} from '../../../../apollo/hooks/dataset'
 import {useCrescentContext} from '../../../../redux/hooks'
 
 import OncotreeSunburst from './OncotreeSunburst'

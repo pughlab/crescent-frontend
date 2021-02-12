@@ -7,7 +7,7 @@ import {useDropzone} from 'react-dropzone'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
-import {useUploadDatasetMetadataMutation} from '../../../../apollo/hooks'
+import {useUploadDatasetMetadataMutation} from '../../../../apollo/hooks/dataset'
 
 export default function UploadMetadataButton({
   datasetID

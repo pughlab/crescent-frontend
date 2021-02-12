@@ -10,7 +10,7 @@ import RegisterForm from './RegisterForm'
 import UserInfo from './UserInfo'
 
 import {useCrescentContext} from '../../redux/hooks'
-import {useUserQuery} from '../../apollo/hooks'
+import {useUserQuery} from '../../apollo/hooks/user'
 
 
 const LoginModal = ({

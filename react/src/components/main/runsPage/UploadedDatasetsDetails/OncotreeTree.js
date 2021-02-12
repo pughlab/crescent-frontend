@@ -5,8 +5,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 
-import {useProjectDetailsQuery, useOncotreeQuery, useOncotreeSunburstQuery, useTagDatasetMutation} from '../../../../apollo/hooks'
-import {useCrescentContext} from '../../../../redux/hooks'
+import {useOncotreeSunburstQuery} from '../../../../apollo/hooks/dataset'
 
 import Tree from 'react-tree-graph'
 

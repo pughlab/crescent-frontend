@@ -7,7 +7,7 @@ import {Divider, Menu, Segment, List, Popup, Grid, Button, Header, Icon, Message
 
 import PipelineParameter from './PipelineParameter'
 
-import {useRunDatasetsQuery, useToolStepsQuery, useRunParametersDownloadUploadMutation} from '../../../../apollo/hooks'
+import {useRunDatasetsQuery, useToolStepsQuery, useRunParametersDownloadUploadMutation} from '../../../../apollo/hooks/run'
 import {useCrescentContext} from '../../../../redux/hooks'
 
 import {useDropzone} from 'react-dropzone'

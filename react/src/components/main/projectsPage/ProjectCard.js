@@ -15,7 +15,7 @@ import Marquee from 'react-marquee'
 
 import {useDispatch} from 'react-redux'
 import {setProject} from '../../../redux/actions/context'
-import {useProjectDetailsQuery} from '../../../apollo/hooks'
+import {useProjectDetailsQuery} from '../../../apollo/hooks/project'
 
 const ProjectCard = ({
   // Prop

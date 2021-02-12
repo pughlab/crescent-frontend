@@ -5,7 +5,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useCancelRunMutation} from '../../../../apollo/hooks'
+import {useCancelRunMutation} from '../../../../apollo/hooks/run'
 
 const CancelRunButton = ({}) => {
 

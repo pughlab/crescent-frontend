@@ -5,7 +5,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useUpdateRunParameterMutation} from '../../../../apollo/hooks'
+import {useRunDetailsQuery, useUpdateRunParameterMutation} from '../../../../apollo/hooks/run'
 
 // Button to reset whatever input to its default value
 const ResetToDefaultValueButton = ({

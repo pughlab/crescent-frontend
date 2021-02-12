@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
-import withRedux from '../../../../redux/hoc'
 import { Image, Container, Header, Segment, Dimmer, Icon, Popup, Dropdown, Grid } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
@@ -14,7 +13,7 @@ import * as R from 'ramda'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useResultsAvailableQuery, useDotPlotQuery } from '../../../../apollo/hooks'
+import { useResultsAvailableQuery, useDotPlotQuery } from '../../../../apollo/hooks/results'
 import { addSelectedFeature, setSelectedScaleBy, setSelectedExpRange } from '../../../../redux/actions/resultsPage'
 
 // cache dot plot data in form of { "gene": plotlyObj }

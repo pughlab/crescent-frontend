@@ -12,7 +12,7 @@ import DownloadResultsButton from './DownloadResultsButton'
 
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery} from '../../../../apollo/hooks'
+import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
 const SidebarComponent = ({

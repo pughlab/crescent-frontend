@@ -5,10 +5,8 @@ import {Container, Card, Divider, Button, Header, Icon, Popup, Modal, Dropdown, 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import filesize from 'filesize'
-
 import {useCrescentContext, useRunsPage} from '../../../redux/hooks'
-import {useProjectRunsQuery} from '../../../apollo/hooks'
+import {useProjectRunsQuery} from '../../../apollo/hooks/project'
 import {useDispatch} from 'react-redux'
 import {setActiveRunsFilter} from '../../../redux/actions/runsPage'
 

@@ -6,19 +6,8 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import { useDispatch } from 'react-redux'
-import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
-import { useRunDetailsQuery, useSubmitRunMutation } from '../../../../apollo/hooks'
-import { setIsSubmitted } from '../../../../redux/actions/resultsPage'
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
-
-import { queryIsNotNil } from '../../../../utils'
-import useRunLogsQuery from '../../../../apollo/hooks/useRunLogsQuery';
-
-import Fade from 'react-reveal/Fade';
-
-
+import {useCrescentContext} from '../../../../redux/hooks'
+import {useRunLogsQuery} from '../../../../apollo/hooks/run'
 
 const Logs = ({
 }) => {

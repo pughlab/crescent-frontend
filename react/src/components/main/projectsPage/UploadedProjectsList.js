@@ -5,7 +5,7 @@ import * as RA from 'ramda-adjunct'
 
 import {Form, Card, Header, Transition, Button, Container, Modal, Label, Divider, Icon, Image, Popup, Segment} from 'semantic-ui-react'
 
-import {useUserProjectsQuery} from '../../../apollo/hooks'
+import {useUserProjectsQuery} from '../../../apollo/hooks/user'
 import {useCrescentContext, useProjectsPage} from '../../../redux/hooks'
 
 import ProjectCard from './ProjectCard'

@@ -7,7 +7,7 @@ import Shake from 'react-reveal/Shake'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useRunDatasetsQuery} from '../../../../apollo/hooks'
+import {useRunDatasetsQuery} from '../../../../apollo/hooks/run'
 
 export default function CrescentPlotCaption ({
   plotQueryIndex
