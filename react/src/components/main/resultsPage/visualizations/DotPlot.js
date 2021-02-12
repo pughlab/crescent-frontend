@@ -10,11 +10,7 @@ import Shake from 'react-reveal/Shake'
 
 import * as R from 'ramda'
 
-import { useDispatch } from 'react-redux'
-import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
-import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useResultsAvailableQuery, useDotPlotQuery } from '../../../../apollo/hooks/results'
-import { addSelectedFeature, setSelectedScaleBy, setSelectedExpRange } from '../../../../redux/actions/resultsPage'
+import { useDotPlotVisualization } from '../../../../apollo/hooks/visualizations'
 
 // cache dot plot data in form of { "gene": plotlyObj }
 let dotPlotData = {}
@@ -27,65 +23,18 @@ const grey = '#a1a1a2'
 const DotPlot = ({
   plotQueryIndex
 }) => {
-  const { runID } = useCrescentContext()
+ 
+  const { plotData, status, reduxStates, reduxActions} = useDotPlotVisualization(plotQueryIndex, dotPlotData)
+  const { dotPlot, plotName, possibleMaxExp } = plotData
+  const { selectedExpRange, selectedScaleBy, sidebarCollapsed } = reduxStates
+  const { dispatch, setSelectedExpRange, setSelectedScaleBy } = reduxActions
 
-  const dispatch = useDispatch()
-  const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression, selectedScaleBy, selectedExpRange } = useResultsPagePlotQuery(plotQueryIndex)
-  const { sidebarCollapsed } = useResultsPage()
-
-  const plots = useResultsAvailableQuery(runID)
-  const [resetSliderValues, setResetSliderValues] = useState(true)
-
-  let dotPlot = [] //list of dot plot plotly object
-  let queryGenes = [] //list of genes to send along the query
-
-  // for all the selected genes, if cached and in the selected group then add to dotPlot, 
-  // else need to include in query
-  R.forEach((gene) => {
-    if (R.includes(gene, Object.keys(dotPlotData)) 
-      && dotPlotData[gene]["group"] === selectedGroup
-      && dotPlotData[gene]["scaleby"] === selectedScaleBy
-      && selectedScaleBy === "gene") {
-      dotPlot = R.append(dotPlotData[gene], dotPlot)
-    } else {
-      queryGenes = R.append(gene, queryGenes)
-    }
-  }, selectedFeatures)
-  const queryResult = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange)
-  const result = queryResult === null ? [] : queryResult.filter(trace => trace["group"] === selectedGroup && trace["scaleby"] === selectedScaleBy)
-  dotPlot = R.concat(dotPlot, result)
-
-
-  useEffect(() => {
-    if((R.not(R.isNil(queryResult) || R.isEmpty(queryResult))) && resetSliderValues){
-      const initialRange = queryResult[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
-      if(R.not(R.equals(selectedExpRange, initialRange))){
-        dispatch(setSelectedExpRange({value: initialRange}))
-        setResetSliderValues(false)
-      }
-    }
-  }, [queryResult])
-
-  useEffect(() => { // when selected features change, reset the default slider value
-    setResetSliderValues(true)
-  }, [selectedFeatures])
-
-  useEffect(() => { // when sidebarCollapsed changes, the selectedFeatures will get reset, 
-                    // so need to set state to false
-    setResetSliderValues(false)
-  }, [sidebarCollapsed])
-  
-  // const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  // const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  // const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression)
-  // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
-
-  if (R.any(R.isNil, [plots])) {
+  if (R.equals(status, "unavailable")) {
     return null
   }
 
   //plot is rendering
-  if (R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot))) {
+  if (R.equals(status, "loading")) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
@@ -94,7 +43,7 @@ const DotPlot = ({
       </Segment>)
   }
   //if no feature is selected, ask the user to select one 
-  if (R.isEmpty(selectedFeatures)) {
+  if (R.equals(status, "selecting")) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Shake forever duration={10000}>
@@ -106,7 +55,6 @@ const DotPlot = ({
       </Segment>
     )
   }
-  const isLoading = false
 
   // cache plot data to dotPlotData
   // cannot cache if scaleBy is "matrix" because we need to recalculate the max avg exp
@@ -115,20 +63,6 @@ const DotPlot = ({
       dotPlotData[trace.x[0]] = trace
     }
   }, dotPlot)
-
-  // determine proper name of active plot
-  const currentScatterPlotType = R.compose(
-    R.prop('label'),
-    R.find(R.propEq('result', activeResult)),
-  )(plots)
-
-  const addColorScale = (data) => {
-    if (R.not(R.isEmpty(data))) {
-      data[0]["marker"]["colorscale"] = [[0, '#fbf4f5'], [1, '#f5527b']];
-      data[0]["marker"]["showscale"] = true;
-    }
-    return data
-  }
 
   var sizeLegend = [{
     x: [1, 2, 3, 4, 5],
@@ -144,9 +78,7 @@ const DotPlot = ({
   
   // stringify y values. (When there's only one y value, 
   // if the value is a number, there will be a rendering error)
-  dotPlot = dotPlot.map(trace => {
-    return {...trace, y: trace.y.map(yValue => yValue + " ")}
-  })
+  const stringifyYValues = dotPlot => dotPlot.map(trace => ({...trace, y: trace.y.map(yValue => yValue + " ")}))
 
   // make the plot smaller when there's less groups
   let plotHeight = "85%"
@@ -154,12 +86,9 @@ const DotPlot = ({
     plotHeight = "60%"
   }
 
-  let possibleMaxExp = 100
-  if(R.not(R.isEmpty(result))){
-    possibleMaxExp = Math.ceil(result[0]["globalmax"]*10)/10
-  }
   const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
   const getColor = () => selectedScaleBy === "gene" ? grey : violet
+  
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
     // <Dimmer active={isLoading} inverted>
@@ -167,17 +96,7 @@ const DotPlot = ({
     // </Dimmer>
     // <Segment style={{height: '100%'}}>
     <>
-      <Header textAlign='center' content={currentScatterPlotType} />
-      {/* <Header textAlign='center'>
-        {currentScatterPlotType}
-        <Popup
-          content="Dot plot can be used to compare expression between different genes and cluster groups. Each dot has 2 properties: opacity and size. Size represents the precentage of cells expressed a specific gene in a cluster group. The opacity shows the average gene expression across the cluster group."
-          position="bottom center"
-          wide
-          trigger={<Icon color="yellow" size="mini" name='info circle' style={{marginLeft: "10px", fontSize: "1em" }}/>}
-          
-        />
-      </Header> */}
+      <Header textAlign='center' content={plotName} />
       { sidebarCollapsed ||
         (
           <Grid divided='vertically'>
@@ -195,7 +114,7 @@ const DotPlot = ({
               </Grid.Column>
               <Grid.Column verticalAlign="middle" >
                 {
-                  selectedScaleBy === "matrix" ? (
+                  selectedScaleBy === "matrix" && (
                     <>
                     <Header size='small' textAlign="center" style={{margin: 0}}>
                       Gene Expression Range
@@ -216,9 +135,8 @@ const DotPlot = ({
                       onAfterChange={(value) => {dispatch(setSelectedExpRange({ value })); }}
                     />
                     </>
-                  ) : (<></>)
+                  )
                 }
-                
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -245,7 +163,7 @@ const DotPlot = ({
       />
       <Plot
         config={{ showTips: false }}
-        data={dotPlot}
+        data={stringifyYValues(dotPlot)}
         useResizeHandler
         style={{ width: '100%', height: plotHeight }}
         layout={{

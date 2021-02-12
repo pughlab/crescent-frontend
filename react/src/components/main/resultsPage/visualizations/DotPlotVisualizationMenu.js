@@ -122,7 +122,7 @@ const DotPlotVisualizationMenu = ({
           value={selectedGroup}
           options={isActiveResult('dot') ? formatList(categoricalGroups) : formatList(groups)}
           // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
-          onChange={(e, { value }) => dispatch(setSelectedGroup({ value }))}
+          onChange={(e, { value }) => dispatch(setSelectedGroup({ value, plotIndex: activePlot }))}
         />
       </Form.Field>
 
@@ -201,7 +201,8 @@ const DotPlotVisualizationMenu = ({
                 R.groupBy(R.prop('cluster'))
               )(topExpressed)
             }
-          </Segment></>
+          </Segment>
+        </>
       }
     </Form>
   )

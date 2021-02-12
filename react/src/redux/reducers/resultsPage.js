@@ -88,11 +88,11 @@ export default createReducer(
     },
     // for plot
     'resultsPage/setSelectedGroup': (state, payload) => {
-      const {value} = payload
+      const {value, plotIndex} = payload
       const {activePlot} = state
       return R.evolve({
         // selectedGroup: R.always(value)
-        plotQueries: evolveAtIndex({selectedGroup: R.always(value)}, activePlot)
+        plotQueries: evolveAtIndex({selectedGroup: R.always(value)}, plotIndex || activePlot)
       })(state)
     },
     // for plot
