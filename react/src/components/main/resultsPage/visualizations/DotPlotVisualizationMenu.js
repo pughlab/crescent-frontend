@@ -132,24 +132,21 @@ const DotPlotVisualizationMenu = ({
       <Segment size='small' >
         {
           R.map(
-            (feature) => {
-              if (R.equals(feature, "none")) return <></>
-              return (
-                <Button
-                  key={feature}
-                  content={feature}
-                  style={{ margin: '0.25rem' }}
-                  icon='close'
-                  size='tiny'
-                  labelPosition='right'
-                  color='violet'
-                  basic
-                  onClick={() => {
-                    dispatch(removeSelectedFeature({ value: feature }))
-                  }}
-                />
-              )
-            }, (selectedFeatures)
+            feature => (
+              <Button
+                key={feature}
+                content={feature}
+                style={{ margin: '0.25rem' }}
+                icon='close'
+                size='tiny'
+                labelPosition='right'
+                color='violet'
+                basic
+                onClick={() => {
+                  dispatch(removeSelectedFeature({ value: feature }))
+                }}
+              />
+            ), (selectedFeatures)
           )
         }
         <Button
@@ -159,10 +156,7 @@ const DotPlotVisualizationMenu = ({
           size="small"
           color='violet'
           onClick={() => {
-            R.forEach((feature) => {
-              dispatch(removeSelectedFeature({ value: feature }))
-            }, selectedFeatures)
-            dispatch(addSelectedFeature({ value: "none" }))
+            R.forEach((feature) => dispatch(removeSelectedFeature({ value: feature })), selectedFeatures)
           }}
         />
       </Segment>

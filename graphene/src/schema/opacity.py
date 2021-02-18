@@ -100,6 +100,11 @@ class OpacityData(ObjectType):
     def resolve_globalmax(parent, info):
         return parent["globalmax"]
     
+    initialminmax = List(Float)
+    @staticmethod
+    def resolve_initialminmax(parent, info):
+        return parent["initialminmax"]
+    
     hovertemplate = String()
     @staticmethod
     def resolve_hovertemplate(parent, info):

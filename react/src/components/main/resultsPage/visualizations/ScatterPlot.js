@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Plot from 'react-plotly.js'
 import { Image, Container, Header, Segment, Dimmer } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
@@ -36,6 +36,26 @@ const ScatterPlot = ({
   const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange)
   // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
 
+  const [resetSliderValues, setResetSliderValues] = useState(null)
+
+  useEffect(() => {
+    if(R.not(R.isNil(opacity)) && resetSliderValues === selectedFeature){
+      const initialRange = opacity[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
+      if(R.not(R.equals(selectedExpRange, initialRange))){
+        dispatch(setSelectedExpRange({value: initialRange}))
+        setResetSliderValues(null)
+      }
+    }
+  }, [opacity])
+
+  useEffect(() => {
+    setResetSliderValues(selectedFeature)
+  }, [selectedFeature])
+
+  useEffect(() => {
+    setResetSliderValues(null)
+  }, [sidebarCollapsed])
+
   if (R.any(R.isNil, [plots])) {
     return null
   }
@@ -60,7 +80,7 @@ const ScatterPlot = ({
     )
   }
 
-  console.log(scatter)
+  // console.log(scatter)
   // const isSelectedDiffExpressionNumeric = R.includes(selectedGroup)(numericGroups)
   
   
@@ -168,7 +188,7 @@ const ScatterPlot = ({
   // }, [selectedFeature])
 
   const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
-  const globalMax = R.isNil(opacity) || opacity[0]["globalmax"] //the max of 
+  const globalMax = R.isNil(opacity) || opacity[0]["globalmax"] 
 
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>

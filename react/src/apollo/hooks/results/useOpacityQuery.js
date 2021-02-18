@@ -21,6 +21,7 @@ export default function useOpacity(vis, feature, group, runID, datasetID, expRan
         }
         hovertemplate
         globalmax
+        initialminmax
       }
     }
     `, {

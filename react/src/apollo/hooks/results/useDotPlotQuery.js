@@ -25,6 +25,7 @@ export default function useDotPlot(features, group, runID, scaleBy, expRange) {
         group
         scaleby
         globalmax
+        initialminmax
       }
     }
     `, {

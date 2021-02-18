@@ -5,12 +5,12 @@ import loompy
 
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
-from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces
+from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces, calculate_n_th_percentile
 from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
 
 colour_dict = {}
 
-def add_barcode(plotly_obj, barcode, label, opacities, exp_values, global_max):
+def add_barcode(plotly_obj, barcode, label, opacities, exp_values, slider_info):
     """ add a new barcode to the plotly object and add its label group if it doesn't exist yet """
     global colour_dict
     if (label in plotly_obj):
@@ -27,10 +27,11 @@ def add_barcode(plotly_obj, barcode, label, opacities, exp_values, global_max):
                 'opacity': [opacities[barcode]],
                 'color': [colour_dict[label]]
             },
-            "globalmax": global_max,
+            "globalmax": slider_info["global_max"],
+            "initialminmax": slider_info["initial_min_max"]
         }
 
-def add_barcodes(plotly_obj, barcode_values, group, opacities, global_max):
+def add_barcodes(plotly_obj, barcode_values, group, opacities, slider_info):
     # continuous scale, add all barcodes
     colours = ['#2a0d82', '#4f0e90', '#6e129e', '#8b1aaa', '#a625b5', '#c034be', '#d846c5', '#ed5bc8', '#ff72c7']
     gradient = polylinear_gradient(colours,len(barcode_values)+1)['hex']
@@ -43,7 +44,8 @@ def add_barcodes(plotly_obj, barcode_values, group, opacities, global_max):
             'opacity': [], # put marker's opacity here
             'showscale': True
         },
-        "globalmax": global_max,
+        "globalmax": slider_info["global_max"],
+        "initialminmax": slider_info["initial_min_max"]
     }
 
     gradient_iter = 0
@@ -56,7 +58,7 @@ def add_barcodes(plotly_obj, barcode_values, group, opacities, global_max):
 
     plotly_obj["barcodes"] = template_obj
 
-def sort_barcodes(opacities, exp_values, group, paths, minio_client, global_max):
+def sort_barcodes(opacities, exp_values, group, paths, minio_client, slider_info):
     """ given the opacities and expression values for the barcodes, sorts them into the specified groups and returns a plotly object """
     plotly_obj = {}
     
@@ -75,7 +77,7 @@ def sort_barcodes(opacities, exp_values, group, paths, minio_client, global_max)
             for row in groups_tsv[2:]:
                 barcode = str(row[0])
                 label = str(row[label_idx])
-                add_barcode(plotly_obj, barcode, label, opacities, exp_values, global_max)
+                add_barcode(plotly_obj, barcode, label, opacities, exp_values, slider_info)
         elif group_type == 'numeric':
             # colour by gradient
             barcode_values = []
@@ -86,7 +88,7 @@ def sort_barcodes(opacities, exp_values, group, paths, minio_client, global_max)
                 barcode_values.append((str(row[0]), num_value))
             barcode_values = sorted(barcode_values, key=lambda x: x[1])
             barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
-            add_barcodes(plotly_obj, barcode_values, group, opacities, global_max)
+            add_barcodes(plotly_obj, barcode_values, group, opacities, slider_info)
         else:
             return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
     elif (metadata_exists and (group in get_first_line(metadata["bucket"], metadata["object"], minio_client))):
@@ -103,11 +105,11 @@ def sort_barcodes(opacities, exp_values, group, paths, minio_client, global_max)
                 if all_barcodes.pop(barcode, None):
                     # exists in all barcodes, ok to add (skipped otherwise)
                     label = str(row[label_idx])
-                    add_barcode(plotly_obj, barcode, label, opacities, exp_values, global_max)
+                    add_barcode(plotly_obj, barcode, label, opacities, exp_values, slider_info)
             # add remaining barcodes that weren't defined in the metadata file
             for barcode in all_barcodes.keys():
                 label = 'unlabelled'
-                add_barcode(plotly_obj, barcode, label, opacities, exp_values, global_max)
+                add_barcode(plotly_obj, barcode, label, opacities, exp_values, slider_info)
         elif group_type == 'numeric':
             # colour by gradient
             barcode_values = []
@@ -118,7 +120,7 @@ def sort_barcodes(opacities, exp_values, group, paths, minio_client, global_max)
                 barcode_values.append((str(row[0]),num_value))
             barcode_values = sorted(barcode_values, key=lambda x: x[1])
             barcode_values = [(x,int(y)) for x, y in barcode_values] if all_ints else [(x,round(y, 2)) for x, y in barcode_values]
-            add_barcodes(plotly_obj, barcode_values, group, opacities, global_max)
+            add_barcodes(plotly_obj, barcode_values, group, opacities, slider_info)
         else:
             return_error(group + " does not have a valid data type (must be 'group' or 'numeric')")
         pass
@@ -162,8 +164,15 @@ def get_opacity_data(feature, group, runID, datasetID, expRange):
     
     barcode_exp_values = get_barcode_exp_values(feature, paths["normalised_counts"])
     exp_values = dict(zip(barcode_exp_values["barcodes"], barcode_exp_values["exp_values"]))
-    opacities = dict(zip(barcode_exp_values["barcodes"], calculate_opacities(barcode_exp_values["exp_values"], expRange)))
-    plotly_obj = sort_barcodes(opacities, exp_values, group, paths, minio_client, max(barcode_exp_values["exp_values"]))
+    slider_info = {
+        "initial_min_max": [calculate_n_th_percentile(10, list(exp_values.values())), 
+                            calculate_n_th_percentile(90, list(exp_values.values()))],
+        "global_max": max(barcode_exp_values["exp_values"]),
+    }
+    opacities = dict(zip(barcode_exp_values["barcodes"], 
+                calculate_opacities(barcode_exp_values["exp_values"], 
+                slider_info["initial_min_max"] if expRange == [0, 0] else expRange)))
+    plotly_obj = sort_barcodes(opacities, exp_values, group, paths, minio_client, slider_info)
     try:
         sort_traces(plotly_obj)
     except:

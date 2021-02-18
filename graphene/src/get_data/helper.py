@@ -152,3 +152,12 @@ def set_IDs(paths, runID, keys, findDatasetID=False):
         paths_required["normalised_counts"] = paths["normalised_counts"]["prefix"] + runID + paths["normalised_counts"]["suffix"]
     return paths_required
     
+def calculate_n_th_percentile(n, num_list):
+    num_list.sort()
+    index = round(n/100 * (len(num_list)+1))-1
+    if index < 0:
+        return 0
+    elif index > len(num_list)-1:
+        return num_list[len(num_list)-1]
+    else: 
+        return num_list[index]

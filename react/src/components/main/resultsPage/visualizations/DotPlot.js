@@ -35,6 +35,7 @@ const DotPlot = ({
 
   const plots = useResultsAvailableQuery(runID)
   const [addedFeatures, setAddedFeatures] = useState(false)
+  const [resetSliderValues, setResetSliderValues] = useState(true)
 
   let dotPlot = [] //list of dot plot plotly object
   let queryGenes = [] //list of genes to send along the query
@@ -67,6 +68,25 @@ const DotPlot = ({
       }, dotPlot)
     }
   }, [dotPlot])
+
+  useEffect(() => {
+    if((R.not(R.isNil(queryResult) || R.isEmpty(queryResult))) && resetSliderValues){
+      const initialRange = queryResult[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
+      if(R.not(R.equals(selectedExpRange, initialRange))){
+        dispatch(setSelectedExpRange({value: initialRange}))
+        setResetSliderValues(false)
+      }
+    }
+  }, [queryResult])
+
+  useEffect(() => { // when selected features change, reset the default slider value
+    setResetSliderValues(true)
+  }, [selectedFeatures])
+
+  useEffect(() => { // when sidebarCollapsed changes, the selectedFeatures will get reset, 
+                    // so need to set state to false
+    setResetSliderValues(false)
+  }, [sidebarCollapsed])
   
   // const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   // const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
@@ -78,7 +98,7 @@ const DotPlot = ({
   }
 
   //plot is rendering
-  if (R.isNil(queryResult) || (R.not(R.equals(queryGenes, ["none"])) && R.isEmpty(dotPlot) && addedFeatures )) {
+  if (R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot) && addedFeatures)) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
@@ -87,7 +107,7 @@ const DotPlot = ({
       </Segment>)
   }
   //if no feature is selected, ask the user to select one 
-  if (R.equals(selectedFeatures, ["none"])|| R.isEmpty(selectedFeatures)) {
+  if (R.isEmpty(selectedFeatures)) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Shake forever duration={10000}>
@@ -149,11 +169,10 @@ const DotPlot = ({
 
   let possibleMaxExp = 100
   if(R.not(R.isEmpty(result))){
-    possibleMaxExp = Math.ceil(result[0]["globalmax"])
+    possibleMaxExp = Math.ceil(result[0]["globalmax"]*10)/10
   }
   const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
   const getColor = () => selectedScaleBy === "gene" ? grey : violet
-
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
     // <Dimmer active={isLoading} inverted>
@@ -188,24 +207,31 @@ const DotPlot = ({
                 />
               </Grid.Column>
               <Grid.Column verticalAlign="middle" >
-                <Header size='small' textAlign="center" style={{margin: 0}}>
-                  Gene Expression Range
-                </Header>
-                      <SliderWithTooltip
-                        key={`slider-${plotQueryIndex}`}
-                        min={0} 
-                        max={possibleMaxExp}
-                        step={0.1}
-                        marks={{0: 0, [possibleMaxExp]: possibleMaxExp}}
-                        allowCross={false}
-                        disabled={selectedScaleBy === "gene"}
-                        style={{maxWidth: "300px", marginLeft: "20px", marginBottom: "20px",  color: violet}}
-                        trackStyle={[{ backgroundColor: getColor() }]}
-                        handleStyle={[{ backgroundColor: getColor(), border: "none", boxShadow: "none"}, { backgroundColor: getColor(), border: "none", boxShadow: "none" }]}
-                        railStyle={{ backgroundColor: lightViolet }}
-                        defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, possibleMaxExp] : selectedExpRange}
-                        onAfterChange={(value) => {dispatch(setSelectedExpRange({ value })); }}
-                      />
+                {
+                  selectedScaleBy === "matrix" ? (
+                    <>
+                    <Header size='small' textAlign="center" style={{margin: 0}}>
+                      Gene Expression Range
+                    </Header>
+                    <SliderWithTooltip
+                      key={`slider-${plotQueryIndex}`}
+                      min={0} 
+                      max={possibleMaxExp}
+                      step={0.1}
+                      marks={{0: 0, [possibleMaxExp]: possibleMaxExp}}
+                      allowCross={false}
+                      disabled={selectedScaleBy === "gene"}
+                      style={{maxWidth: "300px", marginLeft: "20px", marginBottom: "20px",  color: violet}}
+                      trackStyle={[{ backgroundColor: getColor() }]}
+                      handleStyle={[{ backgroundColor: getColor(), border: "none", boxShadow: "none"}, { backgroundColor: getColor(), border: "none", boxShadow: "none" }]}
+                      railStyle={{ backgroundColor: lightViolet }}
+                      defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, possibleMaxExp] : selectedExpRange}
+                      onAfterChange={(value) => {dispatch(setSelectedExpRange({ value })); }}
+                    />
+                    </>
+                  ) : (<></>)
+                }
+                
               </Grid.Column>
             </Grid.Row>
           </Grid>
