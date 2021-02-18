@@ -34,7 +34,6 @@ const DotPlot = ({
   const { sidebarCollapsed } = useResultsPage()
 
   const plots = useResultsAvailableQuery(runID)
-  const [addedFeatures, setAddedFeatures] = useState(false)
   const [resetSliderValues, setResetSliderValues] = useState(true)
 
   let dotPlot = [] //list of dot plot plotly object
@@ -52,22 +51,10 @@ const DotPlot = ({
       queryGenes = R.append(gene, queryGenes)
     }
   }, selectedFeatures)
-  const queryResult = useDotPlotQuery(R.and(R.isEmpty(queryGenes), addedFeatures) ? ["none"] : queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange)
+  const queryResult = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange)
   const result = queryResult === null ? [] : queryResult.filter(trace => trace["group"] === selectedGroup && trace["scaleby"] === selectedScaleBy)
   dotPlot = R.concat(dotPlot, result)
 
-  useEffect(() => {
-    //add the default features to selectedFeatures when the plot first renders and selectedFeatures is empty
-    if (R.and(R.not(R.isEmpty(dotPlot)), R.not(addedFeatures))) {
-      R.map((trace) => {
-        const value = trace.x[0]
-        if (R.not(R.includes(value, selectedFeatures))) {
-          dispatch(addSelectedFeature({ value }))
-        }
-        setAddedFeatures(true)
-      }, dotPlot)
-    }
-  }, [dotPlot])
 
   useEffect(() => {
     if((R.not(R.isNil(queryResult) || R.isEmpty(queryResult))) && resetSliderValues){
@@ -98,7 +85,7 @@ const DotPlot = ({
   }
 
   //plot is rendering
-  if (R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot) && addedFeatures)) {
+  if (R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot))) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
