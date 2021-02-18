@@ -44,7 +44,7 @@ const ViolinPlot = ({
         <Shake forever duration={10000}>
         <Header textAlign='center' icon>
           <Icon name='right arrow' />
-          Select a feature to initialize violin plot
+          Select a gene to initialize violin plot
         </Header>  
         </Shake>      
       </Segment>
@@ -73,14 +73,14 @@ const ViolinPlot = ({
     //   // <Segment basic placeholder style={{height: '100%'}}>
     //   //   <Header icon>
     //   //     <Icon name='right arrow' />
-    //   //     Select a feature to initialize violin plot
+    //   //     Select a gene to initialize violin plot
     //   //   </Header>
     //   // </Segment>
     //   <Segment style={{height: '100%'}} placeholder>
     //     <Shake forever duration={10000}>
     //     <Header textAlign='center' icon>
     //       <Icon name='right arrow' />
-    //       Select a feature to initialize violin plot
+    //       Select a gene to initialize violin plot
     //     </Header>  
     //     </Shake>      
     //   </Segment>
