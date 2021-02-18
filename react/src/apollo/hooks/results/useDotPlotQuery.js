@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
@@ -7,7 +7,7 @@ import {grapheneClient as client} from '../../clients'
 
 export default function useDotPlot(features, group, runID, scaleBy, expRange) {
   const [dotPlot, setDotPlot] = useState(null)
-  const { loading, data, error } = useQuery(gql`
+  const { loading, data, error, refetch } = useQuery(gql`
     query DotPlot($features: [String], $group: String, $runID: ID, $scaleBy: String, $expRange: [Float]) {
       dotPlot(features: $features, group: $group, runID: $runID, scaleBy:$scaleBy, expRange: $expRange) {
         type
@@ -39,6 +39,13 @@ export default function useDotPlot(features, group, runID, scaleBy, expRange) {
     },
     // skip: R.isNil(group)
   })
+
+  useEffect(() => {
+    if (error) {
+      refetch()
+    }
+  }, [error])
+
   return dotPlot
 }
 
