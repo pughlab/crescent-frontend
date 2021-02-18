@@ -191,7 +191,7 @@ def get_trace(cluster_dict, feature, group, scale_by, global_max_avg_exp, exp_ra
 def get_top_ten_expressed_genes(runID, minio_client):
     
     """ given a runID get the top 10 expressed genes + their avg log fold change and p-value """
-    paths = get_paths(runID, ["top_expressed"], datasetID="all")
+    paths = get_paths(runID, ["top_expressed"], findDatasetID=False)
     paths["top_expressed"] = set_name_multi(paths["top_expressed"], "all", "top_expressed")
 
     result = []
@@ -226,7 +226,7 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], datasetID="all")
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=False)
     # paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()
