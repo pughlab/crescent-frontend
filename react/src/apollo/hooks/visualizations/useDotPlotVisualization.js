@@ -5,15 +5,15 @@ import * as R from 'ramda'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
-import { useResultsAvailableQuery, useDotPlotQuery } from '../../hooks'
-import { addSelectedFeature, setSelectedScaleBy, setSelectedExpRange } from '../../../redux/actions/resultsPage'
+import { useResultsAvailableQuery, useDotPlotQuery } from '../../hooks/results'
+import { setSelectedScaleBy, setSelectedExpRange } from '../../../redux/actions/resultsPage'
 
 export default function useDotPlotVisualization(plotQueryIndex, dotPlotData){
     const { runID } = useCrescentContext()
 
     const dispatch = useDispatch()
     const { activeResult, selectedFeatures, selectedGroup, selectedScaleBy, selectedExpRange } = useResultsPagePlotQuery(plotQueryIndex)
-    const { sidebarCollapsed } = useResultsPage()
+    const { sidebarCollapsed, activePlot } = useResultsPage()
     const plots = useResultsAvailableQuery(runID)
     const [resetSliderValues, setResetSliderValues] = useState(true)    
   
@@ -51,17 +51,16 @@ export default function useDotPlotVisualization(plotQueryIndex, dotPlotData){
       setResetSliderValues(true)
     }, [selectedFeatures])
   
-    useEffect(() => { // when sidebarCollapsed changes, the selectedFeatures will get reset, so need to set state to false
+    useEffect(() => { // when sidebarCollapsed/activePlot changes, the selectedFeatures will get reset, so need to set state to false
       setResetSliderValues(false)
-    }, [sidebarCollapsed])
-
+    }, [sidebarCollapsed, activePlot])
 
     let status = "finished" // possible statuses: "finished", "unavailable", "loading", "selecting"
     if (R.any(R.isNil, [plots])) {
         status = "unavailable"
-    }else if (R.isNil(queryResult) || (R.not(R.equals(queryGenes, ["none"])) && R.isEmpty(dotPlot))) {
+    }else if (R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot))) {
         status = "loading"
-    }else if (R.equals(selectedFeatures, ["none"])|| R.isEmpty(selectedFeatures)) {
+    }else if (R.isEmpty(selectedFeatures)) {
         status = "selecting"
     }
 
