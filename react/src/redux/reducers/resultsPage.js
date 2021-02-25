@@ -16,20 +16,16 @@ const initialPlotQuery = {
 
 const initialState = {
   activeSidebarTab: 'parameters', // visualizations
-  activePipelineStep: null,
-  // activeResult: null,
-  // selectedQC: 'Before_After_Filtering',
-  // selectedFeature: null,
-  // selectedGroup: null,
-  // selectedDiffExpression: 'All',
-  // selectedQCDataset: null,
+
+  activeDataAction: null, //inputs data actions in sidebar
+  activePipelineStep: null, // pipeline parameters select in sidebar
 
   sidebarCollapsed: false,
   activePlot: 0,
   plotQueries: [
     initialPlotQuery
     // {
-    //   activeResult: null,
+    //   activeResult: null, //results select in side
     //   selectedQC: 'Before_After_Filtering',
     //   selectedFeature: null,
     //   selectedGroup: null,
@@ -49,6 +45,13 @@ export default createReducer(
       const {sidebarTab} = payload
       return R.evolve({
         activeSidebarTab: R.always(sidebarTab)
+      })(state)
+    },
+
+    'resultsPage/setActiveDataAction': (state, payload) => {
+      const {dataAction} = payload
+      return R.evolve({
+        activeDataAction: R.always(dataAction)
       })(state)
     },
 

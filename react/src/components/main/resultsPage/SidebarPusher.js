@@ -19,6 +19,7 @@ import SidebarComponent from './sidebar'
 import ParametersComponent from './parameters'
 import VisualizationsComponent from './visualizations'
 import LogsComponent from './logs'
+import DataComponent from './data'
 
 import {useResultsPage} from '../../../redux/hooks'
 import {resetResultsPage, toggleSidebarCollapsed} from '../../../redux/actions/resultsPage'
@@ -39,19 +40,19 @@ const ResultsPageSidebarPusher = ({
 
   const stickyRef = useRef()
 
-  // const [showScroll, setShowScroll] = useState(false)
-  // const handleScroll = () => {
-  //   if (!showScroll && window.pageYOffset > 200){
-  //     setShowScroll(true)
-  //   } else if (showScroll && window.pageYOffset <= 200){
-  //     setShowScroll(false)
-  //   }
-  // }
-  // // Resets plot zooming on scroll
-  // useEffect(() => {
-  //   window.addEventListener('scroll', handleScroll)
-  //   return () => window.removeEventListener('scroll', handleScroll)
-  // }, [])
+  const [showScroll, setShowScroll] = useState(false)
+  const handleScroll = () => {
+    if (!showScroll && window.pageYOffset > 200){
+      setShowScroll(true)
+    } else if (showScroll && window.pageYOffset <= 200){
+      setShowScroll(false)
+    }
+  }
+  // Resets plot zooming on scroll
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const activeSidebarTabIs = R.equals(activeSidebarTab)
   return (
@@ -61,7 +62,9 @@ const ResultsPageSidebarPusher = ({
       {
         activeSidebarTabIs('parameters') ? <ParametersComponent />
         : activeSidebarTabIs('visualizations') ? <VisualizationsComponent />
-        : activeSidebarTabIs('logs') && <LogsComponent />
+        : activeSidebarTabIs('logs') ? <LogsComponent /> 
+        : activeSidebarTabIs('data') ? <DataComponent />
+        : null
       }
       </Grid.Column>
 
@@ -98,7 +101,7 @@ const ResultsPageSidebarPusher = ({
         />
 
         <Divider horizontal />
-        {/* {
+        {
           showScroll &&
           <Popup
             position='bottom center'
@@ -117,7 +120,7 @@ const ResultsPageSidebarPusher = ({
             }
             content={'Scroll to top'}
           />
-        } */}
+        }
 
       </Sticky>
 

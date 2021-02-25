@@ -11,7 +11,6 @@ import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks/ru
 
 
 import Shake from 'react-reveal/Shake'
-import Jump from 'react-reveal/Jump'
 
 const ParametersComponent = ({
 

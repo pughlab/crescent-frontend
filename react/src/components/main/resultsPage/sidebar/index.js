@@ -2,10 +2,11 @@ import React from 'react'
 import * as R from 'ramda'
 
 import {Segment, Transition, Button} from 'semantic-ui-react'
-import ParametersSidebar from './ParametersSidebar'
-import VisualizationsSidebar from './VisualizationsSidebar'
-import LogsSidebar from './LogsSidebar'
-import DataSidebar from './DataSidebar'
+
+import ParametersSidebar from '../parameters/ParametersSidebar'
+import VisualizationsSidebar from '../visualizations/VisualizationsSidebar'
+import LogsSidebar from '../logs/LogsSidebar'
+import DataSidebar from '../data/DataSidebar'
 
 import SubmitRunButton from './SubmitRunButton'
 import CancelRunButton from './CancelRunButton'
