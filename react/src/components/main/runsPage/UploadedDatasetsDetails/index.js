@@ -59,7 +59,7 @@ const TagOncotreeModal = ({
             <Label>
               {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
               {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
-              <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} />
+              {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
             </Label>
           }
         />
@@ -78,13 +78,13 @@ const TagOncotreeModal = ({
           <Menu.Item content='Tag Oncotree Tissue'
             active={R.equals(activeMenu, 'oncotree')} onClick={() => setActiveMenu('oncotree')}
           />
-          <Menu.Item content='Upload Metadata File'
+          {/* <Menu.Item content='Upload Metadata File'
             active={R.equals(activeMenu, 'metadata')} onClick={() => setActiveMenu('metadata')}
-          />
+          /> */}
         </Menu>
         <Segment attached='bottom'>
         {
-          R.equals(activeMenu, 'oncotree') ?
+          // R.equals(activeMenu, 'oncotree') ?
             <>
             <Divider horizontal>
               Tag <a target="_blank" href='http://oncotree.mskcc.org/' >Oncotree</a> tissue type using menu below
@@ -130,23 +130,23 @@ const TagOncotreeModal = ({
                 </>
             }
             </>
-          : R.equals(activeMenu, 'metadata') ?
-            <>
-            <Divider horizontal>
-              Upload/Replace Metadata for this dataset in this <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-2' >format.</a> 
-            </Divider>
-            {
-            disabledTagging ? 
-              <Segment placeholder>
-                <Header textAlign='center'
-                  content={'You do not have permissions to upload metadata for this dataset'}
-                />
-              </Segment>
-            :
-            <UploadMetadataButton {...{datasetID}} />
-            }
-            </>
-          : null
+          // : R.equals(activeMenu, 'metadata') ?
+          //   <>
+          //   <Divider horizontal>
+          //     Upload/Replace Metadata for this dataset in this <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-2' >format.</a> 
+          //   </Divider>
+          //   {
+          //   disabledTagging ? 
+          //     <Segment placeholder>
+          //       <Header textAlign='center'
+          //         content={'You do not have permissions to upload metadata for this dataset'}
+          //       />
+          //     </Segment>
+          //   :
+          //   <UploadMetadataButton {...{datasetID}} />
+          //   }
+          //   </>
+          // : null
         }
         </Segment>
 

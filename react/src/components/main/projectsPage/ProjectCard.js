@@ -119,7 +119,7 @@ const ProjectCard = ({
                           {name}
                           {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
                           {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
-                          <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} />
+                          {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
                         </Label>
                       ),
                       allDatasets
