@@ -5,6 +5,7 @@ import {Segment, Transition, Button} from 'semantic-ui-react'
 import ParametersSidebar from './ParametersSidebar'
 import VisualizationsSidebar from './VisualizationsSidebar'
 import LogsSidebar from './LogsSidebar'
+import DataSidebar from './DataSidebar'
 
 import SubmitRunButton from './SubmitRunButton'
 import CancelRunButton from './CancelRunButton'
@@ -44,7 +45,12 @@ const SidebarComponent = ({
         } */}
       </Segment>
       <Segment attached>
-        <Button.Group fluid widths={runIsSubmitted ? 3 : 2}>
+        <Button.Group fluid widths={runIsSubmitted ? 4 : 3}>
+          <Button compact content='INPUTS' 
+            color={isActiveSidebarTab('data') ? 'teal' : undefined}
+            active={isActiveSidebarTab('data')}
+            onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'data'}))}
+          />
           <Button compact content='PIPELINE' 
             color={isActiveSidebarTab('parameters') ? 'blue' : undefined}
             active={isActiveSidebarTab('parameters')}
@@ -69,6 +75,7 @@ const SidebarComponent = ({
       <Segment attached>
       {
         R.cond([
+          [R.equals('data'), R.always(<DataSidebar />)],
           [R.equals('parameters'), R.always(<ParametersSidebar />)],
           [R.equals('visualizations'), R.always(<VisualizationsSidebar />)],
           [R.equals('logs'), R.always(<LogsSidebar />)],
