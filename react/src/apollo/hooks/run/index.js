@@ -7,6 +7,8 @@ import useSubmitRunMutation from './useSubmitRunMutation'
 import useRunParametersDownloadUploadMutation from './useRunParametersDownloadUploadMutation'
 import useCancelRunMutation from './useCancelRunMutation'
 import useRunLogsQuery from './useRunLogsQuery'
+import useUploadRunMetadataMutation from './useUploadRunMetadataMutation'
+
 
 export {
   useRunDetailsQuery,
@@ -18,4 +20,5 @@ export {
   useRunParametersDownloadUploadMutation,
   useCancelRunMutation,
   useRunLogsQuery,
+  useUploadRunMetadataMutation,
 }
