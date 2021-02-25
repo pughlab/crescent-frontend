@@ -1,4 +1,5 @@
 const R = require('ramda')
+const RA = require('ramda-adjunct')
 const A = require('axios')
 const fs = require('fs')
 var rimraf = require("rimraf");
@@ -176,6 +177,18 @@ const resolvers = {
       } catch (error) {
         console.log(error)
         return null;
+      }
+    },
+    uploadRunMetadata: async (parent, {runID, metadata}, {Runs, Minio}) => {
+      try {
+        const run = await Runs.findOne({runID})
+        if (RA.isNotNil(run)) {
+          const bucketName = `run-${runID}`
+          await Minio.putUploadIntoBucket(bucketName, metadata, 'metadata.tsv')          
+          return run
+        }
+      } catch(error) {
+        console.log(error)
       }
     }
   },

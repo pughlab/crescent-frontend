@@ -64,6 +64,13 @@ const typeDefs = gql`
     cancelRun(
       runID: ID
     ): String
+    
+    # Add metadata to run
+    uploadRunMetadata(
+      runID: ID!
+      metadata: Upload!
+    ): Run
+    
   }
 `
 
