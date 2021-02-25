@@ -32,7 +32,7 @@ const InfoModal = ({
       {...{open}}
       closeIcon
       onClose={() => setOpen(!open)}
-      closeOnDimmerClick={false}
+      // closeOnDimmerClick={false}
 
     >
       <Modal.Content>
