@@ -10,6 +10,7 @@ import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import Shake from 'react-reveal/Shake'
 
 import UploadRunMetadataButton from './UploadRunMetadataButton'
+import ReferenceDatasets from './ReferenceDatasets'
 
 export default function DataComponent ({
 
@@ -43,7 +44,7 @@ export default function DataComponent ({
   return (
     <Segment style={{height: '100%'}} color='teal'>
     {
-      activeDataActionIs('referenceDatasets') ? 'reference datasets'
+      activeDataActionIs('referenceDatasets') ? <ReferenceDatasets {...{runID}} />
       : activeDataActionIs('runMetadata') ? <UploadRunMetadataButton {...{runID}} />
       : null
     }
