@@ -135,6 +135,7 @@ def label_barcodes(barcode_coords, group, paths, minio_client):
     
     if group_exists(group, groups, minio_client):
         # groups tsv definition supercedes metadata
+        groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
         label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv)
     elif group_exists(group, metadata, minio_client):
         # it's defined in the metadata
