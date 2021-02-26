@@ -13,7 +13,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from get_data.get_client import get_minio_client
 from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces
-from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
+from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists, group_exists
 
 colour_counter = 0
 
@@ -93,12 +93,11 @@ def categorize_barcodes(group, expression_values, paths, minio_client):
     metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
 
     plotly_obj = {}
-    if (group in get_first_line(groups["bucket"], groups["object"], minio_client)):
+    if group_exists(group, groups, minio_client):
         # groups tsv definition supercedes metadata
         label_with_groups(plotly_obj, expression_values, group, 
             get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client))
-    elif (metadata_exists and 
-         (group in get_first_line(metadata["bucket"], metadata["object"], minio_client))):
+    elif group_exists(group, metadata, minio_client):
         # it's defined in the metadata
         label_with_groups(plotly_obj, expression_values, group, 
             get_obj_as_2dlist(metadata["bucket"], metadata["object"], minio_client))
