@@ -22,7 +22,10 @@ const typeDefs = gql`
     wesID: ID
     logs: String
 
+    # Datasets selected from parent project
     datasets: [Dataset]
+    # Datasets selected within a run to act as reference/anchors for CWL
+    referenceDatasets: [Dataset] 
   }
   type Query {
     allRuns: [Run]
@@ -69,6 +72,12 @@ const typeDefs = gql`
     uploadRunMetadata(
       runID: ID!
       metadata: Upload!
+    ): Run
+
+    # Set reference datasets 
+    updateRunReferenceDatasets(
+      runID: ID!
+      datasetIDs: [ID]
     ): Run
     
   }

@@ -176,7 +176,6 @@ const resolvers = {
         }
       } catch (error) {
         console.log(error)
-        return null;
       }
     },
     uploadRunMetadata: async (parent, {runID, metadata}, {Runs, Minio}) => {
@@ -187,6 +186,17 @@ const resolvers = {
           await Minio.putUploadIntoBucket(bucketName, metadata, 'metadata.tsv')          
           return run
         }
+      } catch(error) {
+        console.log(error)
+      }
+    },
+
+    updateRunReferenceDatasets: async (parent, {runID, datasetIDs}, {Runs}) => {
+      try {
+        const run = await Runs.findOne({runID})
+        run.referenceDatasetIDs = datasetIDs
+        await run.save()
+        return run
       } catch(error) {
         console.log(error)
       }
@@ -205,12 +215,20 @@ const resolvers = {
     },
 
     datasets: async({datasetIDs}, variables, {Datasets}) => {
-      return await Datasets.find({
-        datasetID: {
-          $in: datasetIDs
-        }
-      })
+      try {
+        return await Datasets.find({datasetID: {$in: datasetIDs}})
+      } catch(error) {
+        console.log(error)
+      }
     },
+    referenceDatasets: async ({referenceDatasetIDs}, variables, {Datasets}) => {
+      try {
+        return await Datasets.find({datasetID: {$in: referenceDatasetIDs}})
+      } catch(error) {
+        console.log(error)
+      }
+    },
+
     logs: async({runID}, variables, {Docker}) => {
       try {
         let containerID = await Docker.getContainerId(runID);
@@ -372,7 +390,7 @@ const resolvers = {
       });
       
       return completionDate;
-    }
+    },
   }
 }
 

@@ -33,6 +33,10 @@ const RunSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     required: true
   },
+  referenceDatasetIDs: {
+    type: [mongoose.Schema.Types.ObjectId],
+    default: []
+  },
 
   status: {
     type: String,
