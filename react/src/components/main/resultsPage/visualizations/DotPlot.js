@@ -83,16 +83,6 @@ const DotPlot = ({
   if (R.any(R.isNil, [plots])) {
     return null
   }
-
-  //plot is rendering
-  if (R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot))) {
-    return (
-      <Segment basic style={{ height: '100%' }} placeholder>
-        <Tada forever duration={1000}>
-          <Image src={Logo} centered size='medium' />
-        </Tada>
-      </Segment>)
-  }
   //if no feature is selected, ask the user to select one 
   if (R.isEmpty(selectedFeatures)) {
     return (
@@ -105,6 +95,15 @@ const DotPlot = ({
         </Shake>
       </Segment>
     )
+  }
+  //plot is rendering
+  if (R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot))) {
+    return (
+      <Segment basic style={{ height: '100%' }} placeholder>
+        <Tada forever duration={1000}>
+          <Image src={Logo} centered size='medium' />
+        </Tada>
+      </Segment>)
   }
   const isLoading = false
 
