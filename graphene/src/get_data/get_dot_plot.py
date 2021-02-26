@@ -21,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, calculate_n_th_percentile
-from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists
+from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists, group_exists
 from get_data.get_others import get_paths
 
 def get_barcodes(normalised_counts_path, feature_list):
@@ -41,23 +41,47 @@ def get_barcodes(normalised_counts_path, feature_list):
                     zip(barcodes, ds[feature_idx, :]))})
         return feature_barcodes
 
-def group_by_cluster(barcode_exp_dict, minio_client, groups_path, group, runID):
+def categorize_by_group(group, barcode_exp_dict, label_tsv, include_unlabelled = False):
+    """ return a dictionary containing all groups as keys and {barcode: exp} as values  """
+    group_idx = label_tsv[0].index(str(group))
+    group_type = label_tsv[1][group_idx]
+    uncatogorized_barcodes = {key: True for key in barcode_exp_dict.keys()}
+    cluster_dict = {}
+
+    if group_type == 'numeric':
+        return_error(group + " is numeric data, not viewable in dot plots")
+    if group_type != 'group':
+        return_error(group + " does not have a valid data type (must be 'group')")
+
+    for row in label_tsv[2:]:
+        barcode = str(row[0])
+        if(uncatogorized_barcodes.pop(barcode, None)):
+            label = str(row[group_idx])
+            if label not in cluster_dict:
+                cluster_dict[label] = {barcode: barcode_exp_dict[barcode]}
+            else:
+                cluster_dict[label][barcode] = barcode_exp_dict[barcode]
+    if include_unlabelled:
+        cluster_dict["unlabelled"] = {}
+        for barcode in uncatogorized_barcodes:
+            cluster_dict["unlabelled"][barcode] = barcode_exp_dict[barcode]
+        
+    return cluster_dict
+
+def group_barcodes(barcode_exp_dict, minio_client, paths, group, runID):
     """ given all the barcodes for a feature({barcode: exp}), return the barcodes grouped by cluster
     @rtype: {cluster: {barcode: exp}} """
-    barcode_group_list = get_obj_as_2dlist(
-        groups_path["bucket"], groups_path["all"], minio_client)
-    cluster_dict = {}
-    group_header = barcode_group_list[0]
-    group_column_idx = group_header.index(group) if group in group_header else 1
-    for i in range(len(barcode_group_list)):
-        if i > 2: # headers takes up 2 rows
-            line = barcode_group_list[i]
-            cluster = line[group_column_idx]
-            if cluster not in cluster_dict:
-                cluster_dict[cluster] = {line[0]: barcode_exp_dict[line[0]]}
-            else:
-                cluster_dict[cluster][line[0]] = barcode_exp_dict[line[0]]
-    return cluster_dict
+
+    metadata = paths["metadata"]
+    groups = paths["groups"]
+    if(group_exists(group, groups, minio_client)):
+        groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
+        return categorize_by_group(group, barcode_exp_dict, groups_tsv)
+    elif (group_exists(group, metadata, minio_client)):
+        metadata_tsv = get_obj_as_2dlist(metadata["bucket"], metadata["object"], minio_client)
+        return categorize_by_group(group,barcode_exp_dict, metadata_tsv, True)
+    else:
+        return_error(group + " is not an available group in groups.tsv or metadata.tsv")
 
 def to_float(text):
     try:
@@ -195,7 +219,7 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange):
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
     paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=False)
-    # paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
+    paths["groups"] = set_name_multi(paths["groups"], "all", "groups")
 
     minio_client = get_minio_client()
 
@@ -215,15 +239,15 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange):
     avg_exp_list = [] # list of all average expression values
     feature_cluster_dict = {}
     for l in feature_list:
-        cluster_dict = group_by_cluster(
-            l["barcode_exp"], minio_client, paths["groups"], group, runID)
+        cluster_dict = group_barcodes(
+            l["barcode_exp"], minio_client, paths, group, runID)
         feature_cluster_dict[l["feature"]] = cluster_dict  
         for cluster in list(cluster_dict.keys()):
             avg_exp = calculate_avg_exp(cluster_dict[cluster])
             avg_exp_list.append(avg_exp)
     slider_info = {
         "exp_range": expRange,
-        "global_max": max(avg_exp_list),
+        "global_max": 0 if not avg_exp_list else max(avg_exp_list),
         "initial_min_max": [calculate_n_th_percentile(10, avg_exp_list), calculate_n_th_percentile(90, avg_exp_list)]
     }
 
@@ -232,5 +256,5 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange):
         cluster_dict = feature_cluster_dict[feature]
         trace = get_trace(cluster_dict, feature, group, scaleBy, slider_info)
         plotly_obj.append(trace)
-    
+
     return plotly_obj

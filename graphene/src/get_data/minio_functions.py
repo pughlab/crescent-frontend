@@ -83,3 +83,8 @@ def get_size(bucket, minio_client):
     for objct in objects:
         total_size += objct.size
     return total_size
+
+def group_exists(group, file, minio_client):
+    """ return True if the specified tsv file exists and group in the header, otherwise return False """
+    file_exists = object_exists(file["bucket"], file["object"], minio_client)
+    return file_exists and group in get_first_line(file["bucket"], file["object"], minio_client)
