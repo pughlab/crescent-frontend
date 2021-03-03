@@ -64,6 +64,16 @@ def makeMultiJob(runId: str, run: dict):
     if len(run['parameters']['expression']['dge_comparisons']) > 1:
         dge = ",".join(run['parameters']['expression']['dge_comparisons'])
 
+    # Parse reference dataset IDs
+    ref_ds = []
+    for id in run['referenceDatasetIDs']:
+        ref_ds.append("dataset-" + str(id))
+
+    if not ref_ds:
+        refDatasetIDs = "NA"
+    else:
+        refDatasetIDs = ",".join(ref_ds)
+
     # Add paths to pull from minio
     minioInputPaths = []
     for id in run['datasetIDs']:
@@ -74,7 +84,7 @@ def makeMultiJob(runId: str, run: dict):
     # Filling in structure
     job = {
         "anchors_function": run['parameters']['integration']['anchors_function'],
-        # "reference_datasets": ref,
+        "reference_datasets": refDatasetIDs,
         "resolution": run['parameters']['clustering']['resolution'],
         "project_id": "crescent",
         "pca_dimensions": run['parameters']['reduction']['pca_dimensions'],
