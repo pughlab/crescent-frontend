@@ -57,8 +57,8 @@ inputs:
       prefix: -l
 
   runs_cwl:
-    type: string
-    default: Y
+    type: int
+    default: 1
     inputBinding:
       position: 13
       prefix: -w
