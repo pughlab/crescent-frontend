@@ -61,8 +61,8 @@ inputs:
       prefix: -s
 
   runs_cwl:
-    type: string
-    default: Y
+    type: int
+    default: 1
     inputBinding:
       position: 13
       prefix: -w
@@ -94,3 +94,8 @@ outputs:
     type: Directory
     outputBinding:
       glob: SEURAT
+      
+  r_object_output:
+    type: Directory
+    outputBinding:
+      glob: R_OBJECTS_CWL
