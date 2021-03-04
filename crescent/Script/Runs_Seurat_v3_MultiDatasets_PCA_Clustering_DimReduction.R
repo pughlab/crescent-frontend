@@ -23,10 +23,30 @@
 ####################################
 
 ####################################
+### ISSUES TO BE FIXED
+### 1) with some fetal brain and GBM datasets in the RunPCA() step got:
+### Error in irlba(A = t(x = object), nv = npcs, ...) : 
+### max(nu, nv) must be positive
+### Calls: RunPCA ... RunPCA -> RunPCA.Assay -> RunPCA -> RunPCA.default -> irlba
+### Execution halted
+### Check this:
+### https://github.com/satijalab/seurat/issues/1788
+### Some Seurat users report that the Integration results in cells with ScaleData=0, which produces NaN values afterwards
+### Also some suggest to run FindVariableFeatures() before RunPCA()
+### but FindVariableFeatures() doesn't apply to SCTransform()
+####################################
+
+####################################
+### NOTES
+### 1) Seurat developers suggest to use slot 'data' for DGE, not scale.data
+###    Also, the @data slot has more genes than the @scale.data slot. For SCT @scale.data has only 3000 genes, and is empty for RNA.
+###    Thus, here we are saving @data in the loom files
+####################################
+
+####################################
 ### HOW TO RUN THIS SCRIPT 
-### Using one-line-commands in a console or terminal type:
+### For help using one-line-commands in a console or terminal type:
 ### 'Rscript ~/path_to_this_file/Runs_Seurat_v3_MultiDatasets_PCA_Clustering_DimReduction.R -h'
-### for help
 ####################################
 
 ####################################
@@ -59,7 +79,7 @@ suppressPackageStartupMessages(library(tidyr))        # (CRAN) to handle tibbles
 writeLines("\n**** SETUP RUN ****\n")
 
 ####################################
-### Turning warnings off for the sake of a cleaner aoutput
+### Turning warnings off for the sake of a cleaner output
 ####################################
 oldw <- getOption("warn")
 options( warn = -1 )
@@ -91,16 +111,28 @@ option_list <- list(
 
                 Default = 'No default. It's mandatory to specify this parameter'"),
   #
+  make_option(c("-q", "--inputs_select_barcodes"), default="NA",
+              help="Path/name to a <tab> delimited list of barcodes to be selected from --infile_r_object
+                and run the PCA, clustering and dimension reduction analyzes using only the selected barcodes, like:
+                d1  AAACCTGAGCTCCCAG
+                d2  AAACCTGTCACCATAG
+                d3  AAACCTGTCAGCTTAG
+                
+                Note: the first column must be dataset ID and the second column the barcode
+                Or type 'NA' to include all barcodes in --infile_r_object
+                
+                Default = 'NA'"),
+  #
   make_option(c("-r", "--resolution"), default="1",
               help="Value of the resolution parameter, use a value above (below) 1.0 if you want to obtain a larger (smaller) number of cell clusters
               
                 Default = '1'"),
   #
   make_option(c("-v", "--clustering_inputs"), default="1",
-              help="One or more of the following options. If more than one, pass the choice <comma> delimited, e.g. '1,2,3'
+              help="One or more of the following options. Use <comma> delimited for multiple options, e.g. '1,2,3'
                 '1' = globaly clusters the integrated datasets (mandatory in this script)
-                '2' = re-clusters each datasets split from the integrated datasets. Needed for `-f 6`
-                '3' = re-clusters each dataset type (column 3 from -inputs_list) from the integrated datasets. Needed for `-f 7`
+                '2' = re-clusters each datasets split from the integrated datasets
+                '3' = re-clusters each dataset type (column 3 from -inputs_list) from the integrated datasets
                 
                 Default = '1'"),
   #
@@ -138,6 +170,11 @@ option_list <- list(
                 
                 Default = '0'"),
   #
+  make_option(c("-y", "--assays_for_gene_plots"), default="RNA,SCT",
+              help="Only needed if using '-g INFILE -m [1-3]'.  It indicates <comma> delimited 'RNA' and/or 'SCT'.
+
+                Default = 'RNA,SCT'"),
+  #
   make_option(c("-d", "--pca_dimensions"), default="10",
               help="Max value of PCA dimensions to use for clustering and t-SNE functions
                 FindClusters(..., dims.use = 1:-d) and RunTSNE(..., dims.use = 1:-d)
@@ -153,18 +190,25 @@ option_list <- list(
   #
   make_option(c("-s", "--save_r_object"), default="Y",
               help="Indicates if a R object with the data and analyzes from the run should be saved
-                Note that this may be time consuming. Type 'y/Y' or 'n/N'
-                
+
                 Default = 'Y'"),
   #
-  make_option(c("-w", "--run_cwl"), default="N",
-              help="Indicates if this script is running inside a virtual machine container, such that outfiles are written directly into the 'HOME' . Type 'y/Y' or 'n/N'.
-                Note, if using 'y/Y' this supersedes option -o
-                
-                Default = 'N'"),
+  make_option(c("-t", "--assays_for_loom"), default="NA",
+              help="Indicates which assays should be saved as loom files, <comma> delimited 'RNA' and/or 'SCT'
+                Or type 'NA' to don't save loom files
+
+                Default = 'NA'"),
+  #
+  make_option(c("-w", "--run_cwl"), default="0",
+              help="Indicates if this script should produce 'frontend' files for crescent.cloud
+                0 = no frontend files should be produced
+                1 = frontend files should be produced and '--minio_path path' is provided
+                2 = frontend files should be produced but '--minio_path path' is not provided (i.e local run)
+
+                Default = '0'"),
   #
   make_option(c("-x", "--minio_path"), default="NA",
-              help="Used with the 'run_cwl' option above for mounting input data files in 'inputs_list' to CWL containers
+              help="Only needed if using '-w 1' to mount input data files in 'inputs_list' to CWL containers
               
                 Default = 'NA'"),
   #
@@ -180,6 +224,7 @@ opt <- parse_args(OptionParser(option_list=option_list))
 
 InputsList              <- opt$inputs_list
 InfileRobject           <- opt$infile_r_object
+InfileSelectBarcodes    <- opt$inputs_select_barcodes
 Resolution              <- as.numeric(opt$resolution)
 ClusteringInputs        <- opt$clustering_inputs
 Outdir                  <- opt$outdir
@@ -187,10 +232,12 @@ PrefixOutfiles          <- opt$prefix_outfiles
 InfileMetadata          <- opt$infile_metadata
 InfileSelectedGenes     <- opt$infile_selected_genes
 ApplySelectedGenes      <- opt$apply_list_genes
+AssaysForGenePlots      <- opt$assays_for_gene_plots
 PcaDimsUse              <- c(1:as.numeric(opt$pca_dimensions))
 NumbCores               <- opt$number_cores
 SaveRObject             <- opt$save_r_object
-RunsCwl                 <- opt$run_cwl
+AssaysForLoom           <- opt$assays_for_loom
+RunsCwl                 <- as.numeric(opt$run_cwl)
 MinioPath               <- opt$minio_path
 MaxGlobalVariables      <- as.numeric(opt$max_global_variables)
 
@@ -201,6 +248,18 @@ for (optionInput in option_list) {
 }
 OneLineCommands <- paste0(OneLineCommands, paste0("`\n"))
 writeLines(OneLineCommands)
+
+####################################
+### Check that mandatory parameters are not 'NA' (default)
+####################################
+writeLines("\n*** Check that mandatory parameters are not 'NA' (default) ***\n")
+
+ListMandatory<-list("inputs_list", "infile_r_object", "outdir", "prefix_outfiles")
+for (param in ListMandatory) {
+  if (length(grep('^NA$',opt[[param]], perl = T))) {
+    stop(paste0("Parameter -", param, " can't be 'NA' (default). Use option -h for help."))
+  }
+}
 
 ####################################
 ### Start stopwatches
@@ -216,37 +275,54 @@ StopWatchStart$Overall  <- Sys.time()
 ####################################
 writeLines("\n*** Create outdirs ***\n")
 
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-  ### Using `-w Y` will make Tempdir, which takes the value of ProgramOutdir, and it will be the final out-directory
-  Tempdir         <- ProgramOutdir
-  dir.create(file.path(Tempdir), showWarnings = F) 
-  dir.create(file.path("R_OBJECTS_CWL"), showWarnings = F) 
-  
+FILE_TYPE_OUT_DIRECTORIES = c(
+  "AVERAGE_GENE_EXPRESSION_TABLES",
+  "CELL_CLUSTER_IDENTITIES", 
+  "CELL_FRACTIONS", 
+  "DIMENSION_REDUCTION_COORDINATE_TABLES", 
+  "DIMENSION_REDUCTION_PLOTS",
+  "LOG_FILES",
+  "QC_PLOTS",
+  "PSEUDO_BULK",
+  "SELECTED_GENE_DIMENSION_REDUCTION_PLOTS",
+  "UNFILTERED_DATA_MATRICES"
+)
+
+if (RunsCwl == 0 || RunsCwl == 2) {
   FILE_TYPE_OUT_DIRECTORIES = c(
-    "CRESCENT_CLOUD",
-    "CRESCENT_CLOUD/frontend_normalized",
-    "CRESCENT_CLOUD/frontend_coordinates",
-    "CRESCENT_CLOUD/frontend_raw",
-    "CRESCENT_CLOUD/frontend_groups",
-    "AVERAGE_GENE_EXPRESSION_TABLES",
-    "CELL_CLUSTER_IDENTITIES", 
-    "CELL_FRACTIONS", 
-    "DIMENSION_REDUCTION_COORDINATE_TABLES", 
-    "DIMENSION_REDUCTION_PLOTS",
-    "LOG_FILES",
-    "QC_PLOTS",
-    "R_OBJECTS",
-    "PSEUDO_BULK",
-    "SELECTED_GENE_DIMENSION_REDUCTION_PLOTS",
-    "UNFILTERED_DATA_MATRICES"
+    FILE_TYPE_OUT_DIRECTORIES,
+    "R_OBJECTS"
   )
-  
-}else{
-  ## Using `Tempdir/DIRECTORY` for temporary storage of outfiles because sometimes long paths of outdirectories casuse R to leave outfiles unfinished
+}
+
+if (RunsCwl == 1 || RunsCwl == 2) {
+  FILE_TYPE_OUT_DIRECTORIES = c(
+    FILE_TYPE_OUT_DIRECTORIES,
+    "CRESCENT_CLOUD",
+    "CRESCENT_CLOUD/frontend_features",
+    "CRESCENT_CLOUD/frontend_counts",
+    "CRESCENT_CLOUD/frontend_coordinates",
+    "CRESCENT_CLOUD/frontend_groups",
+    "CRESCENT_CLOUD/frontend_metadata",
+    "CRESCENT_CLOUD/frontend_raw",
+    "CRESCENT_CLOUD/frontend_normalized"
+  )
+}
+
+if (RunsCwl == 1) {
+  ### Using `-w 1` will make Tempdir, which takes the value of ProgramOutdir, and it will be the final out-directory
+  ### for most outfiles, except R objects, which will be written into R_OBJECTS_CWL
+  Tempdir         <- ProgramOutdir
+  dir.create(file.path(Tempdir), showWarnings = F)
+  dir.create(file.path("R_OBJECTS_CWL"), showWarnings = F)
+  dir.create(file.path("LOOM_FILES_CWL"), showWarnings = F)
+}else if (RunsCwl == 0 || RunsCwl == 2) {
+  ## Using `-w 0` or `-w 2` will create a Tempdir/DIRECTORY for temporary storage of outfiles because sometimes
+  ## long paths of outdirectories casuse R to leave outfiles unfinished
   ## 'DIRECTORY' is one of the directories specified at FILE_TYPE_OUT_DIRECTORIES
   ## Then at the end of the script they'll be moved into `Outdir/ProgramOutdir`
-  Tempdir        <- "~/temp" 
-  #
+  ## The difference between `-w 0` and `-w 2` is that the first one doesn't produce frontend outfiles for crescent.cloud
+  Tempdir           <- "~/temp"
   UserHomeDirectory <- Sys.getenv("HOME")[[1]]
   #
   Outdir<-gsub("^~/",paste0(UserHomeDirectory,"/"), Outdir)
@@ -258,20 +334,8 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   #
   dir.create(file.path(Outdir, ProgramOutdir), recursive = T)
   dir.create(file.path(Tempdir), showWarnings = F, recursive = T)
-  
-  FILE_TYPE_OUT_DIRECTORIES = c(
-    "AVERAGE_GENE_EXPRESSION_TABLES",
-    "CELL_CLUSTER_IDENTITIES", 
-    "CELL_FRACTIONS", 
-    "DIMENSION_REDUCTION_COORDINATE_TABLES", 
-    "DIMENSION_REDUCTION_PLOTS",
-    "LOG_FILES",
-    "QC_PLOTS",
-    "R_OBJECTS",
-    "PSEUDO_BULK",
-    "SELECTED_GENE_DIMENSION_REDUCTION_PLOTS",
-    "UNFILTERED_DATA_MATRICES"
-  )
+}else{
+  stop(paste0("ERROR unexpected option '-w ", RunsCwl))
 }
 
 sapply(FILE_TYPE_OUT_DIRECTORIES, FUN=function(eachdir) {
@@ -339,8 +403,10 @@ options(future.globals.maxSize = MaxGlobalVariables * 1024^2)
 ####################################
 ### Some of these default parameters are provided by Seurat developers, others are tailored empirically
 
-RequestedClusteringInputs        = unlist(strsplit(ClusteringInputs, ","))
-RequestedApplySelectedGenes      = unlist(strsplit(ApplySelectedGenes, ","))
+RequestedClusteringInputs   = unlist(strsplit(ClusteringInputs, ","))
+RequestedApplySelectedGenes = unlist(strsplit(ApplySelectedGenes, ","))
+RequestedAssaysForLoom      = unlist(strsplit(AssaysForLoom, ","))
+RequestedAssaysForGenePlots = unlist(strsplit(AssaysForGenePlots, ","))
 
 DefaultParameters <- list(
   ### Parameters for QC plots
@@ -356,7 +422,8 @@ DefaultParameters <- list(
 
   ### Parameters for datasets comparison
   AssaysForAverageGETables = c("RNA", "SCT", "integrated"),
-  AssaysForPseudoBulk = c("RNA", "SCT")
+  AssaysForPseudoBulk = c("RNA", "SCT"),
+  AssaysForLoom = c("RNA", "SCT")
 )
 
 ### Assay types for plot and table outfiles
@@ -368,18 +435,6 @@ DimensionReductionMethods$umap$name <-"UMAP"
 DimensionReductionMethods$tsne$name <-"TSNE"
 DimensionReductionMethods$umap$run  <-as.function(RunUMAP)
 DimensionReductionMethods$tsne$run  <-as.function(RunTSNE)
-
-####################################
-### Check that mandatory parameters are not 'NA' (default)
-####################################
-writeLines("\n*** Check that mandatory parameters are not 'NA' (default) ***\n")
-
-ListMandatory<-list("infiles_list", "infile_r_object", "outdir", "prefix_outfiles")
-for (param in ListMandatory) {
-  if (length(grep('^NA$',opt[[param]], perl = T))) {
-    stop(paste0("Parameter -", param, " can't be 'NA' (default). Use option -h for help."))
-  }
-}
 
 ####################################
 ### Check that optional parameters are compatible with each other
@@ -425,35 +480,28 @@ writeLines("\n**** LOAD DATASETS ****\n")
 ####################################
 writeLines("\n*** Load --inputs_list ***\n")
 
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-  if (regexpr("^NA$", MinioPath , ignore.case = T)[1] == 1) {
-    
-    InputsTable<-read.table(InputsList, header = F, row.names = 1, stringsAsFactors = F)
-    colnames(InputsTable)<-c("DatasetType")
-    
-  } else {
-    MinioPaths <- as.list(strsplit(MinioPath, ",")[[1]])
-    MinioDataPaths = data.frame(dataset_ID=rep(0, length(MinioPaths)), dataset_path=rep(0, length(MinioPaths)))
-    
-    for (i in seq_along(MinioPaths)) {
-      MinioDataPaths[i, ] = c(basename(MinioPaths[[i]]), MinioPaths[[i]])
-    }
-    
-    InputsTable0 <- read.table(InputsList, header = T, sep = ",", stringsAsFactors = F)
-    
-    MergedInputsTable <- merge(MinioDataPaths, InputsTable0, by="dataset_ID")
-    MergeFilter <- c("name", "dataset_ID","dataset_type")
-    MergedInputsTableFiltered <- MergedInputsTable[MergeFilter]
-    MergedInputsTableFilteredFinal <- MergedInputsTableFiltered[,-1]
-    rownames(MergedInputsTableFilteredFinal) <- MergedInputsTableFiltered[,1]
-    colnames(MergedInputsTableFilteredFinal) <-c("DatasetMinioID","DatasetType")
-    
-    InputsTable <- MergedInputsTableFilteredFinal
-  }
-} else {
+if (RunsCwl == 0 || RunsCwl == 2) {
   InputsList<-gsub("^~/",paste0(UserHomeDirectory,"/"), InputsList)
   InputsTable<-read.table(InputsList, header = F, row.names = 1, stringsAsFactors = F)
   colnames(InputsTable)<-c("DatasetType")
+}else if (RunsCwl == 1) {
+  MinioPaths <- as.list(strsplit(MinioPath, ",")[[1]])
+  MinioDataPaths = data.frame(dataset_ID=rep(0, length(MinioPaths)), dataset_path=rep(0, length(MinioPaths)))
+  
+  for (i in seq_along(MinioPaths)) {
+    MinioDataPaths[i, ] = c(basename(MinioPaths[[i]]), MinioPaths[[i]])
+  }
+  
+  InputsTable0 <- read.table(InputsList, header = T, sep = ",", stringsAsFactors = F)
+  
+  MergedInputsTable <- merge(MinioDataPaths, InputsTable0, by="dataset_ID")
+  MergeFilter <- c("name", "dataset_ID", "dataset_type")
+  MergedInputsTableFiltered <- MergedInputsTable[MergeFilter]
+  MergedInputsTableFilteredFinal <- MergedInputsTableFiltered[,-1]
+  rownames(MergedInputsTableFilteredFinal) <- MergedInputsTableFiltered[,1]
+  colnames(MergedInputsTableFilteredFinal) <-c("DatasetMinioID", "DatasetType")
+  
+  InputsTable <- MergedInputsTableFilteredFinal
 }
 
 ##### Replace low dashes by dots in rownames(InputsTable) or DatasetType
@@ -494,26 +542,76 @@ seurat.object.integrated <- readRDS(InfileRobject)
 StopWatchEnd$LoadRDSIntegratedDatasets  <- Sys.time()
 
 ####################################
-### Outfiles for web app: save normalized count matrix as loom
+### Select barcodes by parameter -q (if applicable)
 ####################################
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-  writeLines("\n*** Outfiles for web app: save normalized count matrix as loom ***\n")
+
+if (regexpr("^NA$", InfileSelectBarcodes , ignore.case = T)[1] == 1) {
   
-  StopWatchStart$OutNormalizedTablesLoomFrontEnd  <- Sys.time()
+  writeLines("\n*** No barcodes will be selected by parameter -q ***\n")
   
-  normalized_count_matrix <- as.matrix(seurat.object.integrated@assays[["RNA"]]@data)
+}else{
   
-  # all genes/features in matrix
-  features_tsv <- data.frame(features = rownames(normalized_count_matrix))
-  features_tsv_ordered <- as.data.frame(sort(features_tsv$features))
-  write.table(features_tsv_ordered, file=paste0(Tempdir, "/CRESCENT_CLOUD/frontend_raw/","features.tsv"), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+  StopWatchStart$SelectBarcodes <- Sys.time()
   
-  # generating loom file of normalized count matrix
-  loom_file <- paste0(Tempdir, "/CRESCENT_CLOUD/frontend_normalized/","normalized_counts.loom")
-  create(loom_file, normalized_count_matrix, overwrite = T)
+  writeLines("\n*** Selecting barcodes by parameter -q ***\n")
   
-  StopWatchEnd$OutNormalizedTablesLoomFrontEnd <- Sys.time()
+  InfileAllBarcodesToSelect<-gsub("^~/",paste0(UserHomeDirectory,"/"), InfileSelectBarcodes)
+  AllBarcodesToSelect.tab<-read.table(InfileAllBarcodesToSelect, header = F, row.names = NULL, stringsAsFactors = FALSE)
+  if (ncol(AllBarcodesToSelect.tab) == 2) {
+    colnames(AllBarcodesToSelect.tab) <- c("Dataset","Barcode")
+  }else{
+    stop(paste0("Unexpected format in file:\n", InfileAllBarcodesToSelect, "\nfor parameter -q, 2 columns were expected but found ", ncol(AllBarcodesToSelect.tab)))
+  }
   
+  writeLines("\nOriginal Seurat object:")
+  print(seurat.object.integrated)
+  
+  seurat.object.integrated <- SubsetData(object = seurat.object.integrated, cells = paste(AllBarcodesToSelect.tab[,"Dataset"],AllBarcodesToSelect.tab[,"Barcode"], sep = "_"))
+  
+  writeLines("\nSelected barcodes Seurat object:")
+  print(seurat.object.integrated)
+  
+  
+  StopWatchEnd$SelectBarcodes <- Sys.time()
+  
+}
+
+####################################
+### Outfiles for web app: save count matrices as loom
+####################################
+
+if (regexpr("^NA$", AssaysForLoom, ignore.case = T)[1] == 1) {
+  writeLines("\n*** Not saving the loom files ***\n")
+}else{
+  
+  writeLines("\n*** Saving loom files ***\n")
+  
+  StopWatchStart$LoomFiles  <- Sys.time()
+  
+    if (RunsCwl == 1 || RunsCwl == 2) {
+    writeLines("\n*** Outfiles for web app: save normalized count matrix as loom ***\n")
+  
+      for (ASSAY in RequestedAssaysForLoom) {
+        assay <- tolower(ASSAY)
+        raw_count_matrix <- as.matrix(seurat.object.integrated@assays[[ASSAY]]@data)
+  
+        # all genes/features in matrix
+        features_tsv <- data.frame(features = rownames(raw_count_matrix))
+        features_tsv_ordered <- as.data.frame(sort(features_tsv$features))
+        write.table(features_tsv_ordered, file=paste0(Tempdir, "/CRESCENT_CLOUD/frontend_features/","features_", assay, ".tsv"), sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE)
+  
+        # generating loom file of count matrix
+        if (RunsCwl == 1) {
+          loom_file <- paste0("LOOM_FILES_CWL/", "counts_", assay, ".loom")
+        }else if (RunsCwl == 2) {
+          loom_file <- paste0(Tempdir, "/CRESCENT_CLOUD/frontend_counts/","counts_", assay, ".loom")
+        }
+        create(loom_file, raw_count_matrix, overwrite = T, display.progress = T)
+      }
+    }
+  
+  StopWatchEnd$LoomFiles  <- Sys.time()
+
 }
 
 ####################################
@@ -624,7 +722,7 @@ close(Outfile.con)
 StopWatchEnd$AllCellClusterTables  <- Sys.time()
 
 ## Creates dataframe to merge for groups.tsv
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+if (RunsCwl == 1 || RunsCwl == 2) {
   writeLines("\n*** Creates dataframe to merge for groups.tsv ***\n")
   
   StopWatchStart$SaveGlobalCellClusterIdentitiesFrontEnd  <- Sys.time()
@@ -658,16 +756,18 @@ writeLines("\n*** Generate a matrix with each gene (rows) marginals of SCTransfo
 
 StopWatchStart$SaveSctransformClustersInColumns  <- Sys.time()
 
+Idents(object = seurat.object.integrated) <- seurat.object.integrated@meta.data[["dataset"]]
 seurat.object.integrated.list <- SplitObject(seurat.object.integrated, split.by = "dataset")
 
 for (assay_expression in DefaultParameters$AssaysForPseudoBulk) {
   mat_for_correl_each_cluster.df <- data.frame(row.names = rownames(seurat.object.integrated.list[[1]]@assays[[assay_expression]]))
+
   for (DatasetId in rownames(InputsTable)) {
     if (exists(x = "seurat.object.each_dataset") == T) {
       rm(seurat.object.each_dataset)
     }
     seurat.object.each_dataset <- subset(x = seurat.object.integrated, subset = dataset == DatasetId)
-    
+
     for (cluster_number in sort(unique(seurat.object.integrated$GlobalCellClusterIdentities))) {
       dataset_cluster <- (paste(DatasetId, cluster_number, sep = "_c", collapse = ""))
       res <- try(subset(x = seurat.object.each_dataset, subset = seurat_clusters == cluster_number), silent = TRUE)
@@ -730,7 +830,7 @@ for (dim_red_method in names(DimensionReductionMethods)) {
 
   StopWatchEnd$DimensionReductionWriteCoords[[dim_red_method]]  <- Sys.time()
   
-  if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+  if (RunsCwl == 1 || RunsCwl == 2) {
     ####################################
     ### Outfiles for web app: dimension reduction coordinates
     ####################################
@@ -828,24 +928,28 @@ for (dim_red_method in names(DimensionReductionMethods)) {
     
     StopWatchStart$DimRedPlotsColuredByGenes[[dim_red_method]]  <- Sys.time()
     
-    ### Making a new Seurat object `seurat.object.integrated.sa` with one single slot `@assays$RNA@data` to avoid `FeaturePlot` calling:
-    ### Warning: Found the following features in more than one assay, excluding the default. We will not include these in the final dataframe:...
-    seurat.object.integrated.sa <- CreateSeuratObject(seurat.object.integrated@assays$RNA@data)
-    seurat.object.integrated.sa@reductions$umap <- seurat.object.integrated@reductions$umap
-    seurat.object.integrated.sa@reductions$tsne <- seurat.object.integrated@reductions$tsne
-    
-    OutDirThisOption <- paste0(Tempdir, "/SELECTED_GENE_DIMENSION_REDUCTION_PLOTS/ALL_CELLS/", DimensionReductionMethods[[dim_red_method]][["name"]])
-    dir.create(path = OutDirThisOption, recursive = T)
-    sapply(ListOfGenesForDimRedPlots, FUN=function(eachGene) {
-      if (eachGene %in% rownames(seurat.object.integrated.sa) == T)  {
-        OutfilePathAndName <- paste0(OutDirThisOption, "/", eachGene, "_all_cells_", DimensionReductionMethods[[dim_red_method]][["name"]], ".pdf")
-        pdf(file=OutfilePathAndName, width=DefaultParameters$BaseSizeMultiplePlotPdfWidth, height=DefaultParameters$BaseSizeMultiplePlotPdfHeight)
-        print(FeaturePlot(object = seurat.object.integrated.sa, features = eachGene, cols = c("lightgrey", "blue"),
-                          reduction = dim_red_method, order = T, slot = "data", pt.size = 0.3, min.cutoff = "q0.1", max.cutoff = "q90"))
-        dev.off()
-      }else{
-        print(paste0("Missing ", eachGene))
-      }
+    sapply(RequestedAssaysForGenePlots, FUN=function(ASSAY) {
+
+      ### Making a new Seurat object `seurat.object.integrated.sa` with one single slot `@assays[[ASSAY]]@data` to avoid `FeaturePlot` calling:
+      ### Warning: Found the following features in more than one assay, excluding the default. We will not include these in the final dataframe:...
+      seurat.object.integrated.sa <- CreateSeuratObject(seurat.object.integrated@assays[[ASSAY]]@data)
+      seurat.object.integrated.sa@reductions$umap <- seurat.object.integrated@reductions$umap
+      seurat.object.integrated.sa@reductions$tsne <- seurat.object.integrated@reductions$tsne
+      
+      OutDirThisOption <- paste0(Tempdir, "/SELECTED_GENE_DIMENSION_REDUCTION_PLOTS/ALL_CELLS/", DimensionReductionMethods[[dim_red_method]][["name"]], "/", ASSAY)
+      dir.create(path = OutDirThisOption, recursive = T)
+      sapply(ListOfGenesForDimRedPlots, FUN=function(eachGene) {
+        if (eachGene %in% rownames(seurat.object.integrated.sa) == T)  {
+          OutfilePathAndName <- paste0(OutDirThisOption, "/", eachGene, "_all_cells_", ASSAY, "_", DimensionReductionMethods[[dim_red_method]][["name"]], ".pdf")
+          pdf(file=OutfilePathAndName, width=DefaultParameters$BaseSizeMultiplePlotPdfWidth, height=DefaultParameters$BaseSizeMultiplePlotPdfHeight)
+          print(FeaturePlot(object = seurat.object.integrated.sa, features = eachGene, cols = c("lightgrey", "blue"),
+                            reduction = dim_red_method, order = T, slot = "data", pt.size = 0.3, min.cutoff = "q0.1", max.cutoff = "q90"))
+          dev.off()
+        }else{
+          print(paste0("Missing ", eachGene))
+        }
+      })
+    rm(seurat.object.integrated.sa)
     })
     
     StopWatchEnd$DimRedPlotsColuredByGenes[[dim_red_method]]  <- Sys.time()
@@ -1022,8 +1126,7 @@ for (dataset in rownames(InputsTable)) {
     rm(seurat.object.each_dataset)
   }
   seurat.object.each_dataset <- subset(x = seurat.object.integrated, idents = dataset)
-  print(seurat.object.each_dataset)
-  
+
   for (dim_red_method in names(DimensionReductionMethods)) {
     
     ####################################
@@ -1054,29 +1157,31 @@ for (dataset in rownames(InputsTable)) {
       
       StopWatchStart$DimRedPlotsColuredByGenesEachDataset[[dim_red_method]]  <- Sys.time()
       
-      ### Making a new Seurat object `seurat.object.each_dataset.sa` with one single slot `@assays$RNA@data` to avoid `FeaturePlot` calling:
-      ### Warning: Found the following features in more than one assay, excluding the default. We will not include these in the final dataframe:...
-      seurat.object.each_dataset.sa <- CreateSeuratObject(seurat.object.each_dataset@assays$RNA@data)
-      seurat.object.each_dataset.sa@reductions$umap <- seurat.object.each_dataset@reductions$umap
-      seurat.object.each_dataset.sa@reductions$tsne <- seurat.object.each_dataset@reductions$tsne
-      
-      OutDirThisOption <- paste0(Tempdir, "/SELECTED_GENE_DIMENSION_REDUCTION_PLOTS/DATASETS/", DimensionReductionMethods[[dim_red_method]][["name"]])
-      dir.create(path = OutDirThisOption, recursive = T)
-      sapply(ListOfGenesForDimRedPlots, FUN=function(eachGene) {
-        if (eachGene %in% rownames(seurat.object.each_dataset.sa) == T)  {
-          OutfilePathAndName <- paste0(OutDirThisOption, "/", eachGene, "_", dataset, "_", DimensionReductionMethods[[dim_red_method]][["name"]], ".pdf")
-          pdf(file=OutfilePathAndName, width=DefaultParameters$BaseSizeMultiplePlotPdfWidth, height=DefaultParameters$BaseSizeMultiplePlotPdfHeight)
-          print(FeaturePlot(object = seurat.object.each_dataset.sa, features = eachGene, cols = c("lightgrey", "blue"),
-                            reduction = dim_red_method, order = T, slot = "data", pt.size = 0.3, min.cutoff = "q0.1", max.cutoff = "q90"))
-          dev.off()
-        }else{
-          print(paste0("Missing ", eachGene))
-        }
+      sapply(RequestedAssaysForGenePlots, FUN=function(ASSAY) {
+
+        ### Making a new Seurat object `seurat.object.each_dataset.sa` with one single slot `@assays[[ASSAY]]@data` to avoid `FeaturePlot` calling:
+        ### Warning: Found the following features in more than one assay, excluding the default. We will not include these in the final dataframe:...
+        seurat.object.each_dataset.sa <- CreateSeuratObject(seurat.object.each_dataset@assays[[ASSAY]]@data)
+        seurat.object.each_dataset.sa@reductions$umap <- seurat.object.each_dataset@reductions$umap
+        seurat.object.each_dataset.sa@reductions$tsne <- seurat.object.each_dataset@reductions$tsne
+        
+        OutDirThisOption <- paste0(Tempdir, "/SELECTED_GENE_DIMENSION_REDUCTION_PLOTS/DATASETS/", DimensionReductionMethods[[dim_red_method]][["name"]], "/", ASSAY)
+        dir.create(path = OutDirThisOption, recursive = T)
+        sapply(ListOfGenesForDimRedPlots, FUN=function(eachGene) {
+          if (eachGene %in% rownames(seurat.object.each_dataset.sa) == T)  {
+            OutfilePathAndName <- paste0(OutDirThisOption, "/", eachGene, "_", dataset, "_", DimensionReductionMethods[[dim_red_method]][["name"]], ".pdf")
+            pdf(file=OutfilePathAndName, width=DefaultParameters$BaseSizeMultiplePlotPdfWidth, height=DefaultParameters$BaseSizeMultiplePlotPdfHeight)
+            print(FeaturePlot(object = seurat.object.each_dataset.sa, features = eachGene, cols = c("lightgrey", "blue"),
+                              reduction = dim_red_method, order = T, slot = "data", pt.size = 0.3, min.cutoff = "q0.1", max.cutoff = "q90"))
+            dev.off()
+          }else{
+            print(paste0("Missing ", eachGene))
+          }
+        })
+        rm(seurat.object.each_dataset.sa)
       })
       
       StopWatchEnd$DimRedPlotsColuredByGenesEachDataset[[dim_red_method]]  <- Sys.time()
-      
-      rm(seurat.object.each_dataset.sa)
       
     }
     
@@ -1151,6 +1256,7 @@ for (assay_expression in DefaultParameters$AssaysForAverageGETables) {
 }
 
 StopWatchEnd$AverageGeneExpressionEachDatasetGlobalClustersPerDataset  <- Sys.time()
+
 
 ################################################################################################################################################
 ################################################################################################################################################
@@ -1292,6 +1398,7 @@ if (2 %in% RequestedClusteringInputs == T) {
   system(paste("rm", OutfileEachDatasetNumbClusters, sep = " "))
   system(paste("bzip2 -f", OutfileEachDatasetNumbCellsPerCluster, sep = " "))
   system(paste("rm", OutfileEachDatasetNumbCellsPerCluster, sep = " "))
+  
 }
 
 ################################################################################################################################################
@@ -1345,7 +1452,7 @@ if (NumberOfDatasetsTypes >= 1) {
 
   StopWatchEnd$WriteOutDatasetTypeClusterAssignments  <- Sys.time()
   
-  if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+  if (RunsCwl == 1 || RunsCwl == 2) {
     ####################################
     ### Outfiles for web app: each dataset type global cluster assignments
     ####################################
@@ -1417,31 +1524,33 @@ if (NumberOfDatasetsTypes >= 1) {
         
         StopWatchStart$DimRedPlotsColuredByGenesEachDatasetType[[dim_red_method]]  <- Sys.time()
         
-        ### Making a new Seurat object `seurat.object.each_dataset_type.sa` with one single slot `@assays$RNA@data` to avoid `FeaturePlot` calling:
-        ### Warning: Found the following features in more than one assay, excluding the default. We will not include these in the final dataframe:...
-        seurat.object.each_dataset_type.sa <- CreateSeuratObject(seurat.object.each_dataset_type@assays$RNA@data)
-        seurat.object.each_dataset_type.sa@reductions$umap <- seurat.object.each_dataset_type@reductions$umap
-        seurat.object.each_dataset_type.sa@reductions$tsne <- seurat.object.each_dataset_type@reductions$tsne
-        
-        OutDirThisOption <- paste0(Tempdir, "/SELECTED_GENE_DIMENSION_REDUCTION_PLOTS/DATASET_TYPES/", DimensionReductionMethods[[dim_red_method]][["name"]])
-        dir.create(path = OutDirThisOption, recursive = T)
-        sapply(ListOfGenesForDimRedPlots, FUN=function(eachGene) {
-          if (eachGene %in% rownames(seurat.object.each_dataset_type.sa) == T)  {
-            OutfilePathAndName <- paste0(OutDirThisOption, "/", eachGene, "_", dataset_type, "_", DimensionReductionMethods[[dim_red_method]][["name"]], ".pdf")
-            pdf(file=OutfilePathAndName, width=DefaultParameters$BaseSizeMultiplePlotPdfWidth, height=DefaultParameters$BaseSizeMultiplePlotPdfHeight)
-            print(FeaturePlot(object = seurat.object.each_dataset_type.sa, features = eachGene, cols = c("lightgrey", "blue"),
-                              reduction = dim_red_method, order = T, slot = "data", pt.size = 0.3, min.cutoff = "q0.1", max.cutoff = "q90"))
-            dev.off()
-          }else{
-            print(paste0("Missing ", eachGene))
-          }
+        sapply(RequestedAssaysForGenePlots, FUN=function(ASSAY) {
+
+          ### Making a new Seurat object `seurat.object.each_dataset_type.sa` with one single slot `@assays$RNA@data` to avoid `FeaturePlot` calling:
+          ### Warning: Found the following features in more than one assay, excluding the default. We will not include these in the final dataframe:...
+          seurat.object.each_dataset_type.sa <- CreateSeuratObject(seurat.object.each_dataset_type@assays[[ASSAY]]@data)
+          seurat.object.each_dataset_type.sa@reductions$umap <- seurat.object.each_dataset_type@reductions$umap
+          seurat.object.each_dataset_type.sa@reductions$tsne <- seurat.object.each_dataset_type@reductions$tsne
+          
+          OutDirThisOption <- paste0(Tempdir, "/SELECTED_GENE_DIMENSION_REDUCTION_PLOTS/DATASET_TYPES/", DimensionReductionMethods[[dim_red_method]][["name"]], "/", ASSAY)
+          dir.create(path = OutDirThisOption, recursive = T)
+          sapply(ListOfGenesForDimRedPlots, FUN=function(eachGene) {
+            if (eachGene %in% rownames(seurat.object.each_dataset_type.sa) == T)  {
+              OutfilePathAndName <- paste0(OutDirThisOption, "/", eachGene, "_", dataset_type, "_", DimensionReductionMethods[[dim_red_method]][["name"]], ".pdf")
+              pdf(file=OutfilePathAndName, width=DefaultParameters$BaseSizeMultiplePlotPdfWidth, height=DefaultParameters$BaseSizeMultiplePlotPdfHeight)
+              print(FeaturePlot(object = seurat.object.each_dataset_type.sa, features = eachGene, cols = c("lightgrey", "blue"),
+                                reduction = dim_red_method, order = T, slot = "data", pt.size = 0.3, min.cutoff = "q0.1", max.cutoff = "q90"))
+              dev.off()
+            }else{
+              print(paste0("Missing ", eachGene))
+            }
+          })
+        rm(seurat.object.each_dataset_type.sa)
         })
         
         StopWatchEnd$DimRedPlotsColuredByGenesEachDatasetType[[dim_red_method]]  <- Sys.time()
-        
-        rm(seurat.object.each_dataset_type.sa)
       }
-      
+
       ####################################
       ### Colour dimension reduction plots for each dataset type by -infile_metadata using integrated data
       ####################################
@@ -1705,9 +1814,9 @@ if (regexpr("^Y$", SaveRObject, ignore.case = T)[1] == 1) {
   
   StopWatchStart$SaveRDSFull  <- Sys.time()
   
-  if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+  if (RunsCwl == 1) {
     OutfileRDS<-paste0("R_OBJECTS_CWL/", PrefixOutfiles, ".", ProgramOutdir, "_PCA_Clustering_DimReduction", ".rds")
-  } else {
+  }else{
     OutfileRDS<-paste0(Tempdir, "/R_OBJECTS/", PrefixOutfiles, ".", ProgramOutdir, "_PCA_Clustering_DimReduction", ".rds")
   }
   saveRDS(seurat.object.integrated, file = OutfileRDS)
@@ -1761,10 +1870,10 @@ lapply(names(StopWatchStart), function(stepToClock) {
 writeLines("\n*** Moving outfiles into outdir or keeping them at tempdir (if using CWL) ***\n")
 
 ### using two steps to copy files (`file.copy` and `file.remove`) instead of just `file.rename` to avoid issues with path to Tempdir in cluster systems
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+if (RunsCwl == 1) {
   writeLines("\n*** Keeping files at: ***\n")
   writeLines(Tempdir)
-} else {
+}else{
   writeLines("\n*** Moving outfiles into outdir ***\n")
   sapply(FILE_TYPE_OUT_DIRECTORIES, FUN=function(DirName) {
     TempdirWithData <- paste0(Tempdir, "/", DirName)
@@ -1777,6 +1886,15 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
             file.copy(from=paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName), to=paste0(OutdirFinal, "/", EachFileName), overwrite=T)
             file.remove(paste0(TempdirWithData, "/", SubDirName, "/", SubSubDirName, "/", EachFileName))
           })
+        })
+      })
+    }else if (DirName == "CRESCENT_CLOUD") {
+      sapply(list.dirs(TempdirWithData, full.names = F, recursive = F), FUN=function(SubDirName) {
+        OutdirFinal <- gsub(pattern = Tempdir, replacement =  paste0(Outdir, "/", ProgramOutdir), x = paste0(TempdirWithData, "/", SubDirName))
+        dir.create(file.path(OutdirFinal), showWarnings = F, recursive = T)
+        sapply(list.files(paste0(TempdirWithData, "/", SubDirName), pattern = ".tsv|.loom", full.names = F), FUN=function(EachFileName) {
+          file.copy(from=paste0(TempdirWithData, "/", SubDirName, "/", EachFileName), to=paste0(OutdirFinal, "/", EachFileName), overwrite=T)
+          file.remove(paste0(TempdirWithData, "/", SubDirName, "/", EachFileName))
         })
       })
     }else{
