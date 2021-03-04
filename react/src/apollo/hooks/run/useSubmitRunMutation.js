@@ -8,19 +8,28 @@ import * as R from 'ramda'
 export default function useSubmitRunMutation(runID) {
   // const run = useRunDetailsQuery(runID)
 
-  const [runStatus, setRunStatus] = useState(null)
-  const {loading, data, error} = useQuery(gql`
+  const [run, setRun] = useState(null)
+  const [submitted, setSubmitted] = useState(true) //start true
+  const {loading: loadingRunQuery, data, error, refetch} = useQuery(gql`
     query RunStatus($runID: ID) {
       run(runID: $runID) {
+        wesID
         status
+        referenceDatasets {
+          datasetID
+        }
       }
     }
   `, {
     variables: {
       runID
     },
-    onCompleted: ({run: {status}}) => {
-      setRunStatus(status)
+    fetchPolicy: 'network-only',
+    onCompleted: ({run}) => {
+      if (!!run) {
+        setRun(run)
+        setSubmitted(RA.isNotNil(run.wesID))
+      }
     }
   })
 
@@ -33,11 +42,13 @@ export default function useSubmitRunMutation(runID) {
   `, {
     client,
     variables: {runID},    
-    onCompleted: ({submitRun: {wesID}}) => {
-      if (wesID != null)
-        setRunStatus('submitted')
+    onCompleted: ({submitRun}) => {
+      if (RA.isNotNil(submitRun.wesID))
+        setSubmitted(true)
+        refetch()
     }
   })
 
-  return {submitRun, runStatus, loadingSubmitRun}
+  const loading = loadingRunQuery || loadingSubmitRun
+  return {submitRun, run, loading, submitted}
 }
