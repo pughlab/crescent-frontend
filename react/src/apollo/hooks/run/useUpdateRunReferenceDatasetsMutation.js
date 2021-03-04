@@ -13,6 +13,7 @@ export default function useUpdateRunReferenceDatasetsMutation ({
   useQuery(gql`
     query RunDatasets($runID: ID) {
       run(runID: $runID) {
+        status
         datasets {
           datasetID
           name
@@ -25,7 +26,6 @@ export default function useUpdateRunReferenceDatasetsMutation ({
       }
     }
   `, {
-    fetchPolicy: 'cache-and-network',
     variables: {runID},
     onCompleted: ({run}) => {if (RA.isNotNil(run)) {setRun(run)}}
   })
@@ -39,6 +39,7 @@ export default function useUpdateRunReferenceDatasetsMutation ({
         runID: $runID
         datasetIDs: $datasetIDs
       ) {
+        status
         datasets {
           datasetID
           name
