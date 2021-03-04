@@ -13,6 +13,10 @@
             "suffix": "BeforeFiltering.tsv"
         }
     },
+    "features_assay": {
+        "bucket": "run-",
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_features/"
+    },
     "features": {
         "bucket": "run-",
         "object": "SEURAT/CRESCENT_CLOUD/frontend_raw/features.tsv"
@@ -35,7 +39,11 @@
     },
     "metadata": {
         "bucket": "run-",
-        "object": "metadata.tsv"
+        "object": "SEURAT/CRESCENT_CLOUD/frontend_metadata/metadata.tsv"
+    },
+    "normalised_counts_assay": {
+        "prefix": "../minio/upload/run-",
+        "suffix": "/LOOM_FILES_CWL/"
     },
     "normalised_counts": {
         "prefix": "../minio/upload/run-",
@@ -53,6 +61,12 @@
         "object": {
             "prefix": "SEURAT/CRESCENT_CLOUD/frontend_qc/",
             "suffix": "qc_metrics.tsv"
+        }
+    },
+    "top_expressed_assay": {
+        "bucket": "run-",
+        "object": {
+            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_markers/"
         }
     },
     "top_expressed": {
