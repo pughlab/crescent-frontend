@@ -85,6 +85,7 @@ def makeMultiJob(runId: str, run: dict):
     job = {
         "anchors_function": run['parameters']['integration']['anchors_function'],
         "reference_datasets": refDatasetIDs,
+        "assays_for_loom": "RNA,SCT",
         "resolution": run['parameters']['clustering']['resolution'],
         "project_id": "crescent",
         "pca_dimensions": run['parameters']['reduction']['pca_dimensions'],
@@ -279,7 +280,9 @@ class SubmitRun(Mutation):
                     pathToMultiSplitCWL + "Integration-multiSplit.cwl",
                     pathToMultiSplitCWL + "PCA-Clustering-multiSplit.cwl", 
                     pathToMultiSplitCWL + "DGE-multiSplit.cwl",  
-                    pathToMultiSplitCWL + "upload.cwl"])
+                    pathToMultiSplitCWL + "upload-loom.cwl",  
+                    pathToMultiSplitCWL + "upload-r-objects.cwl",  
+                    pathToMultiSplitCWL + "upload-seurat.cwl"])
 
 
             # Update wesID and submitted on in mongo
