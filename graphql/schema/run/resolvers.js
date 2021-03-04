@@ -184,7 +184,7 @@ const resolvers = {
         const run = await Runs.findOne({runID})
         if (RA.isNotNil(run)) {
           const bucketName = `run-${runID}`
-          await Minio.putUploadIntoBucket(bucketName, metadata, 'metadata.tsv')          
+          await Minio.putUploadIntoBucket(bucketName, metadata, 'SEURAT/CRESCENT_CLOUD/frontend_metadata/metadata.tsv')          
           return run
         }
       } catch(error) {
