@@ -28,7 +28,7 @@ const ResultsPageComponent = ({
     if (RA.isNotNil(run)) {
       const {status} = run
       const runIsIncomplete = R.includes(status, ['pending'])
-      const sidebarTab = runIsIncomplete ? 'parameters' : 'visualizations'
+      const sidebarTab = runIsIncomplete ? 'data' : 'visualizations' //'parameters' replaced by 'data', is disabled unless run.referenceDatasets is nonempty
       dispatch(setActiveSidebarTab({sidebarTab}))
     }
   }, [run])

@@ -15,7 +15,7 @@ const initialPlotQuery = {
 }
 
 const initialState = {
-  activeSidebarTab: 'parameters', // visualizations
+  activeSidebarTab: 'data', // visualizations
 
   activeDataAction: null, //inputs data actions in sidebar
   activePipelineStep: null, // pipeline parameters select in sidebar
