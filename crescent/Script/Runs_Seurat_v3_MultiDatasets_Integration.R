@@ -16,10 +16,9 @@
 ####################################
 
 ####################################
-### HOW TO RUN THIS SCRIPT 
-### Using one-line-commands in a console or terminal type:
+### HOW TO RUN THIS SCRIPT
+### For help using one-line-commands in a console or terminal type:
 ### 'Rscript ~/path_to_this_file/Runs_Seurat_v3_MultiDatasets_Integration.R -h'
-### for help
 ####################################
 
 ####################################
@@ -55,12 +54,10 @@ suppressPackageStartupMessages(library(data.table))   # (CRAN) to read tables qu
 suppressPackageStartupMessages(library(ggplot2))      # (CRAN) to generate QC violin plots
 suppressPackageStartupMessages(library(cowplot))      # (CRAN) to arrange QC violin plots and top legend
 suppressPackageStartupMessages(library(future))       # (CRAN) to run parallel processes
-suppressPackageStartupMessages(library(loomR))        # (GitHub mojaveazure/loomR) needed for fron-end display of data. Only needed if using `-w Y`.
 suppressPackageStartupMessages(library(stringr))      # (CRAN) to regex and extract matching string. Only needed if using `-w Y` and `-x`.
 suppressPackageStartupMessages(library(STACAS))       # (GitHub carmonalab/STACAS) tested with v1.0.1 (compatible with Seurat v3.2.1). Needed for STACAS-based dataset integration
 suppressPackageStartupMessages(library(tidyr))        # (CRAN) to handle tibbles and data.frames
 suppressPackageStartupMessages(library(cluster))      # (CRAN) to cluster/sort the STACAS distances
-
 ####################################
 
 ################################################################################################################################################
@@ -72,7 +69,7 @@ suppressPackageStartupMessages(library(cluster))      # (CRAN) to cluster/sort t
 writeLines("\n**** SETUP RUN ****\n")
 
 ####################################
-### Turning warnings off for the sake of a cleaner aoutput
+### Turning warnings off for the sake of a cleaner output
 ####################################
 oldw <- getOption("warn")
 options( warn = -1 )
@@ -101,7 +98,7 @@ option_list <- list(
                 Default = 'No default. It's mandatory to specify this parameter'"),
   #
   make_option(c("-j", "--infile_r_objects"), default="NA",
-              help="Used with the 'run_cwl' option above for mounting input R Object file directory in 'inputs_list' to CWL containers
+              help="Used with the --run_cwl to mount the --inputs_list R object into CWL containers
 
                 Default = 'NA'"),
   #
@@ -134,13 +131,11 @@ option_list <- list(
               
                 Default = 'No default. It's mandatory to specify this parameter'"),
   #
-  make_option(c("-d", "--pca_dimensions"), default="10",
-              help="Max value of PCA dimensions to use for clustering and t-SNE functions
-                FindClusters(..., dims.use = 1:-d) and RunTSNE(..., dims.use = 1:-d)
-                Typically '10' is enough, if unsure use '10' and afterwards check file:
-                *PCElbowPlot.pdf, use the number of PC's where the elbow shows a plateau along the y-axes low numbers
-                
-                Default = '10'"),
+  make_option(c("-d", "--pca_dimensions_anchors"), default="30",
+              help="Max value of PCA dimensions to use for anchor detection
+                FindIntegrationAnchors(..., dims = 1:-d)
+
+                Default = '30'"),
   #
   make_option(c("-n", "--k_filter"), default="200",
               help="Integrating highly heterogenous datasets can lead to a too small number of anchors,
@@ -160,14 +155,16 @@ option_list <- list(
                 
                 Default = 'Y'"),
   #
-  make_option(c("-w", "--run_cwl"), default="N",
-              help="Indicates if this script is running inside a virtual machine container, such that outfiles are written directly into the 'HOME' . Type 'y/Y' or 'n/N'.
-                Note, if using 'y/Y' this supersedes option -o
-                
-                Default = 'N'"),
+  make_option(c("-w", "--run_cwl"), default="0",
+              help="Indicates if this script should produce 'frontend' files for crescent.cloud and if CWL is used
+                0 = no frontend files should be produced and CWL is not used
+                1 = frontend files should be produced and CWL is used
+                2 = frontend files should be produced but CWL is not used (e.g. run locally)
+
+                Default = '0'"),
   #
   make_option(c("-x", "--minio_path"), default="NA",
-              help="Used with the 'run_cwl' option above for mounting input data files in 'inputs_list' to CWL containers
+              help="Only needed if using '-w 1' to mount input data files in 'inputs_list' to CWL containers
               
                 Default = 'NA'"),
   #
@@ -187,11 +184,11 @@ AnchorsFunction         <- opt$anchors_function
 ReferenceDatasets       <- opt$reference_datasets
 Outdir                  <- opt$outdir
 PrefixOutfiles          <- opt$prefix_outfiles
-PcaDimsUse              <- c(1:as.numeric(opt$pca_dimensions))
+PcaDimsUse              <- c(1:as.numeric(opt$pca_dimensions_anchors))
 KFilter                 <- as.numeric(opt$k_filter)
 NumbCores               <- opt$number_cores
 SaveRObject             <- opt$save_r_object
-RunsCwl                 <- opt$run_cwl
+RunsCwl                 <- as.numeric(opt$run_cwl)
 MinioPath               <- opt$minio_path
 MaxGlobalVariables      <- as.numeric(opt$max_global_variables)
 
@@ -202,6 +199,18 @@ for (optionInput in option_list) {
 }
 OneLineCommands <- paste0(OneLineCommands, paste0("`\n"))
 writeLines(OneLineCommands)
+
+####################################
+### Check that mandatory parameters are not 'NA' (default)
+####################################
+writeLines("\n*** Check that mandatory parameters are not 'NA' (default) ***\n")
+
+ListMandatory<-list("inputs_list", "outdir", "prefix_outfiles")
+for (param in ListMandatory) {
+  if (length(grep('^NA$',opt[[param]], perl = T))) {
+    stop(paste0("Parameter -", param, " can't be 'NA' (default). Use option -h for help."))
+  }
+}
 
 ####################################
 ### Start stopwatches
@@ -217,26 +226,32 @@ StopWatchStart$Overall  <- Sys.time()
 ####################################
 writeLines("\n*** Create outdirs ***\n")
 
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-  ### Using `-w Y` will make Tempdir, which takes the value of ProgramOutdir, and it will be the final out-directory
-  Tempdir         <- ProgramOutdir
-  dir.create(file.path(Tempdir), showWarnings = F) 
-  dir.create(file.path("R_OBJECTS_CWL"), showWarnings = F) 
-  
+FILE_TYPE_OUT_DIRECTORIES = c(
+  "LOG_FILES",
+  "PSEUDO_BULK",
+  "STACAS"
+)
+
+if (RunsCwl == 0 || RunsCwl == 2) {
   FILE_TYPE_OUT_DIRECTORIES = c(
-    "CRESCENT_CLOUD",
-    "LOG_FILES",
-    "R_OBJECTS",
-    "PSEUDO_BULK",
-    "STACAS"
+    FILE_TYPE_OUT_DIRECTORIES,
+    "R_OBJECTS"
   )
-  
-}else{
-  ## Using `Tempdir/DIRECTORY` for temporary storage of outfiles because sometimes long paths of outdirectories casuse R to leave outfiles unfinished
+}
+
+if (RunsCwl == 1) {
+  ### Using `-w 1` will make Tempdir, which takes the value of ProgramOutdir, and it will be the final out-directory
+  ### for most outfiles, except R objects, which will be written into R_OBJECTS_CWL
+  Tempdir         <- ProgramOutdir
+  dir.create(file.path(Tempdir), showWarnings = F)
+  dir.create(file.path("R_OBJECTS_CWL"), showWarnings = F)
+}else if (RunsCwl == 0 || RunsCwl == 2) {
+  ## Using `-w 0` or `-w 2` will create a Tempdir/DIRECTORY for temporary storage of outfiles because sometimes
+  ## long paths of outdirectories casuse R to leave outfiles unfinished
   ## 'DIRECTORY' is one of the directories specified at FILE_TYPE_OUT_DIRECTORIES
   ## Then at the end of the script they'll be moved into `Outdir/ProgramOutdir`
-  Tempdir        <- "~/temp" 
-  #
+  ## The difference between `-w 0` and `-w 2` is that the first one doesn't produce frontend outfiles for crescent.cloud
+  Tempdir           <- "~/temp"
   UserHomeDirectory <- Sys.getenv("HOME")[[1]]
   #
   Outdir<-gsub("^~/",paste0(UserHomeDirectory,"/"), Outdir)
@@ -248,13 +263,8 @@ if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
   #
   dir.create(file.path(Outdir, ProgramOutdir), recursive = T)
   dir.create(file.path(Tempdir), showWarnings = F, recursive = T)
-  
-  FILE_TYPE_OUT_DIRECTORIES = c(
-    "LOG_FILES",
-    "R_OBJECTS",
-    "PSEUDO_BULK",
-    "STACAS"
-  )
+}else{
+  stop(paste0("ERROR unexpected option '-w ", RunsCwl))
 }
 
 sapply(FILE_TYPE_OUT_DIRECTORIES, FUN=function(eachdir) {
@@ -341,18 +351,6 @@ DefaultParameters <- list(
 ### Assay types for plot and table outfiles
 listAssaySuffixForOutfiles <- list(RNA="RNA", SCT="SCT", integrated="INT")
 
-####################################
-### Check that mandatory parameters are not 'NA' (default)
-####################################
-writeLines("\n*** Check that mandatory parameters are not 'NA' (default) ***\n")
-
-ListMandatory<-list("infiles_list", "outdir", "prefix_outfiles")
-for (param in ListMandatory) {
-  if (length(grep('^NA$',opt[[param]], perl = T))) {
-    stop(paste0("Parameter -", param, " can't be 'NA' (default). Use option -h for help."))
-  }
-}
-
 ################################################################################################################################################
 ################################################################################################################################################
 ### HERE ARE THE FUNCTIONS TO LOAD DATASETS
@@ -366,35 +364,29 @@ writeLines("\n**** LOAD DATASETS ****\n")
 ####################################
 writeLines("\n*** Load --inputs_list ***\n")
 
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-  if (regexpr("^NA$", MinioPath , ignore.case = T)[1] == 1) {
-    
-    InputsTable<-read.table(InputsList, header = F, row.names = 1, stringsAsFactors = F)
-    colnames(InputsTable)<-c("PathToRObject","DatasetType")
-    
-  } else {
-    MinioPaths <- as.list(strsplit(MinioPath, ",")[[1]])
-    MinioDataPaths = data.frame(dataset_ID=rep(0, length(MinioPaths)), dataset_path=rep(0, length(MinioPaths)))
-    
-    for (i in seq_along(MinioPaths)) {
-      MinioDataPaths[i, ] = c(basename(MinioPaths[[i]]), MinioPaths[[i]])
-    }
-    
-    InputsTable0 <- read.table(InputsList, header = T, sep = ",", stringsAsFactors = F)
-    
-    MergedInputsTable <- merge(MinioDataPaths, InputsTable0, by="dataset_ID")
-    MergeFilter <- c("name", "dataset_ID","dataset_path", "dataset_type")
-    MergedInputsTableFiltered <- MergedInputsTable[MergeFilter]
-    MergedInputsTableFilteredFinal <- MergedInputsTableFiltered[,-1]
-    rownames(MergedInputsTableFilteredFinal) <- MergedInputsTableFiltered[,1]
-    colnames(MergedInputsTableFilteredFinal) <-c("DatasetMinioID","PathToRObject","DatasetType")
-    
-    InputsTable <- MergedInputsTableFilteredFinal
-  }
-} else {
+if (RunsCwl == 0 || RunsCwl == 2) {
   InputsList<-gsub("^~/",paste0(UserHomeDirectory,"/"), InputsList)
   InputsTable<-read.table(InputsList, header = F, row.names = 1, stringsAsFactors = F)
   colnames(InputsTable)<-c("PathToRObject","DatasetType")
+  
+}else{
+  MinioPaths <- as.list(strsplit(MinioPath, ",")[[1]])
+  MinioDataPaths = data.frame(dataset_ID=rep(0, length(MinioPaths)), dataset_path=rep(0, length(MinioPaths)))
+  
+  for (i in seq_along(MinioPaths)) {
+    MinioDataPaths[i, ] = c(basename(MinioPaths[[i]]), MinioPaths[[i]])
+  }
+  
+  InputsTable0 <- read.table(InputsList, header = T, sep = ",", stringsAsFactors = F)
+  
+  MergedInputsTable <- merge(MinioDataPaths, InputsTable0, by="dataset_ID")
+  MergeFilter <- c("name", "dataset_ID","dataset_path", "dataset_type")
+  MergedInputsTableFiltered <- MergedInputsTable[MergeFilter]
+  MergedInputsTableFilteredFinal <- MergedInputsTableFiltered[,-1]
+  rownames(MergedInputsTableFilteredFinal) <- MergedInputsTableFiltered[,1]
+  colnames(MergedInputsTableFilteredFinal) <-c("DatasetMinioID","PathToRObject","DatasetType")
+  
+  InputsTable <- MergedInputsTableFilteredFinal
 }
 
 ##### Replace low dashes by dots in rownames(InputsTable) or DatasetType
@@ -414,21 +406,20 @@ writeLines("\n*** Load each dataset R object ***\n")
 
 StopWatchStart$LoadRDSEachDataset  <- Sys.time()
 
-if ((regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) & (!(regexpr("^NA$", MinioPath , ignore.case = T)[1] == 1))) {
-  RObjects <- list.files(InputRObjects, pattern="*_QC_Normalization.rds", full.names=TRUE)
+if (RunsCwl == 1) {
+  RObjects <- list.files(InputRObjects, pattern="*_QC_Normalization.rds", full.names=T)
   seurat.object.list <- list()
-  
   for (object in RObjects) {
     MinioID <- str_extract(basename(object), regex("[^.]*"))
     for (dataset in rownames(InputsTable)) {
-      DatasetMinioID   <- InputsTable[dataset,"DatasetMinioID"]
+      DatasetMinioID <- InputsTable[dataset,"DatasetMinioID"]
       if (MinioID == DatasetMinioID) {
         DatasetIndexInInputsTable <- which(x = rownames(InputsTable) == dataset)
         seurat.object.list[[DatasetIndexInInputsTable]] <- readRDS(object)
       }
     }
   }
-} else {
+}else{
   seurat.object.list <- list()
   for (dataset in rownames(InputsTable)) {
     print(dataset)
@@ -505,11 +496,18 @@ if (regexpr("^NA$", ReferenceDatasets , ignore.case = T)[1] == 1) {
   writeLines("\n*** Will compare all-vs-all datasets to get anchors ***\n")
   ReferenceDatasets.indices <- c(1:nrow(InputsTable))
 }else{
+
+  if (RunsCwl == 1) {
+    InputsTableReferenceID <- InputsTable$DatasetMinioID
+  } else {
+    InputsTableReferenceID <- rownames(InputsTable)
+  }
+  
   writeLines("\n*** Determine reference dataset indices ***\n")
   ReferenceDatasets.list <- unlist(strsplit(ReferenceDatasets, ","))
-  NumberOfFoundReferenceDatasetIDs <- sum(ReferenceDatasets.list %in% rownames(InputsTable) == T)
+  NumberOfFoundReferenceDatasetIDs <- sum(ReferenceDatasets.list %in% InputsTableReferenceID == T)
   if (NumberOfFoundReferenceDatasetIDs == length(ReferenceDatasets.list)) {
-    ReferenceDatasets.indices <- match(ReferenceDatasets.list, rownames(InputsTable))
+    ReferenceDatasets.indices <- match(ReferenceDatasets.list, InputsTableReferenceID)
   }else{
     stop(paste0("Requested ", length(ReferenceDatasets.list), " datasets as references by parameter `-z`, but found ", NumberOfFoundReferenceDatasetIDs, " in --inputs_list row headers"))
   }
@@ -545,8 +543,8 @@ if (regexpr("^STACAS$", AnchorsFunction , ignore.case = T)[1] == 1) {
   
   DensityPlots <- PlotAnchors.STACAS(seurat.object.anchors.unfiltered, obj.names=names(seurat.object.list))
   
-  OutfilePathName <- paste0(Tempdir, "/STACAS/", PrefixOutfiles, ".", ProgramOutdir, "_STACAS_distances.tsv.bz2")
-  Outfile.con <- bzfile(OutfilePathName, "w")
+  OutfileStacasDistances <- paste0(Tempdir, "/STACAS/", PrefixOutfiles, ".", ProgramOutdir, "_STACAS_distances.tsv.bz2")
+  Outfile.con <- bzfile(OutfileStacasDistances, "w")
   Headers<-paste("dataset1", "dataset2", "cell1", "cell2", "score", "dist1.2", "dist2.1", "dist.mean", sep = "\t", collapse = "")
   write.table(Headers, file = Outfile.con, row.names = F, col.names = F, sep="\t", quote = F)
   lapply(1:length(seurat.object.list), function(DatasetNumber) {
@@ -564,7 +562,7 @@ if (regexpr("^STACAS$", AnchorsFunction , ignore.case = T)[1] == 1) {
   
   StopWatchStart$GetMedianDistMeanStacas <- Sys.time()
   
-  Distances.df <- read.table(file = paste0(OutfilesTsv, ".gz"), header = T, sep = "\t", row.names = NULL)
+  Distances.df <- read.table(file = OutfileStacasDistances, header = T, sep = "\t", row.names = NULL)
   Distances.df$datasets <- paste0(Distances.df[,"dataset1"],"---",Distances.df[,"dataset2"])
   MedianDistances.df <- aggregate(Distances.df[,"dist.mean"], list(Distances.df$datasets), median)
   SplitDatasets <- data.frame(do.call('rbind', strsplit(as.character(MedianDistances.df[,1]),'---', fixed=TRUE)))
@@ -577,14 +575,12 @@ if (regexpr("^STACAS$", AnchorsFunction , ignore.case = T)[1] == 1) {
   MedianDistances.mat[is.na(MedianDistances.mat)] <- 1
   MedianDistances.clust <- agnes(x = 1-MedianDistances.mat, metric = "manhattan")
   MedianDistances.order <- rownames(MedianDistances.mat)[MedianDistances.clust$order]
-  MedianDistances.mat   <- MedianDistances.mat[MedianDistances.order,MedianDistances.order]
-  
+  MedianDistances.mat   <- MedianDistances.mat[as.factor(MedianDistances.order),as.factor(MedianDistances.order)]
   OutfilePathName <- paste0(Tempdir, "/STACAS/", PrefixOutfiles, ".", ProgramOutdir, "_STACAS_inv_dist.mean_median_ordered.tsv.bz2")
   Outfile.con <- bzfile(OutfilePathName, "w")
   write.table(data.frame("InvDistMean_median"=MedianDistances.order, round(MedianDistances.mat,DefaultParameters$DigitsForRoundMedianDist)),
               file = OutfilePathName, row.names = F,sep="\t",quote = F)
   close(Outfile.con)
-  
   OutfilePathName <- paste0(Tempdir, "/STACAS/", PrefixOutfiles, ".", ProgramOutdir, "_STACAS_dist.mean_median_ordered.tsv.bz2")
   Outfile.con <- bzfile(OutfilePathName, "w")
   write.table(data.frame("DistMean_median"=MedianDistances.order, round(1-MedianDistances.mat,DefaultParameters$DigitsForRoundMedianDist)),
@@ -647,8 +643,7 @@ if (regexpr("^STACAS$", AnchorsFunction , ignore.case = T)[1] == 1) {
   StopWatchStart$GetFilteredAnchorsStacas <- Sys.time()
   
   seurat.object.anchors <- FilterAnchors.STACAS(seurat.object.anchors.unfiltered)
-  print(seurat.object.anchors)
-  
+
   OutfilesTsv <- paste0(Tempdir, "/STACAS/", PrefixOutfiles, ".", ProgramOutdir, "_STACAS_filtered_anchor_numbers.tsv.bz2")
   OutfilePdf  <- paste0(Tempdir, "/STACAS/", PrefixOutfiles, ".", ProgramOutdir, "_STACAS_filtered_anchor_numbers.pdf")
   so.anchors  <- seurat.object.anchors
@@ -698,14 +693,13 @@ if (regexpr("^STACAS$", AnchorsFunction , ignore.case = T)[1] == 1) {
   
   writeLines("\n*** Run FindIntegrationAnchors() ***\n")
   print(paste0("Using k.filter = ", KFilter))
-  seurat.object.anchors <- FindIntegrationAnchors(object.list = seurat.object.list, k.filter = KFilter, normalization.method = "SCT", anchor.features = seurat.object.integratedfeatures, reference = ReferenceDatasets.indices, verbose = T)
+  seurat.object.anchors <- FindIntegrationAnchors(object.list = seurat.object.list, k.filter = KFilter, normalization.method = "SCT", dims=PcaDimsUse, anchor.features = seurat.object.integratedfeatures, reference = ReferenceDatasets.indices, verbose = T)
   SampleTree <- NULL
   
   StopWatchEnd$FindIntegrationAnchors  <- Sys.time()
-  
-  print(seurat.object.anchors)
-  
+
 }
+print(seurat.object.anchors)
 
 ####################################
 ### Integrating datasets
@@ -735,21 +729,31 @@ if (regexpr("^Y$", SaveRObject, ignore.case = T)[1] == 1) {
   
   writeLines("\n*** Saving the Integration R object ***\n")
   
-  StopWatchStart$SaveRDSFull  <- Sys.time()
+  StopWatchStart$SaveRDSIntegration  <- Sys.time()
   
-    if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
-      OutfileRDS<-paste0("R_OBJECTS_CWL/", PrefixOutfiles, ".", ProgramOutdir, "_Integration", ".rds")
-    } else {
-      OutfileRDS<-paste0(Tempdir, "/R_OBJECTS/", PrefixOutfiles, ".", ProgramOutdir, "_Integration", ".rds")
-    }
-
+  if (RunsCwl == 1) {
+    OutfileRDS<-paste0("R_OBJECTS_CWL/", PrefixOutfiles, ".", ProgramOutdir, "_Integration", ".rds")
+  }else{
+    OutfileRDS<-paste0(Tempdir, "/R_OBJECTS/", PrefixOutfiles, ".", ProgramOutdir, "_Integration", ".rds")
+  }
   saveRDS(seurat.object.integrated, file = OutfileRDS)
   
-  StopWatchEnd$SaveRDSFull  <- Sys.time()
+  StopWatchEnd$SaveRDSIntegration  <- Sys.time()
+
+  StopWatchStart$SaveRDSAnchors  <- Sys.time()
   
+  if (RunsCwl == 1) {
+    OutfileRDS<-paste0("R_OBJECTS_CWL/", PrefixOutfiles, ".", ProgramOutdir, "_Anchors", ".rds")
+  }else{
+    OutfileRDS<-paste0(Tempdir, "/R_OBJECTS/", PrefixOutfiles, ".", ProgramOutdir, "_Anchors", ".rds")
+  }
+  saveRDS(seurat.object.anchors, file = OutfileRDS)
+  
+  StopWatchEnd$SaveRDSAnchors  <- Sys.time()
+
 }else{
   
-  writeLines("\n*** Not saving the Integration R object ***\n")
+  writeLines("\n*** Not saving the Integration R objects ***\n")
   
 }
 
@@ -794,10 +798,10 @@ lapply(names(StopWatchStart), function(stepToClock) {
 writeLines("\n*** Moving outfiles into outdir or keeping them at tempdir (if using CWL) ***\n")
 
 ### using two steps to copy files (`file.copy` and `file.remove`) instead of just `file.rename` to avoid issues with path to Tempdir in cluster systems
-if (regexpr("^Y$", RunsCwl, ignore.case = T)[1] == 1) {
+if (RunsCwl == 1) {
   writeLines("\n*** Keeping files at: ***\n")
   writeLines(Tempdir)
-} else {
+}else{
   writeLines("\n*** Moving outfiles into outdir ***\n")
   sapply(FILE_TYPE_OUT_DIRECTORIES, FUN=function(DirName) {
     TempdirWithData <- paste0(Tempdir, "/", DirName)
