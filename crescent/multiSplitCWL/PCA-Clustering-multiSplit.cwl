@@ -47,6 +47,12 @@ inputs:
       position: 6
       prefix: -d
 
+  assays_for_loom:
+    type: string?
+    inputBinding:
+      position: 7
+      prefix: -t
+
   number_cores:
     type: string?
     inputBinding:
@@ -61,8 +67,8 @@ inputs:
       prefix: -s
 
   runs_cwl:
-    type: string
-    default: Y
+    type: int
+    default: 1
     inputBinding:
       position: 13
       prefix: -w
@@ -99,3 +105,8 @@ outputs:
     type: File
     outputBinding:
       glob: ["R_OBJECTS_CWL/*_PCA_Clustering_DimReduction.rds"]
+
+  loom_output:
+    type: Directory
+    outputBinding: 
+      glob: LOOM_FILES_CWL
