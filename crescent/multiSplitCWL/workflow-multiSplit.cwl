@@ -23,6 +23,9 @@ inputs:
   - id: dge_comparisons
     type: string?
 
+  - id: assays_for_loom
+    type: string? 
+
   - id: number_cores
     type: string?
 
@@ -39,8 +42,8 @@ inputs:
     default: N
 
   - id: runs_cwl
-    type: string
-    default: Y
+    type: int
+    default: 1
 
   - id: outs_dir
     type: string
@@ -132,7 +135,7 @@ steps:
       - id: r_object_output
     run: ./QC-Normalization-multiSplit.cwl
 
-  - id: upload-QC-Normalization
+  - id: upload-seurat-QC-Normalization
     in:
       - id: SEURAT
         source: QC-Normalization-multiSplit/seurat_output
@@ -153,7 +156,7 @@ steps:
         source: minio_port
     out:
       - id: SEURAT_dir
-    run: ./upload.cwl
+    run: ./upload-seurat.cwl
     
   - id: Integration-multiSplit
     in:
@@ -201,7 +204,7 @@ steps:
       - id: r_object_output
     run: ./Integration-multiSplit.cwl
 
-  - id: upload-Integration
+  - id: upload-seurat-Integration
     in:
       - id: SEURAT
         source: Integration-multiSplit/seurat_output
@@ -222,7 +225,7 @@ steps:
         source: minio_port
     out:
       - id: SEURAT_dir
-    run: ./upload.cwl
+    run: ./upload-seurat.cwl
 
   - id: PCA-Clustering-multiSplit
     in:
@@ -247,6 +250,9 @@ steps:
       - id: pca_dimensions
         source: pca_dimensions
 
+      - id: assays_for_loom
+        source: assays_for_loom
+
       - id: number_cores
         source: number_cores
 
@@ -265,9 +271,10 @@ steps:
     out:
       - id: seurat_output
       - id: r_object_output
+      - id: loom_output
     run: ./PCA-Clustering-multiSplit.cwl
 
-  - id: upload-PCA-Clustering
+  - id: upload-seurat-PCA-Clustering
     in:
       - id: SEURAT
         source: PCA-Clustering-multiSplit/seurat_output
@@ -288,7 +295,30 @@ steps:
         source: minio_port
     out:
       - id: SEURAT_dir
-    run: ./upload.cwl
+    run: ./upload-seurat.cwl
+
+  - id: upload-loom-PCA-Clustering
+    in:
+      - id: LOOM_FILES_CWL
+        source: PCA-Clustering-multiSplit/loom_output
+
+      - id: destinationPath
+        source: destinationPath
+
+      - id: access
+        source: access_key
+
+      - id: secret
+        source: secret_key
+        
+      - id: domain
+        source: minio_domain
+
+      - id: port
+        source: minio_port
+    out:
+      - id: LOOM_FILES_CWL_dir
+    run: ./upload-loom.cwl
 
   - id: DGE-multiSplit
     in:
@@ -329,9 +359,10 @@ steps:
         source: extract-multiSplit/input_dir
     out:
       - id: seurat_output
+      - id: r_object_output
     run: ./DGE-multiSplit.cwl
 
-  - id: upload-DGE
+  - id: upload-seurat-DGE
     in:
       - id: SEURAT
         source: DGE-multiSplit/seurat_output
@@ -352,4 +383,27 @@ steps:
         source: minio_port
     out:
       - id: SEURAT_dir
-    run: ./upload.cwl
+    run: ./upload-seurat.cwl
+
+  - id: upload-r-objects-DGE
+    in:
+      - id: R_OBJECTS_CWL
+        source: DGE-multiSplit/r_object_output
+
+      - id: destinationPath
+        source: destinationPath
+
+      - id: access
+        source: access_key
+
+      - id: secret
+        source: secret_key
+        
+      - id: domain
+        source: minio_domain
+
+      - id: port
+        source: minio_port
+    out:
+      - id: R_OBJECTS_CWL_dir
+    run: ./upload-r-objects.cwl
