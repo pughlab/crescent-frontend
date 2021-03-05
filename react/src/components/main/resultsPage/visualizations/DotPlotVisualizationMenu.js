@@ -45,7 +45,7 @@ const DotPlotVisualizationMenu = ({
   //   setCurrentSearch(selectedFeature || '')
   // }, [selectedFeature])
 
-  if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, topExpressed, searchOptions])) {
+  if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, topExpressed, searchOptions, assays])) {
     return null
   }
 
@@ -108,20 +108,24 @@ const DotPlotVisualizationMenu = ({
         />
       </Form.Field>
 
-      <Divider horizontal content='RNA Normalization' />
-      <Form.Field>
-        <Form.Dropdown fluid selection labeled
-          // value="raw"
-          // options={[{ key: "raw", text: "Raw", value: "raw" }, { key: "normalized", text: "Normalized", value: "normalized" }]}
-          // onChange={(e, { value }) => { }}
-          // disabled
-          value={selectedAssay}
-          // options={formatList(R.map(R.toUpper)(assays))}
-          options={formatList(assays)}
-          onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
-          disabled={isActiveAssay('legacy')}
-        />
-      </Form.Field>
+      {!isActiveAssay('legacy') && 
+      <>
+        <Divider horizontal content='RNA Normalization' />
+        <Form.Field>
+          <Form.Dropdown fluid selection labeled
+            // value="raw"
+            // options={[{ key: "raw", text: "Raw", value: "raw" }, { key: "normalized", text: "Normalized", value: "normalized" }]}
+            // onChange={(e, { value }) => { }}
+            // disabled
+            value={selectedAssay}
+            // options={formatList(R.map(R.toUpper)(assays))}
+            options={R.compose(R.map(R.evolve({text: R.toUpper})), formatList)(assays)}
+            onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
+            // disabled={isActiveAssay('legacy')}
+          />
+        </Form.Field>
+      </>
+      }
 
       <Divider horizontal content='Colour By' />
       <Form.Field>

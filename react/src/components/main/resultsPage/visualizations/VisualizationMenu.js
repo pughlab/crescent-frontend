@@ -24,6 +24,7 @@ const VisualizationMenu = ({
   const {activePlot} = useResultsPage()
   const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay} = useResultsPagePlotQuery(activePlot)
   const isActiveResult = R.equals(activeResult)
+  const isActiveAssay = R.equals(selectedAssay)
 
   //available groups & top expressed must be queries
   const diffExpression = useDiffExpressionQuery(runID)
@@ -44,7 +45,7 @@ const VisualizationMenu = ({
     setCurrentSearch(selectedFeature || '')
   }, [selectedFeature])
 
-  if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, topExpressed, searchOptions])) {
+  if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, topExpressed, searchOptions, assays])) {
     return null
   }
 
@@ -104,15 +105,20 @@ const VisualizationMenu = ({
         />
         </Form.Field>
 
-        <Divider horizontal content='RNA Normalization' />
-        <Form.Field>
-          <Form.Dropdown fluid selection labeled
-            value={selectedAssay}
-            // options={formatList(R.map(R.toUpper)(assays))}
-            options={formatList(assays)}
-            onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
-          />
-        </Form.Field>
+        {!isActiveAssay('legacy') && 
+        <>
+          <Divider horizontal content='RNA Normalization' />
+          <Form.Field>
+            <Form.Dropdown fluid selection labeled
+              value={selectedAssay}
+              // options={formatList(R.map(R.toUpper)(assays))}
+              options={R.compose(R.map(R.evolve({text: R.toUpper})), formatList)(assays)}
+              onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
+            />
+          </Form.Field>
+        </>
+        }
+
 
         <Divider horizontal content='Colour By' />
         <Form.Field>
