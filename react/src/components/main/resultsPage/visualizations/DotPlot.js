@@ -83,6 +83,7 @@ const DotPlot = ({
   if (R.any(R.isNil, [plots])) {
     return null
   }
+
   //if no feature is selected, ask the user to select one 
   if (R.isEmpty(selectedFeatures)) {
     return (

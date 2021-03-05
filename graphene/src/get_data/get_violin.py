@@ -131,7 +131,7 @@ def get_violin_data(feature, group, runID, datasetID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True, assay=assay)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()

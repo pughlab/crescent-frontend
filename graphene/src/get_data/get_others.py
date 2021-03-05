@@ -12,19 +12,19 @@ from get_data.minio_functions import (
     get_size,
     object_exists
 )
-from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name
+from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name, assay
 
-def get_paths(runID, keys, findDatasetID=False):
+def get_paths(runID, keys, findDatasetID=False, assay="legacy"):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    return set_IDs(paths, runID, keys, findDatasetID=findDatasetID)
+    return set_IDs(paths, runID, keys, findDatasetID=findDatasetID, assay=assay)
 
 def get_top_expressed_data(runID, datasetID):
     """ given a runID get the top 10 expressed genes + their avg log fold change and p-value """
-
-    paths = get_paths(runID, ["top_expressed"])
-    paths["top_expressed"] = set_name_multi(paths["top_expressed"], datasetID, "top_expressed")
+    paths = get_paths(runID, ["top_expressed"], assay=assay)
+    paths["top_expressed"] = set_name_multi(paths["top_expressed"], datasetID, "top_expressed", assay=assay)
+ 
     minio_client = get_minio_client()
 
     result = []
@@ -90,6 +90,23 @@ def get_available_qc_data(runID, datasetID):
 
     return available_plots
 
+def get_assays(runID):
+    """ given a runID, return the available assay types """
+    minio_client = get_minio_client()
+    object_names = get_list_of_object_names("run-"+runID, minio_client)
+
+    # determine whether the new file structure is used by checking if LOOM_FILES_CWL/ exits
+    new_loom_pattern = re.compile(r".*LOOM_FILES_CWL/counts_(?P<assay>.*).loom")
+    assays = []
+    for object_name in object_names:
+        match = new_loom_pattern.match(object_name)
+        if match is not None:
+            assays.append(match.groupdict()["assay"])
+    if not assays:
+        return ["legacy"]
+    else: 
+        return assays
+
 def get_groups(runID, datasetID):
     """ given a runID, fetches the available groups to label cell barcodes by """
     minio_client = get_minio_client()
@@ -127,18 +144,20 @@ def get_plots(runID):
 
     coordinates_pattern = re.compile(r".*frontend_coordinates/(?P<vis>.*)Coordinates.tsv")
     qc_pattern = re.compile(r".*frontend_qc.*")
-    loom_pattern = re.compile(r".*frontend_normalized.*")
+    old_loom_pattern = re.compile(r".*frontend_normalized.*")
+    new_loom_pattern = re.compile(r"LOOM_FILES_CWL/.*")
     object_names = get_list_of_object_names(paths["frontend_coordinates"]["bucket"], minio_client)
 
     for object_name in object_names:
         match = coordinates_pattern.match(object_name)
+        loom_pattern_match = (old_loom_pattern.match(object_name) is not None) or (new_loom_pattern.match(object_name) is not None)
         if match is not None:
             vis = match.groupdict()["vis"]
             if vis in DESC:
                 available_plots.append(vis)
         elif ("QC" not in available_plots) and (qc_pattern.match(object_name) is not None):
             available_plots.append("QC")
-        elif ("VIOLIN" not in available_plots) and (loom_pattern.match(object_name) is not None):
+        elif ("VIOLIN" not in available_plots) and loom_pattern_match:
             available_plots.append("VIOLIN")
             available_plots.append("DOT")       
     

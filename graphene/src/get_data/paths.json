@@ -15,7 +15,11 @@
     },
     "features_assay": {
         "bucket": "run-",
-        "object": "SEURAT/CRESCENT_CLOUD/frontend_features/"
+        "object": {
+            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_features/",
+            "infix": "features",
+            "suffix": ".tsv"
+        }
     },
     "features": {
         "bucket": "run-",
@@ -66,7 +70,9 @@
     "top_expressed_assay": {
         "bucket": "run-",
         "object": {
-            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_markers/"
+            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_markers/",
+            "infix": "TopMarkersPerCluster",
+            "suffix": ".tsv"
         }
     },
     "top_expressed": {

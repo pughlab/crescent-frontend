@@ -4,7 +4,7 @@ import os
 from graphene import ObjectType
 
 from get_data.get_client import get_minio_client
-from get_data.helper import set_IDs
+from get_data.helper import set_IDs, set_name_multi, assay
 from get_data.minio_functions import get_all_lines
 
 def binary_search(query, _list):
@@ -74,8 +74,10 @@ def run_search(query, runID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["features"])
+    paths = set_IDs(paths, runID, ["features"], assay=assay)
 
+    if assay != 'legacy':
+        paths["features"] = set_name_multi(paths["features"], "all", ["features"], assay=assay)
     minio_client = get_minio_client()
 
     features_list = get_all_lines(paths["features"]["bucket"], paths["features"]["object"], minio_client)

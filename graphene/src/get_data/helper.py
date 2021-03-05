@@ -7,6 +7,7 @@ from bson import ObjectId
 
 from get_data.get_client import get_mongo_client
 
+assay = "rna"
 # plotly defaults
 COLOURS = [
   '#1f77b4',  # muted blue
@@ -94,25 +95,31 @@ def find_id(name):
     return datasets.find_one({"name": name})["datasetID"]
 
 # If datasetID is 'all' then use the default path which is prefix+suffix. Else query for the dataset_id
-def set_name_multi(path, datasetID, key):
+def set_name_multi(path, datasetID, key, assay="legacy"):
     if (datasetID.lower() == "all"):
-        path["object"] = path["object"]["prefix"] + path["object"]["suffix"]
+        if "infix" in path["object"]:
+            path["object"] = path["object"]["prefix"] + path["object"]["infix"] + "_" + assay + path["object"]["suffix"]
+        else:
+            path["object"] = path["object"]["prefix"] + path["object"]["suffix"]
         return path
     else:
         # Create a copy in a format that set_name understands
         # Essentially it returns a {"bucket": bucket_name, "object": object_name}
         return set_name({key: path}, datasetID, [key])[key]
 
-def set_name(paths, datasetID, keys):
+def set_name(paths, datasetID, keys, assay="legacy"):
     client = get_mongo_client()
     db = client["crescent"]
     datasets = db["datasets"]
     name = datasets.find_one({"datasetID": ObjectId(datasetID)})["name"]
     for key in keys:
-        paths[key]["object"] = paths[key]["object"]["prefix"] + name + "_" + paths[key]["object"]["suffix"]
+        if "infix" in paths[key]["object"]:
+            paths[key]["object"] = paths[key]["object"]["prefix"] + name + "_" + paths[key]["object"]["infix"] + "_" + assay + paths[key]["object"]["suffix"]
+        else:
+            paths[key]["object"] = paths[key]["object"]["prefix"] + name + "_" + paths[key]["object"]["suffix"]
     return paths
 
-def set_IDs(paths, runID, keys, findDatasetID=False):
+def set_IDs(paths, runID, keys, findDatasetID=False, assay='legacy'):
     paths_required = {}
 
     datasetID = ""
@@ -136,12 +143,14 @@ def set_IDs(paths, runID, keys, findDatasetID=False):
     runid_pattern = re.compile(r"(?P<pre>.*)(?P<run>run-)(?P<post>.*)")
 
     for key in keys:
-        if ("bucket" in paths[key]):
-            match = runid_pattern.match(paths[key]["bucket"])
+        curr_key = key + "_assay" if assay != 'legacy' and key in ["features", "top_expressed"] else key
+    
+        if ("bucket" in paths[curr_key]):
+            match = runid_pattern.match(paths[curr_key]["bucket"])
             if match is not None:
                 groups = match.groupdict()
-                paths[key]["bucket"] = "{0}run-{1}{2}".format(groups["pre"], runID, groups["post"])
-                paths_required[key] = paths[key]
+                paths[curr_key]["bucket"] = "{0}run-{1}{2}".format(groups["pre"], runID, groups["post"])
+                paths_required[key] = paths[curr_key]
             elif findDatasetID:
                 match = datasetid_pattern.match(paths[key]["bucket"])
                 if match is not None:
@@ -149,7 +158,10 @@ def set_IDs(paths, runID, keys, findDatasetID=False):
                     paths[key]["bucket"] = "{0}project-{1}{2}".format(groups["pre"], datasetID, groups["post"])
                     paths_required[key] = paths[key]
     if "normalised_counts" in keys:
-        paths_required["normalised_counts"] = paths["normalised_counts"]["prefix"] + runID + paths["normalised_counts"]["suffix"]
+        if assay == "legacy":
+            paths_required["normalised_counts"] = paths["normalised_counts"]["prefix"] + runID + paths["normalised_counts"]["suffix"] 
+        else:
+            paths_required["normalised_counts"] = paths["normalised_counts_assay"]["prefix"] + runID + paths["normalised_counts_assay"]["suffix"] + "counts_" + assay + ".loom"
     return paths_required
     
 def calculate_n_th_percentile(n, num_list):
