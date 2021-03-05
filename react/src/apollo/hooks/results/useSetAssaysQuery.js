@@ -13,25 +13,21 @@ import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 
 import {setSelectedAssay} from '../../../redux/actions/resultsPage'
 
+import useAvailableAssaysQuery from './useAvailableAssaysQuery'
 
-export default function useAvailableAssays(runID) {
+export default function useSetAssays(runID) {
   const dispatch = useDispatch()
   const { activePlot } = useResultsPage()
   const { selectedAssay } = useResultsPagePlotQuery(activePlot)
 
-  const [assays, setAvailableAssays] = useState(null)
-  const {loading, data, error} = useQuery(gql`
-    query Assays($runID: ID) {
-      assays(runID: $runID)
+  const assays = useAvailableAssaysQuery(runID)
+  // assume assays is never empty 
+
+  useEffect(() => {
+    if (RA.isNotNil(assays) && RA.isNilOrEmpty(selectedAssay)) {
+      dispatch(setSelectedAssay({value: assays[0]}))  
     }
-    `, {
-    client,
-    fetchPolicy: 'cache-and-network',
-    variables: {runID},
-    onCompleted: ({assays}) => {
-      setAvailableAssays(assays)
-    }
-  })
+  }, [assays])
 
   return assays
 }
