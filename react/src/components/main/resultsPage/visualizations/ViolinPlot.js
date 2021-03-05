@@ -20,8 +20,8 @@ const ViolinPlot = ({
 }) => {
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPagePlotQuery(plotQueryIndex)
-  const violin = useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression)
+  const {selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay} = useResultsPagePlotQuery(plotQueryIndex)
+  const violin = useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedAssay)
   // use local state for data since too big for redux store
   // const [violinData, setViolinData] = useState( [] )
 
@@ -104,7 +104,7 @@ const ViolinPlot = ({
           autosize: true,
           hovermode: 'closest',
           xaxis: {tickmode: 'linear', automargin: true, autorange: true, type: 'category'},
-          yaxis: {showgrid: false, title: {text: 'Normalized Expression'}, automargin: true},
+          yaxis: {showgrid: false, title: {text: 'Gene Expression'}, automargin: true},
           margin: {l:45, r:20, b:20, t:20},
         }}
       />

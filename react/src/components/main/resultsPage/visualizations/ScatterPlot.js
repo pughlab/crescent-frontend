@@ -26,14 +26,14 @@ const ScatterPlot = ({
 
   const dispatch = useDispatch()
   const { sidebarCollapsed } = useResultsPage()
-  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange} = useResultsPagePlotQuery(plotQueryIndex)
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange, selectedAssay} = useResultsPagePlotQuery(plotQueryIndex)
   const isFeatureNotSelected = R.or(R.isNil, R.isEmpty)(selectedFeature)
 
 
   const plots = useResultsAvailableQuery(runID)
   const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange)
+  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay)
   // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
 
   const [resetSliderValues, setResetSliderValues] = useState(null)

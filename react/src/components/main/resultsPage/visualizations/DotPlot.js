@@ -30,7 +30,7 @@ const DotPlot = ({
   const { runID } = useCrescentContext()
 
   const dispatch = useDispatch()
-  const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression, selectedScaleBy, selectedExpRange } = useResultsPagePlotQuery(plotQueryIndex)
+  const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression, selectedScaleBy, selectedExpRange, selectedAssay } = useResultsPagePlotQuery(plotQueryIndex)
   const { sidebarCollapsed } = useResultsPage()
 
   const plots = useResultsAvailableQuery(runID)
@@ -51,7 +51,7 @@ const DotPlot = ({
       queryGenes = R.append(gene, queryGenes)
     }
   }, selectedFeatures)
-  const queryResult = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange)
+  const queryResult = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange, selectedAssay)
   const result = queryResult === null ? [] : queryResult.filter(trace => trace["group"] === selectedGroup && trace["scaleby"] === selectedScaleBy)
   dotPlot = R.concat(dotPlot, result)
 
