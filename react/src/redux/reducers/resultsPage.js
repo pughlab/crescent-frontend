@@ -10,6 +10,7 @@ const initialPlotQuery = {
   selectedScaleBy: "gene",
   selectedExpRange: [0, 0],
   selectedGroup: null,
+  selectedAssay: null,
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
 }
@@ -96,6 +97,15 @@ export default createReducer(
       return R.evolve({
         // selectedGroup: R.always(value)
         plotQueries: evolveAtIndex({selectedGroup: R.always(value)}, activePlot)
+      })(state)
+    },
+    // for plot
+    'resultsPage/setSelectedAssay': (state, payload) => {
+      const {value} = payload
+      const {activePlot} = state
+      return R.evolve({
+        // selectedGroup: R.always(value)
+        plotQueries: evolveAtIndex({selectedAssay: R.always(value)}, activePlot)
       })(state)
     },
     // for plot

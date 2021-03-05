@@ -82,6 +82,13 @@ const setSelectedGroup = ({value}) => ({
   }
 })
 
+const setSelectedAssay = ({value}) => ({
+  type: 'resultsPage/setSelectedAssay',
+  payload: {
+    value
+  }
+})
+
 const setSelectedDiffExpression = ({value}) => ({
   type: 'resultsPage/setSelectedDiffExpression',
   payload: {
@@ -119,6 +126,7 @@ export {
   setSelectedScaleBy,
   setSelectedExpRange,
   setSelectedGroup,
+  setSelectedAssay,
   setSelectedDiffExpression,
   resetResultsPage,
   addPlot,
