@@ -47,10 +47,16 @@ inputs:
       position: 8
       prefix: -f
 
-  number_cores:
+  assays_for_dge:
     type: string?
     inputBinding:
       position: 9
+      prefix: -t
+
+  number_cores:
+    type: string?
+    inputBinding:
+      position: 10
       prefix: -u
 
   save_r_object:

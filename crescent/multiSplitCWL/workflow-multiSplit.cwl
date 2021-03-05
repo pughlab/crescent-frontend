@@ -23,6 +23,9 @@ inputs:
   - id: dge_comparisons
     type: string?
 
+  - id: assays_for_dge
+    type: string?
+
   - id: assays_for_loom
     type: string? 
 
@@ -342,6 +345,9 @@ steps:
 
       - id: dge_comparisons
         source: dge_comparisons
+
+      - id: assays_for_dge
+        source: assays_for_dge
 
       - id: number_cores
         source: number_cores

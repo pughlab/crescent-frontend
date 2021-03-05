@@ -86,6 +86,7 @@ def makeMultiJob(runId: str, run: dict):
         "anchors_function": run['parameters']['integration']['anchors_function'],
         "reference_datasets": refDatasetIDs,
         "assays_for_loom": "RNA,SCT",
+        "assays_for_dge" : "RNA,SCT",
         "resolution": run['parameters']['clustering']['resolution'],
         "project_id": "crescent",
         "pca_dimensions": run['parameters']['reduction']['pca_dimensions'],
