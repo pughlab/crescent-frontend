@@ -13,6 +13,7 @@ from get_data.get_others import (
     get_cellcount,
     get_diff_expression,
     get_groups,
+    get_assays,
     get_plots,
     get_qc_metrics,
     get_top_expressed_data,
@@ -64,6 +65,11 @@ class Query(ObjectType):
     @staticmethod
     def resolve_groups(parent, info, runID, datasetID):
         return get_groups(runID, datasetID)
+
+    assays = List(String, runID=ID())
+    @staticmethod
+    def resolve_assays(parent, info, runID):
+        return get_assays(runID)
 
     heatmap = Field(Heatmap, runID=ID())
     @staticmethod
