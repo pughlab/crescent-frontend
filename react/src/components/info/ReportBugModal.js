@@ -59,7 +59,7 @@ const ReportBugModal = ({
           <Button content='Google Forms'
             icon='google'
             active={isActiveMenu('forms')} 
-            color={R.equals(activeMenu, 'forms') ? 'black' : undefined}
+            color={R.equals(activeMenu, 'forms') ? 'violet' : undefined}
             onClick={() => setActiveMenu('forms')}
           />
           <Button.Or />
@@ -72,15 +72,15 @@ const ReportBugModal = ({
         </Button.Group>
         {
           isActiveMenu('forms') ?
-          <Segment>
-            <Button fluid basic color='red' size='massive'
+          <Segment color='violet'>
+            <Button fluid inverted color='red' size='massive'
               content='Bug Report'
               target='_blank'
               href={'https://forms.gle/Bd1jbyjYUno51qs18'}
             >
             </Button> 
             <Divider/>
-            <Button fluid basic color='green' size='massive'
+            <Button fluid inverted color='green' size='massive'
               content='Feature Request'
               target='_blank'
               href={'https://forms.gle/WAheMM3UP9GwibPv5'}
@@ -88,15 +88,15 @@ const ReportBugModal = ({
             </Button> 
           </Segment>
           :
-          <Segment>
-            <Button fluid basic color='red' size='massive' 
+          <Segment color='black'>
+            <Button fluid inverted color='red' size='massive' 
               content='Bug Report'
               target='_blank'
               href={'https://github.com/pughlab/crescent-frontend/issues/new?assignees=&labels=&template=bug_report.md&title=%5BBUG%5D'}
             >
             </Button> 
             <Divider/>
-            <Button fluid basic color='green' size='massive'
+            <Button fluid inverted color='green' size='massive'
               content='Feature Request'
               target='_blank'
               href={'https://github.com/pughlab/crescent-frontend/issues/new?assignees=&labels=&template=feature_request.md&title=%5BFEATURE%5D'}
