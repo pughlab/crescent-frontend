@@ -8,8 +8,8 @@ import * as RA from 'ramda-adjunct'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery } from '../../../../apollo/hooks/results'
-import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedDiffExpression } from '../../../../redux/actions/resultsPage'
+import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery, useAvailableAssaysQuery } from '../../../../apollo/hooks/results'
+import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedAssay, setSelectedDiffExpression } from '../../../../redux/actions/resultsPage'
 
 const DotPlotVisualizationMenu = ({
 }) => {
@@ -21,7 +21,7 @@ const DotPlotVisualizationMenu = ({
   const dispatch = useDispatch()
 
   const { activePlot } = useResultsPage()
-  const { activeResult, selectedFeatures, selectedGroup, selectedDiffExpression } = useResultsPagePlotQuery(activePlot)
+  const { activeResult, selectedFeatures, selectedGroup, selectedDiffExpression, selectedAssay } = useResultsPagePlotQuery(activePlot)
   const isActiveResult = R.equals(activeResult)
 
   //available groups & top expressed must be queries
@@ -32,6 +32,8 @@ const DotPlotVisualizationMenu = ({
   const groups = useDiffExpressionGroupsQuery(runID, selectedDiffExpression)
   const categoricalGroups = useDiffExpressionCategoricalGroupsQuery(runID, selectedDiffExpression)
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
+
+  const assays = useAvailableAssaysQuery(runID)
 
   const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression)
   const searchOptions = useSearchFeaturesQuery(currentSearch, runID)
@@ -108,10 +110,13 @@ const DotPlotVisualizationMenu = ({
       <Divider horizontal content='RNA Normalization' />
       <Form.Field>
         <Form.Dropdown fluid selection labeled
-          value="raw"
-          options={[{ key: "raw", text: "Raw", value: "raw" }, { key: "normalized", text: "Normalized", value: "normalized" }]}
-          onChange={(e, { value }) => { }}
-          disabled
+          // value="raw"
+          // options={[{ key: "raw", text: "Raw", value: "raw" }, { key: "normalized", text: "Normalized", value: "normalized" }]}
+          // onChange={(e, { value }) => { }}
+          // disabled
+          value={selectedAssay}
+          options={formatList(R.map(R.toUpper)(assays))}
+          onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
         />
       </Form.Field>
 
