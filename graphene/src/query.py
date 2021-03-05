@@ -76,10 +76,10 @@ class Query(ObjectType):
     def resolve_heatmap(parent, info, runID):
         return get_heatmap_data(runID)
 
-    opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID(), datasetID=ID(), expRange=List(Float))
+    opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID(), datasetID=ID(), expRange=List(Float), assay=String())
     @staticmethod
-    def resolve_opacity(parent, info, vis, feature, group, runID, datasetID, expRange):
-        opacity_data = get_opacity_data(feature, group, runID, datasetID, expRange)
+    def resolve_opacity(parent, info, vis, feature, group, runID, datasetID, expRange, assay):
+        opacity_data = get_opacity_data(feature, group, runID, datasetID, expRange, assay)
         scatter_data = get_scatter_data(vis, group, runID, datasetID)
         length = min(len(opacity_data), len(scatter_data))
         # Now we merge each corresponding object in 
@@ -116,33 +116,33 @@ class Query(ObjectType):
     def resolve_qc_violin(parent, info, runID, datasetID):
         return get_qc_violin_data(runID, datasetID)
 
-    search = List(SearchResult, query=String(), runID=ID())
+    search = List(SearchResult, query=String(), runID=ID(), assay=String())
     @staticmethod
-    def resolve_search(parent, info, query, runID):
-        return run_search(query, runID)
+    def resolve_search(parent, info, query, runID, assay):
+        return run_search(query, runID, assay)
     
     scatter = List(NonNull(ScatterData), vis=String(), group=String(), runID=ID(), datasetID=ID())
     @staticmethod
     def resolve_scatter(parent, info, vis, group, runID, datasetID):
         return get_scatter_data(vis, group, runID, datasetID)
 
-    dot_plot = List(NonNull(DotPlotData), features=List(String), group=String(), runID=ID(), scaleBy=String(), expRange=List(Float))
+    dot_plot = List(NonNull(DotPlotData), features=List(String), group=String(), runID=ID(), scaleBy=String(), expRange=List(Float), assay=String())
     @staticmethod
-    def resolve_dot_plot(parent, info, features, group, runID, scaleBy, expRange):
-        return get_dot_plot_data(features, group, runID, scaleBy, expRange)
+    def resolve_dot_plot(parent, info, features, group, runID, scaleBy, expRange, assay):
+        return get_dot_plot_data(features, group, runID, scaleBy, expRange, assay)
 
     size = Int(runID=ID())
     @staticmethod
     def resolve_size(parent, info, runID):
         return total_size(runID)
 
-    top_expressed = List(TopExpression, runID=ID(), datasetID=ID())
+    top_expressed = List(TopExpression, runID=ID(), datasetID=ID(), assay=String())
     @staticmethod
-    def resolve_top_expressed(parent, info, runID, datasetID):
-        return get_top_expressed_data(runID, datasetID)
+    def resolve_top_expressed(parent, info, runID, datasetID, assay):
+        return get_top_expressed_data(runID, datasetID, assay)
     
-    violin = List(NonNull(ViolinData), feature=String(), group=String(), runID=ID(), datasetID=ID())
+    violin = List(NonNull(ViolinData), feature=String(), group=String(), runID=ID(), datasetID=ID(), assay=String())
     @staticmethod
-    def resolve_violin(parent, info, feature, group, runID, datasetID):
-        return get_violin_data(feature, group, runID, datasetID)
+    def resolve_violin(parent, info, feature, group, runID, datasetID, assay):
+        return get_violin_data(feature, group, runID, datasetID, assay)
     
