@@ -219,7 +219,7 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay):
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
     paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=False, assay=assay)
-    # paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
+    paths["groups"] = set_name_multi(paths["groups"], "all", "groups")
 
     minio_client = get_minio_client()
 
