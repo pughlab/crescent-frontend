@@ -8,8 +8,8 @@ import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery} from '../../../../apollo/hooks/results'
-import {setSelectedFeature, setSelectedGroup, setSelectedDiffExpression} from '../../../../redux/actions/resultsPage'
+import {useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery, useSetAssaysQuery} from '../../../../apollo/hooks/results'
+import {setSelectedFeature, setSelectedGroup, setSelectedDiffExpression, setSelectedAssay} from '../../../../redux/actions/resultsPage'
 
 const VisualizationMenu = ({
 }) => { 
@@ -22,7 +22,7 @@ const VisualizationMenu = ({
 
   // console.log("use results: ", useResultsPage())
   const {activePlot} = useResultsPage()
-  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression} = useResultsPagePlotQuery(activePlot)
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay} = useResultsPagePlotQuery(activePlot)
   const isActiveResult = R.equals(activeResult)
 
   //available groups & top expressed must be queries
@@ -34,8 +34,10 @@ const VisualizationMenu = ({
   const categoricalGroups = useDiffExpressionCategoricalGroupsQuery(runID, selectedDiffExpression)
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
 
-  const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression)
-  const searchOptions = useSearchFeaturesQuery(currentSearch, runID)
+  const assays = useSetAssaysQuery(runID)
+
+  const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression, selectedAssay)
+  const searchOptions = useSearchFeaturesQuery(currentSearch, runID, selectedAssay)
 
 
   useEffect(() => {
@@ -100,6 +102,16 @@ const VisualizationMenu = ({
           options={diffExpression}
           onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value}))}
         />
+        </Form.Field>
+
+        <Divider horizontal content='RNA Normalization' />
+        <Form.Field>
+          <Form.Dropdown fluid selection labeled
+            value={selectedAssay}
+            // options={formatList(R.map(R.toUpper)(assays))}
+            options={formatList(assays)}
+            onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
+          />
         </Form.Field>
 
         <Divider horizontal content='Colour By' />

@@ -8,7 +8,7 @@ import * as RA from 'ramda-adjunct'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery, useAvailableAssaysQuery } from '../../../../apollo/hooks/results'
+import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery, useSetAssaysQuery } from '../../../../apollo/hooks/results'
 import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedAssay, setSelectedDiffExpression } from '../../../../redux/actions/resultsPage'
 
 const DotPlotVisualizationMenu = ({
@@ -23,6 +23,7 @@ const DotPlotVisualizationMenu = ({
   const { activePlot } = useResultsPage()
   const { activeResult, selectedFeatures, selectedGroup, selectedDiffExpression, selectedAssay } = useResultsPagePlotQuery(activePlot)
   const isActiveResult = R.equals(activeResult)
+  const isActiveAssay = R.equals(selectedAssay)
 
   //available groups & top expressed must be queries
   const diffExpression = useDiffExpressionQuery(runID)
@@ -33,10 +34,10 @@ const DotPlotVisualizationMenu = ({
   const categoricalGroups = useDiffExpressionCategoricalGroupsQuery(runID, selectedDiffExpression)
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
 
-  const assays = useAvailableAssaysQuery(runID)
+  const assays = useSetAssaysQuery(runID)
 
-  const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression)
-  const searchOptions = useSearchFeaturesQuery(currentSearch, runID)
+  const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression, selectedAssay)
+  const searchOptions = useSearchFeaturesQuery(currentSearch, runID, selectedAssay)
 
   const maxNumGenes = 20
 
@@ -115,8 +116,10 @@ const DotPlotVisualizationMenu = ({
           // onChange={(e, { value }) => { }}
           // disabled
           value={selectedAssay}
-          options={formatList(R.map(R.toUpper)(assays))}
+          // options={formatList(R.map(R.toUpper)(assays))}
+          options={formatList(assays)}
           onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
+          disabled={isActiveAssay('legacy')}
         />
       </Form.Field>
 
