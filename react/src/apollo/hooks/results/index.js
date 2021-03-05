@@ -7,6 +7,7 @@ import useDiffExpressionQuery from './useDiffExpressionQuery'
 import useDiffExpressionGroupsQuery from './useDiffExpressionGroupsQuery'
 import useDiffExpressionCategoricalGroupsQuery from './useDiffExpressionCategoricalGroupsQuery'
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
+import useAvailableAssaysQuery from './useAvailableAssaysQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
 import useDotPlotQuery from './useDotPlotQuery'
@@ -28,6 +29,7 @@ export {
   useDiffExpressionGroupsQuery,
   useDiffExpressionCategoricalGroupsQuery,
   useAvailableGroupsQuery,
+  useAvailableAssaysQuery,
   useTopExpressedQuery,
   useScatterQuery,
   useDotPlotQuery,
