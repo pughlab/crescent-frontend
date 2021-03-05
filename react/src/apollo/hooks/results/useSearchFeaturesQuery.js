@@ -7,11 +7,11 @@ import * as R from 'ramda'
 
 // FEATURES DATA NEEDS TO BE ORDERED!!!!!!
 
-export default function useSearchFeatures(query, runID) {
+export default function useSearchFeatures(query, runID, assay) {
   const [search, setSearch] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query search($query: String, $runID: ID) {
-      search(query: $query, runID: $runID) {
+    query search($query: String, $runID: ID, $assay: String) {
+      search(query: $query, runID: $runID, assay: $assay) {
         text
         value
       }
@@ -19,7 +19,7 @@ export default function useSearchFeatures(query, runID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {query, runID},
+    variables: {query, runID, assay},
     onCompleted: ({search}) => {
       setSearch(search)
     }

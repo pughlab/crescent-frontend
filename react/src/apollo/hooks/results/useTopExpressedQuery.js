@@ -3,11 +3,11 @@ import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
 
-export default function useTopExpressed(runID, datasetID) {
+export default function useTopExpressed(runID, datasetID, assay) {
   const [topExpressed, setTopExpressed] = useState(null)
   const {loading, data, error} = useQuery(gql`
-    query TopExpressed($runID: ID, $datasetID: ID) {
-        topExpressed(runID: $runID, datasetID: $datasetID) {
+    query TopExpressed($runID: ID, $datasetID: ID, $assay: String) {
+        topExpressed(runID: $runID, datasetID: $datasetID, assay: $assay) {
           gene
           cluster
           pVal
@@ -17,7 +17,7 @@ export default function useTopExpressed(runID, datasetID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID, datasetID},
+    variables: {runID, datasetID, assay},
     onCompleted: ({topExpressed}) => {
       setTopExpressed(topExpressed)
     }

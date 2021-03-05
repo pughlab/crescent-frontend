@@ -5,11 +5,11 @@ import {grapheneClient as client} from '../../clients'
 import * as R from 'ramda'
 
 
-export default function useViolin(feature, group, runID, datasetID) {
+export default function useViolin(feature, group, runID, datasetID, assay) {
   const [violin, setViolin] = useState(null)
   const {loading, data, error, refetch} = useQuery(gql`
-    query Violin($feature: String, $group: String, $runID: ID, $datasetID: ID) {
-      violin(feature: $feature, group: $group, runID: $runID, datasetID: $datasetID) {
+    query Violin($feature: String, $group: String, $runID: ID, $datasetID: ID, $assay: String) {
+      violin(feature: $feature, group: $group, runID: $runID, datasetID: $datasetID, assay: $assay) {
         name
         type
         spanmode
@@ -31,7 +31,7 @@ export default function useViolin(feature, group, runID, datasetID) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {feature, group, runID, datasetID},
+    variables: {feature, group, runID, datasetID, assay},
     onCompleted: ({violin}) => {
       setViolin(violin)
     },
