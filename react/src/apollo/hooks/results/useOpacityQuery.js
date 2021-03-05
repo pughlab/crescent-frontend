@@ -35,7 +35,7 @@ export default function useOpacity(vis, feature, group, runID, datasetID, expRan
         // R.prop('data')
       )(opacity)
     },
-    skip: R.isNil(feature, group)
+    skip: R.any(R.isNil, [feature, group, assay])
   })
 
   useEffect(() => {

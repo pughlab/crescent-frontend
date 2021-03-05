@@ -35,7 +35,7 @@ export default function useViolin(feature, group, runID, datasetID, assay) {
     onCompleted: ({violin}) => {
       setViolin(violin)
     },
-    skip: R.isNil(feature, group)
+    skip: R.any(R.isNil, [feature, group, assay])
   })
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import {useState} from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
+import * as R from 'ramda'
 
 export default function useTopExpressed(runID, datasetID, assay) {
   const [topExpressed, setTopExpressed] = useState(null)
@@ -20,7 +21,8 @@ export default function useTopExpressed(runID, datasetID, assay) {
     variables: {runID, datasetID, assay},
     onCompleted: ({topExpressed}) => {
       setTopExpressed(topExpressed)
-    }
+    },
+    skip: R.isNil(assay)
   })
 
   return topExpressed

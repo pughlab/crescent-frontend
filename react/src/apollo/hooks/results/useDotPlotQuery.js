@@ -38,7 +38,7 @@ export default function useDotPlot(features, group, runID, scaleBy, expRange, as
         R.map(R.evolve({ mode: R.join('+') })),
       )(dotPlot)
     },
-    // skip: R.isNil(group)
+    skip: R.any(R.isNil,[group, assay])
   })
 
   useEffect(() => {

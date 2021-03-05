@@ -22,7 +22,8 @@ export default function useSearchFeatures(query, runID, assay) {
     variables: {query, runID, assay},
     onCompleted: ({search}) => {
       setSearch(search)
-    }
+    },
+    skip: R.isNil(assay)
   })
 
   return search
