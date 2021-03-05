@@ -212,7 +212,7 @@ def get_trace(cluster_dict, feature, group, scale_by, slider_info):
 
     return template
 
-def get_dot_plot_data(features, group, runID, scaleBy, expRange):
+def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay):
     """ given a runID: returns a dot plot plotly object """
 
     paths = {}

@@ -12,7 +12,7 @@ from get_data.minio_functions import (
     get_size,
     object_exists
 )
-from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name, assay
+from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name
 
 def get_paths(runID, keys, findDatasetID=False, assay="legacy"):
     paths = {}
@@ -20,7 +20,7 @@ def get_paths(runID, keys, findDatasetID=False, assay="legacy"):
         paths = json.load(paths_file)
     return set_IDs(paths, runID, keys, findDatasetID=findDatasetID, assay=assay)
 
-def get_top_expressed_data(runID, datasetID):
+def get_top_expressed_data(runID, datasetID, assay):
     """ given a runID get the top 10 expressed genes + their avg log fold change and p-value """
     paths = get_paths(runID, ["top_expressed"], assay=assay)
     paths["top_expressed"] = set_name_multi(paths["top_expressed"], datasetID, "top_expressed", assay=assay)

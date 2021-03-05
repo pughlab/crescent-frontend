@@ -4,7 +4,7 @@ import os
 from graphene import ObjectType
 
 from get_data.get_client import get_minio_client
-from get_data.helper import set_IDs, set_name_multi, assay
+from get_data.helper import set_IDs, set_name_multi
 from get_data.minio_functions import get_all_lines
 
 def binary_search(query, _list):
@@ -66,7 +66,7 @@ def prefix_binary_search(query, _list):
                 last = mid
         return [-1] # Not Found
 
-def run_search(query, runID):
+def run_search(query, runID, assay):
     # First check that query isn't blank
     if query == "":
         return []

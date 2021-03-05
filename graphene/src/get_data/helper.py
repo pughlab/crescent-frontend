@@ -7,7 +7,6 @@ from bson import ObjectId
 
 from get_data.get_client import get_mongo_client
 
-assay = "rna"
 # plotly defaults
 COLOURS = [
   '#1f77b4',  # muted blue

@@ -5,7 +5,7 @@ import loompy
 
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
-from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces, calculate_n_th_percentile, assay
+from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces, calculate_n_th_percentile
 from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
 
 colour_dict = {}
@@ -149,7 +149,7 @@ def get_barcode_exp_values(feature, normalised_counts_path):
         else:
             return_error("Feature Not Found")
     
-def get_opacity_data(feature, group, runID, datasetID, expRange):
+def get_opacity_data(feature, group, runID, datasetID, expRange, assay):
     """ given a feature and group, returns the expression opacities of the feature of interest for each barcode """
     
     global colour_dict

@@ -123,9 +123,9 @@ def calculate_bandwidths(plotly_obj):
             std = np.std(mod_values)
             violin_group['bandwidth'] = 0.9 * min(std, iqr/1.34) * (len(mod_values)**(-1/5.0))
 
-def get_violin_data(feature, group, runID, datasetID):
+def get_violin_data(feature, group, runID, datasetID, assay):
     """ given a grouping for the cells and a feature of interest, returns the plotly violin object """
-    
+
     global colour_counter
 
     paths = {}
