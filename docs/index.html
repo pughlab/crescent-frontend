@@ -50,7 +50,7 @@
 					<ul class="social-list list-inline mx-md-3 mx-lg-5 mb-0 d-none d-lg-flex">
 						<li class="list-inline-item"><a href="https://github.com/pughlab/crescent-frontend" target="_blank" rel="noopener noreferrer"><i class="fab fa-github fa-fw"></i></a></li>
 						<li class="list-inline-item"><a href="https://doi.org/10.1093/nar/gkaa437" target="_blank" rel="noopener noreferrer"><i class="fas fa-book mr-2"></i></a></li>
-		                <!-- <li class="list-inline-item"><a href="https://www.youtube.com/playlist?list=PLdXeBakJd4aLCn2THd2cXyKAXqmGktu1s" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a></li> -->
+		                <li class="list-inline-item"><a href="https://youtube.com/playlist?list=PLdXeBakJd4aLGpi2OPWTNeet2jb0iXfPJ" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a></li>
 		            </ul><!--//social-list-->
 					<a href="https://crescent.cloud/" target="_blank" rel="noopener noreferrer" class="btn btn-primary"><i class="fas fa-play-circle mr-2"></i>Go to crescent.cloud!</a>
 					<!-- <a href="#" class="btn btn-info"><i class="fas fa-play-circle mr-2"></i> Go to crescent.cloud</a> -->
@@ -131,7 +131,8 @@
 					    <section class="docs-intro">
 							<p>CReSCENT is organized into projects, each of which features a single scRNA-seq dataset. Projects exist within the portal as public or uploaded (private). Public projects are curated by the CReSCENT team, and results within these projects can be explored by all users. In addition to exploring these public projects, your own scRNA-seq data can be uploaded to be processed. To create a new project, click on the 'Uploaded Data' tab in the Projects page, followed by the '+' icon. A 'New Uploaded Project' window will appear where you can enter a name and description for the project. Associated scRNA-seq data is uploaded here.</p>
 							<figure class="figure docs-figure py-3">
-								<a href="assets/images/git_docs/1-create-proj/create-project-name.gif" data-title="Uploading scRNA-seq data" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/1-create-proj/create-project-name.gif" alt="" style="width: 800px;"></a>
+								<!-- <a href="https://youtu.be/Ny-xUxQq7Z8" data-title="Uploading scRNA-seq data" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="https://youtu.be/Ny-xUxQq7Z8" alt="" style="width: 800px;"></a> -->
+								<iframe width="800" height="555" src="https://www.youtube.com/embed/Ny-xUxQq7Z8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 								<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Quick walkthrough of how to upload your own scRNA-seq data and create a project in CReSCENT.</figcaption>
 							</figure>	
 						</section><!--//docs-intro-->
@@ -224,12 +225,12 @@
 					
 					<section class="docs-section" id="item-2-2">
 						<h2 class="section-heading">Uploading cell metadata</h2>	
-						<p>Following project creation, cell metadata can be uploaded, if available, via the Runs page. Cell metadata will be used to visualize and colour cells, as well as provide further insight into gene expression exploration in the Visualizations page. To upload metadata, click the 'Upload Metadata' button and then click the 'Metadata' upload icon to select your file. Once your metadata file is selected, click 'Upload' and exit the window.</p>
+						<p>Following project creation, cell metadata can be uploaded, if available, via the Visualizations page in the Inputs Tab. Cell metadata will be used to visualize and colour cells, as well as provide further insight into gene expression exploration in the Visualizations page. To upload metadata, click the 'Upload Metadata' button and then click the 'Metadata' upload icon to select your file. Once your metadata file is selected, click 'Upload' and exit the window.</p>
 						<!-- <h5>Upload example</h5> -->
-						<figure class="figure docs-figure py-3">
+						<!-- <figure class="figure docs-figure py-3">
 							<a href="assets/images/git_docs/13-metadata/metadata.gif" data-title="Uploading cell metadata" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/13-metadata/metadata.gif" alt="" style="width: 800px;"></a>
 							<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Quick walkthrough of how to upload cell metadata for a project.</figcaption>
-						</figure>
+						</figure> -->
 				
 						<h3>Metadata file format</h3>
 						<p>CReSCENT currently accepts cell metadata in a tab-separated file (tsv). We have adopted the <a href="https://github.com/broadinstitute/single_cell_portal/wiki/Metadata-File" target="_blank" rel="noopener noreferrer">Broad standard</a> for cell metadata. This tsv has cell barcodes in the first column and customized metadata labels in the subsequent columns (see table below). These labels can be categorized as "group" for categorical variables, like cell types, and "numeric" for continuous values, like orthogonal assay measurements. The double header is necessary to display the proper visualization with "NAME" and "TYPE" being mandatory. </p>
@@ -304,7 +305,8 @@
 					    <section class="docs-intro">
 							<p>Once a CReSCENT project has been created, runs for the project can be submitted! A run involves optionally setting parameters for a standardized scRNA-seq analysis pipeline that includes quality control, normalization, dimension reduction, cell clustering, and differential gene expression. The pipeline is preconfigured but parameters are user-editable, making  optimization, comparison, and re-analysis simple and easy to do on the fly. To create a run, click the '+' icon in the Runs page. A 'New Run’ window will appear where you can enter a name for the run. Once the run is named, clicking ‘Create Run’ will take you to the Visualizations page. Within the ‘Pipeline’ tab of the Visualizations page, parameters can be configured and the run can be submitted for analysis.</p>
 							<figure class="figure docs-figure py-3">
-								<a href="assets/images/git_docs/3-create-run/create-run.gif" data-title="Creating a run" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/3-create-run/create-run.gif" alt="" style="width: 800px;"></a>
+								<!-- <a href="assets/images/git_docs/3-create-run/create-run.gif" data-title="Creating a run" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/3-create-run/create-run.gif" alt="" style="width: 800px;"></a> -->
+								<iframe width="800" height="555" src="https://www.youtube.com/embed/f6zaUQu7HGo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 								<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Creating and naming a project run in CReSCENT.</figcaption>
 							</figure>	
 						</section><!--//docs-intro-->
@@ -356,7 +358,8 @@
 					    <section class="docs-intro">
 							<p>Once your run is submitted and completed, results are available to visualize and explore. There are a variety of interactive visualizations within CReSCENT. Quality control plots include violin plots of QC metrics before and after filtering as well as UMAP plots visualizing the different QC metrics with a gradient. Gene expression can be explored through t-SNE, UMAP, and violin plots. Along with the clustering results from the pipeline, cell metadata previously uploaded is incorporated to colour cells. </p>
 							<figure class="figure docs-figure py-3">
-								<a href="assets/images/git_docs/7-results/results.gif" data-title="Viewing a completed run" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/7-results/results.gif" alt="" style="width: 800px;"></a>
+								<!-- <a href="assets/images/git_docs/7-results/results.gif" data-title="Viewing a completed run" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/7-results/results.gif" alt="" style="width: 800px;"></a> -->
+								<iframe width="800" height="555" src="https://www.youtube.com/embed/hRoficVJw1o" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 								<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Viewing a completed run in CReSCENT.</figcaption>
 							</figure>					
 						</section><!--//docs-intro-->
@@ -408,7 +411,8 @@
 					    <section class="docs-intro">
 							<p>Downloading results in CReSCENT is easy! After selecting a completed run, click the 'Results' tab in the Visualizations page and click the 'DOWNLOAD RESULTS' button to get a zipped folder of your run's results. This includes folders with QC plots and tables, dimension reduction plots and tables, cell cluster identity tables, average gene expression tables, differential gene expression tables and log files.</p>
 							<figure class="figure docs-figure py-3">
-								<a href="assets/images/git_docs/10-download/download.gif" data-title="Downloading results of a completed run" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/10-download/download.gif" alt="" style="width: 800px;"></a>
+								<!-- <a href="assets/images/git_docs/10-download/download.gif" data-title="Downloading results of a completed run" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/10-download/download.gif" alt="" style="width: 800px;"></a> -->
+								<iframe width="800" height="555" src="https://www.youtube.com/embed/MgXnQ0RMQHI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 								<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Downloading results of a completed run in CReSCENT.</figcaption>
 							</figure>	
 							<div class="callout-block callout-block-info">
@@ -460,7 +464,8 @@
 					    <section class="docs-intro">
 							<p>CReSCENT projects can be shared with collaborators. The shared project and its runs will appear in the collaborator's Projects page. To share a project, click the 'Share Project' button in a project's Runs page to allow collaborators to view and submit runs for that specific project.</p>
 							<figure class="figure docs-figure py-3">
-								<a href="assets/images/git_docs/9-share/share.gif" data-title="Sharing a project" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/9-share/share.gif" alt="" style="width: 800px;"></a>
+								<!-- <a href="assets/images/git_docs/9-share/share.gif" data-title="Sharing a project" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/9-share/share.gif" alt="" style="width: 800px;"></a> -->
+								<iframe width="800" height="555" src="https://www.youtube.com/embed/o3-DrhpRY2Y" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 								<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Sharing a project with collaborators in CReSCENT.</figcaption>
 							</figure>
 							<div class="callout-block callout-block-info">
@@ -483,10 +488,11 @@
 				    <header class="docs-header">
 					    <h1 class="docs-heading">Deleting projects and runs</h1>
 					    <section class="docs-intro">
-							<p>Deleting projects and runs is simple! To delete a project, click the 'Delete Project' button in a project's Runs page to delete a project and all of its runs. To delete a run, click the trash button in an individual run card to delete only that specific run of the project.</p>
+							<p>Deleting projects and runs is simple! To delete a project, click the 'Delete Project' button in a project's Runs page to delete a project and all of its runs.</p>
 							<figure class="figure docs-figure py-3">
-								<a href="assets/images/git_docs/11-delete/delete.gif" data-title="Deleting projects and runs" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/11-delete/delete.gif" alt="" style="width: 800px;"></a>
-								<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Deleting individual runs within a project as well as deleting a project and all its runs.</figcaption>
+								<!-- <a href="assets/images/git_docs/11-delete/delete.gif" data-title="Deleting projects and runs" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/11-delete/delete.gif" alt="" style="width: 800px;"></a> -->
+								<iframe width="800" height="555" src="https://www.youtube.com/embed/PtstEgdWqMA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+								<figcaption class="figure-caption mt-3"><i class="fas fa-info-circle mr-2"></i>Deleting a project and all of its runs.</figcaption>
 							</figure>
 						</section><!--//docs-intro-->
 				    </header>
@@ -531,7 +537,7 @@
 									<li><a href="https://github.com/pughlab/crescent-frontend" target="_blank" rel="noopener noreferrer" class="btn btn-info"><i class="fab fa-github fa-fw"></i> View Web App Code</a></li>
 									<li><a href="https://github.com/pughlab/crescent" target="_blank" rel="noopener noreferrer" class="btn btn-info"><i class="fas fa-code"></i> View Pipeline Scripts</a></li>
                                     <li><a href="https://doi.org/10.1093/nar/gkaa437" target="_blank" rel="noopener noreferrer" class="btn btn-secondary"><i class="fas fa-book mr-2"></i> View Publication</a></li>
-                                    <!-- <li><a href="https://www.youtube.com/playlist?list=PLdXeBakJd4aLCn2THd2cXyKAXqmGktu1s" target="_blank" rel="noopener noreferrer" class="btn btn-danger"><i class="fab fa-youtube"></i> Youtube Tutorials</a></li> -->
+                                    <li><a href="https://youtube.com/playlist?list=PLdXeBakJd4aLGpi2OPWTNeet2jb0iXfPJ" target="_blank" rel="noopener noreferrer" class="btn btn-danger"><i class="fab fa-youtube"></i> Youtube Tutorials</a></li>
 									<li><a href="https://github.com/pughlab/crescent-frontend/issues" target="_blank" rel="noopener noreferrer" class="btn btn-warning"><i class="fas fa-bug mr-2"></i> Report Bugs</a></li>
 
 								</ul>
@@ -559,7 +565,7 @@
 				        <ul class="social-list list-unstyled pt-4 mb-0">
 							<li class="list-inline-item"><a href="https://github.com/pughlab/crescent-frontend" target="_blank" rel="noopener noreferrer"><i class="fab fa-github fa-fw"></i></a></li> 
 				            <li class="list-inline-item"><a href="https://doi.org/10.1093/nar/gkaa437" target="_blank" rel="noopener noreferrer"><i class="fas fa-book mr-2"></i></a></li>
-				            <!-- <li class="list-inline-item"><a href="https://www.youtube.com/playlist?list=PLdXeBakJd4aLCn2THd2cXyKAXqmGktu1s" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube fa-fw"></i></a></li> -->
+				            <li class="list-inline-item"><a href="https://youtube.com/playlist?list=PLdXeBakJd4aLGpi2OPWTNeet2jb0iXfPJ" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube fa-fw"></i></a></li>
 				        </ul><!--//social-list-->
 				    </div>
 			    </footer>
