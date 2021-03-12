@@ -47,6 +47,6 @@ export default function useDotPlot(features, group, runID, scaleBy, expRange, as
     }
   }, [error])
 
-  return dotPlot
+  return {dotPlot, loading}
 }
 

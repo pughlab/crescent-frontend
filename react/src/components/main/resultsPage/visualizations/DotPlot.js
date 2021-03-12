@@ -51,7 +51,7 @@ const DotPlot = ({
       queryGenes = R.append(gene, queryGenes)
     }
   }, selectedFeatures)
-  const queryResult = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange, selectedAssay)
+  const {dotPlot: queryResult, loading} = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange, selectedAssay)
   const result = queryResult === null ? [] : queryResult.filter(trace => trace["group"] === selectedGroup && trace["scaleby"] === selectedScaleBy)
   dotPlot = R.concat(dotPlot, result)
 
@@ -98,7 +98,7 @@ const DotPlot = ({
     )
   }
   //plot is rendering
-  if (R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot))) {
+  if (loading || R.isNil(queryResult) || (R.not(R.isEmpty(queryGenes)) && R.isEmpty(dotPlot))) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
