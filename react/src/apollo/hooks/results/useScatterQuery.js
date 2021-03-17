@@ -34,6 +34,6 @@ export default function useScatter(vis, group, runID, datasetID) {
     skip: R.isNil(group)
   })
 
-  return scatter
+  return {scatter, loading}
 }
 

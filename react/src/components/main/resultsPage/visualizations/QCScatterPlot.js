@@ -25,7 +25,7 @@ const QCScatterPlot = ({
   const dispatch = useDispatch()
   const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
 
-  const qcScatter = useQCScatterQuery(selectedQC, runID, datasetID)
+  const {qcScatter, loading} = useQCScatterQuery(selectedQC, runID, datasetID)
 
   if (R.any(R.isNil, [qcScatter])) {
     return (
@@ -43,20 +43,22 @@ const QCScatterPlot = ({
   return (
     <>
       <Header textAlign='center' content={R.isNil(selectedQC) ? '' : R.equals(selectedQC)('Number_of_Reads') ? "Number of UMI Counts for "+name+" (UMAP)" : (selectedQC.replace(/_/g," ")+" for "+name+" (UMAP)")} />
-      <Plot
-        config={{showTips: false}}
-        data={qcScatterData}
-        useResizeHandler
-        style={{width: '100%', height:'95%'}}
-        layout={{
-          autosize: true,
-          hovermode: 'closest',
-          xaxis: {showgrid: false, ticks: '', showticklabels: false},
-          yaxis: {showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x"},
-          margin: {l:20, r:20, b:20, t:20},
-          legend: {"orientation": "v"}
-        }}
-      />
+      <Segment basic loading={loading} style={{height: '100%'}}>
+        <Plot
+          config={{showTips: false}}
+          data={qcScatterData}
+          useResizeHandler
+          style={{width: '100%', height:'95%'}}
+          layout={{
+            autosize: true,
+            hovermode: 'closest',
+            xaxis: {showgrid: false, ticks: '', showticklabels: false},
+            yaxis: {showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x"},
+            margin: {l:20, r:20, b:20, t:20},
+            legend: {"orientation": "v"}
+          }}
+        />
+      </Segment>
     </>
   )
 }

@@ -31,9 +31,9 @@ const ScatterPlot = ({
 
 
   const plots = useResultsAvailableQuery(runID)
-  const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
+  const {scatter,loading: scatterLoading} = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay)
+  const {opacity, loading: opacityLoading} = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay)
   // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
 
   const [resetSliderValues, setResetSliderValues] = useState(null)
@@ -61,16 +61,6 @@ const ScatterPlot = ({
   }
 
   if (R.any(R.isNil, [scatter])) {
-    return (
-      <Segment basic style={{height: '100%'}} placeholder>
-        <Tada forever duration={1000}>
-          <Image src={Logo} centered size='medium' />
-        </Tada>
-      </Segment>
-    )
-  }
-
-  if ((R.not(isFeatureNotSelected)) && (R.any(R.isNil, [opacity]))) {
     return (
       <Segment basic style={{height: '100%'}} placeholder>
         <Tada forever duration={1000}>
@@ -220,22 +210,24 @@ const ScatterPlot = ({
           />
       </div>
       )}
-      <Plot
-        config={{showTips: false}}
-        // data={opacity}
-        data={isFeatureNotSelected ? scatter : opacity}
-        // data={scatterData}
-        useResizeHandler
-        style={{width: '100%', height:'90%'}}
-        layout={{
-          autosize: true,
-          hovermode: 'closest',
-          xaxis: {showgrid: false, ticks: '', showticklabels: false},
-          yaxis: {showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x"},
-          margin: {l:20, r:20, b:20, t:20},
-          legend: {"orientation": "v"}
-        }}
-      />
+      <Segment basic loading={isFeatureNotSelected ? scatterLoading : opacityLoading} style={{height: '100%'}}>
+        <Plot
+          config={{showTips: false}}
+          // data={opacity}
+          data={isFeatureNotSelected ? scatter : opacity}
+          // data={scatterData}
+          useResizeHandler
+          style={{width: '100%', height:'90%'}}
+          layout={{
+            autosize: true,
+            hovermode: 'closest',
+            xaxis: {showgrid: false, ticks: '', showticklabels: false},
+            yaxis: {showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x"},
+            margin: {l:20, r:20, b:20, t:20},
+            legend: {"orientation": "v"}
+          }}
+        />
+      </Segment>
     {/* </Dimmer.Dimmable> */}
   </>
   )

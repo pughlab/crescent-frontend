@@ -44,6 +44,6 @@ export default function useOpacity(vis, feature, group, runID, datasetID, expRan
     }
   }, [error])
 
-  return opacity
+  return {opacity, loading}
 }
 

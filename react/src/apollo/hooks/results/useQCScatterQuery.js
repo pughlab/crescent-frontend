@@ -36,6 +36,6 @@ export default function useQCScatter(qcType, runID, datasetID) {
     }
   })
 
-  return qcScatter
+  return {qcScatter, loading}
 }
 
