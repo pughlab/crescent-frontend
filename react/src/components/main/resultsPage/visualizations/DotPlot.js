@@ -194,9 +194,8 @@ const DotPlot = ({
                 />
               </Grid.Column>
               <Grid.Column verticalAlign="middle" >
-                {
-                  selectedScaleBy === "matrix" ? (
-                    <>
+                {selectedScaleBy !== "matrix" || (
+                  <>
                     <Header size='small' textAlign="center" style={{margin: 0}}>
                       Gene Expression Range
                     </Header>
@@ -208,17 +207,16 @@ const DotPlot = ({
                       marks={{0: 0, [possibleMaxExp]: possibleMaxExp}}
                       allowCross={false}
                       disabled={selectedScaleBy === "gene"}
-                      style={{maxWidth: "300px", marginLeft: "20px", marginBottom: "20px",  color: violet}}
+                      style={{maxWidth: "300px", margin: "auto", marginBottom: "10px"}}
                       trackStyle={[{ backgroundColor: getColor() }]}
                       handleStyle={[{ backgroundColor: getColor(), border: "none", boxShadow: "none"}, { backgroundColor: getColor(), border: "none", boxShadow: "none" }]}
                       railStyle={{ backgroundColor: lightViolet }}
                       defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, possibleMaxExp] : selectedExpRange}
                       onAfterChange={(value) => {dispatch(setSelectedExpRange({ value })); }}
                     />
-                    </>
-                  ) : (<></>)
+                  </>
+                  )
                 }
-                
               </Grid.Column>
             </Grid.Row>
           </Grid>
