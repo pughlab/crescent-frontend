@@ -161,7 +161,7 @@ const VisualizationMenu = ({
             R.compose(
               R.map(
                 ([cluster, features]) => (
-                  <Segment key={cluster} compact size='small'>
+                  <Segment key={cluster} size='small'>
                     <Label attached='top' content={`Cluster ${cluster}`} />
                     {
                       R.addIndex(R.map)((feature, idx) => <FeatureButton key={idx} {...feature} />)(features)

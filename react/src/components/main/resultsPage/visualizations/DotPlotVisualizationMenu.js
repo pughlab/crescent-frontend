@@ -190,30 +190,29 @@ const DotPlotVisualizationMenu = ({
         </Form.Field>
       </Form.Group>
 
+      <Divider horizontal content='Top Differentially Expressed Genes' />
       {
         RA.isNotEmpty(topExpressed) &&
-        <>
-          <Divider horizontal content='Top Differentially Expressed Genes' />
-          <Segment basic
-            style={{ maxHeight: '30vh', overflowY: 'scroll' }}
-          >
-            {
-              R.compose(
-                R.map(
-                  ([cluster, features]) => (
-                    <Segment key={cluster} size='small'>
-                      <Label attached='top' content={`Cluster ${cluster}`} />
-                      {
-                        R.addIndex(R.map)((feature, idx) => <FeatureButton key={idx} {...feature} />)(features)
-                      }
-                    </Segment>
-                  )
-                ),
-                R.toPairs,
-                R.groupBy(R.prop('cluster'))
-              )(topExpressed)
-            }
-          </Segment></>
+        <Segment basic
+          style={{ maxHeight: '30vh', overflowY: 'scroll' }}
+        >
+          {
+            R.compose(
+              R.map(
+                ([cluster, features]) => (
+                  <Segment key={cluster} size='small'>
+                    <Label attached='top' content={`Cluster ${cluster}`} />
+                    {
+                      R.addIndex(R.map)((feature, idx) => <FeatureButton key={idx} {...feature} />)(features)
+                    }
+                  </Segment>
+                )
+              ),
+              R.toPairs,
+              R.groupBy(R.prop('cluster'))
+            )(topExpressed)
+          }
+        </Segment>
       }
     </Form>
   )
