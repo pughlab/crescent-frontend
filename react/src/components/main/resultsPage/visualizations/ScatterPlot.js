@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import Plot from 'react-plotly.js'
-import { Image, Container, Header, Segment, Dimmer } from 'semantic-ui-react'
+import { Image, Container, Header, Segment, Dimmer, Button, Grid, Popup, Icon } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
-import {ClimbingBoxLoader} from 'react-spinners'
+import { ClimbingBoxLoader } from 'react-spinners'
 
 import * as R from 'ramda'
 
-import {useDispatch} from 'react-redux'
-import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery} from '../../../../apollo/hooks/results'
+import { useDispatch } from 'react-redux'
+import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
+import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
+import { useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery} from '../../../../apollo/hooks/results'
 import { setSelectedExpRange } from '../../../../redux/actions/resultsPage'
 
 const violet = '#6435c9'
@@ -22,39 +22,40 @@ const lightViolet = '#c5b3eb'
 const ScatterPlot = ({
   plotQueryIndex
 }) => {
-  const {runID} = useCrescentContext()
+  const { runID } = useCrescentContext()
 
   const dispatch = useDispatch()
   const { sidebarCollapsed } = useResultsPage()
-  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange, selectedAssay} = useResultsPagePlotQuery(plotQueryIndex)
+  const { activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange, selectedAssay } = useResultsPagePlotQuery(plotQueryIndex)
   const isFeatureNotSelected = R.or(R.isNil, R.isEmpty)(selectedFeature)
 
 
   const plots = useResultsAvailableQuery(runID)
-  const scatter = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
+  const { scatter, loading: scatterLoading } = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  const opacity = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay)
+  const { opacity, loading: opacityLoading } = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay)
+
   // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
 
   const [resetSliderValues, setResetSliderValues] = useState(null)
 
-  useEffect(() => {
-    if(R.not(R.isNil(opacity)) && resetSliderValues === selectedFeature){
-      const initialRange = opacity[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
-      if(R.not(R.equals(selectedExpRange, initialRange))){
-        dispatch(setSelectedExpRange({value: initialRange}))
-        setResetSliderValues(null)
-      }
-    }
-  }, [opacity])
+  // useEffect(() => {
+  //   if(R.not(R.isNil(opacity))) {
+  //     const initialRange = opacity[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
+  //     if(R.not(R.equals(selectedExpRange, initialRange))){
+  //       dispatch(setSelectedExpRange({value: initialRange}))
+  //       // setResetSliderValues(null)
+  //     }
+  //   }
+  // }, [opacity])
 
-  useEffect(() => {
-    setResetSliderValues(selectedFeature)
-  }, [selectedFeature])
+  // useEffect(() => {
+  //   setResetSliderValues(selectedFeature)
+  // }, [selectedFeature])
 
-  useEffect(() => {
-    setResetSliderValues(null)
-  }, [sidebarCollapsed])
+  // useEffect(() => {
+  //   setResetSliderValues(null)
+  // }, [sidebarCollapsed])
 
   if (R.any(R.isNil, [plots])) {
     return null
@@ -62,17 +63,7 @@ const ScatterPlot = ({
 
   if (R.any(R.isNil, [scatter])) {
     return (
-      <Segment basic style={{height: '100%'}} placeholder>
-        <Tada forever duration={1000}>
-          <Image src={Logo} centered size='medium' />
-        </Tada>
-      </Segment>
-    )
-  }
-
-  if ((R.not(isFeatureNotSelected)) && (R.any(R.isNil, [opacity]))) {
-    return (
-      <Segment basic style={{height: '100%'}} placeholder>
+      <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
           <Image src={Logo} centered size='medium' />
         </Tada>
@@ -82,8 +73,8 @@ const ScatterPlot = ({
 
   // console.log(scatter)
   // const isSelectedDiffExpressionNumeric = R.includes(selectedGroup)(numericGroups)
-  
-  
+
+
   // const scatterData = isFeatureNotSelected ? 
   //   isSelectedDiffExpressionNumeric ? 
   //     scatterNumeric
@@ -91,7 +82,7 @@ const ScatterPlot = ({
   //     scatter
   //   :
   //     opacity
-  
+
   // const scatterData = isFeatureNotSelected ? 
   //   isSelectedDiffExpressionNumeric ? 
   //     // scatter
@@ -188,7 +179,9 @@ const ScatterPlot = ({
   // }, [selectedFeature])
 
   const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
-  const globalMax = R.isNil(opacity) || opacity[0]["globalmax"] 
+  const globalMax = R.isNil(opacity) || opacity[0]["globalmax"]
+  const initialminmax = R.isNil(opacity) || opacity[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
+  const initialRange = R.isNil(opacity) ? [0, 0] : initialminmax
 
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
@@ -197,48 +190,84 @@ const ScatterPlot = ({
     // </Dimmer>
     // <Segment style={{height: '100%'}}>
     <>
-    <Header textAlign='center' content={currentScatterPlotType} />
+      <Header textAlign='center' content={currentScatterPlotType} />
+      <Segment basic loading={isFeatureNotSelected ? scatterLoading : opacityLoading} style={{ height: '100%' }}>
+
       {
         (isFeatureNotSelected || sidebarCollapsed) || (
-          <div style={{display: 'flex', justifyContent: "center", alignContent: "center"}}>
-          <Header size='small'  style={{margin: 0}}>
-            Gene Expression Range: 
-          </Header>
-          <SliderWithTooltip
-            key={`slider-${plotQueryIndex}`}
-            min={0} 
-            max={globalMax}
-            step={0.1}
-            marks={{0: 0, [globalMax]: globalMax}}
-            allowCross={false}
-            style={{maxWidth: "300px", marginLeft: "20px", marginBottom: "20px",  color: violet}}
-            trackStyle={[{ backgroundColor: violet }]}
-            handleStyle={[{ backgroundColor: violet, border: "none", boxShadow: "none"}, { backgroundColor: violet, border: "none", boxShadow: "none" }]}
-            railStyle={{ backgroundColor: lightViolet }}
-            defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, globalMax] : selectedExpRange}
-            onAfterChange={value => dispatch(setSelectedExpRange({ value }))}
-          />
-      </div>
-      )}
-      <Plot
-        config={{showTips: false}}
-        // data={opacity}
-        data={isFeatureNotSelected ? scatter : opacity}
-        // data={scatterData}
-        useResizeHandler
-        style={{width: '100%', height:'90%'}}
-        layout={{
-          autosize: true,
-          hovermode: 'closest',
-          xaxis: {showgrid: false, ticks: '', showticklabels: false},
-          yaxis: {showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x"},
-          margin: {l:20, r:20, b:20, t:20},
-          legend: {"orientation": "v"}
-        }}
-      />
-    {/* </Dimmer.Dimmable> */}
-  </>
+          <Grid divided='vertically'>
+            <Grid.Row columns={2} >
+              <Grid.Column verticalAlign="middle" width={12}>
+                <div style={{ display: 'flex', justifyContent: "center", alignContent: "center" }}>
+                  <Header size='small' style={{ margin: 0 }}>
+                    Gene Expression Range:
+                  </Header>
+                  <SliderWithTooltip
+                    key={`slider-${plotQueryIndex}`}
+                    min={0}
+                    max={globalMax}
+                    step={0.1}
+                    marks={{ 0: 0, [globalMax]: globalMax }}
+                    allowCross={false}
+                    style={{ maxWidth: "300px", marginLeft: "20px", marginBottom: "20px", color: violet }}
+                    trackStyle={[{ backgroundColor: violet }]}
+                    handleStyle={[{ backgroundColor: violet, border: "none", boxShadow: "none" }, { backgroundColor: violet, border: "none", boxShadow: "none" }]}
+                    railStyle={{ backgroundColor: lightViolet }}
+                    defaultValue={R.equals(selectedExpRange, [0, 0]) ? initialRange : selectedExpRange}
+                    // defaultValue={selectedExpRange}
+                    onAfterChange={value => dispatch(setSelectedExpRange({ value }))}
+                  />
+
+                </div>
+              </Grid.Column>
+              <Grid.Column textAlign="center" verticalAlign="middle" width={2}>
+                <Button.Group fluid widths={2} size='mini'>
+                  <Popup inverted size='tiny'
+                    trigger={
+                      <Button color='violet' icon='chart area'
+                        onClick={() => dispatch(setSelectedExpRange({ value: initialRange }))}
+                      />
+                    }
+                    content={
+                      'Set Gene Expression Range to 10th/90th Percentiles'
+                    }
+                  />
+                  <Popup inverted size='tiny'
+                    trigger={
+                      <Button basic color='violet' icon='balance scale'
+                        onClick={() => dispatch(setSelectedExpRange({ value: [0, globalMax] }))}
+                      />
+                    }
+                    content={
+                      'Set Gene Expression Range to Min/Max'
+                    }
+                  />
+                </Button.Group>
+
+              </Grid.Column>
+            </Grid.Row>
+          </Grid>
+        )}
+        <Plot
+          config={{ showTips: false }}
+          // data={opacity}
+          data={isFeatureNotSelected ? scatter : opacity}
+          // data={scatterData}
+          useResizeHandler
+          style={{ width: '100%', height: '90%' }}
+          layout={{
+            autosize: true,
+            hovermode: 'closest',
+            xaxis: { showgrid: false, ticks: '', showticklabels: false },
+            yaxis: { showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x" },
+            margin: { l: 20, r: 20, b: 20, t: 20 },
+            legend: { "orientation": "v" }
+          }}
+        />
+      </Segment>
+      {/* </Dimmer.Dimmable> */}
+    </>
   )
 }
 
-export default ScatterPlot 
+export default ScatterPlot

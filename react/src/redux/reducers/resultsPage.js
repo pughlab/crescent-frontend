@@ -114,7 +114,7 @@ export default createReducer(
       const {activePlot} = state
       return R.evolve({
         // selectedFeature: R.always(value)
-        plotQueries: evolveAtIndex({selectedFeature: R.always(value)}, activePlot)
+        plotQueries: evolveAtIndex({selectedFeature: R.always(value), selectedExpRange: R.always([0, 0])}, activePlot)
       })(state)
     },
     // for plot

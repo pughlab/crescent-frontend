@@ -21,7 +21,7 @@ const QCViolinPlot = ({
 }) => { 
   const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
 
-  const qcViolin = useQCViolinQuery({runID, datasetID})
+  const {qcViolin, loading} = useQCViolinQuery({runID, datasetID})
 
   if (R.any(R.isNil, [qcViolin])) {
     return (
@@ -36,73 +36,75 @@ const QCViolinPlot = ({
   return (
     <>
     <Header textAlign='center' content={R.isNil(selectedQC) ? '' : `Metrics Before and After QC for ${name} (Violins)`} />
-    <Plot
-      config={{showTips: false}}
-      data={qcViolin}
-      useResizeHandler
-      style={{width: '100%', height:'90%'}}
-      layout={{
-        autosize: true,
-        grid: {rows: 1, columns: 4, pattern: 'independent'},
-        margin: {l:40, r:40, b:20, t:30},
-        showlegend: false,
-        hovermode: 'closest',
-        yaxis: {
-          range: [0, R.isNil(qcViolin[0]) ? 1.1 : Math.max(...R.map(parseInt, qcViolin[0]['y']))+1]
-        },
-        yaxis2: {
-          range: [0, R.isNil(qcViolin[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcViolin[2]['y'])))+1]
-        },
-        yaxis3: {
-          range: [0, R.isNil(qcViolin[4]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolin[4]['y'])))+1]
-        },
-        yaxis4: {
-          range: [0, R.isNil(qcViolin[6]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolin[6]['y'])))+1]
-        },
-        annotations: [
-          {
-            "x": 0.11,
-            "y": 1,
-            "text": "Number of Genes",
-            "xref": "paper",
-            "yref": "paper",
-            "xanchor": "center",
-            "yanchor": "bottom",
-            "showarrow": false
+    <Segment basic loading={loading} style={{height: '100%'}}>
+      <Plot
+        config={{showTips: false}}
+        data={qcViolin}
+        useResizeHandler
+        style={{width: '100%', height:'90%'}}
+        layout={{
+          autosize: true,
+          grid: {rows: 1, columns: 4, pattern: 'independent'},
+          margin: {l:40, r:40, b:20, t:30},
+          showlegend: false,
+          hovermode: 'closest',
+          yaxis: {
+            range: [0, R.isNil(qcViolin[0]) ? 1.1 : Math.max(...R.map(parseInt, qcViolin[0]['y']))+1]
           },
-          {
-            "x": 0.37,
-            "y": 1,
-            "text": "Number of UMI Counts",
-            "xref": "paper",
-            "yref": "paper",
-            "xanchor": "center",
-            "yanchor": "bottom",
-            "showarrow": false
+          yaxis2: {
+            range: [0, R.isNil(qcViolin[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcViolin[2]['y'])))+1]
           },
-          {
-            "x": 0.63,
-            "y": 1,
-            "text": "Mitochondrial Gene Counts (%) ",
-            "xref": "paper",
-            "yref": "paper",
-            "xanchor": "center",
-            "yanchor": "bottom",
-            "showarrow": false
+          yaxis3: {
+            range: [0, R.isNil(qcViolin[4]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolin[4]['y'])))+1]
           },
-          {
-            "x": 0.89,
-            "y": 1,
-            "text": "  Ribosomal Protein Gene Counts (%)",
-            "xref": "paper",
-            "yref": "paper",
-            "xanchor": "center",
-            "yanchor": "bottom",
-            "showarrow": false
-          }
-          ]
-      }}
-    />
+          yaxis4: {
+            range: [0, R.isNil(qcViolin[6]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolin[6]['y'])))+1]
+          },
+          annotations: [
+            {
+              "x": 0.11,
+              "y": 1,
+              "text": "Number of Genes",
+              "xref": "paper",
+              "yref": "paper",
+              "xanchor": "center",
+              "yanchor": "bottom",
+              "showarrow": false
+            },
+            {
+              "x": 0.37,
+              "y": 1,
+              "text": "Number of UMI Counts",
+              "xref": "paper",
+              "yref": "paper",
+              "xanchor": "center",
+              "yanchor": "bottom",
+              "showarrow": false
+            },
+            {
+              "x": 0.63,
+              "y": 1,
+              "text": "Mitochondrial Gene Counts (%) ",
+              "xref": "paper",
+              "yref": "paper",
+              "xanchor": "center",
+              "yanchor": "bottom",
+              "showarrow": false
+            },
+            {
+              "x": 0.89,
+              "y": 1,
+              "text": "  Ribosomal Protein Gene Counts (%)",
+              "xref": "paper",
+              "yref": "paper",
+              "xanchor": "center",
+              "yanchor": "bottom",
+              "showarrow": false
+            }
+            ]
+        }}
+      />
+    </Segment>
     </>
   )
 }

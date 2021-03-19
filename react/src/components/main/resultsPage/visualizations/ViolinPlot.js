@@ -21,7 +21,7 @@ const ViolinPlot = ({
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
   const {selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay} = useResultsPagePlotQuery(plotQueryIndex)
-  const violin = useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedAssay)
+  const {violin, loading} = useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedAssay)
   // use local state for data since too big for redux store
   // const [violinData, setViolinData] = useState( [] )
 
@@ -95,19 +95,21 @@ const ViolinPlot = ({
     // Plot data
     <>
     <Header textAlign='center' content='Gene Expression Violin' />
-      <Plot
-        config={{showTips: false}}
-        data={violin}
-        useResizeHandler
-        style={{width: '100%', height:'90%'}}
-        layout={{
-          autosize: true,
-          hovermode: 'closest',
-          xaxis: {tickmode: 'linear', automargin: true, autorange: true, type: 'category'},
-          yaxis: {showgrid: false, title: {text: 'Gene Expression'}, automargin: true},
-          margin: {l:45, r:20, b:20, t:20},
-        }}
-      />
+      <Segment basic loading={loading} style={{height: '100%'}} >
+        <Plot
+          config={{showTips: false}}
+          data={violin}
+          useResizeHandler
+          style={{width: '100%', height:'90%'}}
+          layout={{
+            autosize: true,
+            hovermode: 'closest',
+            xaxis: {tickmode: 'linear', automargin: true, autorange: true, type: 'category'},
+            yaxis: {showgrid: false, title: {text: 'Gene Expression'}, automargin: true},
+            margin: {l:45, r:20, b:20, t:20},
+          }}
+        />
+      </Segment>
     </>
   )
 }

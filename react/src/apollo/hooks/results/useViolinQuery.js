@@ -44,6 +44,6 @@ export default function useViolin(feature, group, runID, datasetID, assay) {
     }
   }, [error])
 
-  return violin
+  return {violin, loading}
 }
 

@@ -40,6 +40,6 @@ export default function useQCViolin({runID, datasetID}) {
     }
   })
 
-  return qcViolin
+  return {qcViolin, loading}
 }
 
