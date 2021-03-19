@@ -144,7 +144,11 @@ def calculate_avg_exp(barcode_exp_dict):
     total_exp = 0.0
     for barcode in list(barcode_exp_dict.keys()):
         total_exp += barcode_exp_dict[barcode]
-    return total_exp/len(barcode_exp_dict.keys())
+    try:
+        avg_exp = total_exp/len(barcode_exp_dict.keys())
+    except ZeroDivisionError:
+        avg_exp = 0
+    return avg_exp
 
 def calculate_abundance(barcode_exp_dict):
     """ calculate abundance for a cluster 
@@ -153,7 +157,11 @@ def calculate_abundance(barcode_exp_dict):
     for barcode in list(barcode_exp_dict.keys()):
         if barcode_exp_dict[barcode] != 0.0:
             num_expressed += 1
-    return num_expressed/len(list(barcode_exp_dict.keys()))
+    try: 
+        abundance = num_expressed/len(list(barcode_exp_dict.keys()))
+    except ZeroDivisionError:
+        abundance = 0
+    return abundance
 
 def count_cells(barcode_exp_dict):
     count = 0
