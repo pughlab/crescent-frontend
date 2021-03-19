@@ -39,7 +39,7 @@ const DotPlotVisualizationMenu = ({
   const topExpressed = useTopExpressedQuery(runID, selectedDiffExpression, selectedAssay)
   const searchOptions = useSearchFeaturesQuery(currentSearch, runID, selectedAssay)
 
-  const maxNumGenes = 20
+  const maxNumGenes = 10
 
   // useEffect(() => {
   //   setCurrentSearch(selectedFeature || '')
@@ -139,7 +139,7 @@ const DotPlotVisualizationMenu = ({
       </Form.Field>
 
       <Divider horizontal>
-        Selected Genes (Max 20)
+        {R.length(selectedFeatures)}/{maxNumGenes} Genes Selected
       </Divider>
       <Segment size='small' >
         {
