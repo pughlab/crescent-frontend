@@ -12,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 """
 
 from get_data.get_client import get_minio_client
-from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces
+from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, merge_gsva
 from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists, group_exists
 
 colour_counter = 0
@@ -87,17 +87,23 @@ def new_violin_group(label, y_coord):
 def categorize_barcodes(group, expression_values, paths, minio_client):
     """ for every group, make a new plotly object and put the barcodes into it """
     
-    metadata = paths["metadata"]
-    groups = paths["groups"]
+    metadata, groups, gsva = paths["metadata"], paths["groups"], paths["gsva"]
 
     metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
-
+    gsva_label_exists = object_exists(gsva["bucket"], gsva["object"], minio_client)
+    
     plotly_obj = {}
-    if group_exists(group, groups, minio_client):
+    if group == "GSVA Label":
+        if gsva_label_exists:
+            merged_groups_tsv = merge_gsva(get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client), get_obj_as_2dlist(gsva["bucket"], gsva["object"], minio_client))
+            label_with_groups(plotly_obj, expression_values, group, merged_groups_tsv)
+        else:
+            return_error("GSVA label is not available")
+    elif group_exists(group, groups, minio_client):
         # groups tsv definition supercedes metadata
         label_with_groups(plotly_obj, expression_values, group, 
             get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client))
-    elif group_exists(group, metadata, minio_client):
+    elif metadata_exists and group_exists(group, metadata, minio_client):
         # it's defined in the metadata
         label_with_groups(plotly_obj, expression_values, group, 
             get_obj_as_2dlist(metadata["bucket"], metadata["object"], minio_client))
@@ -131,7 +137,7 @@ def get_violin_data(feature, group, runID, datasetID, assay):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True, assay=assay)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts", "gsva"], findDatasetID=True, assay=assay)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()
