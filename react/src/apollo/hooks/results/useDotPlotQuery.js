@@ -5,11 +5,11 @@ import * as R from 'ramda'
 
 import {grapheneClient as client} from '../../clients'
 
-export default function useDotPlot(features, group, runID, scaleBy, expRange, assay) {
+export default function useDotPlot(features, group, runID, scaleBy, expRange, assay, sidebarCollapsed) {
   const [dotPlot, setDotPlot] = useState(null)
   const { loading, data, error, refetch } = useQuery(gql`
-    query DotPlot($features: [String], $group: String, $runID: ID, $scaleBy: String, $expRange: [Float], $assay: String) {
-      dotPlot(features: $features, group: $group, runID: $runID, scaleBy:$scaleBy, expRange: $expRange, assay: $assay) {
+    query DotPlot($features: [String], $group: String, $runID: ID, $scaleBy: String, $expRange: [Float], $assay: String, $sidebarCollapsed: Boolean) {
+      dotPlot(features: $features, group: $group, runID: $runID, scaleBy:$scaleBy, expRange: $expRange, assay: $assay, sidebarCollapsed: $sidebarCollapsed) {
         type
         mode
         x
@@ -26,12 +26,14 @@ export default function useDotPlot(features, group, runID, scaleBy, expRange, as
         scaleby
         globalmax
         initialminmax
+        dotminmax
+        sidebarcollapsed
       }
     }
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: { features, group, runID, scaleBy, expRange, assay},
+    variables: { features, group, runID, scaleBy, expRange, assay, sidebarCollapsed},
     onCompleted: ({ dotPlot }) => {
       R.compose(
         setDotPlot,

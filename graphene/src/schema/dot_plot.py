@@ -1,4 +1,4 @@
-from graphene import Field, Float, ID, List, NonNull, ObjectType, String
+from graphene import Field, Float, ID, List, NonNull, ObjectType, String, Boolean
 
 from schema.secondary.dot_plot_marker import DotPlotMarker
 from schema.secondary.mode import Mode
@@ -59,3 +59,13 @@ class DotPlotData(ObjectType):
     @staticmethod
     def resolve_initialminmax(parent, info):
         return parent["initialminmax"]
+    
+    dotminmax = List(Float)
+    @staticmethod
+    def resolve_dotminmax(parent, info):
+        return parent["dotminmax"]
+    
+    sidebarcollapsed = Boolean()
+    @staticmethod
+    def resolve_sidebarcollapsed(parent, info):
+        return parent["sidebarcollapsed"]

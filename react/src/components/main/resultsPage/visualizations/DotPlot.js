@@ -45,13 +45,14 @@ const DotPlot = ({
     if (R.includes(gene, Object.keys(dotPlotData))
       && dotPlotData[gene]["group"] === selectedGroup
       && dotPlotData[gene]["scaleby"] === selectedScaleBy
+      && dotPlotData[gene]["sidebarcollapsed"] === sidebarCollapsed
       && selectedScaleBy === "gene") {
       dotPlot = R.append(dotPlotData[gene], dotPlot)
     } else {
       queryGenes = R.append(gene, queryGenes)
     }
   }, selectedFeatures)
-  const { dotPlot: queryResult, loading } = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange, selectedAssay)
+  const { dotPlot: queryResult, loading } = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange, selectedAssay, sidebarCollapsed)
   const result = queryResult === null ? [] : queryResult.filter(trace => trace["group"] === selectedGroup && trace["scaleby"] === selectedScaleBy)
   dotPlot = R.concat(dotPlot, result)
 
@@ -130,14 +131,15 @@ const DotPlot = ({
     return data
   }
 
-  var sizeLegend = [{
+  const getDotSizes = (percentages, dotMinMax) =>  percentages.map(percentage => percentage * (dotMinMax[1] - dotMinMax[0]) + dotMinMax[0])
+  const sizeLegend = [{
     x: [1, 2, 3, 4, 5],
     y: [1, 1, 1, 1, 1],
     text: ['<b>0%</b>', '<b>25%</b>', '<b>50%</b>', '<b>75%</b>', '<b>100%</b>'],
     mode: 'markers+text',
     textposition: 'center left',
     marker: {
-      size: [10, 20, 30, 40, 50],
+      size: getDotSizes([0, .25, .5, .75, 1], dotPlot[0]["dotminmax"]),
       color: '#f5527b'
     }
   }];

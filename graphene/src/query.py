@@ -1,4 +1,4 @@
-from graphene import ObjectType, Int, String, Field, ID, List, NonNull, Float
+from graphene import ObjectType, Int, String, Field, ID, List, NonNull, Float, Boolean
 
 from get_data.get_scatter import get_scatter_data
 from get_data.get_violin import get_violin_data
@@ -126,10 +126,10 @@ class Query(ObjectType):
     def resolve_scatter(parent, info, vis, group, runID, datasetID):
         return get_scatter_data(vis, group, runID, datasetID)
 
-    dot_plot = List(NonNull(DotPlotData), features=List(String), group=String(), runID=ID(), scaleBy=String(), expRange=List(Float), assay=String())
+    dot_plot = List(NonNull(DotPlotData), features=List(String), group=String(), runID=ID(), scaleBy=String(), expRange=List(Float), assay=String(), sidebarCollapsed=Boolean())
     @staticmethod
-    def resolve_dot_plot(parent, info, features, group, runID, scaleBy, expRange, assay):
-        return get_dot_plot_data(features, group, runID, scaleBy, expRange, assay)
+    def resolve_dot_plot(parent, info, features, group, runID, scaleBy, expRange, assay, sidebarCollapsed):
+        return get_dot_plot_data(features, group, runID, scaleBy, expRange, assay, sidebarCollapsed)
 
     size = Int(runID=ID())
     @staticmethod

@@ -139,14 +139,14 @@ def calculate_opacities(cluster_exp_dict, min_max_list):
 
     return opacities
 
-def calculate_sizes(cluster_exp_dict):
+def calculate_sizes(cluster_exp_dict, dot_info):
     """ given a cluster expression dict, calculate and return the sizes of each cluster 
     @cluster_exp_dict: {cluster: exp} """
-    min_size = 10  # 0% expressed
+    min_size = dot_info["min"]  # 0% expressed
     size_values = [float(cluster_exp_dict[cluster])
                    for cluster in list(cluster_exp_dict.keys())]
     sizes = [min_size if val == 0.0 else round(
-        (val*40/1 + min_size), 2) for val in size_values]
+        (val*(dot_info["max"] - dot_info["min"])/1 + min_size), 2) for val in size_values]
     return sizes
 
 def find_max_exp_per_cluster(cluster_exp_dict):
@@ -188,7 +188,7 @@ def count_cells(barcode_exp_dict):
         count += 1
     return count
 
-def get_trace(cluster_dict, feature, group, scale_by, slider_info):
+def get_trace(cluster_dict, feature, group, scale_by, slider_info, dot_info):
     """ given a cluster barcode dict, return a template trace object for one feature
     """
     sorted_clusters = sorted(list(cluster_dict.keys()), key=natural_keys)
@@ -213,7 +213,9 @@ def get_trace(cluster_dict, feature, group, scale_by, slider_info):
         "group": group,
         "scaleby": scale_by,
         "globalmax": slider_info["global_max"],
-        "initialminmax": slider_info["initial_min_max"]
+        "initialminmax": slider_info["initial_min_max"],
+        "dotminmax": [dot_info["min"], dot_info["max"]],
+        "sidebarcollapsed": dot_info["sidebar_collapsed"]
     }
     cluster_exp_dict = {}
     cluster_abundance_dict = {}
@@ -235,11 +237,11 @@ def get_trace(cluster_dict, feature, group, scale_by, slider_info):
     template["marker"]["opacity"] = calculate_opacities(
         cluster_exp_dict, min_max_list)
     template["marker"]["size"] = calculate_sizes(
-        cluster_abundance_dict)
+        cluster_abundance_dict, dot_info)
 
     return template
 
-def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay):
+def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay, sidebarCollapsed):
     """ given a runID: returns a dot plot plotly object """
 
     paths = {}
@@ -277,11 +279,16 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay):
         "global_max": 0 if not avg_exp_list else max(avg_exp_list),
         "initial_min_max": [calculate_n_th_percentile(10, avg_exp_list), calculate_n_th_percentile(90, avg_exp_list)]
     }
+    dot_info = {
+        "sidebar_collapsed": sidebarCollapsed,
+        "min": 5 if sidebarCollapsed else 10,
+        "max": 25 if sidebarCollapsed else 50
+    }
 
     # get trace for each feature
     for feature in list(feature_cluster_dict.keys()):
         cluster_dict = feature_cluster_dict[feature]
-        trace = get_trace(cluster_dict, feature, group, scaleBy, slider_info)
+        trace = get_trace(cluster_dict, feature, group, scaleBy, slider_info, dot_info)
         plotly_obj.append(trace)
 
     return plotly_obj
