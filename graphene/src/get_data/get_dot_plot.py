@@ -10,6 +10,7 @@ import io
 import csv
 import gzip
 import re
+from collections import OrderedDict
 """
 Run these if you need to run this file directly
 # case-2-syspath-could-change
@@ -32,13 +33,22 @@ def get_barcodes(normalised_counts_path, feature_list):
         feature_barcodes = []
         barcodes = ds.ca.CellID
         features = ds.ra.Gene    
+
+        # get all indices of the features in the loom file
+        idx_feature_dict = OrderedDict()
         for feature in feature_list:
             feature_idx = next(
                 (i for i in range(len(features)) if features[i] == feature), -1)
             if feature_idx >= 0:
-                # ds[feature_idx, :] is taking 0.2s to calculate
-                feature_barcodes.append({"feature": feature, "barcode_exp": dict(
-                    zip(barcodes, ds[feature_idx, :]))})
+                idx_feature_dict[feature_idx] = feature
+                
+        # sort the indices and find the corresponding barcodes and expression values
+        sorted_idx_feature_dict = OrderedDict(sorted(idx_feature_dict.items(), key=lambda x: x[0]))
+        rows = ds[sorted_idx_feature_dict.keys(), :]
+        for i in range(len(rows)):
+            feature_barcodes.append({"feature": list(sorted_idx_feature_dict.items())[i][1], "barcode_exp": dict(
+                zip(barcodes, rows[i]))})
+
         return feature_barcodes
 
 def categorize_by_group(group, barcode_exp_dict, label_tsv, include_unlabelled = False):
