@@ -176,15 +176,16 @@ def calculate_n_th_percentile(n, num_list):
 def merge_gsva(groups_tsv, gsva_tsv):
     """ merge gsva_tsv with groups_tsv """
     gsva_dict = {}
-    pattern = re.compile(r".*_(?P<cluster>.*)")
+    multidataset_pattern = re.compile(r".*_(?P<cluster>.*)")
     for line in gsva_tsv:
-        match = pattern.match(line[0])
-        if match is not None:
-            gsva_dict[(match.groupdict()["cluster"])] = line[1]
+        multidataset_match = multidataset_pattern.match(line[0])
+        if multidataset_match is not None: # multi-dataset run
+            gsva_dict[(multidataset_match.groupdict()["cluster"])] = line[1]
+        else: # single dataset run
+            gsva_dict[line[0]] = line[1]
 
     merged_tsv = [['NAME', "GSVA Label"], ["TYPE", "group"]]
-    barcode_idx = 0
-    cluster_idx = groups_tsv[0].index("Seurat_Global_Clusters_Resolution_1")
+    barcode_idx, cluster_idx = 0, 1
     groups = groups_tsv[2:]
     for line in groups:
         new_line = [line[barcode_idx], gsva_dict[line[cluster_idx]]]
