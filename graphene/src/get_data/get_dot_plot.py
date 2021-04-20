@@ -21,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 """
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
-from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, calculate_n_th_percentile, merge_gsva
+from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, calculate_n_th_percentile, merge_gsva, natural_keys
 from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists, group_exists
 from get_data.get_others import get_paths
 
@@ -101,16 +101,6 @@ def group_barcodes(barcode_exp_dict, minio_client, paths, group, runID):
         return categorize_by_group(group,barcode_exp_dict, metadata_tsv, True)
     else:
         return_error(group + " is not an available group in groups.tsv or metadata.tsv")
-
-def to_float(text):
-    try:
-        result = float(text)
-    except ValueError:
-        result = text
-    return result
-
-def natural_keys(text):
-    return [ to_float(c) for c in re.split(r'[+-]?([0-9]+(?:[.][0-9]*)?|[.][0-9]+)', text) ]
 
 def duplicate_element(element, num):
     """ given an string, create a list with n copies of the string """

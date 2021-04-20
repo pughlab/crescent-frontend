@@ -14,6 +14,7 @@ import ScatterPlot from './ScatterPlot'
 import ViolinPlot from './ViolinPlot'
 import QCPlot from './QCPlot'
 import DotPlot from './DotPlot'
+import Heatmap from './Heatmap'
 
 import CrescentPlotCaption from './PlotCaption'
 
@@ -32,6 +33,7 @@ const CrescentPlot = ({
     isActiveResult('qc') ? <QCPlot {...{plotQueryIndex}} />
     : isActiveResult('violin') ? <ViolinPlot {...{plotQueryIndex}} />
     : isActiveResult('dot') ? <DotPlot {...{plotQueryIndex}} />
+    : isActiveResult('heatmap') ? <Heatmap {...{plotQueryIndex}} />
     : (isActiveResult('tsne') || isActiveResult('umap')) && <ScatterPlot {...{plotQueryIndex}} />
   )
 }

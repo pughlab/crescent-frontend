@@ -23,5 +23,10 @@
     "label": "Dot Plot",
     "result": "dot",
     "description": "Gene Expression Dot Plot"
+  },
+  "HEATMAP": {
+    "label": "Heatmap",
+    "result": "heatmap",
+    "description": "GSVA Heatmap"
   }
 }

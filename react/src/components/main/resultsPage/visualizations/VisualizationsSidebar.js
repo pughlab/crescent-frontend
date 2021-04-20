@@ -12,6 +12,7 @@ import {setActiveResult, addPlot, setActivePlot} from '../../../../redux/actions
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
 import DotPlotVisualizationMenu from '../../resultsPage/visualizations/DotPlotVisualizationMenu'
+import HeatmapVisualizationMenu from '../../resultsPage/visualizations/HeatmapVisualizationMenu'
 import QualityControlMenu from '../../resultsPage/visualizations/QualityControlMenu'
 
 const MultiPlotSelector = ({
@@ -104,6 +105,7 @@ const VisualizationsSidebar = ({
               R.cond([
                 [R.equals('qc'),   R.always(<QualityControlMenu/>)],
                 [R.equals('dot'), R.always(<DotPlotVisualizationMenu/>)],
+                [R.equals('heatmap'), R.always(<HeatmapVisualizationMenu/>)],
                 [R.T,            R.always(<VisualizationMenu/>)]
               ])(activeResult)
             }

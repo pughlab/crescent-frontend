@@ -1,8 +1,6 @@
 from graphene import Float, List, ObjectType, String
 
-from schema.secondary.hoverinfo import HoverInfo
-
-class Heatmap(ObjectType):
+class HeatmapData(ObjectType):
     x = List(String)
     @staticmethod
     def resolve_x(parent, info):
@@ -12,17 +10,6 @@ class Heatmap(ObjectType):
     @staticmethod
     def resolve_y(parent, info):
         return parent['y']
-    
-    text = List(List(Float))
-    @staticmethod
-    def resolve_text(parent, info):
-        str_vals = parent['text']
-        return [map(float, i) for i in str_vals]
-
-    hoverinfo = List(HoverInfo)
-    @staticmethod
-    def resolve_hoverinfo(parent, info):
-        return parent['hoverinfo'].split('+')
 
     z = List(List(Float))
     @staticmethod
@@ -34,3 +21,8 @@ class Heatmap(ObjectType):
     @staticmethod
     def resolve_type(parent, info):
         return parent['type']
+        
+    hovertemplate = String()
+    @staticmethod
+    def resolve_hovertemplate(parent, info):
+        return parent["hovertemplate"]
