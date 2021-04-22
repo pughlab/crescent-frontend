@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useReducer} from 'react';
 
-import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Menu, Form, Popup} from 'semantic-ui-react'
+import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Input, Menu, Form, Popup} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -15,6 +15,7 @@ import OncotreeTree from './OncotreeTree'
 import OncotreeDirectory from './OncotreeDirectory'
 
 import UploadMetadataButton from './UploadMetadataButton'
+import AddCustomTagsButton from './AddCustomTagsButton';
 
 const TagOncotreeModal = ({
   datasetID,
@@ -48,16 +49,32 @@ const TagOncotreeModal = ({
           flowing
           on='hover'
           trigger={
-          <Label as={Button} onClick={() => setOpen(true)}>
+          <Label 
+            as={Button} 
+            // size='big'
+            basic
+            color={R.prop(cancerTag, {
+              true: 'pink',
+              false: 'purple',
+              null: 'blue',
+            })}
+            onClick={() => setOpen(true)}>
               {name}
-              {/* {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
-              {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+              {/* {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />} */}
+              {/* {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
               <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
             </Label>
           }
           content={
-            <Label>
-              {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
+            <Label
+            color={R.prop(cancerTag, {
+              true: 'pink',
+              false: 'purple',
+              null: 'blue',
+            })}
+            >
+              {<Icon style={{margin: 0}} name='paperclip' /> }             
+              {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />}
               {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
               {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
             </Label>
@@ -75,32 +92,39 @@ const TagOncotreeModal = ({
         </Header>
 
         <Menu attached='top'>
-          <Menu.Item content='Tag Oncotree Tissue'
+          <Menu.Item content='Oncotree Tissue Tag'
             active={R.equals(activeMenu, 'oncotree')} onClick={() => setActiveMenu('oncotree')}
           />
-          {/* <Menu.Item content='Upload Metadata File'
-            active={R.equals(activeMenu, 'metadata')} onClick={() => setActiveMenu('metadata')}
-          /> */}
+          <Menu.Item content='Custom Tags'
+            active={R.equals(activeMenu, 'custom')} onClick={() => setActiveMenu('custom')}
+          />
         </Menu>
         <Segment attached='bottom'>
         {
-          // R.equals(activeMenu, 'oncotree') ?
+          R.equals(activeMenu, 'oncotree') ?
             <>
             <Divider horizontal>
               Tag <a target="_blank" href='http://oncotree.mskcc.org/' >Oncotree</a> tissue type using menu below
             </Divider>
-            <Button.Group fluid widths={2}>
+            <Button.Group fluid widths={3}>
               <Button content='Cancer'
                 disabled={disabledTagging}
                 active={cancerTag}
-                color={cancerTag ? 'blue' : undefined}
+                color={cancerTag ? 'pink' : undefined}
                 onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode}})}
+              />
+              <Button.Or />
+              <Button content='Immune'
+                disabled={disabledTagging}
+                active={R.equals(cancerTag, null)}
+                color={R.equals(cancerTag, null) ? 'blue' : undefined}
+                onClick={() => tagDataset({variables: {cancerTag: null, oncotreeCode: null}})}
               />
               <Button.Or />
               <Button content='Non-cancer'
                 disabled={disabledTagging}
-                active={R.not(cancerTag)}
-                color={R.not(cancerTag) ? 'blue' : undefined}
+                active={R.equals(cancerTag, false)}
+                color={R.equals(cancerTag, false) ? 'purple' : undefined}
                 onClick={() => tagDataset({variables: {cancerTag: false, oncotreeCode: null}})}
               />
             </Button.Group>
@@ -110,7 +134,7 @@ const TagOncotreeModal = ({
             {
               cancerTag ?
                 <OncotreeDirectory {...{dataset, tagDataset, disabledTagging}} />
-              :
+              : 
                 <>
                 <Divider horizontal />
                 <Dropdown fluid
@@ -130,23 +154,23 @@ const TagOncotreeModal = ({
                 </>
             }
             </>
-          // : R.equals(activeMenu, 'metadata') ?
-          //   <>
-          //   <Divider horizontal>
-          //     Upload/Replace Metadata for this dataset in this <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-2' >format.</a> 
-          //   </Divider>
-          //   {
-          //   disabledTagging ? 
-          //     <Segment placeholder>
-          //       <Header textAlign='center'
-          //         content={'You do not have permissions to upload metadata for this dataset'}
-          //       />
-          //     </Segment>
-          //   :
-          //   <UploadMetadataButton {...{datasetID}} />
-          //   }
-          //   </>
-          // : null
+          : R.equals(activeMenu, 'custom') ?
+            <>
+            <Divider horizontal>
+              Add custom tags/labels to your datasets below
+            </Divider>
+            {
+            disabledTagging ? 
+              <Segment placeholder>
+                <Header textAlign='center'
+                  content={'You do not have permissions to upload metadata for this dataset'}
+                />
+              </Segment>
+            :
+            <AddCustomTagsButton {...{datasetID}} />
+            }
+            </>
+          : null
         }
         </Segment>
 
@@ -171,7 +195,7 @@ export default function UploadedDatasetsDetails ({
   return (
     <Segment attached>
       <Divider horizontal>
-        <Header content={'Uploaded Dataset Metadata'} />
+        <Header content={'Dataset Tags'} />
       </Divider>
       <Label.Group size='large'>
       {
