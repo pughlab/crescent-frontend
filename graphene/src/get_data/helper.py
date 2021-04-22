@@ -200,3 +200,12 @@ def to_float(text):
 
 def natural_keys(text):
     return [ to_float(c) for c in re.split(r'[+-]?([0-9]+(?:[.][0-9]*)?|[.][0-9]+)', text) ]
+
+def extract_cluster_label(cluster):
+    """ if '_' exists in cluster, extract the cluster cluster after '_' else return cluster """
+    multidataset_pattern = re.compile(r".*_(?P<cluster>.*)")
+    multidataset_match = multidataset_pattern.match(cluster)
+    if multidataset_match is not None: # multi-dataset run
+        return multidataset_match.groupdict()["cluster"]
+    else: # single dataset run
+        return cluster

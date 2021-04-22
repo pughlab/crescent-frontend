@@ -12,7 +12,7 @@ from get_data.minio_functions import (
     get_size,
     object_exists
 )
-from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name, natural_keys
+from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name, natural_keys, extract_cluster_label
 
 def get_paths(runID, keys, findDatasetID=False, assay="legacy"):
     paths = {}
@@ -310,19 +310,12 @@ def get_GSVA_metrics(runID):
 
     cell_types = es_tsv[0][1:] # cell types are first line
     es_tsv = es_tsv[1:]
-
-    multidataset_pattern = re.compile(r".*_(?P<cluster>.*)")
     for row in es_tsv:
-        cluster = row[0]
-        multidataset_match = multidataset_pattern.match(row[0])
-        if multidataset_match is not None: # multi-dataset run
-            trimmed_cluster = multidataset_match.groupdict()["cluster"]
-        else: # single dataset run
-            trimmed_cluster = row[0]
+        cluster = extract_cluster_label(row[0])
         scores = list(map(float, row[1:]))
         max_score_idx = row.index(str(max(scores)))
         GSVA_metrics.append({
-            "cluster": trimmed_cluster,
+            "cluster": cluster,
             "celltype": cell_types[max_score_idx-1],
             "score": row[max_score_idx]
         })

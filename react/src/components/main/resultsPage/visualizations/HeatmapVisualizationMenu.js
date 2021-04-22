@@ -25,7 +25,7 @@ const HeatmapVisualizationMenu = ({
         R.map(
             ({cluster, celltype, score}, index) => (
               <Segment fluid key={index}>
-                <Label attached='top' content={`Cluster `+cluster}/>
+                <Label attached='top' content={`Cluster ${cluster}`}/>
                 <div>
                   <Label basic size="medium" style={{ margin: '0.25rem' }}>
                     Predicted Cell Type: 
