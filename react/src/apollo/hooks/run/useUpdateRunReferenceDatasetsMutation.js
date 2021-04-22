@@ -10,7 +10,7 @@ export default function useUpdateRunReferenceDatasetsMutation ({
   runID
 }) {
   const [run, setRun] = useState(null)
-  useQuery(gql`
+  const {data: dataDatasets, refetch} = useQuery(gql`
     query RunDatasets($runID: ID) {
       run(runID: $runID) {
         status
@@ -27,8 +27,18 @@ export default function useUpdateRunReferenceDatasetsMutation ({
     }
   `, {
     variables: {runID},
-    onCompleted: ({run}) => {if (RA.isNotNil(run)) {setRun(run)}}
+    fetchPolicy: 'network-only',
+    onCompleted: ({run}) => {
+      if (RA.isNotNil(run)) {
+        setRun(run) 
+      }
+    }
   })
+  useEffect(() => {
+    if (dataDatasets) {
+      setRun(dataDatasets.run)
+    }
+  }, [dataDatasets])
 
   const [updateRunReferenceDatasets, {loading, data, error}] = useMutation(gql`
     mutation UpdateRunReferenceDatasets(
@@ -55,6 +65,11 @@ export default function useUpdateRunReferenceDatasetsMutation ({
     variables: {runID},
     onCompleted: ({updateRunReferenceDatasets: run}) => {if (RA.isNotNil(run)) {setRun(run)}},
   })
+  useEffect(() => {
+    if (data) {
+      refetch()
+    }
+  }, [data])
 
   return {run, updateRunReferenceDatasets, loading}
 }
