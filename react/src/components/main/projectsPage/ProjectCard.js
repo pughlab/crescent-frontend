@@ -51,6 +51,8 @@ const ProjectCard = ({
   } = project
 
   const uniqueOncotreeCodesArray = R.compose(R.uniq, R.reject(R.isNil), R.pluck('oncotreeCode'))(allDatasets)
+  const uniqueCancerTagsArray = R.compose(R.uniq, R.pluck('cancerTag'))(allDatasets)
+  const uniqueCustomTagsArray = R.compose(R.flatten, R.uniq, R.reject(R.isNil), R.pluck('customTags'))(allDatasets)
 
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
@@ -112,19 +114,25 @@ const ProjectCard = ({
                   </Label.Group>
                   <Divider horizontal content='Datasets' />
                   <Label.Group size='tiny'>
-                  {
-                    R.map(
-                      ({datasetID, name, cancerTag, oncotreeCode, hasMetadata}) => (
-                        <Label key={datasetID}>
-                          {name}
-                          {RA.isNotNil(cancerTag) && <Label.Detail content={cancerTag ? 'CANCER' : 'NON-CANCER'} />}
-                          {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
-                          {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
-                        </Label>
-                      ),
-                      allDatasets
-                    )
-                  }
+                    {
+                      R.map(
+                        ({datasetID, name, cancerTag, oncotreeCode, hasMetadata}) => (
+                          <Label key={datasetID}
+                            color={R.prop(cancerTag, {
+                              true: 'pink',
+                              false: 'purple',
+                              null: 'blue',
+                            })}
+                          >
+                            {name}
+                            {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />}
+                            {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+                            {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
+                          </Label>
+                        ),
+                        allDatasets
+                      )
+                    }
                   </Label.Group>
                 </Segment>
               </Segment.Group>
@@ -147,11 +155,63 @@ const ProjectCard = ({
             <Label.Group>
               <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(allDatasets)} dataset(s)`} />
               {
+                R.includes(true,uniqueCancerTagsArray) &&
+                <Label color='pink' content={<Icon style={{margin: 0}} name='paperclip' />} detail={'CANCER'} />
+              }
+              {
+                R.includes(false,uniqueCancerTagsArray) &&
+                <Label color='purple' content={<Icon style={{margin: 0}} name='paperclip' />} detail={'NON-CANCER'} />
+              }
+              {
+                R.includes(null,uniqueCancerTagsArray) &&
+                <Label color='blue' content={<Icon style={{margin: 0}} name='paperclip' />} detail={'IMMUNE'} />
+              }
+              </Label.Group>
+              <Label.Group>
+
+              {
                 R.map(
                   oncotreeCode => <Label key={oncotreeCode} content={<Icon style={{margin: 0}} name='paperclip' />} detail={oncotreeCode} />,
-                  uniqueOncotreeCodesArray
+                  R.slice(0,3,uniqueOncotreeCodesArray)
                  )
               }
+              <Popup
+                  size='huge' wide='very'
+                  trigger={
+                    RA.isNotEmpty(uniqueCustomTagsArray) && 
+                    <Label color='grey' content={<Icon style={{margin: 0}} name='paperclip' />} detail={`${R.length(uniqueCustomTagsArray)} custom tag(s)`} />
+
+                    // <Label attached='top' color='grey' animated='vertical'>
+                    //   <Label.Content>
+                    //     <Icon name='folder open' size='large' />
+                    //   </Label.Content>
+                    // </Label>
+                  }
+                  content={
+                    <>
+                    <Segment.Group>
+      
+                      <Segment>
+                        <Divider horizontal content='Custom Tags' />
+                        <Label.Group>
+                        {
+                          R.map(
+                            customTags => <Label key={customTags} content={<Icon style={{margin: 0}} name='paperclip' />} detail={customTags} />,
+                            uniqueCustomTagsArray
+                          )
+                        }
+                        </Label.Group>
+                      </Segment>
+                    </Segment.Group>
+                    </>
+                  }
+                />
+              {/* {
+                R.map(
+                  customTags => <Label key={customTags} content={<Icon style={{margin: 0}} name='paperclip' />} detail={customTags} />,
+                  uniqueCustomTagsArray
+                 )
+              } */}
             </Label.Group>
           </Card.Header>
         </Card.Content>
@@ -177,7 +237,7 @@ const ProjectCard = ({
                         return null
                       }
                       return (
-                        <Label key={status} color={statusColor}>
+                        <Label key={status} color={statusColor} basic>
                           <Icon
                             name={R.prop(status, {
                               pending: 'circle outline',

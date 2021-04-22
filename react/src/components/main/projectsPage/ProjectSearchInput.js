@@ -30,7 +30,7 @@ const ProjectSearchInput = ({
   
   return (
     // <Fade down appear={true} spy={activeProjectKind}>
-    <Segment attached='bottom' as={Segment.Group} verticalAlign='middle'>
+    <Segment attached='bottom' as={Segment.Group} verticalalign='middle'>
       <Segment>
         <Input fluid
           placeholder='Search project names and descriptions'
@@ -58,7 +58,7 @@ const ProjectSearchInput = ({
         <Button.Group widths={2} fluid size='small'>
           <Button
             active={cancer}
-            color={'black'}
+            color={'pink'}
             basic
             onClick={() => dispatch(setTissueFilter({cancer: R.not(cancer), nonCancer}))}
           >
@@ -66,7 +66,7 @@ const ProjectSearchInput = ({
           </Button>
           <Button
             active={nonCancer}
-            color={'black'}
+            color={'purple'}
             basic
             onClick={() => dispatch(setTissueFilter({cancer, nonCancer: R.not(nonCancer)}))}
           >

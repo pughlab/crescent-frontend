@@ -9,6 +9,7 @@ const typeDefs = gql`
     # Ontology tagging
     cancerTag: Boolean
     oncotreeCode: String
+    customTags: [String]
   }
 
   type Query {
@@ -37,6 +38,16 @@ const typeDefs = gql`
     uploadDatasetMetadata(
       datasetID: ID!
       metadata: Upload!
+    ): Dataset
+
+    addCustomTagDataset(
+      datasetID: ID!
+      customTag: String
+    ): Dataset
+
+    removeCustomTagDataset(
+      datasetID: ID!
+      customTag: String
     ): Dataset
   }
 `

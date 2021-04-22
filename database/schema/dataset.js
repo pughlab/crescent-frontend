@@ -19,6 +19,10 @@ const DatasetSchema = new mongoose.Schema({
   oncotreeCode: {
     type: String,
     default: null
+  },
+  customTags: {
+    type: [String],
+    default: null
   }
 })
 

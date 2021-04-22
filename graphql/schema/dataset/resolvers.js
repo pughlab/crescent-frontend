@@ -91,8 +91,40 @@ const resolvers = {
       } catch(error) {
         console.log(error)
       }
-    }
-  },
+    },
+
+    // customTagsDataset: async (parent, {datasetID, customTags}, {Projects}) => {
+    //   const dataset = await Datasets.findOne({datasetID})
+    //   dataset.customTags = R.uniq(customTags) //Just in case...
+    //   await dataset.save()
+    //   return dataset
+    // },
+
+
+    addCustomTagDataset: async (parent, {datasetID, customTag}, {Datasets}) => {
+    try {
+      const dataset = await Datasets.findOne({datasetID})
+      const {customTags} = dataset
+      dataset.customTags = R.append(customTag, customTags)
+      await dataset.save()
+      return dataset
+    } catch(error) {
+        console.log(error)
+      }
+    },
+
+    removeCustomTagDataset: async (parent, {datasetID, customTag}, {Datasets}) => {
+      try {
+        const dataset = await Datasets.findOne({datasetID})
+        const customTags = dataset.customTags  
+        dataset.customTags = R.reject(R.equals(customTag), customTags)
+        await dataset.save()
+        return dataset
+      } catch(error) {
+          console.log(error)
+        }
+    },
+  }
 }
 
 module.exports = resolvers
