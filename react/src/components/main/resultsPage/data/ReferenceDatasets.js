@@ -34,10 +34,10 @@ export default function ReferenceDatasets({
 
   return (
     <>
-      <Message color='teal'>
+      <Message color='blue'>
         Select which run datasets to use as reference/anchors (up to 3)
       </Message>
-      <Segment color='teal' loading={loading}>
+      <Segment color='blue' loading={loading}>
         <Divider horizontal content={`${R.length(referenceDatasetIDs)}/3 datasets selected`} />
         <List divided relaxed selection celled>
           {
@@ -55,7 +55,7 @@ export default function ReferenceDatasets({
                           runIsPending ? 
                             <Button floated='right'
                               disabled={!isReference && disableAddingReferences}
-                              color='teal'
+                              color='blue'
                               onClick={() => {
                                 if (isReference) {
                                   removeReferenceDataset(datasetID)
@@ -66,7 +66,7 @@ export default function ReferenceDatasets({
                               content={isReference ? 'Unanchor' : 'Anchor'}
                             />
                             :
-                            <Button floated='right' disabled={true} color='teal' basic={R.not(isReference)}
+                            <Button floated='right' disabled={true} color='blue' basic={R.not(isReference)}
                               content={isReference ? 'Anchored' : 'Unanchored'}
                             />
                         }
