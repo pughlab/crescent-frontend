@@ -41,9 +41,16 @@ const ParameterPopoverContent = ({
         <Label.Group>
         {
           R.map(
-            ({datasetID, name}) => (
-              <Label key={datasetID}>
+            ({datasetID, name, cancerTag}) => (
+              <Label key={datasetID}
+              color={R.prop(cancerTag, {
+                true: 'pink',
+                false: 'purple',
+                null: 'blue',
+              })}
+              >
                 {name}
+                {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />}
               </Label>
             ),
             datasets
