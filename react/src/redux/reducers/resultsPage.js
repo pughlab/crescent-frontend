@@ -16,10 +16,11 @@ const initialPlotQuery = {
 }
 
 const initialState = {
-  activeSidebarTab: 'data', // visualizations
+  activeSidebarTab: 'parameters', // visualizations
 
   activeDataAction: null, //inputs data actions in sidebar
   activePipelineStep: null, // pipeline parameters select in sidebar
+  activeAnnotationsAction: null, // annotations actions in sidebar
 
   sidebarCollapsed: false,
   activePlot: 0,
@@ -56,13 +57,20 @@ export default createReducer(
       })(state)
     },
 
+    'resultsPage/setActiveAnnotationsAction': (state, payload) => {
+      const {annotationsAction} = payload
+      return R.evolve({
+        activeAnnotationsAction: R.always(annotationsAction)
+      })(state)
+    },
+
     'resultsPage/setActivePipelineStep': (state, payload) => {
       const {pipelineStep} = payload
       return R.evolve({
         activePipelineStep: R.always(pipelineStep)
       })(state)
     },
-
+    
     // for plot
     'resultsPage/setActiveResult': (state, payload) => {
       const {result} = payload

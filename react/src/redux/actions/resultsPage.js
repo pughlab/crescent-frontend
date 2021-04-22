@@ -12,6 +12,11 @@ const setActiveDataAction = ({dataAction}) => ({
   payload: {dataAction}
 })
 
+const setActiveAnnotationsAction = ({annotationsAction}) => ({
+  type: 'resultsPage/setActiveAnnotationsAction',
+  payload: {annotationsAction}
+})
+
 const setActivePipelineStep = ({pipelineStep}) => ({
   type: 'resultsPage/setActivePipelineStep',
   payload: {
@@ -116,6 +121,7 @@ const resetResultsPage = R.always({type: 'resultsPage/reset'})
 export {
   setActiveSidebarTab,
   setActiveDataAction,
+  setActiveAnnotationsAction,
   setActivePipelineStep,
   setActiveResult,
   setSelectedQC,
