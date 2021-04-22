@@ -26,7 +26,7 @@ const NewRunModal = ({
   const [runName, setRunName] = useState('')
   const [datasetsState, datasetsDispatch] = useReducer(
     function (state, action) {
-      const maxDatasets = 3
+      const maxDatasets = 20
       const {type} = action
       switch (type) {
         case 'TOGGLE_DATASET':
@@ -102,7 +102,7 @@ const NewRunModal = ({
     >
       <Modal.Header>
         <Header textAlign='center' content='New Run'
-          subheader={`Enter a run name and select up to three datasets (${R.length(datasetsState)}/3)`}
+          subheader={`Enter a run name and select up to 20 datasets (${R.length(datasetsState)}/20)`}
         />
       </Modal.Header>
       <Modal.Content>
