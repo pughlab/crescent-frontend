@@ -1,5 +1,41 @@
 const mongoose = require('mongoose')
 
+const SecondaryRunSchema = new mongoose.Schema({
+  // MinIO object name
+  wesID: {
+    type: String,
+    default: null
+  },
+  status: {
+    type: String,
+    enum: ['pending', 'submitted', 'completed', 'failed'],
+    default: 'pending'
+  },  
+  submittedOn: {
+    type: Date,
+    default: null
+  },
+  completedOn: {
+    type: Date,
+    default: null
+  },
+  // uploadName: {
+  //   type: String,
+  //   default: null
+  // }
+})
+
+const UploadNamesSchema = new mongoose.Schema ({
+  gsva: {
+    type: String,
+    default: null
+  },
+  metadata: {
+    type: String,
+    default: null
+  }
+})
+
 const RunSchema = new mongoose.Schema({
   runID: {
     type: mongoose.Schema.Types.ObjectId,
@@ -53,6 +89,10 @@ const RunSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  secondaryRuns: {
+    type: [SecondaryRunSchema],
+    default: [],
+  },
   submittedOn: {
     type: Date,
     default: null
@@ -61,6 +101,11 @@ const RunSchema = new mongoose.Schema({
   completedOn: {
     type: Date,
     default: null
+  },
+
+  uploadNames: {
+    type: UploadNamesSchema,
+    default: {metadata: null, gsva: null},
   }
 })
 
