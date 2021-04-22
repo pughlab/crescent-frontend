@@ -46,6 +46,7 @@ export default function useProjectDetailsQuery(projectID) {
           hasMetadata
           cancerTag
           oncotreeCode
+          customTags
         }
       }
     }
