@@ -41,8 +41,7 @@ export default function DataSidebar ({
   const isSingleDatasetRun = R.compose(R.equals(1), R.length)(datasets)
 
   const DATA_ACTIONS = [
-    ... isSingleDatasetRun ? [] : [{dataAction: 'referenceDatasets', label: 'Reference Datasets', description: 'Select which datasets will be used as reference/anchors'}],
-    {dataAction: 'runMetadata', label: 'Run Metadata', description: 'Upload/replace metadata for this run'},
+    ... isSingleDatasetRun ? [] : [{dataAction: 'referenceDatasets', label: 'Select Reference Datasets', description: 'Select which datasets will be used as reference/anchors'}],
   ]
 
   return (
