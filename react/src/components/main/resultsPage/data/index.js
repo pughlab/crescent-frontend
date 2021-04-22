@@ -7,9 +7,10 @@ import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
+import Tada from 'react-reveal/Tada'
+import Logo from '../../../login/logo.jpg'
 import Shake from 'react-reveal/Shake'
 
-import UploadRunMetadataButton from './UploadRunMetadataButton'
 import ReferenceDatasets from './ReferenceDatasets'
 
 export default function DataComponent ({
@@ -22,7 +23,15 @@ export default function DataComponent ({
 
   const run = useRunDetailsQuery(runID)
   if (R.any(R.isNil, [run])) {
-    return null
+    return (
+      <Segment style={{height: '100%'}} color='violet'>
+        <Segment basic style={{ height: '100%' }} placeholder>
+          <Tada forever duration={1000}>
+            <Image src={Logo} centered size='medium' />
+          </Tada>
+        </Segment>
+      </Segment>
+    )
   }
 
   if (R.isNil(activeDataAction)) {
@@ -45,7 +54,6 @@ export default function DataComponent ({
     <Segment style={{height: '100%'}} color='teal'>
     {
       activeDataActionIs('referenceDatasets') ? <ReferenceDatasets {...{runID}} />
-      : activeDataActionIs('runMetadata') ? <UploadRunMetadataButton {...{runID}} />
       : null
     }
     </Segment> 
