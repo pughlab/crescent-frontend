@@ -20,6 +20,17 @@ export default function useRunDetails(runID) {
 
         status
 
+        secondaryRuns {
+          wesID
+          status
+          submittedOn
+          completedOn
+        }
+        uploadNames {
+          gsva
+          metadata
+        }
+
         submittedOn
         completedOn
 
@@ -28,6 +39,7 @@ export default function useRunDetails(runID) {
           name
           size
           hasMetadata
+          cancerTag
         }
 
         project {
