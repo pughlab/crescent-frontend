@@ -7,6 +7,7 @@ import ParametersSidebar from '../parameters/ParametersSidebar'
 import VisualizationsSidebar from '../visualizations/VisualizationsSidebar'
 import LogsSidebar from '../logs/LogsSidebar'
 import DataSidebar from '../data/DataSidebar'
+import AnnotationsSidebar from '../annotations/AnnotationSidebar'
 
 import SubmitRunButton from './SubmitRunButton'
 import CancelRunButton from './CancelRunButton'
@@ -35,6 +36,8 @@ const SidebarComponent = ({
   const disableResults = R.equals('pending', runStatus)
   const enableSubmit = R.equals(currentUserID, creatorUserID)
   const runIsSubmitted = R.equals('submitted', runStatus)
+  const runIsNotCompleted = R.not(R.equals('completed', runStatus))
+
   return (
     
     <Segment basic style={{padding: 0, display: 'flex', flexDirection: 'column'}}>
@@ -46,12 +49,12 @@ const SidebarComponent = ({
         } */}
       </Segment>
       <Segment attached>
-        <Button.Group fluid widths={runIsSubmitted ? 4 : 3}>
-          <Button compact content='INPUTS' 
+        <Button.Group size='small' fluid widths={runIsSubmitted ? 4 : 3}>
+          {/* <Button compact content='INPUTS' 
             color={isActiveSidebarTab('data') ? 'teal' : undefined}
             active={isActiveSidebarTab('data')}
             onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'data'}))}
-          />
+          /> */}
           <Button compact content='PIPELINE' 
             color={isActiveSidebarTab('parameters') ? 'blue' : undefined}
             active={isActiveSidebarTab('parameters')}
@@ -71,15 +74,22 @@ const SidebarComponent = ({
             active={isActiveSidebarTab('visualizations')}
             onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'visualizations'}))}
           />
+          <Button compact content='ANNOTATIONS'
+            disabled={runIsNotCompleted}
+            color={isActiveSidebarTab('annotations') ? 'purple' : undefined}
+            active={isActiveSidebarTab('annotations')}
+            onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'annotations'}))}
+          />
         </Button.Group>
       </Segment>
       <Segment attached>
       {
         R.cond([
-          [R.equals('data'), R.always(<DataSidebar />)],
+          // [R.equals('data'), R.always(<DataSidebar />)],
           [R.equals('parameters'), R.always(<ParametersSidebar />)],
           [R.equals('visualizations'), R.always(<VisualizationsSidebar />)],
           [R.equals('logs'), R.always(<LogsSidebar />)],
+          [R.equals('annotations'), R.always(<AnnotationsSidebar />)],
         ])(activeSidebarTab)
       }
       </Segment>
