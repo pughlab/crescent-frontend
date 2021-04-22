@@ -30,15 +30,15 @@ export default function ReferenceDatasets({
   const addReferenceDataset = datasetID => updateRunReferenceDatasets({variables: {datasetIDs: R.uniq([... referenceDatasetIDs, datasetID])}})
   const removeReferenceDataset = datasetID => updateRunReferenceDatasets({variables: {datasetIDs: R.without([datasetID], referenceDatasetIDs)}})
 
-  const disableAddingReferences = R.lt(2, R.length(referenceDatasetIDs))
+  const disableAddingReferences = R.lt(5, R.length(referenceDatasetIDs))
 
   return (
     <>
       <Message color='blue'>
-        Select which run datasets to use as reference/anchors (up to 3)
+        Select which run datasets to use as reference/anchors (up to 6)
       </Message>
       <Segment color='blue' loading={loading}>
-        <Divider horizontal content={`${R.length(referenceDatasetIDs)}/3 datasets selected`} />
+        <Divider horizontal content={`${R.length(referenceDatasetIDs)}/6 datasets selected`} />
         <List divided relaxed selection celled>
           {
             R.compose(
