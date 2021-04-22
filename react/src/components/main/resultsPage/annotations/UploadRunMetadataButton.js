@@ -33,11 +33,11 @@ export default function UploadMetadataButton({
 
   return (
     <>
-      <Message color='teal'>
+      <Message color='purple'>
         <Icon name='upload'/>
         Upload/replace metadata for this Run in this <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-2' >format.</a> 
       </Message>
-      <Segment inverted={success} color='teal'>
+      <Segment inverted={success} color='purple'>
         {
         disabledUpload ? 
           <Segment placeholder>
@@ -51,7 +51,7 @@ export default function UploadMetadataButton({
             />
             {
               RA.isNotNil(metadataFile) &&
-              <Button color='blue'
+              <Button color='purple'
                 onClick={() => uploadRunMetadata({variables: {metadata: metadataFile}})}
                 content={success ? 'Uploaded' : 'Confirm'}
               />

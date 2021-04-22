@@ -7,12 +7,14 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
-import {useSubmitRunMutation} from '../../../../apollo/hooks/run'
+import {useSubmitRunMutation, useUpdateRunReferenceDatasetsMutation} from '../../../../apollo/hooks/run'
 
 const SubmitRunButton = ({
 }) => {
   const {userID, runID} = useCrescentContext()
-  const {submitRun, run, loading, submitted} = useSubmitRunMutation(runID)
+  const {submitRun, loading, submitted} = useSubmitRunMutation(runID)
+  const {run} = useUpdateRunReferenceDatasetsMutation({runID})
+
 
   if (R.any(R.isNil, [run])) {
     return null

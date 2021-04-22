@@ -81,5 +81,9 @@
             "prefix": "SEURAT/CRESCENT_CLOUD/frontend_markers/",
             "suffix": "TopTwoMarkersPerCluster.tsv"
         }
+    },
+    "gsva": {
+        "bucket": "run-",
+        "object": "GSVA/GSVA_RESULTS/crescent.GSVA_cluster_final_label.tsv"
     }
 }

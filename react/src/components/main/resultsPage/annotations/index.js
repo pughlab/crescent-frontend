@@ -7,19 +7,28 @@ import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
+import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
+import UploadedMetadataList from './UploadedMetadataList'
+
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import Shake from 'react-reveal/Shake'
 
-import ReferenceDatasets from './ReferenceDatasets'
+import UploadRunGenesetButton from './UploadRunGenesetButton'
+import UploadRunMetadataButton from './UploadRunMetadataButton'
 
-export default function DataComponent ({
+export default function AnnotationsComponent ({
 
 }) {
-  const {activeDataAction} = useResultsPage()
+  const {activeAnnotationsAction} = useResultsPage()
   const {runID} = useCrescentContext()
 
   const dispatch = useDispatch()
+
+  // const run = useRunDetailsQuery(runID)
+  // if (R.any(R.isNil, [run])) {
+  //   return null
+  // }
 
   const run = useRunDetailsQuery(runID)
   if (R.any(R.isNil, [run])) {
@@ -34,13 +43,13 @@ export default function DataComponent ({
     )
   }
 
-  if (R.isNil(activeDataAction)) {
+  if (R.isNil(activeAnnotationsAction)) {
     return (
-      <Segment placeholder style={{height: '100%'}} color='teal'>
+      <Segment placeholder style={{height: '100%'}} color='purple'>
         <Shake forever duration={10000}>
         <Header textAlign='center' icon>
           <Icon name='right arrow' />
-          {'Modify run inputs by selecting to the right'}
+          {'Select an annotation method'}
         </Header>
         </Shake>
       </Segment>
@@ -48,14 +57,15 @@ export default function DataComponent ({
   }
 
 
-  const activeDataActionIs = R.equals(activeDataAction)
+  const activeAnnotationsActionIs = R.equals(activeAnnotationsAction)
 
   return (
-    <Segment style={{height: '100%'}} color='teal'>
+    <Segment style={{height: '100%'}} color='purple'>
     {
-      activeDataActionIs('referenceDatasets') ? <ReferenceDatasets {...{runID}} />
+      activeAnnotationsActionIs('gsva') ? <> <UploadRunGenesetButton {...{runID}} /> </>
+      : activeAnnotationsActionIs('runMetadata') ? <> <UploadRunMetadataButton {...{runID}} /> <UploadedMetadataList {...{runID}} /> </>
       : null
     }
-    </Segment> 
+    </Segment>
   )
 }

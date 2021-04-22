@@ -20,7 +20,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 """
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
-from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, calculate_n_th_percentile
+from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, calculate_n_th_percentile, merge_gsva
 from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists, group_exists
 from get_data.get_others import get_paths
 
@@ -72,12 +72,21 @@ def group_barcodes(barcode_exp_dict, minio_client, paths, group, runID):
     """ given all the barcodes for a feature({barcode: exp}), return the barcodes grouped by cluster
     @rtype: {cluster: {barcode: exp}} """
 
-    metadata = paths["metadata"]
-    groups = paths["groups"]
-    if(group_exists(group, groups, minio_client)):
+    metadata, groups, gsva = paths["metadata"], paths["groups"], paths["gsva"]
+
+    metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
+    gsva_label_exists = object_exists(gsva["bucket"], gsva["object"], minio_client)
+
+    if group == "GSVA Label":
+        if gsva_label_exists:
+            merged_groups_tsv = merge_gsva(get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client), get_obj_as_2dlist(gsva["bucket"], gsva["object"], minio_client))
+            return categorize_by_group(group, barcode_exp_dict, merged_groups_tsv)
+        else:
+            return_error("GSVA label is not available")
+    elif (group_exists(group, groups, minio_client)):
         groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
         return categorize_by_group(group, barcode_exp_dict, groups_tsv)
-    elif (group_exists(group, metadata, minio_client)):
+    elif metadata_exists and (group_exists(group, metadata, minio_client)):
         metadata_tsv = get_obj_as_2dlist(metadata["bucket"], metadata["object"], minio_client)
         return categorize_by_group(group,barcode_exp_dict, metadata_tsv, True)
     else:
@@ -226,7 +235,7 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=False, assay=assay)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts", "gsva"], findDatasetID=False, assay=assay)
     paths["groups"] = set_name_multi(paths["groups"], "all", "groups")
 
     minio_client = get_minio_client()

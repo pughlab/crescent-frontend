@@ -20,6 +20,7 @@ import ParametersComponent from './parameters'
 import VisualizationsComponent from './visualizations'
 import LogsComponent from './logs'
 import DataComponent from './data'
+import AnnotationsComponent from './annotations'
 
 import {useResultsPage} from '../../../redux/hooks'
 import {resetResultsPage, toggleSidebarCollapsed} from '../../../redux/actions/resultsPage'
@@ -29,6 +30,7 @@ import {useDispatch} from 'react-redux'
 import Fade from 'react-reveal/Fade'
 import Tada from 'react-reveal/Tada'
 import Logo from '../../login/logo.svg'
+import AnnotationsSidebar from './annotations/AnnotationSidebar'
 
 const ResultsPageSidebarPusher = ({
 
@@ -63,7 +65,8 @@ const ResultsPageSidebarPusher = ({
         activeSidebarTabIs('parameters') ? <ParametersComponent />
         : activeSidebarTabIs('visualizations') ? <VisualizationsComponent />
         : activeSidebarTabIs('logs') ? <LogsComponent /> 
-        : activeSidebarTabIs('data') ? <DataComponent />
+        // : activeSidebarTabIs('data') ? <DataComponent />
+        : activeSidebarTabIs('annotations') ? <AnnotationsComponent />
         : null
       }
       </Grid.Column>

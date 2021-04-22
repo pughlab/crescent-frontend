@@ -49,7 +49,15 @@ const VisualizationsComponent = ({
   const [showLogs, setShowLogs] = useState(false)
 
   if (R.any(R.isNil, [run, plots])) {
-    return null
+    return (
+      <Segment style={{height: '100%'}} color='violet'>
+        <Segment basic style={{ height: '100%' }} placeholder>
+          <Tada forever duration={1000}>
+            <Image src={Logo} centered size='medium' />
+          </Tada>
+        </Segment>
+      </Segment>
+    )
   }
 
   const {status: runStatus} = run

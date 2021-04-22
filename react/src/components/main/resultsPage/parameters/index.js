@@ -1,15 +1,18 @@
 import React from 'react'
 import * as R from 'ramda'
 
-import {Segment, Transition, Header, Icon} from 'semantic-ui-react'
+import {Segment, Image, Header, Icon} from 'semantic-ui-react'
 
 import PipelineParameter from './PipelineParameter'
 import QualityControlParametersComponent from './QualityControl'
+import ReferenceDatasets from '../data/ReferenceDatasets'
+
 
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks/run'
 
-
+import Tada from 'react-reveal/Tada'
+import Logo from '../../../login/logo.jpg'
 import Shake from 'react-reveal/Shake'
 
 const ParametersComponent = ({
@@ -21,7 +24,15 @@ const ParametersComponent = ({
   const toolSteps = useToolStepsQuery()
 
   if (R.any(R.isNil, [run, toolSteps])) {
-    return null
+    return (
+      <Segment style={{height: '100%'}} color='violet'>
+        <Segment basic style={{ height: '100%' }} placeholder>
+          <Tada forever duration={1000}>
+            <Image src={Logo} centered size='medium' />
+          </Tada>
+        </Segment>
+      </Segment>
+    )
   }
 
 
@@ -53,7 +64,9 @@ const ParametersComponent = ({
   return (
     <Segment style={{height: '100%'}} color='blue'>
     {
-      R.equals('quality', activePipelineStep) ? 
+      R.equals('referenceDatasets', activePipelineStep) ? 
+        <ReferenceDatasets {...{runID}} />      
+      : R.equals('quality', activePipelineStep) ? 
         <QualityControlParametersComponent />
       : 
         R.compose(
@@ -85,7 +98,7 @@ const ParametersComponent = ({
           R.prop('parameters'),
           // R.find(R.propEq('step', activePipelineStep))
         )(activePipelineStepData)
-      }
+    }
     </Segment>
   )
 }

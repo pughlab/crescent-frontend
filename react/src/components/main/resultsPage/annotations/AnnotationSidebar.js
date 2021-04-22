@@ -7,15 +7,15 @@ import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
-import {setActiveDataAction} from '../../../../redux/actions/resultsPage'
+import {setActiveAnnotationsAction} from '../../../../redux/actions/resultsPage'
 
-const DataAccordionItem = ({dataAction, label, description}) => {
+const AnnotationsAccordionItem = ({annotationsAction, label, description}) => {
   const dispatch = useDispatch()
-  const {activeDataAction} = useResultsPage()
-  const active = R.equals(dataAction, activeDataAction)
+  const {activeAnnotationsAction} = useResultsPage()
+  const active = R.equals(annotationsAction, activeAnnotationsAction)
   return (
     <>
-    <Accordion.Title {...{active, onClick: () => dispatch(setActiveDataAction({dataAction}))}}>
+    <Accordion.Title {...{active, onClick: () => dispatch(setActiveAnnotationsAction({annotationsAction}))}}>
       {label}
     </Accordion.Title>
     <Accordion.Content>
@@ -25,7 +25,7 @@ const DataAccordionItem = ({dataAction, label, description}) => {
   )
 }
 
-export default function DataSidebar ({
+export default function AnnotationsSidebar ({
 
 }) {    
   const {userID: currentUserID, runID} = useCrescentContext()
@@ -40,8 +40,13 @@ export default function DataSidebar ({
   const {datasets} = run
   const isSingleDatasetRun = R.compose(R.equals(1), R.length)(datasets)
 
-  const DATA_ACTIONS = [
-    ... isSingleDatasetRun ? [] : [{dataAction: 'referenceDatasets', label: 'Select Reference Datasets', description: 'Select which datasets will be used as reference/anchors'}],
+  const ANNOTATIONS_ACTIONS = [
+    // ... isSingleDatasetRun ? [] : [{annotationsAction: 'gsva', label: 'GSVA Cell Labelling', description: 'aaa'}]
+    {annotationsAction: 'runMetadata', label: 'Custom Metadata', description: 'Upload/replace metadata for this run'},
+    {annotationsAction: 'gsva', label: 'GSVA Cluster Labelling', description: 'Run GSVA cell labelling by uploading/replacing geneset for this run'},
+
+
+
   ]
 
   return (
@@ -49,9 +54,9 @@ export default function DataSidebar ({
     <Accordion styled>
     {
       R.map(
-        (action) => (<DataAccordionItem key={action.dataAction} {...{...action}} />
+        (action) => (<AnnotationsAccordionItem key={action.annotationsAction} {...{...action}} />
         ),
-        DATA_ACTIONS
+        ANNOTATIONS_ACTIONS
       )
     }
     </Accordion>

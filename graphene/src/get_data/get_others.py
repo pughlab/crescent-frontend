@@ -109,19 +109,7 @@ def get_assays(runID):
 
 def get_groups(runID, datasetID):
     """ given a runID, fetches the available groups to label cell barcodes by """
-    minio_client = get_minio_client()
-    paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
-    paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
-    groups = paths["groups"]
-    metadata = paths["metadata"]
-
-    available_groups = get_first_line(groups["bucket"], groups["object"], minio_client)[1:]
-    if(object_exists(metadata["bucket"], metadata["object"], minio_client)):
-        metadata_groups = get_first_line(metadata["bucket"], metadata["object"], minio_client)[1:]
-        # available_groups = list(OrderedDict.fromkeys(available_groups))+list(OrderedDict.fromkeys(metadata_groups))
-        available_groups = list(OrderedSet(available_groups) | OrderedSet(metadata_groups))
-
-    return available_groups
+    return get_available_groups(runID, datasetID, "all")
 
 def get_cellcount(runID):
     """ count the lines of the barcode groups file to determine the cellcount """
@@ -201,23 +189,36 @@ def get_qc_metrics(runID, datasetID):
 
     return metrics
 
+def get_groups_from_tsv(path, minio_client, group_type):
+    if group_type == "all":
+        groups = get_first_line(path["bucket"], path["object"], minio_client)[1:]
+    else:
+        tsv = get_first_n_lines(2, path["bucket"], path["object"], minio_client)
+        group_types = list(zip(tsv[0], tsv[1]))[1:]
+        groups = [group for group, grouptype in group_types if grouptype == group_type]
+    return  groups
+
+def get_available_groups(runID, datasetID, group_type):
+    """ given a runID, fetches the available groups of type group, numeric or all """
+    minio_client = get_minio_client()
+    paths = get_paths(runID, ["groups", "metadata", "gsva"], findDatasetID=True)
+    paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
+    groups, metadata, gsva = paths["groups"], paths["metadata"], paths["gsva"]
+
+    # get avialable groups from groups.tsv
+    groups = get_groups_from_tsv(groups, minio_client, group_type)
+    # get available groups from metadata.tsv
+    if(object_exists(metadata["bucket"], metadata["object"], minio_client)):
+        metadata_groups = get_groups_from_tsv(metadata, minio_client, group_type)
+        groups = list(OrderedSet(groups) | OrderedSet(metadata_groups))
+    # get available groups from gsva tsv
+    if object_exists(gsva["bucket"], gsva["object"], minio_client):
+        groups.append("GSVA Label")
+    return groups
+
 def get_available_categorical_groups(runID, datasetID):
     """ given a runID, fetches the available groups (of non-numeric type) to label cell barcodes by """
-    minio_client = get_minio_client()
-    paths = get_paths(runID, ["groups", "metadata"], findDatasetID=True)
-    paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
-
-    groups_tsv = get_first_n_lines(2, paths["groups"]["bucket"], paths["groups"]["object"], minio_client)
-    group_types = list(zip(groups_tsv[0], groups_tsv[1]))[1:]
-    groups = [group for group, grouptype in group_types if grouptype == 'group']
-    if object_exists(paths["metadata"]["bucket"], paths["metadata"]["object"], minio_client):
-        metadata_tsv = get_first_n_lines(2, paths["metadata"]["bucket"], paths["metadata"]["object"], minio_client)
-        metadata_types = list(zip(metadata_tsv[0], metadata_tsv[1]))[1:]
-        metadata_groups = [group for group, grouptype in metadata_types if grouptype == 'group']
-        return list(OrderedSet(groups) | OrderedSet(metadata_groups))
-        # return list(OrderedDict.fromkeys(groups))+list(OrderedDict.fromkeys(metadata_groups))
-
-    return groups
+    return get_available_groups(runID, datasetID, "group")
 
 def get_available_numeric_groups(runID, datasetID):
     """ given a runID, fetches the available groups (of numeric type) to label cell barcodes by """

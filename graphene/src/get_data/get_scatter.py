@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 """
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
-from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces
+from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, merge_gsva
 from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists, group_exists
 
 
@@ -129,11 +129,19 @@ def label_with_groups(plotly_obj, barcode_coords, num_cells, group, label_tsv, i
 def label_barcodes(barcode_coords, group, paths, minio_client):
     """ given the coordinates for the barcodes, sorts them into the specified groups and returns a plotly object """
     plotly_obj = {}
-    metadata = paths["metadata"]
-    groups = paths["groups"]
+    metadata, groups, gsva = paths["metadata"], paths["groups"], paths["gsva"]
+
+    metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
+    gsva_label_exists = object_exists(gsva["bucket"], gsva["object"], minio_client)
+
     num_cells = count_lines(groups["bucket"], groups["all"], minio_client) - 2
-    
-    if group_exists(group, groups, minio_client):
+    if group == "GSVA Label":
+        if gsva_label_exists:
+            merged_groups_tsv = merge_gsva(get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client), get_obj_as_2dlist(gsva["bucket"], gsva["object"], minio_client))
+            label_with_groups(plotly_obj, barcode_coords, num_cells, group, merged_groups_tsv)
+        else:
+            return_error("GSVA label is not available")
+    elif group_exists(group, groups, minio_client):
         # groups tsv definition supercedes metadata
         groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
         label_with_groups(plotly_obj, barcode_coords, num_cells, group, groups_tsv)
@@ -167,7 +175,7 @@ def get_scatter_data(vis, group, runID, datasetID):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "frontend_coordinates", "normalised_counts"], findDatasetID=True)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "frontend_coordinates", "normalised_counts", "gsva"], findDatasetID=True)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()

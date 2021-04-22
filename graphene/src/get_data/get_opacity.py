@@ -5,7 +5,7 @@ import loompy
 
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
-from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces, calculate_n_th_percentile
+from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces, calculate_n_th_percentile, merge_gsva
 from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
 
 colour_dict = {}
@@ -62,13 +62,17 @@ def sort_barcodes(opacities, exp_values, group, paths, minio_client, slider_info
     """ given the opacities and expression values for the barcodes, sorts them into the specified groups and returns a plotly object """
     plotly_obj = {}
     
-    metadata = paths["metadata"]
-    groups = paths["groups"]
+    metadata, groups, gsva = paths["metadata"], paths["groups"], paths["gsva"]
 
     metadata_exists = object_exists(metadata["bucket"], metadata["object"], minio_client)
+    gsva_label_exists = object_exists(gsva["bucket"], gsva["object"], minio_client)
 
-    if (group in get_first_line(groups["bucket"], groups["object"], minio_client)):
-        groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client)
+    in_groups_tsv = group in get_first_line(groups["bucket"], groups["object"], minio_client)
+    in_gsva_tsv = group == "GSVA Label" and gsva_label_exists
+    if in_groups_tsv or in_gsva_tsv:
+        groups_tsv = get_obj_as_2dlist(groups["bucket"], groups["object"], minio_client) 
+        if in_gsva_tsv:
+            groups_tsv = merge_gsva(groups_tsv, get_obj_as_2dlist(gsva["bucket"], gsva["object"], minio_client))
 
         label_idx = groups_tsv[0].index(str(group))
         group_type = groups_tsv[1][label_idx]
@@ -157,7 +161,7 @@ def get_opacity_data(feature, group, runID, datasetID, expRange, assay):
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts"], findDatasetID=True, assay=assay)
+    paths = set_IDs(paths, runID, ["groups", "metadata", "normalised_counts", "gsva"], findDatasetID=True, assay=assay)
     paths["groups"] = set_name_multi(paths["groups"], datasetID, "groups")
 
     minio_client = get_minio_client()

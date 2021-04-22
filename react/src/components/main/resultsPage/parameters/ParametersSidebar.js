@@ -26,6 +26,7 @@ const ParameterAccordionItem = ({
   const {status: runStatus} = run
   const active = R.equals(step, activePipelineStep)
   const runStatusIsPending = R.equals('pending', runStatus)
+
   return (
     <>
       <Accordion.Title active={active}
@@ -49,12 +50,23 @@ const ParameterAccordionItem = ({
 const ParametersSidebar = ({
 
 }) => {
+  const {runID} = useCrescentContext()
+  const run = useRunDetailsQuery(runID)
   const toolSteps = useToolStepsQuery()
-  if (R.isNil(toolSteps)) {
+
+  if (R.any(R.isNil, [run, toolSteps])) {
     return null
   }
+  const {datasets} = run
+  const isSingleDataset = R.compose(R.equals(1), R.length)(datasets)
+
   return (
     <Accordion styled>
+    { isSingleDataset ?
+      null
+      :
+      <ParameterAccordionItem {...{step: 'referenceDatasets', label: 'Reference Datasets'}}/>
+    }
     {
       R.map(
         ({step, label}) => (

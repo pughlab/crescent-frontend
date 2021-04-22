@@ -3,6 +3,20 @@ const { gql } = require('apollo-server')
 const typeDefs = gql`
   scalar RunParameters
 
+  type SecondaryRun {
+    wesID: ID
+    submittedOn: Date
+    completedOn: Date
+    status: String
+    logs: String
+    uploadName: String
+  }
+
+  type UploadNames {
+    gsva: String
+    metadata: String
+  }
+
   type Run {
     runID: ID
     createdOn: Date
@@ -19,8 +33,10 @@ const typeDefs = gql`
     submittedOn: Date
     completedOn: Date
 
+    secondaryRuns: [SecondaryRun]
     wesID: ID
     logs: String
+    uploadNames: UploadNames
 
     # Datasets selected from parent project
     datasets: [Dataset]
@@ -72,6 +88,11 @@ const typeDefs = gql`
     uploadRunMetadata(
       runID: ID!
       metadata: Upload!
+    ): Run
+
+    uploadRunGeneset(
+      runID: ID!
+      geneset: Upload!
     ): Run
 
     # Set reference datasets 
