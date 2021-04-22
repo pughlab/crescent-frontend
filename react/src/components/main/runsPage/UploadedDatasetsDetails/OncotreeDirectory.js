@@ -50,14 +50,14 @@ function OncotreeDirectoryNode ({
           trigger={
             <Button
               compact
-              color={isTaggedNodePath ? 'blue' : isFilteredNode ? 'grey' : undefined}
+              color={isTaggedNodePath ? 'pink' : isFilteredNode ? 'grey' : undefined}
               basic={R.and(R.not(isTaggedNodePath), R.not(isFilteredNode))}
               onClick={() => setExpanded(!expanded)}
               content={name}
             />
           }
           content={
-            <Button color='blue' content={`Tag dataset as '${name} (${title})' `}
+            <Button color='pink' content={`Tag dataset as '${name} (${title})' `}
               onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode: title}})}
             
             />
@@ -174,7 +174,7 @@ export default function OncotreeDirectory ({
     <Segment basic>
       <Input
         fluid
-        label={RA.isNotNil(oncotreeCode) && <Label color='blue' content='Currently' detail={oncotreeCode} />}
+        label={RA.isNotNil(oncotreeCode) && <Label color='pink' content='Currently' detail={oncotreeCode} />}
         placeholder='Search Oncotree'
         value={textSearch}
         onChange={(e, {value}) => setTextSearch(value)}
