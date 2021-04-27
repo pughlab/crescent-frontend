@@ -47,7 +47,7 @@ const Heatmap = ({
 
   return (
     <>
-      <Header textAlign='center' content={currentPlotType} />
+      <Header textAlign='center' content={'GSVA Heatmap'} />
       <Segment basic loading={loading} style={{height: '100%'}}>
         <Plot
           config={{ showTips: false }}
@@ -63,10 +63,17 @@ const Heatmap = ({
             legend: { "orientation": "v" },
             showlegend: false,
             xaxis: {
+              tickangle: 40,
+              tickfont: {
+                size: 11,
+              },
               title: 'Cell Types',
               automargin: true,
             },
             yaxis: {
+              tickfont: {
+                size: 11,
+              },
               title: 'Clusters',
               automargin: true,
             },
