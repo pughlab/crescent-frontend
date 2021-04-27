@@ -22,6 +22,7 @@ export default function useTagDatasetMutation(datasetID) {
       }
     }
   `, {
+    fetchPolicy: 'cache-and-network',
     variables: {
       datasetID
     },
