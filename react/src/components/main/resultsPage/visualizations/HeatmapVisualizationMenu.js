@@ -26,18 +26,34 @@ const HeatmapVisualizationMenu = ({
             ({cluster, celltype, score}, index) => (
               <Segment fluid key={index}>
                 <Label attached='top' content={`Cluster ${cluster}`}/>
-                <div>
-                  <Label basic size="medium" style={{ margin: '0.25rem' }}>
-                    Predicted Cell Type: 
-                    <Label.Detail>{celltype}</Label.Detail>
-                  </Label>
-                </div>
-                <div>
-                  <Label basic size="medium" style={{ margin: '0.25rem' }}>
-                    Enrichment Score: 
-                    <Label.Detail>{score}</Label.Detail>
-                  </Label>
-                </div>
+                <Popup
+                  size={'tiny'}
+                  inverted
+                  position='top center'
+                  trigger={
+                    <Button as='div' labelPosition='right'>
+                      <Button 
+                        basic 
+                        size='small'
+                        color={R.ifElse(R.equals("UNDEFINED"),R.always('red'),R.always(undefined))(celltype)}
+                      >
+                        {celltype}
+                      </Button>
+                      <Label 
+                        as='a' 
+                        pointing='left' 
+                        size='small' 
+                        color={R.ifElse(R.equals("NA"),R.always('red'),R.always(undefined))(score)}
+                      >
+                        {score}
+                      </Label>
+                    </Button>
+                  }
+                >
+                  <Popup.Content>
+                    {'Predicted Label & Enrichment Score'}
+                  </Popup.Content>
+                </Popup>
               </Segment>
             ),GSVAMetrics)
       }
