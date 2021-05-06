@@ -11,7 +11,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useQCViolinQuery} from '../../../../apollo/hooks/results'
+import {useQCViolinQuery, usePlotLoadingEffect} from '../../../../apollo/hooks/results'
 
 const QCViolinPlot = ({
   runID,
@@ -22,6 +22,7 @@ const QCViolinPlot = ({
   const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
 
   const {qcViolin, loading} = useQCViolinQuery({runID, datasetID})
+  usePlotLoadingEffect(loading)
 
   if (R.any(R.isNil, [qcViolin])) {
     return (

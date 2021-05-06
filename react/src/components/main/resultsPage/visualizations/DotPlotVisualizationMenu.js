@@ -21,7 +21,7 @@ const DotPlotVisualizationMenu = ({
   const dispatch = useDispatch()
 
   const { activePlot } = useResultsPage()
-  const { activeResult, selectedFeatures, selectedGroup, selectedDiffExpression, selectedAssay } = useResultsPagePlotQuery(activePlot)
+  const { activeResult, selectedFeatures, selectedGroup, selectedDiffExpression, selectedAssay, isPlotLoading } = useResultsPagePlotQuery(activePlot)
   const isActiveResult = R.equals(activeResult)
   const isActiveAssay = R.equals(selectedAssay)
 
@@ -79,7 +79,7 @@ const DotPlotVisualizationMenu = ({
             color='violet'
             style={{ margin: '0.25rem' }}
             basic={R.not(R.includes(gene, selectedFeatures))}
-            disabled={R.length(selectedFeatures) >= maxNumGenes}
+            disabled={R.length(selectedFeatures) >= maxNumGenes || isPlotLoading}
           >
             {gene}
           </Button>
@@ -121,6 +121,7 @@ const DotPlotVisualizationMenu = ({
             // options={formatList(R.map(R.toUpper)(assays))}
             options={R.compose(R.map(R.evolve({text: R.toUpper})), formatList)(assays)}
             onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
+            disabled={isPlotLoading}
             // disabled={isActiveAssay('legacy')}
           />
         </Form.Field>
@@ -130,6 +131,7 @@ const DotPlotVisualizationMenu = ({
       <Divider horizontal content='Colour By' />
       <Form.Field>
         <Form.Dropdown fluid selection labeled
+          disabled={isPlotLoading}
           // All groups! assumes that first group is categorical (might not be true in the future)
           value={selectedGroup}
           options={isActiveResult('dot') ? formatList(categoricalGroups) : formatList(groups)}
@@ -141,7 +143,7 @@ const DotPlotVisualizationMenu = ({
       <Divider horizontal>
         {R.length(selectedFeatures)}/{maxNumGenes} Genes Selected
       </Divider>
-      <Segment size='small' >
+      <Segment size='small' disabled={isPlotLoading} >
         {
           R.map(
             feature => (
@@ -185,7 +187,7 @@ const DotPlotVisualizationMenu = ({
             options={searchOptions}
             onSearchChange={handleSearchChange}
             onChange={handleSelectFeature}
-            disabled={R.length(selectedFeatures) >= maxNumGenes}
+            disabled={R.length(selectedFeatures) >= maxNumGenes || isPlotLoading}
           />
         </Form.Field>
       </Form.Group>

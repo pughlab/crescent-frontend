@@ -11,20 +11,23 @@ import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {setSelectedQC, setSelectedQCDataset} from '../../../../redux/actions/resultsPage'
 import {useQCAvailableQuery, useQCMetricsQuery} from '../../../../apollo/hooks/results'
 import {useRunDatasetsDropdownQuery} from '../../../../apollo/hooks/run/useRunDatasetsQuery'
+import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 
 const QualityControlMenu = ({
   
 }) => {    
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedQCDataset, selectedQC} = useResultsPage()
+  const {selectedQCDataset, selectedQC, activePlot} = useResultsPage()
+  const {isPlotLoading} = useResultsPagePlotQuery(activePlot)
+
   const datasetsOptions = useRunDatasetsDropdownQuery(runID, {
     onNonEmptyOptions: options => {
       const [{value}] = options
       dispatch(setSelectedQCDataset({value}))
     }
   })
-  
+
   const availableQc = useQCAvailableQuery({runID, datasetID: selectedQCDataset})
   const qcMetrics = useQCMetricsQuery({runID, datasetID: selectedQCDataset})
 
@@ -38,12 +41,14 @@ const QualityControlMenu = ({
     <Divider horizontal content='Datasets' />
     <Dropdown selection fluid labeled search
       loading={R.isNil(datasetsOptions)}
+      disabled={isPlotLoading}
       options={datasetsOptions || []}
       value={selectedQCDataset}
       onChange={(e, {value}) => dispatch(setSelectedQCDataset({value}))}
     />
     <Divider horizontal content='QC Plot Type' />
     <Dropdown selection fluid labeled
+      disabled={isPlotLoading}
       options={availableQc}
       value={selectedQC}
       onChange={(e, {value}) => dispatch(setSelectedQC({value}))}

@@ -13,7 +13,7 @@ import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useViolinQuery} from '../../../../apollo/hooks/results'
+import {useViolinQuery, usePlotLoadingEffect} from '../../../../apollo/hooks/results'
 
 const ViolinPlot = ({
   plotQueryIndex
@@ -22,6 +22,7 @@ const ViolinPlot = ({
   const dispatch = useDispatch()
   const {selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay} = useResultsPagePlotQuery(plotQueryIndex)
   const {violin, loading} = useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedAssay)
+  usePlotLoadingEffect(loading)
   // use local state for data since too big for redux store
   // const [violinData, setViolinData] = useState( [] )
 

@@ -11,7 +11,7 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
-import {useQCScatterQuery} from '../../../../apollo/hooks/results'
+import {useQCScatterQuery, usePlotLoadingEffect} from '../../../../apollo/hooks/results'
 
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
  
@@ -26,6 +26,7 @@ const QCScatterPlot = ({
   const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
 
   const {qcScatter, loading} = useQCScatterQuery(selectedQC, runID, datasetID)
+  usePlotLoadingEffect(loading)
 
   if (R.any(R.isNil, [qcScatter])) {
     return (

@@ -13,6 +13,7 @@ const initialPlotQuery = {
   selectedAssay: null,
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
+  isPlotLoading: false,
 }
 
 const initialState = {
@@ -171,6 +172,14 @@ export default createReducer(
           },
           activePlot
         )
+      })(state)
+    },
+    // for plot
+    'resultsPage/setIsPlotLoading': (state, payload) => {
+      const {value} = payload
+      const {activePlot} = state
+      return R.evolve({
+        plotQueries: evolveAtIndex({isPlotLoading: R.always(value)}, activePlot)
       })(state)
     },
 

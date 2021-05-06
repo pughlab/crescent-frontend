@@ -13,7 +13,7 @@ import * as R from 'ramda'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery} from '../../../../apollo/hooks/results'
+import { useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery, usePlotLoadingEffect } from '../../../../apollo/hooks/results'
 import { setSelectedExpRange } from '../../../../redux/actions/resultsPage'
 
 const violet = '#6435c9'
@@ -34,6 +34,7 @@ const ScatterPlot = ({
   const { scatter, loading: scatterLoading } = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
   const { opacity, loading: opacityLoading } = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay)
+  usePlotLoadingEffect(isFeatureNotSelected ? scatterLoading : opacityLoading)
 
   // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
 

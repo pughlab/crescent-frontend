@@ -22,7 +22,7 @@ const VisualizationMenu = ({
 
   // console.log("use results: ", useResultsPage())
   const {activePlot} = useResultsPage()
-  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay} = useResultsPagePlotQuery(activePlot)
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay, isPlotLoading} = useResultsPagePlotQuery(activePlot)
   const isActiveResult = R.equals(activeResult)
   const isActiveAssay = R.equals(selectedAssay)
 
@@ -78,6 +78,7 @@ const VisualizationMenu = ({
             color='violet'
             style={{margin: '0.25rem'}}
             basic={R.not(R.equals(selectedFeature,gene))}
+            disabled={isPlotLoading}
           >
             {gene}
           </Button>
@@ -99,6 +100,7 @@ const VisualizationMenu = ({
         <Divider horizontal content='Datasets' />
         <Form.Field>
         <Form.Dropdown fluid selection labeled
+          disabled={isPlotLoading}
           value={selectedDiffExpression}
           options={diffExpression}
           onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value}))}
@@ -110,6 +112,7 @@ const VisualizationMenu = ({
           <Divider horizontal content='RNA Normalization' />
           <Form.Field>
             <Form.Dropdown fluid selection labeled
+              disabled={isPlotLoading}
               value={selectedAssay}
               // options={formatList(R.map(R.toUpper)(assays))}
               options={R.compose(R.map(R.evolve({text: R.toUpper})), formatList)(assays)}
@@ -123,6 +126,7 @@ const VisualizationMenu = ({
         <Divider horizontal content='Colour By' />
         <Form.Field>
           <Form.Dropdown fluid selection labeled
+            disabled={isPlotLoading}
             // All groups! assumes that first group is categorical (might not be true in the future)
             value={selectedGroup}
             options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
@@ -143,11 +147,12 @@ const VisualizationMenu = ({
             value={selectedFeature}
             onSearchChange={handleSearchChange}
             onChange={handleSelectFeature}
+            disabled={isPlotLoading}
           />
         </Form.Field>
 
         <Form.Field width={4}>
-           <Button fluid disabled={R.isNil(selectedFeature)} icon='close' color='violet' onClick={() => resetSelectFeature()} />
+           <Button fluid disabled={R.isNil(selectedFeature) || isPlotLoading} icon='close' color='violet' onClick={() => resetSelectFeature()} />
         </Form.Field>
       </Form.Group>
 

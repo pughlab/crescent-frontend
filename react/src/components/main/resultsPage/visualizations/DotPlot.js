@@ -13,7 +13,7 @@ import * as R from 'ramda'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useResultsAvailableQuery, useDotPlotQuery } from '../../../../apollo/hooks/results'
+import { useResultsAvailableQuery, useDotPlotQuery, usePlotLoadingEffect } from '../../../../apollo/hooks/results'
 import { addSelectedFeature, setSelectedScaleBy, setSelectedExpRange } from '../../../../redux/actions/resultsPage'
 
 // cache dot plot data in form of { "gene": plotlyObj }
@@ -55,6 +55,7 @@ const DotPlot = ({
   const { dotPlot: queryResult, loading } = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange, selectedAssay, sidebarCollapsed)
   const result = queryResult === null ? [] : queryResult.filter(trace => trace["group"] === selectedGroup && trace["scaleby"] === selectedScaleBy)
   dotPlot = R.concat(dotPlot, result)
+  usePlotLoadingEffect(loading)
 
 
   // useEffect(() => {

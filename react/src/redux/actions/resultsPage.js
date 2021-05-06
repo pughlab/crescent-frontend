@@ -101,6 +101,13 @@ const setSelectedDiffExpression = ({value}) => ({
   }
 })
 
+const setIsPlotLoading = ({value}) => ({
+  type: 'resultsPage/setIsPlotLoading',
+  payload: {
+    value
+  }
+})
+
 const addPlot = () => ({
   type: 'resultsPage/addPlot',
   payload: {}
@@ -134,6 +141,7 @@ export {
   setSelectedGroup,
   setSelectedAssay,
   setSelectedDiffExpression,
+  setIsPlotLoading,
   resetResultsPage,
   addPlot,
   setActivePlot,

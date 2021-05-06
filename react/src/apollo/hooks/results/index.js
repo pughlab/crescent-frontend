@@ -21,6 +21,7 @@ import useViolinQuery from './useViolinQuery'
 import useCategoricalGroupsQuery from './useCategoricalGroupsQuery'
 import useNumericGroupsQuery from './useNumericGroupsQuery'
 import useCellCountsQuery from './useCellCountsQuery'
+import usePlotLoadingEffect from './usePlotLoadingEffect'
 
 export {
   useResultsAvailableQuery,
@@ -46,4 +47,5 @@ export {
   useCategoricalGroupsQuery,
   useNumericGroupsQuery,
   useCellCountsQuery,
+  usePlotLoadingEffect,
 }
