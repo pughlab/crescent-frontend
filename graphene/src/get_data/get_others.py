@@ -12,7 +12,7 @@ from get_data.minio_functions import (
     get_size,
     object_exists
 )
-from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name
+from get_data.helper import find_id, return_error, set_name_multi, set_IDs, set_name, natural_keys, extract_cluster_label
 
 def get_paths(runID, keys, findDatasetID=False, assay="legacy"):
     paths = {}
@@ -134,6 +134,7 @@ def get_plots(runID):
     qc_pattern = re.compile(r".*frontend_qc.*")
     old_loom_pattern = re.compile(r".*frontend_normalized.*")
     new_loom_pattern = re.compile(r"LOOM_FILES_CWL/.*")
+    gsva_heatmap_pattern = re.compile(r".*crescent.GSVA_enrichment_scores_sorted.tsv")
     object_names = get_list_of_object_names(paths["frontend_coordinates"]["bucket"], minio_client)
 
     for object_name in object_names:
@@ -148,8 +149,10 @@ def get_plots(runID):
         elif ("VIOLIN" not in available_plots) and loom_pattern_match:
             available_plots.append("VIOLIN")
             available_plots.append("DOT")       
+        elif ("HEATMAP" not in available_plots) and (gsva_heatmap_pattern.match(object_name) is not None):
+            available_plots.append("HEATMAP")
     
-    hardcoded_order = ["QC", "TSNE", "UMAP", "VIOLIN", "DOT"]
+    hardcoded_order = ["QC", "TSNE", "UMAP", "VIOLIN", "DOT", "HEATMAP"]
     available_plots_with_data = []
 
     for vis in hardcoded_order:
@@ -291,3 +294,31 @@ def get_diff_expression(runID):
             "value": datasetID
         })
     return diff_expression
+
+def get_GSVA_metrics(runID):
+    GSVA_metrics = []
+
+    paths = {}
+    with open('get_data/paths.json') as paths_file:
+        paths = json.load(paths_file)
+    paths = set_IDs(paths, runID, ['enrichment_scores'])
+    es = paths['enrichment_scores']
+    minio_client = get_minio_client()
+    if not object_exists(es['bucket'], es['object'], minio_client):
+        return_error('Heatmap scores file not found')
+    es_tsv = get_obj_as_2dlist(es['bucket'], es['object'], minio_client)
+
+    cell_types = es_tsv[0][1:] # cell types are first line
+    es_tsv = es_tsv[1:]
+    for row in es_tsv:
+        cluster = extract_cluster_label(row[0])
+        scores = list(map(float, row[1:]))
+        max_score_idx = row.index(str(max(scores)))
+        GSVA_metrics.append({
+            "cluster": cluster,
+            "celltype": cell_types[max_score_idx-1],
+            "score": row[max_score_idx]
+        })
+        
+    GSVA_metrics.sort(key=lambda x: natural_keys(x["cluster"]))
+    return GSVA_metrics

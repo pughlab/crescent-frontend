@@ -12,6 +12,8 @@ import useSetAssaysQuery from './useSetAssaysQuery'
 import useTopExpressedQuery from './useTopExpressedQuery'
 import useScatterQuery from './useScatterQuery'
 import useDotPlotQuery from './useDotPlotQuery'
+import useGSVAMetricsQuery from './useGSVAMetricsQuery'
+import useHeatmapQuery from './useHeatmapQuery'
 import useScatterNumericQuery from './useScatterNumericQuery'
 import useOpacityQuery from './useOpacityQuery'
 import useSearchFeaturesQuery from './useSearchFeaturesQuery'
@@ -35,6 +37,8 @@ export {
   useTopExpressedQuery,
   useScatterQuery,
   useDotPlotQuery,
+  useGSVAMetricsQuery,
+  useHeatmapQuery,
   useScatterNumericQuery,
   useOpacityQuery,
   useSearchFeaturesQuery,

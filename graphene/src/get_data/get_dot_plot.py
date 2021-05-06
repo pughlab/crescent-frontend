@@ -10,6 +10,7 @@ import io
 import csv
 import gzip
 import re
+from collections import OrderedDict
 """
 Run these if you need to run this file directly
 # case-2-syspath-could-change
@@ -20,7 +21,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 """
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
-from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, calculate_n_th_percentile, merge_gsva
+from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, calculate_n_th_percentile, merge_gsva, natural_keys
 from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists, group_exists
 from get_data.get_others import get_paths
 
@@ -32,13 +33,22 @@ def get_barcodes(normalised_counts_path, feature_list):
         feature_barcodes = []
         barcodes = ds.ca.CellID
         features = ds.ra.Gene    
+
+        # get all indices of the features in the loom file
+        idx_feature_dict = OrderedDict()
         for feature in feature_list:
             feature_idx = next(
                 (i for i in range(len(features)) if features[i] == feature), -1)
             if feature_idx >= 0:
-                # ds[feature_idx, :] is taking 0.2s to calculate
-                feature_barcodes.append({"feature": feature, "barcode_exp": dict(
-                    zip(barcodes, ds[feature_idx, :]))})
+                idx_feature_dict[feature_idx] = feature
+                
+        # sort the indices and find the corresponding barcodes and expression values
+        sorted_idx_feature_dict = OrderedDict(sorted(idx_feature_dict.items(), key=lambda x: x[0]))
+        rows = ds[sorted_idx_feature_dict.keys(), :]
+        for i in range(len(rows)):
+            feature_barcodes.append({"feature": list(sorted_idx_feature_dict.items())[i][1], "barcode_exp": dict(
+                zip(barcodes, rows[i]))})
+
         return feature_barcodes
 
 def categorize_by_group(group, barcode_exp_dict, label_tsv, include_unlabelled = False):
@@ -92,16 +102,6 @@ def group_barcodes(barcode_exp_dict, minio_client, paths, group, runID):
     else:
         return_error(group + " is not an available group in groups.tsv or metadata.tsv")
 
-def to_float(text):
-    try:
-        result = float(text)
-    except ValueError:
-        result = text
-    return result
-
-def natural_keys(text):
-    return [ to_float(c) for c in re.split(r'[+-]?([0-9]+(?:[.][0-9]*)?|[.][0-9]+)', text) ]
-
 def duplicate_element(element, num):
     """ given an string, create a list with n copies of the string """
     result = []
@@ -129,14 +129,14 @@ def calculate_opacities(cluster_exp_dict, min_max_list):
 
     return opacities
 
-def calculate_sizes(cluster_exp_dict):
+def calculate_sizes(cluster_exp_dict, dot_info):
     """ given a cluster expression dict, calculate and return the sizes of each cluster 
     @cluster_exp_dict: {cluster: exp} """
-    min_size = 10  # 0% expressed
+    min_size = dot_info["min"]  # 0% expressed
     size_values = [float(cluster_exp_dict[cluster])
                    for cluster in list(cluster_exp_dict.keys())]
     sizes = [min_size if val == 0.0 else round(
-        (val*40/1 + min_size), 2) for val in size_values]
+        (val*(dot_info["max"] - dot_info["min"])/1 + min_size), 2) for val in size_values]
     return sizes
 
 def find_max_exp_per_cluster(cluster_exp_dict):
@@ -178,7 +178,7 @@ def count_cells(barcode_exp_dict):
         count += 1
     return count
 
-def get_trace(cluster_dict, feature, group, scale_by, slider_info):
+def get_trace(cluster_dict, feature, group, scale_by, slider_info, dot_info):
     """ given a cluster barcode dict, return a template trace object for one feature
     """
     sorted_clusters = sorted(list(cluster_dict.keys()), key=natural_keys)
@@ -203,7 +203,9 @@ def get_trace(cluster_dict, feature, group, scale_by, slider_info):
         "group": group,
         "scaleby": scale_by,
         "globalmax": slider_info["global_max"],
-        "initialminmax": slider_info["initial_min_max"]
+        "initialminmax": slider_info["initial_min_max"],
+        "dotminmax": [dot_info["min"], dot_info["max"]],
+        "sidebarcollapsed": dot_info["sidebar_collapsed"]
     }
     cluster_exp_dict = {}
     cluster_abundance_dict = {}
@@ -225,11 +227,11 @@ def get_trace(cluster_dict, feature, group, scale_by, slider_info):
     template["marker"]["opacity"] = calculate_opacities(
         cluster_exp_dict, min_max_list)
     template["marker"]["size"] = calculate_sizes(
-        cluster_abundance_dict)
+        cluster_abundance_dict, dot_info)
 
     return template
 
-def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay):
+def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay, sidebarCollapsed):
     """ given a runID: returns a dot plot plotly object """
 
     paths = {}
@@ -267,11 +269,16 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay):
         "global_max": 0 if not avg_exp_list else max(avg_exp_list),
         "initial_min_max": [calculate_n_th_percentile(10, avg_exp_list), calculate_n_th_percentile(90, avg_exp_list)]
     }
+    dot_info = {
+        "sidebar_collapsed": sidebarCollapsed,
+        "min": 5 if sidebarCollapsed else 10,
+        "max": 25 if sidebarCollapsed else 50
+    }
 
     # get trace for each feature
     for feature in list(feature_cluster_dict.keys()):
         cluster_dict = feature_cluster_dict[feature]
-        trace = get_trace(cluster_dict, feature, group, scaleBy, slider_info)
+        trace = get_trace(cluster_dict, feature, group, scaleBy, slider_info, dot_info)
         plotly_obj.append(trace)
 
     return plotly_obj

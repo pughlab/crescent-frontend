@@ -27,7 +27,7 @@
     },
     "enrichment_scores": {
         "bucket": "run-",
-        "object": "GSVA/GSVA_RESULTS/crescent.GSVA_enrichment_scores.tsv"
+        "object": "GSVA/GSVA_RESULTS/crescent.GSVA_enrichment_scores_sorted.tsv"
     },
     "frontend_coordinates": {
         "bucket": "run-",

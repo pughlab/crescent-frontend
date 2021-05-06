@@ -1,4 +1,4 @@
-from graphene import ObjectType, Int, String, Field, ID, List, NonNull, Float
+from graphene import ObjectType, Int, String, Field, ID, List, NonNull, Float, Boolean
 
 from get_data.get_scatter import get_scatter_data
 from get_data.get_violin import get_violin_data
@@ -17,13 +17,15 @@ from get_data.get_others import (
     get_plots,
     get_qc_metrics,
     get_top_expressed_data,
-    total_size
+    total_size,
+    get_GSVA_metrics
 )
 from get_data.search_features import run_search
 from get_data.get_heatmap import get_heatmap_data
 
 from schema.dropdown_form import DropdownForm
-from schema.heatmap import Heatmap
+from schema.gsva_metrics import GSVAMetrics
+from schema.heatmap import HeatmapData
 from schema.opacity import OpacityData
 from schema.plots import Plot
 from schema.qc_metrics import QCMetrics
@@ -71,7 +73,12 @@ class Query(ObjectType):
     def resolve_assays(parent, info, runID):
         return get_assays(runID)
 
-    heatmap = Field(Heatmap, runID=ID())
+    GSVA_metrics = List(GSVAMetrics, runID=ID())
+    @staticmethod
+    def resolve_GSVA_metrics(parent, info, runID):
+        return get_GSVA_metrics(runID)
+
+    heatmap = List(NonNull(HeatmapData), runID=ID())
     @staticmethod
     def resolve_heatmap(parent, info, runID):
         return get_heatmap_data(runID)
@@ -126,10 +133,10 @@ class Query(ObjectType):
     def resolve_scatter(parent, info, vis, group, runID, datasetID):
         return get_scatter_data(vis, group, runID, datasetID)
 
-    dot_plot = List(NonNull(DotPlotData), features=List(String), group=String(), runID=ID(), scaleBy=String(), expRange=List(Float), assay=String())
+    dot_plot = List(NonNull(DotPlotData), features=List(String), group=String(), runID=ID(), scaleBy=String(), expRange=List(Float), assay=String(), sidebarCollapsed=Boolean())
     @staticmethod
-    def resolve_dot_plot(parent, info, features, group, runID, scaleBy, expRange, assay):
-        return get_dot_plot_data(features, group, runID, scaleBy, expRange, assay)
+    def resolve_dot_plot(parent, info, features, group, runID, scaleBy, expRange, assay, sidebarCollapsed):
+        return get_dot_plot_data(features, group, runID, scaleBy, expRange, assay, sidebarCollapsed)
 
     size = Int(runID=ID())
     @staticmethod
