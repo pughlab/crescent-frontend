@@ -1,23 +1,13 @@
 require('dotenv').config()
 const mongooseConnection = require('mongoose').connection
 const {ToolStep} = require('../database/mongo')
-const apolloServer = require('./server')
-
-const express = require('express')
-const cors = require('cors')
+const app = require('./server')
 
 // For loading seurat tool info into mongo
 const R = require('ramda')
 const TOOLS = require('./TOOLS')
-const seuratToolSteps = R.compose(
-  R.flatten,
-  R.pluck('parameters'),
-  R.prop('SEURAT')
-)(TOOLS)
+const seuratToolSteps = R.compose(R.flatten, R.pluck('parameters'), R.prop('SEURAT'))(TOOLS)
 
-const app = express()
-app.use(cors())
-apolloServer.applyMiddleware({ app })
 
 
 // Load SEURAT tool steps into database then start GQL server

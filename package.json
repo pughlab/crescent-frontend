@@ -16,6 +16,8 @@
     "graphql": "^14.4.2",
     "json-query": "^2.2.2",
     "jsonexport": "^2.4.1",
+    "keycloak-connect": "^13.0.0",
+    "keycloak-connect-graphql": "^0.7.0",
     "merge-graphql-schemas": "^1.7.0",
     "minio": "^7.0.8",
     "mongoose": "^5.5.7",
