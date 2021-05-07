@@ -1,4 +1,4 @@
-const { ApolloServer } = require('apollo-server')
+const { ApolloServer } = require('apollo-server-express')
 
 const { mergeTypes, mergeResolvers } = require('merge-graphql-schemas')
 

@@ -3,6 +3,9 @@ const mongooseConnection = require('mongoose').connection
 const {ToolStep} = require('../database/mongo')
 const apolloServer = require('./server')
 
+const express = require('express')
+const cors = require('cors')
+
 // For loading seurat tool info into mongo
 const R = require('ramda')
 const TOOLS = require('./TOOLS')
@@ -11,6 +14,11 @@ const seuratToolSteps = R.compose(
   R.pluck('parameters'),
   R.prop('SEURAT')
 )(TOOLS)
+
+const app = express()
+app.use(cors())
+apolloServer.applyMiddleware({ app })
+
 
 // Load SEURAT tool steps into database then start GQL server
 mongooseConnection.once('open', () => {
@@ -28,8 +36,9 @@ mongooseConnection.once('open', () => {
   })
 
   loadSeuratPromise.then(
-    () => apolloServer
-      .listen({ port: process.env.GRAPHQL_PORT })
-      .then(({ url }) => console.log(`🚀  Server ready at ${url}`))
+    () => app.listen({ port: process.env.GRAPHQL_PORT }, () => console.log(`🚀  Server ready at ${process.env.GRAPHQL_PORT}`)) 
+    // () => apolloServer
+    //   .listen({ port: process.env.GRAPHQL_PORT })
+    //   .then(({ url }) => console.log(`🚀  Server ready at ${url}`))
   )
 })
