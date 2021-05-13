@@ -108,7 +108,7 @@ const DatasetCard = ({
 
 const UploadedDirectoryCard = ({
   dirSummary
-}) => {
+}) => (
   <Grid.Column>
     <Card fluid color={dirSummary.isValid ? "green" : "red"}>
       <Label attached='top' color={dirSummary.isValid ? "green" : "red"}>
@@ -134,7 +134,7 @@ const UploadedDirectoryCard = ({
       </Card.Content>
     </Card>
   </Grid.Column>
-}
+)
 
 // Callback function for drag and drop
 const useOnDropAcceptedCallback = (createDataset, setUploadSummary, setUploadErrMsgs) => useCallback(acceptedFiles => {
