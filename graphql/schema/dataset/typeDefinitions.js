@@ -6,6 +6,8 @@ const typeDefs = gql`
     name: String!
     hasMetadata: Boolean!
     size: Int!
+    numGenes: Int
+    numCells: Int
     # Ontology tagging
     cancerTag: Boolean
     oncotreeCode: String
