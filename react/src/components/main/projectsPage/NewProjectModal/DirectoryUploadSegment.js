@@ -234,7 +234,6 @@ const DirectoryUploadSegment = ({
     onDropAccepted: useOnDropAcceptedCallback(createDataset, setUploadSummary, setUploadErrMsgs),
     onDropRejected: errors => setUploadErrMsgs(errors.map(({ file, errors }) => ({ file, message: errorsToMsg(errors) })))
   })
-  console.log(uploadErrMsgs)
 
   return (
     <div {...getRootProps()}>
@@ -284,8 +283,8 @@ const DirectoryUploadSegment = ({
       </Modal>
       <Segment placeholder loading={loading}>
         <Header textAlign='center' >
-          Drag and drop single-cell sample dataset directory.
-          <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-1'>(See required files and formats)</a>
+          Drag and drop single-cell sample dataset directory
+          <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-1'> (see required files and formats)</a>
         </Header>
         <Card.Group itemsPerRow={4}>
           {
