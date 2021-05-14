@@ -113,7 +113,7 @@ const UploadedDirectoryCard = ({
     <Card fluid color={dirSummary.isValid ? "green" : "red"}>
       <Label attached='top' color={dirSummary.isValid ? "green" : "red"}>
         <Header size="small" textAlign="center" style={{ color: "#FFFFFF" }} >
-          <Icon name='folder open outline' />
+          <Icon name='upload' />
           <Header.Content>{R.toUpper(dirSummary.dirName)}</Header.Content>
         </Header>
       </Label>
