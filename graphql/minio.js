@@ -69,5 +69,21 @@ module.exports = {
     } catch(error) {
       console.log(error)
     }
+  }, 
+
+  bucketSize: async bucketName => {
+    try {
+      return await (new Promise(
+        (resolve, reject) => {
+          let totalSize = 0
+          const objectsStream = minioClient.listObjects(bucketName)
+          objectsStream.on('data', obj => totalSize += obj.size)
+          objectsStream.on('error', e => reject(e))
+          objectsStream.on('end', () => resolve(totalSize))
+        }
+      ))
+    } catch(error) {
+      console.log(error)
+    }
   }
 }

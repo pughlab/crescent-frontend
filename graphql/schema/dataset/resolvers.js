@@ -51,16 +51,10 @@ const resolvers = {
           await Minio.putUploadIntoBucket(bucketName, file)
         }
 
-        // calculate the total size of the files
-        let totalSize = 0
-        for (const file of files) {
-          const {filename} = await file
-          await Minio.client.statObject(bucketName, filename, function(err, stat) {totalSize += stat.size})
+        // calculate the total size of the files in bucket
+        dataset.size = await Minio.bucketSize(bucketName)
 
-        }
-        dataset.size = totalSize
-
-        // count cells and genes
+        // count cells and genes (https://stackoverflow.com/questions/38074288/read-gzip-stream-line-by-line)
         const getFileLineCount = async (file) => {
           const { createReadStream } = await file;
           const stream = createReadStream();
