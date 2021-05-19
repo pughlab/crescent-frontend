@@ -7,7 +7,7 @@ import moment from 'moment'
 import ArchiveProjectModal from './ArchiveProjectModal'
 import ShareProjectModal from './ShareProjectModal'
 import UnsubscribeProjectModal from './UnsubscribeProjectModal'
-import AddMetadataModal from './AddMetadataModal'
+import EditProjectDetailsModal from './EditProjectDetailsModal'
 
 import MergedProjectsDetails from './MergedProjectsDetails'
 import UploadedDatasetsDetails from './UploadedDatasetsDetails'
@@ -40,6 +40,7 @@ const RunsPageComponent = ({
     return null
   }
 
+  // es6 destructuring
   const {
     name: projectName,
     kind: projectKind,
@@ -55,21 +56,24 @@ const RunsPageComponent = ({
     uploadedDatasets,
     mergedProjects
   } = project
+
   const isUploadedProject = R.equals(projectKind, 'uploaded')
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
   return (
     <Fade duration={2000}>
-      <Segment basic>
-        <Container>
-          {/* PROJECT CREATOR ACTIONS */}
-          {
-            R.and(isUploadedProject, currentUserIsCreator) &&
-            <Button.Group attached='top' widths={2} size='large'>
-              <ShareProjectModal {...{ project }} />
-              {/* <AddMetadataModal {...{project}} /> */}
-              <ArchiveProjectModal {...{ project }} />
-            </Button.Group>
-          }
+    <Segment basic>
+    <Container>
+      {/* PROJECT CREATOR ACTIONS */}
+      {
+        R.and(isUploadedProject, currentUserIsCreator) &&
+        <Button.Group attached='top' widths={3} size='large'>
+          <ShareProjectModal {...{project}} />
+          <EditProjectDetailsModal {...{project}} />
+          <ArchiveProjectModal {...{project}} />
+        </Button.Group>
+      }
+
+
           {/*SHARED WITH ACTIONS */}
           {
             R.and(isUploadedProject, !currentUserIsCreator) &&
