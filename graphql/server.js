@@ -64,6 +64,13 @@ app.use(keycloak.middleware({
 app.use('/graphql', keycloak.middleware())
 
 app.use(graphqlPath, keycloak.protect())
+
+// const corsOptions = {
+//   origin: 'http://localhost:3000',
+//   credentials: true // <-- REQUIRED backend setting
+// }
+// app.use(cors(corsOptions));
+
 app.use(cors());
 app.options('*', cors());
 
@@ -101,6 +108,9 @@ app.use(server.graphqlPath, keycloak.protect())
 
 // app.use(cors())
 
-server.applyMiddleware({ app })
+server.applyMiddleware({ 
+  app,
+  // cors: false
+})
 
 module.exports = app

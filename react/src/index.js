@@ -54,6 +54,8 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
+      // 'Access-Control-Allow-Origin': '*',
+      // 'Access-Control-Allow-Credentials': true,
       authorization: token ? `Bearer ${token}` : "need a token",
     }
   }
