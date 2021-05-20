@@ -21,6 +21,10 @@ import {setUser} from './redux/actions/context'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from './redux/hooks'
 
+
+import keycloak from './keycloak'
+
+
 const App = () => {
   const context = useCrescentContext()
   const {view, userID, projectID, runID, error} = context

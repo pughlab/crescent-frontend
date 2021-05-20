@@ -8,8 +8,11 @@ import * as serviceWorker from './serviceWorker';
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import {createUploadLink} from 'apollo-upload-client'
-
+import { setContext } from '@apollo/client/link/context';
 import { ApolloProvider } from '@apollo/react-hooks'
+
+import { ReactKeycloakProvider } from '@react-keycloak/web'
+import keycloak from './keycloak'
 
 import { Provider as ReduxProvider } from 'react-redux'
 import { createStore, applyMiddleware } from 'redux'
@@ -42,28 +45,67 @@ const persistor = persistStore(store)
 //     : process.env.REACT_APP_GRAPHQL_URL_PROD
 // })
 
-const link = createUploadLink({uri: process.env.NODE_ENV === 'development'
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem('keycloak_token');
+  // return the headers to the context so httpLink can read them
+  console.log('SETTING CONTEXT WITH KC TOKEN', token)
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : "need a token",
+    }
+  }
+})
+const uploadLink = createUploadLink({uri: process.env.NODE_ENV === 'development'
 ? process.env.REACT_APP_GRAPHQL_URL_DEV
 : process.env.REACT_APP_GRAPHQL_URL_PROD})
 
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link
+  link: authLink.concat(uploadLink),
+  
 })
 
 // For dev
 // persistor.purge()
 
+const eventLogger = (event, error) => {
+  console.log('onKeycloakEvent', event, error)
+}
+
+const tokenLogger = (tokens) => {
+  console.log('onKeycloakTokens', tokens)
+  const {token} = tokens
+  localStorage.setItem('keycloak_token', token)
+}
+
+
 ReactDOM.render(
-  <ReduxProvider store={store}>
-    <PersistGate loading={null} {...{persistor}}>
-    <ApolloProvider client={client}>
-      <App />
-    </ApolloProvider>
-    </PersistGate>
-  </ReduxProvider>,
+  <ReactKeycloakProvider
+    authClient={keycloak}
+    onEvent={eventLogger}
+    onTokens={tokenLogger}
+    initOptions={{ 
+      onLoad: "login-required",
+    }}
+    LoadingComponent={<>Redirecting to Keycloak</>}
+  >
+    <ReduxProvider store={store}>
+      <PersistGate loading={null} {...{persistor}}>
+      <ApolloProvider client={client}>
+        <App />
+      </ApolloProvider>
+      
+      </PersistGate>
+    </ReduxProvider>
+  </ReactKeycloakProvider>
+  ,
   document.getElementById('root')
 )
+
+
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

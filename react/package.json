@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.3.19",
     "@apollo/react-hooks": "^3.0.0",
+    "@react-keycloak/web": "^3.4.0",
     "adm-zip": "^0.4.13",
     "apollo-boost": "^0.4.4",
     "apollo-cache-inmemory": "^1.6.5",
@@ -14,6 +16,7 @@
     "fuse.js": "^5.2.3",
     "graphql": "^14.4.2",
     "jsonexport": "^2.4.1",
+    "keycloak-js": "^13.0.0",
     "moment": "^2.24.0",
     "papaparse": "^5.1.1",
     "plotly.js": "^1.49.0",
@@ -52,7 +55,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://localhost:4001",
+  "proxy": "http://localhost:5000",
   "browserslist": {
     "production": [
       ">0.2%",

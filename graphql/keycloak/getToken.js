@@ -8,8 +8,8 @@ const settings = {
     username: username || 'developer',
     password: password || 'developer',
     grant_type: 'password',
-    client_id: 'keycloak-connect-graphql-public',
-    realmName: 'keycloak-connect-graphql'
+    realmName: 'crescent',
+    client_id: 'crescent-app',
 }
 
 tokenRequester(baseUrl, settings)
