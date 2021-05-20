@@ -4,6 +4,9 @@ const cors = require('cors')
 const { mergeTypes, mergeResolvers } = require('merge-graphql-schemas')
 
 const R = require('ramda')
+const fs = require('fs')
+const session = require('express-session')
+
 
 const { KeycloakContext, KeycloakTypeDefs, KeycloakSchemaDirectives } = require('keycloak-connect-graphql')
 const Keycloak = require('keycloak-connect')
@@ -26,16 +29,43 @@ const Docker = require('./docker.js')
 
 
 const app = express()
-app.use(cors())
+
+
+// const keycloak = new Keycloak({
+//   url: 'http://localhost:8080/auth',
+//   realm: 'crescent',
+//   clientId: 'crescent-app',
+//   clientSecret: '87fcf4e2-9a07-4e92-9033-9c4090bdc608',
+//   redirectUri: 'http://localhost:5000/graphql'
+// })
+
+
+// app.use('/graphql', keycloak.middleware())
+
+const graphqlPath = '/graphql'
+
+const keycloakConfig = JSON.parse(fs.readFileSync('/usr/src/app/keycloak.json'))
+const memoryStore = new session.MemoryStore()
+app.use(session({
+  secret: process.env.SESSION_SECRET_STRING || 'this should be a long secret',
+  resave: false,
+  saveUninitialized: true,
+  store: memoryStore
+}))
 
 const keycloak = new Keycloak({
-  url: 'http://localhost:8080/auth',
-  realm: 'crescent',
-  clientId: 'crescent-server',
-  clientSecret: '4e28f97b-2161-48c7-86d3-65db18eb57b4',
-  redirectUri: 'http://localhost:3000'
-})
+  store: memoryStore
+}, keycloakConfig)
+
+app.use(keycloak.middleware({
+  admin: '/graphql'
+}))
+
 app.use('/graphql', keycloak.middleware())
+
+app.use(graphqlPath, keycloak.protect())
+app.use(cors());
+app.options('*', cors());
 
 // GQL server requires type definitions and resolvers for those types
 const server = new ApolloServer({
@@ -62,10 +92,14 @@ const server = new ApolloServer({
       Docker,
 
       // KEYCLOAK
-      kauth: new KeycloakContext({ req }, keycloak)
+      kauth: new KeycloakContext({ req })
     }
   }
 })
+
+app.use(server.graphqlPath, keycloak.protect())
+
+// app.use(cors())
 
 server.applyMiddleware({ app })
 

@@ -89,3 +89,14 @@ services:
       - --opt=extra=--maxLogFileSize=0 
       - --opt=extra=--realTimeLogging
       - --opt=extra=--retryCount=0
+
+  keycloak:
+    image: jboss/keycloak:11.0.1
+    container_name: keycloak
+    expose: 
+      - 8080
+    ports:
+      - "8080:8080"
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin

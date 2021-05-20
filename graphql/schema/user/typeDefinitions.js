@@ -20,7 +20,7 @@ const typeDefs = gql`
   #       multiple field mutation run in sequence
   type Query {
     # The query 'messages' expects array of type 'Message'
-    users: [User]! @auth
+    users: [User]! @hasRole(role: "developer")
     user(userID: ID!): User!
   }
   # 'Mutation' is similar (but is invoked and not executed immediately)
