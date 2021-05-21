@@ -10,6 +10,21 @@ const passwordGenerator = require('generate-password')
 const resolvers = {
   // For every type definition there is a resolver...
   Query: {
+    me: async (parent, variables, {kauth}) => {
+      try {
+        const {sub: userID, email, name, ... kcAuth} = kauth.accessToken.content
+        const user = {
+          userID,
+          email,
+          name,
+          sessionToken: '',
+          projects: [],
+        }
+        return user
+      } catch(err) {
+        console.log('me', err)
+      }
+    },
     users: async (parent, variables, {Users}) => {
       const users = await Users.find({
         firstName: {
@@ -78,9 +93,9 @@ const resolvers = {
   // We also resolve subfields on our type definitions
   User: {
     // Concatenate first and last name
-    name: async ({firstName, lastName}, variables, context) => {
-      return firstName + ' ' + lastName
-    },
+    // name: async ({firstName, lastName}, variables, context) => {
+    //   return firstName + ' ' + lastName
+    // },
     projects: async ({userID}, variables, {Projects}) => {
       return await Projects.find({
         $or: [{createdBy: userID}, {sharedWith: {$elemMatch: {$eq: userID}}}],

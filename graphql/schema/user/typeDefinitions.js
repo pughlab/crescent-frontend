@@ -19,6 +19,8 @@ const typeDefs = gql`
   # Note: multiple field query run in parallel
   #       multiple field mutation run in sequence
   type Query {
+    me: User
+
     # The query 'messages' expects array of type 'Message'
     users: [User]! @hasRole(role: "developer")
     user(userID: ID!): User!
