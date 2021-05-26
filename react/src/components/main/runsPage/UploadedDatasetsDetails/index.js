@@ -7,7 +7,7 @@ import * as RA from 'ramda-adjunct'
 import {PulseLoader} from 'react-spinners'
 
 import {useProjectDetailsQuery} from '../../../../apollo/hooks/project'
-import {useOncotreeQuery, useTagDatasetMutation} from '../../../../apollo/hooks/dataset'
+import {useOncotreeQuery, useEditDatasetTagsMutation} from '../../../../apollo/hooks/dataset'
 import {useCrescentContext} from '../../../../redux/hooks'
 
 import OncotreeSunburst from './OncotreeSunburst'
@@ -19,12 +19,12 @@ import AddCustomTagsButton from './AddCustomTagsButton';
 
 const TagOncotreeModal = ({
   datasetID,
-  disabledTagging
+  disabledTagging,
 }) => {
-  const [activeMenu, setActiveMenu] = useState('oncotree')
   const [open, setOpen] = useState(false)
   const oncotree = useOncotreeQuery()
-  const {dataset, tagDataset} = useTagDatasetMutation(datasetID)
+  const { dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset } = useEditDatasetTagsMutation(datasetID)
+  
   if (R.any(R.isNil, [oncotree, dataset])) {
 
     // return null
@@ -38,7 +38,7 @@ const TagOncotreeModal = ({
   }
 
   const {tissue: tissueTypes} = oncotree
-  const {name, cancerTag, oncotreeCode, hasMetadata} = dataset
+  const {name, cancerTag, oncotreeCode} = dataset
   return (
     <Modal
       open={open}
@@ -66,43 +66,58 @@ const TagOncotreeModal = ({
             </Label>
           }
           content={
-            <Label
-            color={R.prop(cancerTag, {
-              true: 'pink',
-              false: 'purple',
-              null: 'blue',
-            })}
-            >
-              {<Icon style={{margin: 0}} name='paperclip' /> }             
-              {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />}
-              {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
-              {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
-            </Label>
+            <>
+              <Label
+              color={R.prop(cancerTag, {
+                true: 'pink',
+                false: 'purple',
+                null: 'blue',
+              })}
+              >
+                {<Icon style={{margin: 0}} name='paperclip' /> }      
+                {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />}
+                {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+              </Label>
+              {R.map(tag => <Label key={tag} content={<Icon style={{ margin: 0 }} name='paperclip'/>} detail={R.toUpper(tag)} />, dataset.customTags)}
+            </>
           }
         />
       }
     >
-      <Modal.Content>
-        <Header icon textAlign='center'>
-          <Icon name='folder open' />
-          {name}
-          {/* <Header.Subheader>
-          
-          </Header.Subheader> */}
-        </Header>
+      <TagOncotreeModalContent {...{dataset, disabledTagging, tissueTypes, tagDataset, addCustomTagDataset, removeCustomTagDataset}}/>
+    </Modal>
+  )
+}
 
-        <Menu attached='top'>
-          <Menu.Item content='Oncotree Tissue Tag'
-            active={R.equals(activeMenu, 'oncotree')} onClick={() => setActiveMenu('oncotree')}
-          />
-          <Menu.Item content='Custom Tags'
-            active={R.equals(activeMenu, 'custom')} onClick={() => setActiveMenu('custom')}
-          />
-        </Menu>
-        <Segment attached='bottom'>
-        {
-          R.equals(activeMenu, 'oncotree') ?
-            <>
+export function TagOncotreeModalContent({
+  dataset,
+  disabledTagging,
+  tissueTypes,
+  tagDataset,
+  addCustomTagDataset, 
+  removeCustomTagDataset
+}) {
+  const [activeMenu, setActiveMenu] = useState('oncotree')
+  const {name, cancerTag, oncotreeCode} = dataset
+
+  return (
+    <Modal.Content>
+      <Header icon textAlign='center'>
+        <Icon name='folder open' />
+        {name}
+      </Header>
+      <Menu attached='top'>
+        <Menu.Item content='Oncotree Tissue Tag'
+          active={R.equals(activeMenu, 'oncotree')} onClick={() => setActiveMenu('oncotree')}
+        />
+        <Menu.Item content='Custom Tags'
+          active={R.equals(activeMenu, 'custom')} onClick={() => setActiveMenu('custom')}
+        />
+      </Menu>
+      <Segment attached='bottom'>
+      {
+        R.equals(activeMenu, 'oncotree') ?
+          <>
             <Divider horizontal>
               Tag <a target="_blank" href='http://oncotree.mskcc.org/' >Oncotree</a> tissue type using menu below
             </Divider>
@@ -153,32 +168,27 @@ const TagOncotreeModal = ({
                 /> 
                 </>
             }
-            </>
+          </>
           : R.equals(activeMenu, 'custom') ?
             <>
-            <Divider horizontal>
-              Add custom tags/labels to your datasets below
-            </Divider>
-            {
-            disabledTagging ? 
-              <Segment placeholder>
-                <Header textAlign='center'
-                  content={'You do not have permissions to upload metadata for this dataset'}
-                />
-              </Segment>
-            :
-            <AddCustomTagsButton {...{datasetID}} />
-            }
-            </>
-          : null
-        }
-        </Segment>
-
-        
-
-
-      </Modal.Content>
-    </Modal>
+              <Divider horizontal>
+                Add custom tags/labels to your datasets below
+              </Divider>
+              {
+              disabledTagging ? 
+                <Segment placeholder>
+                  <Header textAlign='center'
+                    content={'You do not have permissions to upload metadata for this dataset'}
+                  />
+                </Segment>
+              :
+              <AddCustomTagsButton {...{dataset, addCustomTagDataset, removeCustomTagDataset}} />
+              }
+          </>
+        : null
+      }
+      </Segment>
+    </Modal.Content>
   )
 }
 
