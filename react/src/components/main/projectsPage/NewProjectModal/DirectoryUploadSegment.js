@@ -9,11 +9,11 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import moment from 'moment'
 
-import { queryIsNotNil } from '../../../../utils'
-
 import { useDropzone } from 'react-dropzone'
+import { Form, Card, Header, Button, Segment, Modal, Label, Icon, Grid, List, Message } from 'semantic-ui-react'
 
-import { Form, Card, Header, Menu, Button, Segment, Modal, Label, Divider, Icon, Image, Popup, Grid, Step, List, Item, Message, Container } from 'semantic-ui-react'
+import { useOncotreeQuery, useEditDatasetTagsMutation} from '../../../../apollo/hooks/dataset'
+import { TagOncotreeModalContent } from '../../runsPage/UploadedDatasetsDetails/index'
 
 const maxFileSize = 209715200
 const validFileTypes = ['.mtx.gz', '.tsv.gz']
@@ -29,27 +29,40 @@ const errorsToMsg = (errorList) => {
   return R.toLower(message)
 }
 
+const TagOncotreeModal = ({
+  dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset
+}) => {
+  const [open, setOpen] = useState(false)
+  const oncotree = useOncotreeQuery()
+  const tissueTypes = R.isNil(oncotree) ? null : oncotree.tissue
+
+  return (
+    <Modal
+      open={open}
+      onClose={() => setOpen(false)}
+      size='large'
+      trigger={
+        <Button animated='vertical' size='small' onClick={() => setOpen(true)} disabled={R.any(R.isNil, [oncotree, dataset])}>
+          <Button.Content visible>
+            <Icon name='paperclip' />
+          </Button.Content>
+          <Button.Content hidden>
+            EDIT TAG(S)
+          </Button.Content>
+        </Button>
+      }
+    >
+      <TagOncotreeModalContent {...{dataset, tissueTypes, tagDataset, addCustomTagDataset, removeCustomTagDataset}}/>
+    </Modal>
+  )
+}
+
 const DatasetCard = ({
   datasetID,
   newProjectDispatch
 }) => {
-  const { loading, data, error } = useQuery(gql`
-    query DatasetDetails(
-      $datasetID: ID!
-    ) {
-      dataset(datasetID: $datasetID) {
-        datasetID
-        name
-        size
-        numGenes
-        numCells
-      }
-    }
-  `, {
-    variables: { datasetID }
-  })
 
-  // Mutation to delete uploaded dataset
+  const { dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset } = useEditDatasetTagsMutation(datasetID)
   const [deleteDataset, { }] = useMutation(gql`
     mutation DeleteDataset(
       $datasetID: ID!
@@ -70,12 +83,6 @@ const DatasetCard = ({
     }
   })
 
-  const dataset = R.ifElse(
-    queryIsNotNil('dataset'),
-    R.prop('dataset'),
-    R.always(null)
-  )(data)
-  console.log(dataset)
   return (
     RA.isNotNil(dataset) &&
     <Card>
@@ -87,20 +94,38 @@ const DatasetCard = ({
           <Label content={<Icon style={{ margin: 0 }} name='folder' />} detail={formatSize(dataset.size)} />
           <Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${dataset.numCells} cells`} />
           <Label content={<Icon style={{ margin: 0 }} name='dna' />} detail={`${dataset.numGenes} genes`} />
+          <Label
+            color={R.prop(dataset.cancerTag, {
+              true: 'pink',
+              false: 'purple',
+              null: 'blue',
+            })}
+            >
+              {<Icon style={{margin: 0}} name='paperclip' /> }             
+              {<Label.Detail content={dataset.cancerTag ? 'CANCER' : R.equals(dataset.cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'} />}
+              {RA.isNotNil(dataset.oncotreeCode) && <Label.Detail content={dataset.oncotreeCode} />}
+          </Label>
+          {R.map((tag, index) => <Label key={`tag-${index}`} content={<Icon style={{ margin: 0 }} name='paperclip'/>} detail={R.toUpper(tag)} />, dataset.customTags)}
         </Label.Group>
       </Card.Content>
       <Card.Content>
-        <Button fluid animated='vertical'
-          size='small'
-          onClick={() => deleteDataset()}
-        >
-          <Button.Content visible>
-            <Icon name='trash' />
-          </Button.Content>
-          <Button.Content hidden>
-            REMOVE
-          </Button.Content>
-        </Button>
+        <Button.Group fluid>
+          <Button animated='vertical'
+            size='small'
+            onClick={() => deleteDataset()}
+            color="red"
+          >
+            <Button.Content visible>
+              <Icon name='trash' />
+            </Button.Content>
+            <Button.Content hidden>
+              REMOVE
+            </Button.Content>
+          </Button>
+          <TagOncotreeModal 
+            {...{dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset}}
+          />
+        </Button.Group>
       </Card.Content>
     </Card>
   )
@@ -123,7 +148,7 @@ const UploadedDirectoryCard = ({
             ["matrix", "barcodes", "features"].map((file) => {
               const { expectedFileName, code } = R.prop(file, dirSummary)
               return (
-                <List.Item>
+                <List.Item key={file}>
                   <List.Icon verticalAlign="middle" name={(R.equals(code, "valid") ? "check" : "exclamation") + " circle"} color={R.equals(code, "valid") ? "green" : "red"} />
                   <List.Content>{expectedFileName} <span style={{ color: R.equals(code, "valid") ? "green" : "red" }}>{code}</span></List.Content>
                 </List.Item>
@@ -259,16 +284,16 @@ const DirectoryUploadSegment = ({
                       Rejected files:
                     </Header>
                     <Message.List>
-                      {uploadErrMsgs.map(({ file, message }) => (
-                        <Message.Item>{R.compose(R.join("/"), R.slice(0, -1), R.split("/"))(file.path)}/<b>{file.name}</b>: {message}</Message.Item>
+                      {uploadErrMsgs.map(({ file, message }, index) => (
+                        <Message.Item key={index}>{R.compose(R.join("/"), R.slice(0, -1), R.split("/"))(file.path)}/<b>{file.name}</b>: {message}</Message.Item>
                       ))}
                     </Message.List>
                   </Message>
                 }
                 <Grid columns={2} style={{ margin: 0 }}>
                   {
-                    uploadSummary.map((dirSummary) => (
-                      <UploadedDirectoryCard {...{ dirSummary }} />
+                    uploadSummary.map((dirSummary, index) => (
+                      <UploadedDirectoryCard key={index} {...{ dirSummary }} />
                   ))}
                 </Grid>
               </>
