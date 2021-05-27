@@ -10,9 +10,11 @@ import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
 import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery, useSetAssaysQuery } from '../../../../apollo/hooks/results'
 import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedAssay, setSelectedDiffExpression } from '../../../../redux/actions/resultsPage'
+import { useDotPlotMachine } from './DotPlot'
 
 const DotPlotVisualizationMenu = ({
 }) => {
+  const [current, send] = useDotPlotMachine()  
   // const {changeActiveGroup, changeSelectedFeature} = reduxThunks
   const [currentSearch, setCurrentSearch] = useState('')
   const [currentOptions, setCurrentOptions] = useState([])
@@ -63,6 +65,7 @@ const DotPlotVisualizationMenu = ({
     if (R.not(R.includes(value, selectedFeatures))) {
       if (R.length(selectedFeatures) < maxNumGenes) {
         dispatch(addSelectedFeature({ value }))
+        send({type: "CHANGE_PARAMETER", data: value})
       }
 
     }
@@ -97,13 +100,16 @@ const DotPlotVisualizationMenu = ({
   const formatList = R.addIndex(R.map)((val, index) => ({ key: index, text: val, value: val }))
 
   return (
-    <Form>
+    <Form loading={current.matches('dataLoading') || current.matches('initialLoading')}>
+      {/* <div>
+        {current.value}
+      </div> */}
       <Divider horizontal content='Datasets' />
       <Form.Field>
         <Form.Dropdown fluid selection labeled
           value={selectedDiffExpression}
           options={diffExpression}
-          onChange={(e, { value }) => dispatch(setSelectedDiffExpression({ value }))}
+          onChange={(e, { value }) => { send({type: "CHANGE_PARAMETER", data: value}); dispatch(setSelectedDiffExpression({ value }))}}
           disabled
         />
       </Form.Field>
@@ -120,7 +126,7 @@ const DotPlotVisualizationMenu = ({
             value={selectedAssay}
             // options={formatList(R.map(R.toUpper)(assays))}
             options={R.compose(R.map(R.evolve({text: R.toUpper})), formatList)(assays)}
-            onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
+            onChange={(e, { value }) => {send({type: 'CHANGE_PARAMETER'}); dispatch(setSelectedAssay({ value }))}}
             // disabled={isActiveAssay('legacy')}
           />
         </Form.Field>
@@ -134,7 +140,7 @@ const DotPlotVisualizationMenu = ({
           value={selectedGroup}
           options={isActiveResult('dot') ? formatList(categoricalGroups) : formatList(groups)}
           // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
-          onChange={(e, { value }) => dispatch(setSelectedGroup({ value }))}
+          onChange={(e, { value }) => {send({type: 'CHANGE_PARAMETER'}); dispatch(setSelectedGroup({ value }))}}
         />
       </Form.Field>
 
@@ -156,6 +162,7 @@ const DotPlotVisualizationMenu = ({
                 basic
                 onClick={() => {
                   dispatch(removeSelectedFeature({ value: feature }))
+                  R.length(selectedFeatures) > 1 ? send({type: 'CHANGE_PARAMETER'}) : send({type: "CLEAR_GENES"})
                 }}
               />
             ), (selectedFeatures)
@@ -169,6 +176,7 @@ const DotPlotVisualizationMenu = ({
           color='violet'
           onClick={() => {
             R.forEach((feature) => dispatch(removeSelectedFeature({ value: feature })), selectedFeatures)
+            send({type: "CLEAR_GENES"})
           }}
         />
       </Segment>
