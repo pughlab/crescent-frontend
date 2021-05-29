@@ -4,8 +4,10 @@ import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
 
 const initialState = {
+  keycloakUser: null,
+
   userID: null,
-  isGuest: true,
+
   projectID: null,
   runID: null,
   view: 'projects', // 'runs' || 'results'
@@ -16,6 +18,11 @@ const initialState = {
 
 export default createReducer(
   initialState, {
+    'context/setKeycloakUser': (state, payload) => {
+      const {keycloakUser} = payload
+      return {...state, keycloakUser}
+    },
+
     'context/setUser': (state, payload) => {
       const {user} = payload
       const userID = R.compose(R.always, R.prop('userID'))(user)

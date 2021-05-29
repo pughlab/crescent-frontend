@@ -28,10 +28,19 @@ const goBack = R.always({
   type: 'context/goBack'
 })
 
+const setKeycloakUser = ({keycloakUser}) => ({
+  type: 'context/setKeycloakUser',
+  payload: {
+    keycloakUser
+  }
+})
+
 export {
   setUser,
   setProject,
   setRun,
   goHome,
   goBack,
+
+  setKeycloakUser
 }

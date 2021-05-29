@@ -2,29 +2,14 @@ import React, {useState, useEffect} from 'react';
 
 import {Embed, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, Image, Popup, Message} from 'semantic-ui-react'
 
-import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
-
-import LoginForm from './LoginForm'
-import RegisterForm from './RegisterForm'
-import UserInfo from './UserInfo'
-
 import {useCrescentContext} from '../../redux/hooks'
-import {useUserQuery} from '../../apollo/hooks/user'
-
 
 const LoginModal = ({
 
 }) => {
-  const context = useCrescentContext()
-  const {userID, isGuest} = context
+  const {keycloakUser} = useCrescentContext()
+  const {name, email} = keycloakUser
   const [open, setOpen] = useState(false)
-  const [showLogin, setShowLogin] = useState(true)
-  useEffect(() => {
-    setShowLogin(true)
-  }, [open])
-
-  const user = useUserQuery(userID)
   return (
     <>
     <Popup inverted size='large'
@@ -33,27 +18,12 @@ const LoginModal = ({
           onClick={() => setOpen(!open)}
         >
           <Header>
-            {/* <Icon color='black' size='big' name='user circle' /> */}
-            <Header.Content color='black' size='huge'>
-              {R.prop('name', user)}
-            </Header.Content>
+            <Header.Content color='black' size='huge' content={name} />
           </Header>
         </Button>
       }
-    >
-    {
-      isGuest ?
-        'Login'
-      : RA.isNotNil(user) ?
-        <>
-        {`Logged in as `}
-        <b>
-          {R.prop('name', user)}
-        </b>
-        </>
-      : null
-    }
-    </Popup>
+      content={`Logged in as ${name} (${email})`}
+    />
     <Modal
       {...{open}}
       closeIcon
@@ -61,13 +31,7 @@ const LoginModal = ({
       closeOnDimmerClick={false}
     >
       <Modal.Content>
-      {
-        R.not(isGuest) ?
-          <UserInfo {...{setOpen}} />
-        : showLogin ?
-          <LoginForm {...{setOpen, setShowLogin}} />
-        : <RegisterForm {...{setOpen, setShowLogin}} />
-      }
+      {/* put logout here */}
      </Modal.Content>
     </Modal>
     </>

@@ -16,7 +16,7 @@ import {useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
 
 
-import {setUser} from './redux/actions/context'
+import {setKeycloakUser} from './redux/actions/context'
 // Hooks
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from './redux/hooks'
@@ -26,49 +26,46 @@ import keycloak from './keycloak'
 
 
 const App = () => {
-  const context = useCrescentContext()
-  const {view, userID, projectID, runID, error} = context
+  const stickyRef = useRef()
+
+  const {keycloakUser} = useCrescentContext()
   const dispatch = useDispatch()
-  
-  // TODO: put into custom hoook
-  const [createGuestUser] = useMutation(gql`
-    mutation CreateGuestUser {
-      createGuestUser {
-        userID
-        email
+
+  const [me, {loading, data, error}] = useMutation(gql`
+    mutation CheckInKeycloak {
+      me {
+        keycloakUserID
         name
+        email
       }
     }
   `, {
-    onCompleted: ({createGuestUser: user}) => {
-      console.log(user)
-      dispatch(setUser({user}))
+    onCompleted: ({me}) => {
+      if (!!me) {
+        console.log(me)
+        dispatch(setKeycloakUser({keycloakUser: me}))
+      }
     }
   })
-  // If no userID then create guest user
-  useEffect(() => {
-    if (R.isNil(userID)) {
-      console.log('Creating Guest User')
-      createGuestUser()
-    }
-    return () => {}
-  }, [userID])
 
-  const stickyRef = useRef()
+  useEffect(() => {me()}, [])
 
-  if (RA.isNotNil(error)) {
-    return (
-      <ErrorComponent />
-    )
+  if (loading) {
+    return 'loading me'
   }
+
+  // if (RA.isNotNil(error)) {
+  //   return (
+  //     <ErrorComponent />
+  //   )
+  // }
 
   return (
     <div ref={stickyRef} style={{minHeight: '100vh'}}>
-      {/* <Sticky context={stickyRef}> */}
-        <MenuComponent />
-      {/* </Sticky> */}
+      <MenuComponent />
       <Segment basic style={{marginTop: 0, paddingTop: 0}}>
-      {
+        {JSON.stringify(keycloakUser)}
+      {/* {
         R.cond([
           [R.equals('projects'), R.always(
             <ProjectsPageComponent key={userID} />
@@ -80,7 +77,7 @@ const App = () => {
             <ResultsPageComponent key={runID} />
           )],
         ])(view)
-      }
+      } */}
       </Segment>
     </div>
   )
