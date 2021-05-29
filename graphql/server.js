@@ -13,6 +13,8 @@ const Keycloak = require('keycloak-connect')
 
 const Models = require('../database/mongo');
 
+const neo4jDriver = require('./neo4j')
+
 // VOYAGER
 const { express: voyagerMiddleware } = require('graphql-voyager/middleware')
 
@@ -103,7 +105,10 @@ const server = new ApolloServer({
       Docker,
 
       // KEYCLOAK
-      kauth: new KeycloakContext({ req })
+      kauth: new KeycloakContext({ req }),
+
+      // NEO4J
+      neo4j: {driver: neo4jDriver}
     }
   }
 })

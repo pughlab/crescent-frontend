@@ -39,6 +39,27 @@ const resolvers = {
     }
   },
   Mutation: {
+    me: async (parent, variables, {kauth, neo4j}) => {
+      try {
+
+
+        const {sub: keycloakUserID, email, name, ... kcAuth} = kauth.accessToken.content
+        const keycloakUser = { keycloakUserID, email, name }
+
+        const session = driver.session()
+        const result = await session.run(
+          'CREATE (a:User {keycloakUserID: $keycloakUserID, name: $name, email: $email}) RETURN a',
+          keycloakUser
+        )
+        const singleRecord = result.records[0]
+        const node = singleRecord.get(0)
+        
+        return node
+      } catch(err) {
+        console.log('mutation.me', err)
+      }
+    },
+    
     // These resolvers should do some kind of create/update/delete
     createGuestUser: async (
       parent,

@@ -6,6 +6,12 @@ const typeDefs = gql`
   # Fairly flexible data types
   scalar Email
 
+  type KeycloakUser {
+    userID: ID!
+    name: String!
+    email: Email!
+  }
+
   # This defines a node in our data graph
   type User {
     userID: ID
@@ -30,6 +36,8 @@ const typeDefs = gql`
   }
   # 'Mutation' is similar (but is invoked and not executed immediately)
   type Mutation {
+    me: KeycloakUser
+
     createGuestUser: User
 
     authenticateUser(

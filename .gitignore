@@ -20,6 +20,9 @@ frontend_seurat_inputs.json
 wes/logs/
 wes/workflows/
 
+neo4j/databases
+neo4j/dbms
+
 .env
 nginx/certs/
 nginx/errors/
