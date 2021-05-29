@@ -13,6 +13,10 @@ const Keycloak = require('keycloak-connect')
 
 const Models = require('../database/mongo');
 
+// VOYAGER
+const { express: voyagerMiddleware } = require('graphql-voyager/middleware')
+
+
 // GRAPHQL SCHEMAS
 const UserSchema = require('./schema/user')
 const ProjectSchema = require('./schema/project')
@@ -57,13 +61,13 @@ const keycloak = new Keycloak({
   store: memoryStore
 }, keycloakConfig)
 
-app.use(keycloak.middleware({
-  admin: '/graphql'
-}))
+// app.use(keycloak.middleware({
+//   admin: '/graphql'
+// }))
 
-app.use('/graphql', keycloak.middleware())
+// app.use('/graphql', keycloak.middleware())
 
-app.use(graphqlPath, keycloak.protect())
+// app.use(graphqlPath, keycloak.protect())
 
 // const corsOptions = {
 //   origin: 'http://localhost:3000',
@@ -104,7 +108,8 @@ const server = new ApolloServer({
   }
 })
 
-app.use(server.graphqlPath, keycloak.protect())
+// app.use(server.graphqlPath, keycloak.protect())
+app.use('/voyager', voyagerMiddleware({ endpointUrl: '/graphql' }));
 
 // app.use(cors())
 

@@ -19,6 +19,9 @@ const typeDefs = gql`
   # Note: multiple field query run in parallel
   #       multiple field mutation run in sequence
   type Query {
+    """
+    Query.me for logging in keycloak users after authentication (should be mutation to check in tokens for users)
+    """
     me: User
 
     # The query 'messages' expects array of type 'Message'
