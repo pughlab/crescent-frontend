@@ -8,4 +8,4 @@ const keycloak = Keycloak({
   clientId: 'crescent-app'
 });
 
-export {keycloak}
+export default keycloak

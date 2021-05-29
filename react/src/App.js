@@ -22,8 +22,6 @@ import {useDispatch} from 'react-redux'
 import {useCrescentContext} from './redux/hooks'
 
 
-import keycloak from './keycloak'
-
 
 const App = () => {
   const stickyRef = useRef()
