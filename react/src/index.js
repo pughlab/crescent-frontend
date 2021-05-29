@@ -10,7 +10,7 @@ import { ApolloProvider } from '@apollo/react-hooks'
 import {apolloClient} from './apollo/apolloClient'
 
 import { ReactKeycloakProvider } from '@react-keycloak/web'
-import {keycloak} from './keycloak/keycloak'
+import keycloak from './keycloak/keycloak'
 import {
   eventLogger as keycloakEventLogger,
   tokenLogger as keycloakTokenLogger,
