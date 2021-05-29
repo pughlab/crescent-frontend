@@ -50,6 +50,14 @@ services:
       - .:/usr/src/app
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - /var/lib/toil:/var/lib/toil:rw
+    environment:
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_USER=${NEO4J_USER}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
+      
+      
+      
+      
     depends_on:
       - minio 
       - mongo

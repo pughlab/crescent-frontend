@@ -10,21 +10,6 @@ const passwordGenerator = require('generate-password')
 const resolvers = {
   // For every type definition there is a resolver...
   Query: {
-    me: async (parent, variables, {kauth}) => {
-      try {
-        const {sub: userID, email, name, ... kcAuth} = kauth.accessToken.content
-        const user = {
-          userID,
-          email,
-          name,
-          sessionToken: '',
-          projects: [],
-        }
-        return user
-      } catch(err) {
-        console.log('me', err)
-      }
-    },
     users: async (parent, variables, {Users}) => {
       const users = await Users.find({
         firstName: {
@@ -41,25 +26,30 @@ const resolvers = {
   Mutation: {
     me: async (parent, variables, {kauth, neo4j}) => {
       try {
-
-
         const {sub: keycloakUserID, email, name, ... kcAuth} = kauth.accessToken.content
         const keycloakUser = { keycloakUserID, email, name }
 
-        const session = driver.session()
-        const result = await session.run(
-          'CREATE (a:User {keycloakUserID: $keycloakUserID, name: $name, email: $email}) RETURN a',
-          keycloakUser
+        const session = neo4j.driver.session()
+        const existingUser = await session.run(
+          'MATCH (a:User {keycloakUserID: $keycloakUserID}) RETURN a',
+          {keycloakUserID}
         )
-        const singleRecord = result.records[0]
-        const node = singleRecord.get(0)
-        
-        return node
+        console.log('match result', existingUser)
+        if (R.isEmpty(existingUser.records)) {
+          const createUser = await session.run(
+            'CREATE (a:User {keycloakUserID: $keycloakUserID, name: $name, email: $email}) RETURN a',
+            keycloakUser
+          )
+          console.log('createUser result', createUser)
+          return createUser.records[0].get(0).properties
+        } else {
+          console.log('existing user props', existingUser.records[0].get(0).properties)
+          return keycloakUser
+        }
       } catch(err) {
-        console.log('mutation.me', err)
+        console.log('me', err)
       }
     },
-    
     // These resolvers should do some kind of create/update/delete
     createGuestUser: async (
       parent,

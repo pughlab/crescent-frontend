@@ -7,7 +7,7 @@ const typeDefs = gql`
   scalar Email
 
   type KeycloakUser {
-    userID: ID!
+    keycloakUserID: ID!
     name: String!
     email: Email!
   }
@@ -25,17 +25,15 @@ const typeDefs = gql`
   # Note: multiple field query run in parallel
   #       multiple field mutation run in sequence
   type Query {
-    """
-    Query.me for logging in keycloak users after authentication (should be mutation to check in tokens for users)
-    """
-    me: User
-
     # The query 'messages' expects array of type 'Message'
     users: [User]! @hasRole(role: "developer")
     user(userID: ID!): User!
   }
   # 'Mutation' is similar (but is invoked and not executed immediately)
   type Mutation {
+    """
+    Checks in (creates if does not exist) keycloak user to neo4j based on token after authentication
+    """
     me: KeycloakUser
 
     createGuestUser: User

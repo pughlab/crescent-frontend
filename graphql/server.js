@@ -36,18 +36,6 @@ const Docker = require('./docker.js')
 
 const app = express()
 
-
-// const keycloak = new Keycloak({
-//   url: 'http://localhost:8080/auth',
-//   realm: 'crescent',
-//   clientId: 'crescent-app',
-//   clientSecret: '87fcf4e2-9a07-4e92-9033-9c4090bdc608',
-//   redirectUri: 'http://localhost:5000/graphql'
-// })
-
-
-// app.use('/graphql', keycloak.middleware())
-
 const graphqlPath = '/graphql'
 
 const keycloakConfig = JSON.parse(fs.readFileSync('/usr/src/app/keycloak.json'))
@@ -59,17 +47,11 @@ app.use(session({
   store: memoryStore
 }))
 
-const keycloak = new Keycloak({
-  store: memoryStore
-}, keycloakConfig)
+const keycloak = new Keycloak({store: memoryStore}, keycloakConfig)
 
-// app.use(keycloak.middleware({
-//   admin: '/graphql'
-// }))
-
-// app.use('/graphql', keycloak.middleware())
-
-// app.use(graphqlPath, keycloak.protect())
+app.use(keycloak.middleware({admin: graphqlPath}))
+app.use(graphqlPath, keycloak.middleware())
+app.use(graphqlPath, keycloak.protect())
 
 // const corsOptions = {
 //   origin: 'http://localhost:3000',
@@ -113,10 +95,7 @@ const server = new ApolloServer({
   }
 })
 
-// app.use(server.graphqlPath, keycloak.protect())
 app.use('/voyager', voyagerMiddleware({ endpointUrl: '/graphql' }));
-
-// app.use(cors())
 
 server.applyMiddleware({ 
   app,
