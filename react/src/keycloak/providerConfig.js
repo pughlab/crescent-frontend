@@ -10,6 +10,8 @@ const tokenLogger = (tokens) => {
 
 const initOptions = { 
   onLoad: "login-required",
+  checkLoginIframe: false,
+  promiseType: 'native'
 }
 
 export {

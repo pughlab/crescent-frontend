@@ -6,6 +6,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 // React components
 import {Sticky, Segment} from 'semantic-ui-react'
+
 import MenuComponent from './components/menu'
 import ProjectsPageComponent from './components/main/projectsPage'
 import RunsPageComponent from './components/main/runsPage'
@@ -21,6 +22,7 @@ import {setKeycloakUser} from './redux/actions/context'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from './redux/hooks'
 
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 
 
 const App = () => {
@@ -59,25 +61,33 @@ const App = () => {
   // }
 
   return (
-    <div ref={stickyRef} style={{minHeight: '100vh'}}>
-      <MenuComponent />
-      <Segment basic style={{marginTop: 0, paddingTop: 0}}>
-        {JSON.stringify(keycloakUser)}
-      {/* {
-        R.cond([
-          [R.equals('projects'), R.always(
-            <ProjectsPageComponent key={userID} />
-          )],
-          [R.equals('runs'), R.always(
-            <RunsPageComponent key={projectID} />
-          )],
-          [R.equals('results'), R.always(
-            <ResultsPageComponent key={runID} />
-          )],
-        ])(view)
-      } */}
-      </Segment>
-    </div>
+    <Router>
+      <div ref={stickyRef} style={{minHeight: '100vh'}}>
+        <MenuComponent />
+        <Segment basic style={{marginTop: 0, paddingTop: 0}}>
+          {JSON.stringify(keycloakUser)}
+          {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
+          <Switch>
+            <Route path="/">
+              home
+            {/* {
+              R.cond([
+                [R.equals('projects'), R.always(
+                  <ProjectsPageComponent key={userID} />
+                )],
+                [R.equals('runs'), R.always(
+                  <RunsPageComponent key={projectID} />
+                )],
+                [R.equals('results'), R.always(
+                  <ResultsPageComponent key={runID} />
+                )],
+              ])(view)
+            } */}
+            </Route>
+          </Switch>
+        </Segment>
+      </div>
+    </Router>
   )
 }
 export default App

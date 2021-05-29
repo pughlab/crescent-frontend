@@ -2,13 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-import Logo from './components/login/Logo'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 import { ApolloProvider } from '@apollo/react-hooks'
 import {apolloClient} from './apollo/apolloClient'
 
+import Logo from './components/login/Logo'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import keycloak from './keycloak/keycloak'
 import {
@@ -17,32 +17,14 @@ import {
   initOptions as keycloakInitOptions
 } from './keycloak/providerConfig'
 
-
 import { Provider as ReduxProvider } from 'react-redux'
-import { createStore, applyMiddleware } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension'
-import thunk from 'redux-thunk'
-import rootReducer from './redux/reducers'
-import { persistStore, persistReducer } from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { PersistGate } from 'redux-persist/integration/react'
+
+import configureStore from './redux/configureStore'
 require('dotenv').config()
 
-const persistConfig = {
-  key: 'root',
-  storage,
-}
-const persistedReducer = persistReducer(persistConfig, rootReducer)
 // Redux store
-const store = createStore(
-  persistedReducer,
-  composeWithDevTools(
-    applyMiddleware(thunk)
-  )
-  // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-)
-const persistor = persistStore(store)
-
+const {store, persistor} = configureStore()
 // FOR DEV PURGING REDUX STORE
 // persistor.purge()
 
