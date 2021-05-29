@@ -21,8 +21,10 @@ import {setKeycloakUser} from './redux/actions/context'
 // Hooks
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from './redux/hooks'
+import {useMeMutation} from './apollo/hooks/user'
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import keycloak from './keycloak/keycloak'
 
 
 const App = () => {
@@ -31,26 +33,13 @@ const App = () => {
   const {keycloakUser} = useCrescentContext()
   const dispatch = useDispatch()
 
-  const [me, {loading, data, error}] = useMutation(gql`
-    mutation CheckInKeycloak {
-      me {
-        keycloakUserID
-        name
-        email
-      }
-    }
-  `, {
-    onCompleted: ({me}) => {
-      if (!!me) {
-        console.log(me)
-        dispatch(setKeycloakUser({keycloakUser: me}))
-      }
-    }
-  })
+  const {me} = useMeMutation()
 
-  useEffect(() => {me()}, [])
+  useEffect(() => {
+    if (RA.isNotNil(me)) {dispatch(setKeycloakUser({keycloakUser: me}))}
+  }, [me])
 
-  if (loading) {
+  if (R.isNil(keycloakUser)) {
     return 'loading me'
   }
 
@@ -59,6 +48,8 @@ const App = () => {
   //     <ErrorComponent />
   //   )
   // }
+
+  const {keycloakUserID} = keycloakUser
 
   return (
     <Router>
@@ -69,11 +60,11 @@ const App = () => {
           {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
           <Switch>
             <Route path="/">
-              home
+              <ProjectsPageComponent key={keycloakUserID} />
             {/* {
               R.cond([
                 [R.equals('projects'), R.always(
-                  <ProjectsPageComponent key={userID} />
+                  
                 )],
                 [R.equals('runs'), R.always(
                   <RunsPageComponent key={projectID} />

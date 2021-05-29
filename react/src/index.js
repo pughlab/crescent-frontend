@@ -26,7 +26,7 @@ require('dotenv').config()
 // Redux store
 const {store, persistor} = configureStore()
 // FOR DEV PURGING REDUX STORE
-// persistor.purge()
+persistor.purge()
 
 ReactDOM.render(
   <ReactKeycloakProvider
