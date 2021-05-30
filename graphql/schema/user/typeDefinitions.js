@@ -10,6 +10,7 @@ const typeDefs = gql`
     keycloakUserID: ID!
     name: String!
     email: Email!
+    userID: ID!
   }
 
   # This defines a node in our data graph
@@ -17,7 +18,7 @@ const typeDefs = gql`
     userID: ID
     email: Email
     name: String
-    sessionToken: ID
+    # sessionToken: ID
     projects: [Project]
   }
 

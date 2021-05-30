@@ -9,23 +9,31 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  password: {
+  keycloakUserID: {
     type: String,
     required: true
   },
-  firstName: {
+  // password: {
+  //   type: String,
+  //   required: false
+  // },
+  // firstName: {
+  //   type: String,
+  //   required: false
+  // },
+  // lastName: {
+  //   type: String,
+  //   required: false
+  // },
+  name: {
     type: String,
     required: true
   },
-  lastName: {
-    type: String,
-    required: true
-  },
-  sessionToken: {
-    // type: mongoose.Schema.Types.ObjectId,
-    type: String,
-    default: null
-  }
+  // sessionToken: {
+  //   // type: mongoose.Schema.Types.ObjectId,
+  //   type: String,
+  //   default: null
+  // }
 })
 
 module.exports = UserSchema

@@ -11,6 +11,7 @@ export default function useMeMutation() {
         keycloakUserID
         name
         email
+        userID
       }
     }
   `)

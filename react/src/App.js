@@ -30,7 +30,7 @@ import keycloak from './keycloak/keycloak'
 const App = () => {
   const stickyRef = useRef()
 
-  const {keycloakUser} = useCrescentContext()
+  const {keycloakUser, projectID, runID, view} = useCrescentContext()
   const dispatch = useDispatch()
 
   const {me} = useMeMutation()
@@ -60,11 +60,11 @@ const App = () => {
           {/* A <Switch> looks through its children <Route>s and renders the first one that matches the current URL. */}
           <Switch>
             <Route path="/">
-              <ProjectsPageComponent key={keycloakUserID} />
-            {/* {
+            {
               R.cond([
                 [R.equals('projects'), R.always(
-                  
+                  <ProjectsPageComponent key={keycloakUserID} />
+
                 )],
                 [R.equals('runs'), R.always(
                   <RunsPageComponent key={projectID} />
@@ -73,7 +73,7 @@ const App = () => {
                   <ResultsPageComponent key={runID} />
                 )],
               ])(view)
-            } */}
+            }
             </Route>
           </Switch>
         </Segment>

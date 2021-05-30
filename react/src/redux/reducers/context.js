@@ -20,10 +20,10 @@ export default createReducer(
   initialState, {
     'context/setKeycloakUser': (state, payload) => {
       const {keycloakUser} = payload
-      return {...state, keycloakUser}
+      return {...state, keycloakUser, userID: keycloakUser.userID}
     },
 
-    'context/setUser': (state, payload) => {
+    'context/': (state, payload) => {
       const {user} = payload
       const userID = R.compose(R.always, R.prop('userID'))(user)
       // Check if guest by looking at email url

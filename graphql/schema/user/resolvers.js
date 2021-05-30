@@ -24,27 +24,38 @@ const resolvers = {
     }
   },
   Mutation: {
-    me: async (parent, variables, {kauth, neo4j}) => {
+    me: async (parent, variables, {kauth, neo4j, Users}) => {
       try {
         const {sub: keycloakUserID, email, name, ... kcAuth} = kauth.accessToken.content
         const keycloakUser = { keycloakUserID, email, name }
 
-        const session = neo4j.driver.session()
-        const existingUser = await session.run(
-          'MATCH (a:User {keycloakUserID: $keycloakUserID}) RETURN a',
-          {keycloakUserID}
-        )
-        console.log('match result', existingUser)
-        if (R.isEmpty(existingUser.records)) {
-          const createUser = await session.run(
-            'CREATE (a:User {keycloakUserID: $keycloakUserID, name: $name, email: $email}) RETURN a',
-            keycloakUser
-          )
-          console.log('createUser result', createUser)
-          return createUser.records[0].get(0).properties
+        // NEO4J PROOF OF CONCEPT
+
+        // const session = neo4j.driver.session()
+        // const existingUser = await session.run(
+        //   'MATCH (a:User {keycloakUserID: $keycloakUserID}) RETURN a',
+        //   {keycloakUserID}
+        // )
+        // console.log('match result', existingUser)
+        // if (R.isEmpty(existingUser.records)) {
+        //   const createUser = await session.run(
+        //     'CREATE (a:User {keycloakUserID: $keycloakUserID, name: $name, email: $email}) RETURN a',
+        //     keycloakUser
+        //   )
+        //   console.log('createUser result', createUser)
+        //   return createUser.records[0].get(0).properties
+        // } else {
+        //   console.log('existing user props', existingUser.records[0].get(0).properties)
+        //   return keycloakUser
+        // }
+
+        // MONGO TEMPORARY
+        const existingUser = await Users.findOne({keycloakUserID})
+        if (R.isNil(existingUser)) {
+          const newUser = await Users.create({name, keycloakUserID, email})
+          return newUser
         } else {
-          console.log('existing user props', existingUser.records[0].get(0).properties)
-          return keycloakUser
+          return existingUser
         }
       } catch(err) {
         console.log('me', err)
