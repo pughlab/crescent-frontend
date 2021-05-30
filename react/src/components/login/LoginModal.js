@@ -4,12 +4,21 @@ import {Embed, Header, Segment, Button, Grid, Modal, Label, Divider, Icon, Image
 
 import {useCrescentContext} from '../../redux/hooks'
 
+import { useKeycloak } from '@react-keycloak/web'
+
+import Logo from './logo.jpg'
+
+import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
+
 const LoginModal = ({
 
 }) => {
   const {keycloakUser} = useCrescentContext()
   const {name, email} = keycloakUser
   const [open, setOpen] = useState(false)
+  const { keycloak, initialized } = useKeycloak()
+
   return (
     <>
     <Popup inverted size='large'
@@ -32,6 +41,27 @@ const LoginModal = ({
     >
       <Modal.Content>
       {/* put logout here */}
+        <Segment.Group>
+          <Segment>
+            <Image centered size='small' src={Logo}/>
+          </Segment>
+          <Segment>
+          {
+            RA.isNotNil(keycloakUser) &&
+            <Header>
+              {R.prop('name', keycloakUser)}
+              <Header.Subheader content={R.prop('email', keycloakUser)} />
+            </Header>
+          }
+          </Segment>
+          <Segment>
+            <Button
+              fluid color='grey' size='massive'
+              content='Logout'
+              onClick={() => keycloak.logout()}
+            />
+          </Segment>
+        </Segment.Group>
      </Modal.Content>
     </Modal>
     </>
