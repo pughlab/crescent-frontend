@@ -8,6 +8,7 @@ tmp
 
 build/
 mongodb/
+graphql/keycloak/keycloak-db/
 *.simg
 
 

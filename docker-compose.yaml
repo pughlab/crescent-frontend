@@ -54,10 +54,6 @@ services:
       - NEO4J_URI=${NEO4J_URI}
       - NEO4J_USER=${NEO4J_USER}
       - NEO4J_PASSWORD=${NEO4J_PASSWORD}
-      
-      
-      
-      
     depends_on:
       - minio 
       - mongo
@@ -119,6 +115,11 @@ services:
       - 8080
     ports:
       - "8080:8080"
+    volumes:
+      - ./graphql/keycloak/realm-export.json:/opt/jboss/keycloak/realm-export.json
+      - ./graphql/keycloak/keycloak-db:/opt/jboss/keycloak/standalone/data
     environment:
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_IMPORT=/opt/jboss/keycloak/realm-export.json
+      - DB_VENDOR=h2
