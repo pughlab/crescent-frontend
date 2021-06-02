@@ -41,6 +41,8 @@ const TagOncotreeModal = ({
       open={open}
       onClose={() => setOpen(false)}
       size='large'
+      closeIcon
+      closeOnDimmerClick={false}
       trigger={
         <Button animated='vertical' size='small' onClick={() => setOpen(true)} disabled={R.any(R.isNil, [oncotree, dataset])}>
           <Button.Content visible>
