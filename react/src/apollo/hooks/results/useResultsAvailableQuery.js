@@ -13,6 +13,7 @@ export default function useResultsAvailable(runID) {
         label
         result
         description
+        detailedDescription
       }
     }
     `, {
