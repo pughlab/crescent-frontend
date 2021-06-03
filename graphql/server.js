@@ -51,7 +51,7 @@ const keycloak = new Keycloak({store: memoryStore}, keycloakConfig)
 
 app.use(keycloak.middleware({admin: graphqlPath}))
 app.use(graphqlPath, keycloak.middleware())
-app.use(graphqlPath, keycloak.protect())
+// app.use(graphqlPath, keycloak.protect())
 
 // const corsOptions = {
 //   origin: 'http://localhost:3000',
@@ -59,8 +59,8 @@ app.use(graphqlPath, keycloak.protect())
 // }
 // app.use(cors(corsOptions));
 
-app.use(cors());
-app.options('*', cors());
+app.use(cors('*'));
+// app.options('*', cors());
 
 // GQL server requires type definitions and resolvers for those types
 const server = new ApolloServer({
