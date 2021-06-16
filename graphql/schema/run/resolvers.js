@@ -45,12 +45,12 @@ const resolvers = {
     },
   },
   Mutation: {
-    createUnsubmittedRun: async (parent, {name, projectID, userID, datasetIDs}, {Runs, Minio, ToolSteps}) => {
+    createUnsubmittedRun: async (parent, {name, description, projectID, userID, datasetIDs}, {Runs, Minio, ToolSteps}) => {
       try {
         const isSingleDataset = R.compose(R.equals(1), R.length)(datasetIDs)
 
         const defaultReferenceDatasetIDs = isSingleDataset ? {referenceDatasetIDs: datasetIDs} : {} //if single dataset run then default to that one dataset
-        const run = await Runs.create({name, projectID, createdBy: userID, datasetIDs, ... defaultReferenceDatasetIDs})
+        const run = await Runs.create({name, description, projectID, createdBy: userID, datasetIDs, ... defaultReferenceDatasetIDs})
         const {runID} = run
 
         // Add default parameters
@@ -224,6 +224,13 @@ const resolvers = {
       } catch(error) {
         console.log(error)
       }
+    },
+
+    updateRunDescription: async (parent, {runID, newDescription}, {Runs}) => {
+      const run = await Runs.findOne({runID})
+      run.description = newDescription
+      await run.save()
+      return run
     }
   },
   Run: {
