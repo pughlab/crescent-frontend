@@ -22,6 +22,7 @@ const typeDefs = gql`
     createdOn: Date
     createdBy: User
     name: String
+    description: String
     parameters: RunParameters
     projectID: ID
     project: Project
@@ -55,6 +56,7 @@ const typeDefs = gql`
   type Mutation {
     createUnsubmittedRun(
       name: String,
+      description: String,
       projectID: ID,
       userID: ID,
       datasetIDs: [ID]
@@ -99,6 +101,12 @@ const typeDefs = gql`
     updateRunReferenceDatasets(
       runID: ID!
       datasetIDs: [ID]
+    ): Run
+
+    # edit run description
+    updateRunDescription(
+      runID: ID!
+      newDescription: String!
     ): Run
     
   }

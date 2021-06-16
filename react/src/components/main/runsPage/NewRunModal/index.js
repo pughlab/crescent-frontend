@@ -24,6 +24,7 @@ const NewRunModal = ({
   const {userID, projectID} = useCrescentContext()
 
   const [runName, setRunName] = useState('')
+  const [runDescription, setRunDescription] = useState('')
   const [datasetsState, datasetsDispatch] = useReducer(
     function (state, action) {
       const maxDatasets = 20
@@ -59,12 +60,14 @@ const NewRunModal = ({
   const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
     mutation CreateUnsubmittedRun(
       $name: String!,
+      $description: String!,
       $projectID: ID!,
       $userID: ID!
       $datasetIDs: [ID!]!
     ) {
       createUnsubmittedRun(
         name: $name
+        description: $description
         datasetIDs: $datasetIDs
         projectID: $projectID
         userID: $userID
@@ -75,6 +78,7 @@ const NewRunModal = ({
   `, {
     variables: {
       name: runName,
+      description: runDescription,
       datasetIDs: datasetsState,
       projectID, userID,
     },
@@ -110,6 +114,10 @@ const NewRunModal = ({
           <Form.Input fluid
             placeholder='Enter a Run Name'
             onChange={(e, {value}) => setRunName(value)}
+          />
+          <Form.Input fluid
+            placeholder='Enter a Run Description - Optional'
+            onChange={(e, {value}) => setRunDescription(value)}
           />
 
           <DataForm {...{project, datasetsState, datasetsDispatch}} />
