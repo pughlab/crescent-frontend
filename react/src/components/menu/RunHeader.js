@@ -18,6 +18,7 @@ const RunHeader = ({
   }
   const {
     name: runName,
+    description: runDescription,
     project: {name: projectName},
     createdOn,
     status,
@@ -36,7 +37,12 @@ const RunHeader = ({
   return (
     <Popup
       trigger={
-        <Header textAlign='center' content={projectName} subheader={runName} />
+        <Header textAlign="center">
+          {projectName}
+          <Header.Subheader><b>{runName}</b></Header.Subheader>
+          <Header.Subheader>{runDescription}</Header.Subheader>
+        </Header>
+        
       }
       wide='very'
       position='bottom center'
