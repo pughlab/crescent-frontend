@@ -80,7 +80,7 @@ const RunCard = ({
   const {userID: currentUserID} = useCrescentContext()
 
   const {
-    runID, name,
+    runID, name, description,
     parameters: {
       quality,
       normalization,
@@ -97,7 +97,6 @@ const RunCard = ({
   } = run
 
   const cellcount = useCellCountsQuery(runID)
-
   // if (R.isNil(cellcount)) {return null}
 
   const color = R.prop(status, {
@@ -135,6 +134,7 @@ const RunCard = ({
         <Card.Header>
           <Header size='small'>
             <Marquee text={name} />
+            <Header.Subheader>{description}</Header.Subheader>
           </Header>
           <Label.Group>
             <Label content={<Icon style={{margin: 0}} name='user' />}  detail={creatorName} />
