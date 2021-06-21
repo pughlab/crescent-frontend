@@ -11,7 +11,7 @@ import { useEditRunDetailsMutation } from '../../apollo/hooks/run'
 import moment from 'moment'
 
 
-const EditRunDetailsContent = ({ runName: oldName, runDescription: oldDescription, open, runID }) => {
+const EditRunDetailsContent = ({ runName: oldName, runDescription: oldDescription, open, runID, setOpen }) => {
   const [newName, setNewName] = useState(oldName)
   const [newDescription, setNewDescription] = useState(oldDescription)
   const {editRunDescription, editRunName, loadingDesc, dataDesc, loadingName, dataName} = useEditRunDetailsMutation({runID})
@@ -19,6 +19,8 @@ const EditRunDetailsContent = ({ runName: oldName, runDescription: oldDescriptio
   // when modal is open, set new name and description to match the old ones
   useEffect(() => { if (open) { setNewName(oldName) } }, [open])
   useEffect(() => { if (open) { setNewDescription(oldDescription) } }, [open])
+  useEffect(() => {if (R.or(RA.isNotNil(dataDesc), RA.isNotNil(dataName))) {setOpen(false)}}, [dataDesc, dataName]) // close Modal when mutation successful
+
 
   const sameName = R.equals(oldName, newName)
   const sameDesc = R.equals(oldDescription, newDescription)
@@ -42,7 +44,7 @@ const EditRunDetailsContent = ({ runName: oldName, runDescription: oldDescriptio
           <Header as='h4'>Run Description</Header>
           <Input fluid value={newDescription} onChange={(e, { value }) => { setNewDescription(value) }} />
         </Segment>
-        <Segment attached='bottom'>
+        <Segment attatched='bottom'>
           <Button color='black' disabled={disabled} loading={R.or(loadingDesc, loadingName)} fluid content='Save' onClick={submitButtonHandler}/>
         </Segment>
       </Segment.Group>
@@ -136,7 +138,7 @@ const RunHeader = ({
         </Popup>
       }
     >
-      <EditRunDetailsContent  {...{ runName, runDescription, open, runID }} />
+      <EditRunDetailsContent  {...{ runName, runDescription, open, runID, setOpen }} />
     </Modal>
   )
 }
