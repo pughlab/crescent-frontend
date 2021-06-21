@@ -226,9 +226,18 @@ const resolvers = {
       }
     },
 
+    // edit run description
     updateRunDescription: async (parent, {runID, newDescription}, {Runs}) => {
       const run = await Runs.findOne({runID})
       run.description = newDescription
+      await run.save()
+      return run
+    },
+
+    // edit run name
+    updateRunName: async (parent, {runID, newName}, {Runs}) => {
+      const run = await Runs.findOne({runID})
+      run.name = newName
       await run.save()
       return run
     }

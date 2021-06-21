@@ -108,6 +108,12 @@ const typeDefs = gql`
       runID: ID!
       newDescription: String!
     ): Run
+
+    # edit run name
+    updateRunName(
+      runID: ID!
+      newName: String!
+    ): Run
     
   }
 `
