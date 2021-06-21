@@ -4,6 +4,7 @@ import useOncotreeSunburstQuery from './useOncotreeSunburstQuery'
 import useUploadDatasetMetadataMutation from './useUploadDatasetMetadataMutation'
 import useAddCustomTagDatasetMutation from './useAddCustomTagDatasetMutation'
 import useRemoveCustomTagDatasetMutation from './useRemoveCustomTagDatasetMutation'
+import useEditDatasetTagsMutation from './useEditDatasetTagsMutation'
 import useDatasetDetailsQuery from './useDatasetDetailsQuery'
 
 
@@ -14,5 +15,6 @@ export {
   useUploadDatasetMetadataMutation,
   useAddCustomTagDatasetMutation,
   useRemoveCustomTagDatasetMutation,
+  useEditDatasetTagsMutation,
   useDatasetDetailsQuery,
 }

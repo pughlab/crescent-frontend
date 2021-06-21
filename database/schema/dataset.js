@@ -23,6 +23,18 @@ const DatasetSchema = new mongoose.Schema({
   customTags: {
     type: [String],
     default: null
+  },
+  size:{
+    type: Number,
+    default: null
+  },
+  numGenes: {
+    type: Number,
+    default: null
+  },
+  numCells:{
+    type: Number,
+    default: null
   }
 })
 

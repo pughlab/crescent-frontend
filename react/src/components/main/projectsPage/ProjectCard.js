@@ -196,7 +196,7 @@ const ProjectCard = ({
                         <Label.Group>
                         {
                           R.map(
-                            customTags => <Label key={customTags} content={<Icon style={{margin: 0}} name='paperclip' />} detail={customTags} />,
+                            customTags => <Label key={customTags} content={<Icon style={{margin: 0}} name='paperclip' />} detail={R.toUpper(customTags)} />,
                             uniqueCustomTagsArray
                           )
                         }

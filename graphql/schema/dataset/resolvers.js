@@ -1,6 +1,8 @@
 const R = require('ramda')
 const RA = require('ramda-adjunct')
 const {ApolloError} = require('apollo-server')
+const zlib = require('zlib');
+const readline = require('readline');
 
 const resolvers = {
   Dataset: {
@@ -35,18 +37,43 @@ const resolvers = {
     }
   },
   Mutation: {
-    // TODO: sometimes uploading dataset without metadata fails
-    createDataset: async (parent, {name, matrix, features, barcodes, metadata}, {Datasets, Minio}) => {
+    createDataset: async (parent, {name, matrix, features, barcodes}, {Datasets, Minio}) => {
       try {
-        // Make dataset document and bucket
+        // Make dataset document
         const dataset = await Datasets.create({name})
+
+        //create a minio bucket and upload all the files to it
         const {datasetID} = dataset
         const bucketName = `dataset-${datasetID}`
         await Minio.client.makeBucket(bucketName)
-        const files = [matrix, features, barcodes, ... R.isNil(metadata) ? [] : [metadata]]
+        const files = [matrix, features, barcodes]
         for (const file of files) {
           await Minio.putUploadIntoBucket(bucketName, file)
         }
+
+        // calculate the total size of the files in bucket
+        dataset.size = await Minio.bucketSize(bucketName)
+
+        // count cells and genes (https://stackoverflow.com/questions/38074288/read-gzip-stream-line-by-line)
+        const getFileLineCount = async (file) => {
+          const { createReadStream } = await file;
+          const stream = createReadStream();
+          const lineReader = (stream) => readline.createInterface({
+              input: stream.pipe(zlib.createGunzip()),
+              crlfDelay: Infinity
+          });
+          const countLines = async () => {
+            let count = 0
+            for await (const line of lineReader(stream)) count+=1
+            return count
+          }
+          return await countLines(stream)
+        };
+        dataset.numCells = await getFileLineCount(barcodes)
+        dataset.numGenes = await getFileLineCount(features)
+        
+        await dataset.save()
+
         console.log('Creating dataset ', datasetID)
         return dataset
       } catch(error) {

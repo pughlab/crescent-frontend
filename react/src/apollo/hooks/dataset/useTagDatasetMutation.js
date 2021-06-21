@@ -17,8 +17,11 @@ export default function useTagDatasetMutation(datasetID) {
         name
         hasMetadata
         size
+        numGenes
+        numCells
         cancerTag
         oncotreeCode
+        customTags
       }
     }
   `, {
@@ -47,8 +50,11 @@ export default function useTagDatasetMutation(datasetID) {
         name
         hasMetadata
         size
+        numGenes
+        numCells
         cancerTag
         oncotreeCode
+        customTags
       }
     }
   `, {

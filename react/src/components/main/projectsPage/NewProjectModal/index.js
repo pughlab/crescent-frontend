@@ -107,6 +107,8 @@ const NewProjectModal = ({
 
   return (
     <Modal
+      closeIcon
+      closeOnDimmerClick={false}
       size='large'
       onOpen={() => {
         newProjectDispatch({type: 'RESET'})
