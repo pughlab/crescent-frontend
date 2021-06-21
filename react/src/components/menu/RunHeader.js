@@ -1,20 +1,62 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import { Header, Popup, Message, Label, Divider, Modal, Button, Icon } from 'semantic-ui-react'
+import { Header, Popup, Message, Label, Divider, Modal, Button, Segment, Input } from 'semantic-ui-react'
 
 import { useCrescentContext } from '../../redux/hooks'
 import { useRunDetailsQuery } from '../../apollo/hooks/run'
+import { useEditRunDetailsMutation } from '../../apollo/hooks/run'
 
 import moment from 'moment'
+
+
+const EditRunDetailsContent = ({ runName: oldName, runDescription: oldDescription, open, runID }) => {
+  const [newName, setNewName] = useState(oldName)
+  const [newDescription, setNewDescription] = useState(oldDescription)
+  const {editRunDescription, editRunName, loadingDesc, dataDesc, loadingName, dataName} = useEditRunDetailsMutation({runID})
+
+  // when modal is open, set new name and description to match the old ones
+  useEffect(() => { if (open) { setNewName(oldName) } }, [open])
+  useEffect(() => { if (open) { setNewDescription(oldDescription) } }, [open])
+
+  const sameName = R.equals(oldName, newName)
+  const sameDesc = R.equals(oldDescription, newDescription)
+  const disabled = R.any(RA.isTrue, [loadingDesc, loadingName, R.and(sameName, sameDesc)]) // disable button when loading or unchanged description/name
+  
+  // call appropriate mutate functions
+  const submitButtonHandler = () => {
+    if (!sameName) {editRunName({variables: {newName}})}
+    if (!sameDesc) {editRunDescription({variables: {newDescription}})}
+  }
+
+  return (
+    <Modal.Content>
+      <Segment.Group>
+        <Segment attatched='top' >
+          <Header icon='edit' content={oldName} subheader='Are you sure you want to edit this run?' />
+        </Segment >
+        <Segment attatched>
+          <Header as='h4'>Run Name</Header>
+          <Input fluid value={newName} onChange={(e, { value }) => { setNewName(value) }} />
+          <Header as='h4'>Run Description</Header>
+          <Input fluid value={newDescription} onChange={(e, { value }) => { setNewDescription(value) }} />
+        </Segment>
+        <Segment attached='bottom'>
+          <Button color='black' disabled={disabled} loading={R.or(loadingDesc, loadingName)} fluid content='Save' onClick={submitButtonHandler}/>
+        </Segment>
+      </Segment.Group>
+    </Modal.Content>
+  )
+}
+
 
 const RunHeader = ({
 
 }) => {
   const { runID } = useCrescentContext()
   const run = useRunDetailsQuery(runID)
-  const [open, setOpen] = useState(false) // whether or not Modal is open
+  const [open, setOpen] = useState(false) // for the edit run details modal
   if (R.isNil(run)) {
     return null
   }
@@ -37,11 +79,13 @@ const RunHeader = ({
     failed: 'red'
   })
 
+
   return (
     <Modal
+      basic
       open={open}
       onClose={() => setOpen(false)}
-      size='large'
+      onOpen={() => setOpen(true)}
       trigger={
         <Popup
           on='hover'
@@ -91,8 +135,9 @@ const RunHeader = ({
           </Message>
         </Popup>
       }
-    ></Modal>
-      
+    >
+      <EditRunDetailsContent  {...{ runName, runDescription, open, runID }} />
+    </Modal>
   )
 }
 
