@@ -23,8 +23,8 @@ const HeatmapVisualizationMenu = ({
       <Segment basic style={{padding: 0}} style={{maxHeight: '60vh', overflowY: 'scroll'}}>
       {
         R.map(
-            ({cluster, celltype, score}, index) => (
-              <Segment fluid key={index}>
+            ({cluster, celltype, score}) => (
+              <Segment key={cluster}>
                 <Label attached='top' content={`Cluster ${cluster}`}/>
                 <Popup
                   size={'tiny'}

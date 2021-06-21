@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 
-import { Segment, Button, Icon, Step, Header, Dropdown, Form, Divider, Menu, Label } from 'semantic-ui-react'
+import { Segment, Button, Icon, Step, Header, Dropdown, Form, Divider, Menu, Label, Popup } from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
@@ -50,6 +50,11 @@ const VisualizationsSidebar = ({
   const isActiveResult = R.equals(activeResult)
 
   const plots = useResultsAvailableQuery(runID)
+  
+  const DetailedDescription = () => {
+    const plot = R.find(({result}) => result === activeResult, plots)
+    return R.isNil(plot) ? <></> : <p>{plot.detailedDescription}</p>
+  }
 
   if (R.any(R.isNil, [run, plots])) {
     return null
@@ -92,13 +97,35 @@ const VisualizationsSidebar = ({
           <MultiPlotSelector />
           <Segment as={Form} attached>
             <Divider horizontal content='Plots' />
-            <Form.Field>
-              <Dropdown fluid selection labeled
-                value={activeResult}
-                options={R.compose(R.map(({result, label, description}) => ({key: result, value: result, text: label})))(plots)}
-                onChange={(e, {value}) => dispatch(setActiveResult({result: value}))}
+            <Form.Group>
+              <Form.Field width={16}>
+                <Dropdown fluid selection labeled
+                  value={activeResult}
+                  options={R.compose(R.map(({result, label, description}) => ({key: result, value: result, text: label})))(plots)}
+                  onChange={(e, {value}) => dispatch(setActiveResult({result: value}))}
+                />
+              </Form.Field>
+              <Popup
+                trigger={ 
+                  <Button icon >
+                    <Icon name='help circle'/>
+                  </Button>
+                }
+                content={
+                  <>
+                    <DetailedDescription/>
+                    <Button icon style={{padding:'5px'}} fluid>
+                      <a target="_blank" href={`https://pughlab.github.io/crescent-frontend/#item-4-${R.equals(activeResult, 'qc') ? "1" : "2"}`} style={{textDecoration: 'none', color: "inherit"}}>
+                        Go to documentation
+                        <Icon name='external'/>
+                      </a>
+                    </Button>
+                  </>
+                }
+                hoverable
+                wide
               />
-            </Form.Field>
+            </Form.Group>
           </Segment>
           <Segment attached='bottom'>
             {

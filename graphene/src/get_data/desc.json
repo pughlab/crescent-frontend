@@ -2,31 +2,38 @@
   "TSNE": {
     "label": "t-SNE",
     "result": "tsne",
-    "description": "t-Distributed Stochastic Neighbour Embedding"
+    "description": "t-Distributed Stochastic Neighbour Embedding",
+    "detailedDescription": "Gene expression can be explored through t-SNE plots. t-SNE initially show cell clusters determined by CReSCENT's scRNA-seq pipeline. Selecting a top DEG or searching a gene of interest will provide an opacity to the cells. The higher the normalized expression per cell, the darker the opacity."
+
   },
   "UMAP": {
     "label": "UMAP",
     "result": "umap",
-    "description": "Uniform Manifold Approximation and Projection for Dimension Reduction"
+    "description": "Uniform Manifold Approximation and Projection for Dimension Reduction",
+    "detailedDescription": "Gene expression can be explored through UMAP plots. UMAP initially show cell clusters determined by CReSCENT's scRNA-seq pipeline. Selecting a top DEG or searching a gene of interest will provide an opacity to the cells. The higher the normalized expression per cell, the darker the opacity."
   },
   "VIOLIN": {
     "label": "Gene Expression Violin",
     "result": "violin",
-    "description": "Violin Plots"
+    "description": "Violin Plots",
+    "detailedDescription": "Gene expression violin plots show the distributions of the expression of one gene across the clusters. Gene expression can be explored by searching a gene of interest via the search bar or selecting a top differentially expressed gene determined by CReSCENT’s pipeline."
   },
   "QC": {
     "label": "QC",
     "result": "qc",
-    "description": "Quality Control Plots"
+    "description": "Quality Control Plots",
+    "detailedDescription": "Quality control consists of violin plots and UMAPs. The QC violin plots have four QC metrics: number of genes, number of reads, mitochondrial genes fraction, and ribosomal protein genes fraction. The metrics are displayed with distributions before and after QC filtering in the pipeline. The QC UMAP plots show the intensity of the four QC metrics with a gradient."
   },
   "DOT": {
     "label": "Dot Plot",
     "result": "dot",
-    "description": "Gene Expression Dot Plot"
+    "description": "Gene Expression Dot Plot",
+    "detailedDescription": "Gene expression dot plot shows the selected genes on the x-axis and the groups on the y-axis. The size of the dots refer to the percentage of cells within a cluster that express a specific gene. The opacity of the dots refer to the average expression of a specific gene across all clusters."
   },
   "HEATMAP": {
     "label": "Heatmap",
     "result": "heatmap",
-    "description": "GSVA Heatmap"
+    "description": "GSVA Heatmap",
+    "detailedDescription": "GSVA heatmap shows the predicted cell types on the x-axis and groups on the y-axis. Hovering or clicking on the grid provides the cluster name, predicted cell type and enrichment score."
   }
 }

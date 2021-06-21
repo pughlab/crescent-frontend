@@ -15,3 +15,8 @@ class Plot(ObjectType):
     @staticmethod
     def resolve_description(parent, info):
         return parent["description"]
+    
+    detailedDescription = String()
+    @staticmethod
+    def resolve_detailedDescription(parent, info):
+        return parent["detailedDescription"]
