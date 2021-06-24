@@ -91,7 +91,7 @@ export default createReducer(
       const renewService = () => {
         const currService = state.plotQueries[activePlot].service
         if(currService) currService.stop()
-        return interpret(getMachine(result), { devTools: true }).start()
+        return interpret(getMachine(result)).start()
       }
       return R.evolve({
         // activeResult: R.always(result)

@@ -60,9 +60,6 @@ const DotPlot = ({
   if (current.matches('idle')) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
-        <div>
-      {current.value}
-    </div>
         <Shake forever duration={10000}>
           <Header textAlign='center' icon>
             <Icon name='right arrow' />
@@ -134,7 +131,6 @@ const DotPlot = ({
     <>
       <Header textAlign='center' content={currentScatterPlotType} />
       <Segment basic loading={R.test(/.*Loading/, current.value)} style={{ height: '100%' }}>
-
       { sidebarCollapsed ||
         (
           <Grid divided='vertically'>
