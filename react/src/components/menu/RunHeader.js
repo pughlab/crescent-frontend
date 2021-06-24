@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import { Header, Popup, Message, Label, Divider, Modal, Button, Segment, Input } from 'semantic-ui-react'
+import { Header, Popup, Message, Label, Form, Divider, Modal, Button, Segment, Input } from 'semantic-ui-react'
 
 import { useCrescentContext } from '../../redux/hooks'
 import { useRunDetailsQuery } from '../../apollo/hooks/run'
@@ -11,25 +11,48 @@ import { useEditRunDetailsMutation } from '../../apollo/hooks/run'
 import moment from 'moment'
 
 
-const EditRunDetailsContent = ({ runName: oldName, runDescription: oldDescription, open, runID, setOpen }) => {
-  const [newName, setNewName] = useState(oldName)
-  const [newDescription, setNewDescription] = useState(oldDescription)
-  const {editRunDescription, editRunName, loadingDesc, dataDesc, loadingName, dataName} = useEditRunDetailsMutation({runID})
+const EditRunDetailsContent = ({ 
+  runName: oldName,
+  runDescription: oldDescription,
+  open, setOpen,
+  editRunDescription, 
+  editRunName, 
+  loading, 
+  dataDesc, 
+  dataName 
+}) => {
+  const [runDetailsState, runDetailsDispatch] = useReducer(
+    (state, action) => {
+      const { type, value } = action
+      switch (type) {
+        case 'NAME':
+          return { ...state, newName: value }
+        case 'DESCRIPTION':
+          return { ...state, newDescription: value }
+      }
+    }, {
+    newName: oldName,
+    newDescription: oldDescription
+  }
+  )
 
-  // when modal is open, set new name and description to match the old ones
-  useEffect(() => { if (open) { setNewName(oldName) } }, [open])
-  useEffect(() => { if (open) { setNewDescription(oldDescription) } }, [open])
-  useEffect(() => {if (R.or(RA.isNotNil(dataDesc), RA.isNotNil(dataName))) {setOpen(false)}}, [dataDesc, dataName]) // close Modal when mutation successful
+  useEffect(() => {
+    if (open) {
+      runDetailsDispatch({ type: 'NAME', value: oldName })
+      runDetailsDispatch({ type: 'DESCRIPTION', value: oldDescription })
+    }
+  }, [open])   // when modal is open, set new name and description to match the old ones
+  useEffect(() => { if (R.or(RA.isNotNil(dataDesc), RA.isNotNil(dataName))) { setOpen(false) } }, [dataDesc, dataName]) // close Modal when mutation successful
 
 
-  const sameName = R.equals(oldName, newName)
-  const sameDesc = R.equals(oldDescription, newDescription)
-  const disabled = R.any(RA.isTrue, [loadingDesc, loadingName, R.and(sameName, sameDesc)]) // disable button when loading or unchanged description/name
-  
+  const sameName = R.equals(oldName, runDetailsState.newName)
+  const sameDesc = R.equals(oldDescription, runDetailsState.newDescription)
+  const disabled = R.or(loading, R.and(sameName, sameDesc)) // disable button when loading or unchanged description/name
+
   // call appropriate mutate functions
   const submitButtonHandler = () => {
-    if (!sameName) {editRunName({variables: {newName}})}
-    if (!sameDesc) {editRunDescription({variables: {newDescription}})}
+    if (!sameName) { editRunName({ variables: { newName: runDetailsState.newName } }) }
+    if (!sameDesc) { editRunDescription({ variables: { newDescription: runDetailsState.newDescription } }) }
   }
 
   return (
@@ -38,14 +61,19 @@ const EditRunDetailsContent = ({ runName: oldName, runDescription: oldDescriptio
         <Segment attatched='top' >
           <Header icon='edit' content={oldName} subheader='Are you sure you want to edit this run?' />
         </Segment >
-        <Segment attatched>
+        <Segment attatched='top bottom'>
           <Header as='h4'>Run Name</Header>
-          <Input fluid value={newName} onChange={(e, { value }) => { setNewName(value) }} />
+          <Input fluid value={runDetailsState.newName} onChange={(e, { value }) => { runDetailsDispatch({ type: 'NAME', value: value }) }} />
           <Header as='h4'>Run Description</Header>
-          <Input fluid value={newDescription} onChange={(e, { value }) => { setNewDescription(value) }} />
+          <Form>
+            <Form.TextArea
+              value={runDetailsState.newDescription}
+              onChange={(e, { value }) => { runDetailsDispatch({ type: 'DESCRIPTION', value: value }) }}
+            />
+          </Form>
         </Segment>
         <Segment attatched='bottom'>
-          <Button color='black' disabled={disabled} loading={R.or(loadingDesc, loadingName)} fluid content='Save' onClick={submitButtonHandler}/>
+          <Button color='black' disabled={disabled} loading={loading} fluid content='Save' onClick={submitButtonHandler} />
         </Segment>
       </Segment.Group>
     </Modal.Content>
@@ -57,11 +85,13 @@ const RunHeader = ({
 
 }) => {
   const { runID } = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
-  const [open, setOpen] = useState(false) // for the edit run details modal
+  const { run, editRunDescription, editRunName, loading, dataDesc, dataName } = useEditRunDetailsMutation({ runID })
+  const [open, setOpen] = useState(false) // for the edit run details Modal
+
   if (R.isNil(run)) {
     return null
   }
+  console.log(run.name)
   const {
     name: runName,
     description: runDescription,
@@ -80,8 +110,7 @@ const RunHeader = ({
     completed: 'green',
     failed: 'red'
   })
-
-
+  console.log(run)
   return (
     <Modal
       basic
@@ -92,7 +121,7 @@ const RunHeader = ({
         <Popup
           on='hover'
           trigger={
-            <Label as={Button} basic onClick={() => setOpen(true)}>
+            <Label key={runName} as={Button} basic onClick={() => setOpen(true)}>
               <Header textAlign="center">{projectName}
                 <Header.Subheader>{runName}</Header.Subheader>
               </Header>
@@ -138,7 +167,7 @@ const RunHeader = ({
         </Popup>
       }
     >
-      <EditRunDetailsContent  {...{ runName, runDescription, open, runID, setOpen }} />
+      <EditRunDetailsContent  {...{ runName, runDescription, open, runID, setOpen, editRunDescription, editRunName, loading, dataDesc, dataName }} />
     </Modal>
   )
 }
