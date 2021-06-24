@@ -3,6 +3,7 @@ import {useState, useEffect} from 'react'
 import * as RA from 'ramda-adjunct'
 
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
+import useMachineService from './useMachineService'
 
 import {setSelectedGroup, setSelectedDiffExpression} from '../../../redux/actions/resultsPage'
 
@@ -14,6 +15,7 @@ import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 export default function useDiffExpressionGroups(runID, selectedDiffExpression) {
   const dispatch = useDispatch()
   const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
+  const [current, send] = useMachineService()
 
   const { activePlot } = useResultsPage()
   const { selectedGroup } = useResultsPagePlotQuery(activePlot)
@@ -21,7 +23,7 @@ export default function useDiffExpressionGroups(runID, selectedDiffExpression) {
 
   useEffect(() => {
     if (RA.isNotNil(groups) && RA.isNilOrEmpty(selectedGroup)) {
-      dispatch(setSelectedGroup({value: groups[0]}))  
+      dispatch(setSelectedGroup({value: groups[0], send}))  
     }
   }, [groups])
 

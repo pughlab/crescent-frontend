@@ -14,18 +14,20 @@ import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 import {setSelectedAssay} from '../../../redux/actions/resultsPage'
 
 import useAvailableAssaysQuery from './useAvailableAssaysQuery'
+import { useMachineService } from '.'
 
 export default function useSetAssays(runID) {
   const dispatch = useDispatch()
   const { activePlot } = useResultsPage()
   const { selectedAssay } = useResultsPagePlotQuery(activePlot)
+  const [current, send] = useMachineService()
 
   const assays = useAvailableAssaysQuery(runID)
   // assume assays is never empty 
 
   useEffect(() => {
     if (RA.isNotNil(assays) && RA.isNilOrEmpty(selectedAssay)) {
-      dispatch(setSelectedAssay({value: assays[0]}))  
+      dispatch(setSelectedAssay({value: assays[0], send}))  
     }
   }, [assays])
 
