@@ -12,6 +12,7 @@ import * as RA from 'ramda-adjunct'
 
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 import {useQCViolinQuery} from '../../../../apollo/hooks/results'
+import { useService } from '@xstate/react';
 
 const QCViolinPlot = ({
   runID,
@@ -19,11 +20,13 @@ const QCViolinPlot = ({
   name,
   plotQueryIndex
 }) => { 
-  const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
+  const {selectedQC, service} = useResultsPagePlotQuery(plotQueryIndex)
+  
+  useQCViolinQuery({runID, datasetID}, plotQueryIndex)
 
-  const {qcViolin, loading} = useQCViolinQuery({runID, datasetID})
+  const [current, send] = useService(service)
 
-  if (R.any(R.isNil, [qcViolin])) {
+  if (current.matches('initialLoading')) {
     return (
     <Segment basic style={{height: '100%'}} placeholder>
       <Tada forever duration={1000}>
@@ -32,14 +35,15 @@ const QCViolinPlot = ({
     </Segment>
     )
   }
+  const { plotData } = current.context
   
   return (
     <>
     <Header textAlign='center' content={R.isNil(selectedQC) ? '' : `Metrics Before and After QC for ${name} (Violins)`} />
-    <Segment basic loading={loading} style={{height: '100%'}}>
+    <Segment basic loading={current.matches('violinLoading')} style={{height: '100%'}}>
       <Plot
         config={{showTips: false}}
-        data={qcViolin}
+        data={plotData}
         useResizeHandler
         style={{width: '100%', height:'90%'}}
         layout={{
@@ -49,16 +53,16 @@ const QCViolinPlot = ({
           showlegend: false,
           hovermode: 'closest',
           yaxis: {
-            range: [0, R.isNil(qcViolin[0]) ? 1.1 : Math.max(...R.map(parseInt, qcViolin[0]['y']))+1]
+            range: [0, R.isNil(plotData[0]) ? 1.1 : Math.max(...R.map(parseInt, plotData[0]['y']))+1]
           },
           yaxis2: {
-            range: [0, R.isNil(qcViolin[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, qcViolin[2]['y'])))+1]
+            range: [0, R.isNil(plotData[2]) ? 1.1: Math.round(Math.max(...R.map(parseInt, plotData[2]['y'])))+1]
           },
           yaxis3: {
-            range: [0, R.isNil(qcViolin[4]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolin[4]['y'])))+1]
+            range: [0, R.isNil(plotData[4]) ? 101: Math.round(Math.max(...R.map(parseInt, plotData[4]['y'])))+1]
           },
           yaxis4: {
-            range: [0, R.isNil(qcViolin[6]) ? 101: Math.round(Math.max(...R.map(parseInt, qcViolin[6]['y'])))+1]
+            range: [0, R.isNil(plotData[6]) ? 101: Math.round(Math.max(...R.map(parseInt, plotData[6]['y'])))+1]
           },
           annotations: [
             {

@@ -5,6 +5,7 @@ import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
+import { useService } from '@xstate/react';
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -23,11 +24,13 @@ const QCScatterPlot = ({
 
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
+  const {selectedQC, service} = useResultsPagePlotQuery(plotQueryIndex)
+  
+  useQCScatterQuery(selectedQC, runID, datasetID, plotQueryIndex)
+  
+  const [current, send] = useService(service)
 
-  const {qcScatter, loading} = useQCScatterQuery(selectedQC, runID, datasetID)
-
-  if (R.any(R.isNil, [qcScatter])) {
+  if (current.matches('initialLoading')) {
     return (
       <Segment style={{height: '100%'}} basic placeholder>
       <Tada forever duration={1000}>
@@ -37,16 +40,13 @@ const QCScatterPlot = ({
     )
   }
 
-  const qcScatterData = []
-  qcScatterData.push(qcScatter)
-  
   return (
     <>
       <Header textAlign='center' content={R.isNil(selectedQC) ? '' : R.equals(selectedQC)('Number_of_Reads') ? "Number of UMI Counts for "+name+" (UMAP)" : (selectedQC.replace(/_/g," ")+" for "+name+" (UMAP)")} />
-      <Segment basic loading={loading} style={{height: '100%'}}>
+      <Segment basic loading={current.matches('umapLoading')} style={{height: '100%'}}>
         <Plot
           config={{showTips: false}}
-          data={qcScatterData}
+          data={current.context.plotData}
           useResizeHandler
           style={{width: '100%', height:'95%'}}
           layout={{
