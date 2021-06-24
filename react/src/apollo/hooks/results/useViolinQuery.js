@@ -4,9 +4,16 @@ import { gql } from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
 import * as R from 'ramda'
 
+import { useDispatch } from 'react-redux'
+import { useService } from '@xstate/react'
+import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
+import { sendSuccess } from '../../../redux/actions/resultsPage'
 
-export default function useViolin(feature, group, runID, datasetID, assay) {
-  const [violin, setViolin] = useState(null)
+export default function useViolin(feature, group, runID, datasetID, assay, plotQueryIndex) {
+  const dispatch = useDispatch()
+  const { service } = useResultsPagePlotQuery(plotQueryIndex)
+  const [current, send] = useService(service)
+  
   const {loading, data, error, refetch} = useQuery(gql`
     query Violin($feature: String, $group: String, $runID: ID, $datasetID: ID, $assay: String) {
       violin(feature: $feature, group: $group, runID: $runID, datasetID: $datasetID, assay: $assay) {
@@ -33,7 +40,7 @@ export default function useViolin(feature, group, runID, datasetID, assay) {
     fetchPolicy: 'cache-and-network',
     variables: {feature, group, runID, datasetID, assay},
     onCompleted: ({violin}) => {
-      setViolin(violin)
+      dispatch(sendSuccess({send, data: violin}))
     },
     skip: R.any(R.isNil, [feature, group, assay])
   })
@@ -43,7 +50,5 @@ export default function useViolin(feature, group, runID, datasetID, assay) {
       refetch()
     }
   }, [error])
-
-  return {violin, loading}
 }
 

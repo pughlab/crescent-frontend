@@ -10,6 +10,7 @@ import Shake from 'react-reveal/Shake'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
+import { useService } from '@xstate/react';
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
@@ -20,8 +21,11 @@ const ViolinPlot = ({
 }) => {
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay} = useResultsPagePlotQuery(plotQueryIndex)
-  const {violin, loading} = useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedAssay)
+  const {selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay, service} = useResultsPagePlotQuery(plotQueryIndex)
+  useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedAssay, plotQueryIndex)
+
+  const [current, send] = useService(service)
+
   // use local state for data since too big for redux store
   // const [violinData, setViolinData] = useState( [] )
 
@@ -38,7 +42,7 @@ const ViolinPlot = ({
   //   }
   // }, [selectedGroup, selectedFeature])
 
-  if (R.any(R.isNil, [selectedFeature])) {
+  if (current.matches('idle')) {
     return (
       <Segment basic style={{height: '100%'}} placeholder>
         <Shake forever duration={10000}>
@@ -50,7 +54,7 @@ const ViolinPlot = ({
       </Segment>
     )
   }
-  if (R.any(R.isNil, [violin])) {
+  if (current.matches('initialLoading')) {
     return (
       <Segment basic style={{height: '100%'}} placeholder>
         <Tada forever duration={1000}>
@@ -95,10 +99,10 @@ const ViolinPlot = ({
     // Plot data
     <>
     <Header textAlign='center' content='Gene Expression Violin' />
-      <Segment basic loading={loading} style={{height: '100%'}} >
+      <Segment basic loading={current.matches('dataLoading')} style={{height: '100%'}} >
         <Plot
           config={{showTips: false}}
-          data={violin}
+          data={current.context.plotData}
           useResizeHandler
           style={{width: '100%', height:'90%'}}
           layout={{
