@@ -59,7 +59,7 @@ const EditRunDetailsContent = ({
     <Modal.Content>
       <Segment.Group>
         <Segment attatched='top' >
-          <Header icon='edit' content={oldName} subheader='Are you sure you want to edit this run?' />
+          <Header icon='edit' content={oldName} subheader='Edit the details of this run?' />
         </Segment >
         <Segment attatched='top bottom'>
           <Header as='h4'>Run Name</Header>
@@ -91,7 +91,7 @@ const RunHeader = ({
   if (R.isNil(run)) {
     return null
   }
-  console.log(run.name)
+
   const {
     name: runName,
     description: runDescription,
@@ -110,7 +110,7 @@ const RunHeader = ({
     completed: 'green',
     failed: 'red'
   })
-  console.log(run)
+
   return (
     <Modal
       basic
