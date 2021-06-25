@@ -21,6 +21,7 @@ import {Segment, Container, Button, Divider, Header, Popup, Label, Grid} from 's
 import Fade from 'react-reveal/Fade'
 
 import {useProjectDetailsQuery} from '../../../apollo/hooks/project'
+import {useEditProjectDetailsMutation} from '../../../apollo/hooks/project'
 import {useCrescentContext} from '../../../redux/hooks'
 
 import {useDispatch} from 'react-redux'
@@ -33,7 +34,7 @@ const RunsPageComponent = ({
   const dispatch = useDispatch()
   const {userID: currentUserID, projectID} = useCrescentContext()
   useEffect(() => () => dispatch(resetRunsPage()), [projectID])
-  const project = useProjectDetailsQuery(projectID)
+  const { project } = useEditProjectDetailsMutation({projectID}) 
 
   if (R.isNil(project)) {
     return null
@@ -65,9 +66,8 @@ const RunsPageComponent = ({
       {/* PROJECT CREATOR ACTIONS */}
       {
         R.and(isUploadedProject, currentUserIsCreator) &&
-        <Button.Group attached='top' widths={3} size='large'>
+        <Button.Group attached='top' widths={2} size='large'>
           <ShareProjectModal {...{project}} />
-          <EditProjectDetailsModal {...{project}} />
           <ArchiveProjectModal {...{project}} />
         </Button.Group>
       }
