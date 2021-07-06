@@ -27,7 +27,10 @@ export default function useEditProjectDetailsMutation({projectID}) {
         name
         userID
       }
-      
+      sharedWith {
+        name
+        userID
+      }
       runs {
         runID
         name
@@ -91,11 +94,28 @@ export default function useEditProjectDetailsMutation({projectID}) {
     }
   }, [dataName])
 
+  const [changeProjectOwnership, {loading: loadingOwner, data: dataOwner, error: errorOwner}] = useMutation(gql`
+    mutation ChangeProjectOwnership($projectID: ID, $userID: ID) {
+      changeProjectOwnership(projectID: $projectID, userID: $userID) {
+        createdBy {
+          name
+        }
+      }
+    }
+  `, {
+    variables: {projectID}
+  })
+  useEffect(() => {
+    if (dataOwner) {
+      refetch()
+    }
+  }, [dataOwner])
+
   useEffect(() => {
     if (dataDetails) {
       setProject(dataDetails.project)
     }
   }, [dataDetails])
 
-  return {project, editProjectDescription, editProjectName, loading: R.or(loadingName, loadingDesc), dataDesc, dataName}
+  return {project, editProjectDescription, editProjectName, changeProjectOwnership, loading: R.or(loadingName, loadingDesc, loadingOwner), dataDesc, dataName, dataOwner}
 }

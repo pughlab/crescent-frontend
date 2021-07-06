@@ -56,7 +56,7 @@ const RunsPageComponent = ({
     uploadedDatasets,
     mergedProjects
   } = project
-
+  
   const isUploadedProject = R.equals(projectKind, 'uploaded')
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
   return (

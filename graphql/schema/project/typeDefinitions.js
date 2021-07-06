@@ -91,6 +91,9 @@ const typeDefs = gql`
 
     # Update the project's name
     updateProjectName(projectID: ID, newName: String): Project
+
+    # Change ownership of project
+    changeProjectOwnership(projectID: ID, userID: ID): Project
   }
 `
 

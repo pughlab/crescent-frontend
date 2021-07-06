@@ -128,6 +128,13 @@ const resolvers = {
       project.name = newName
       await project.save()
       return project
+    },
+
+    changeProjectOwnership: async(parent, {projectID, userID}, {Projects}) => {
+      const project = await Projects.findOne({projectID})
+      project.createdBy = userID
+      await project.save()
+      return project
     }
   },
   // Subfield resolvers
