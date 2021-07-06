@@ -77,6 +77,7 @@
 				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-2"><span class="theme-icon-holder mr-2"><i class="fas fa-folder-open"></i></span>Creating a project</a></li>
 				    <li class="nav-item"><a class="nav-link scrollto" href="#item-2-1">Uploading scRNA-seq data</a></li>
 				    <li class="nav-item"><a class="nav-link scrollto" href="#item-2-2">Uploading cell metadata</a></li>
+					<li class="nav-item"><a class="nav-link scrollto" href="#item-2-3">Uploading geneset data</a></li>
 				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#section-3"><span class="theme-icon-holder mr-2"><i class="fas fa-paper-plane"></i></span>Creating a run</a></li>
 				    <li class="nav-item"><a class="nav-link scrollto" href="#item-3-1">Configuring parameters</a></li>
 				    <li class="nav-item"><a class="nav-link scrollto" href="#item-3-2">Run status</a></li>
@@ -225,7 +226,7 @@
 					
 					<section class="docs-section" id="item-2-2">
 						<h2 class="section-heading">Uploading cell metadata</h2>	
-						<p>Following project creation, cell metadata can be uploaded, if available, via the Visualizations page in the Inputs Tab. Cell metadata will be used to visualize and colour cells, as well as provide further insight into gene expression exploration in the Visualizations page. To upload metadata, click the 'Upload Metadata' button and then click the 'Metadata' upload icon to select your file. Once your metadata file is selected, click 'Upload' and exit the window.</p>
+						<p>Following run completion, cell metadata can be uploaded, if available, via the Visualizations page in the Annotations tab. Cell metadata will be used to visualize and colour cells, as well as provide further insight into gene expression exploration in the Visualizations page. To upload metadata, click the 'Upload Metadata' button in the Annotations tab and then drag and drop your file to upload.</p>
 						<!-- <h5>Upload example</h5> -->
 						<!-- <figure class="figure docs-figure py-3">
 							<a href="assets/images/git_docs/13-metadata/metadata.gif" data-title="Uploading cell metadata" data-toggle="lightbox"><img class="figure-img img-fluid shadow rounded" src="assets/images/git_docs/13-metadata/metadata.gif" alt="" style="width: 800px;"></a>
@@ -284,19 +285,61 @@
 								<p>Metadata is an optional upload! Some examples include orthogonal assays, sample annotations, cell annotations, etc.</p>
 							</div><!--//content-->
 						</div><!--//callout-block-->
-						<div class="callout-block callout-block-warning">
-                            <div class="content">
-                                <h4 class="callout-title">
-	                                <span class="callout-icon-holder mr-1">
-		                                <i class="fas fa-bullhorn"></i>
-		                            </span><!--//icon-holder-->
-	                                Warning
-	                            </h4>
-								<p>Personal/protected health information (PHI) is prohibited from upload. Do not include patient names, dates of birth, MRNs and other patient identifiers in your uploads. Examples of PHI can be found <a href="https://privacyruleandresearch.nih.gov/pr_08.asp" target="_blank" rel="noopener noreferrer">here</a>. Only de-identified data is accepted in CReSCENT! </p>
-							</div><!--//content-->
-                        </div><!--//callout-block-->
+
+
 					</section><!--//section-->
 			    </article><!--//docs-article-->
+
+				<section class="docs-section" id="item-2-3">
+					<h2 class="section-heading">Uploading geneset data</h2>
+					<p>Following run completion, geneset data can be uploaded in GMT format, if available, via the Visualizations page in the Annotations tab. Genesets will be used to run GSVA and label cell clusters, and the resulting labels will be available under the "Colour By" menu to provide further insight into gene expression exploration in the Visualizations page. To upload a geneset, click the 'Upload Geneset' button and then drag and drop the gmt file to upload.</p>	
+					<h3>Geneset file format</h3>
+					<p>CReSCENT currently accepts geneset files in the <a href="https://software.broadinstitute.org/cancer/software/gsea/wiki/index.php/Data_formats#GMT:_Gene_Matrix_Transposed_file_format_.28.2A.gmt.29" target="_blank" rel="noopener noreferrer">gene matrix transposed format (gmt)</a>. This gmt file has cell type or cluster labels in the first two columns followed by a list of associated genes.</p>
+					<h5>Geneset GMT:</h5>
+					<div class="table-responsive my-4">
+						<table class="table table-striped">
+							<tbody>
+								<tr>
+									<th scope="row">B cells naive</th>
+									<th scope="row">B cells naive</th>
+									<td>CD2</td>
+									<td>CD72</td>
+									<td>IL2RA</td>
+									<td>MME</td>
+									<td>ABCB4</td>
+								</tr>
+								<tr>
+									<th scope="row">Distal tubule cells</th>
+									<th scope="row">Distal tubule cells</th>
+									<td>SLC12A3</td>
+									<td>UMOD</td>
+									<td>JAG1</td>
+								</tr>
+								<tr>
+									<th scope="row">Embryonic stem cells</th>
+									<th scope="row">Embryonic stem cells</th>
+									<td>FOXD3</td>
+									<td>POU5F1</td>
+									<td>FUT4</td>
+									<td>CD24</td>
+									<td>ITGA4</td>
+								</tr>
+							</tbody>
+						</table>
+					</div><!--//table-responsive-->
+					<div class="callout-block callout-block-warning">
+						<div class="content">
+							<h4 class="callout-title">
+								<span class="callout-icon-holder mr-1">
+									<i class="fas fa-bullhorn"></i>
+								</span><!--//icon-holder-->
+								Warning
+							</h4>
+							<p>Personal/protected health information (PHI) is prohibited from upload. Do not include patient names, dates of birth, MRNs and other patient identifiers in your uploads. Examples of PHI can be found <a href="https://privacyruleandresearch.nih.gov/pr_08.asp" target="_blank" rel="noopener noreferrer">here</a>. Only de-identified data is accepted in CReSCENT! </p>
+						</div><!--//content-->
+					</div><!--//callout-block-->
+
+				</section><!--//section-->
 			    
 			    
 			    <article class="docs-article" id="section-3">
