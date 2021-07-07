@@ -11,15 +11,15 @@ import { useEditRunDetailsMutation } from '../../apollo/hooks/run'
 import moment from 'moment'
 
 
-const EditRunDetailsContent = ({ 
+const EditRunDetailsContent = ({
   runName: oldName,
   runDescription: oldDescription,
   open, setOpen,
-  editRunDescription, 
-  editRunName, 
-  loading, 
-  dataDesc, 
-  dataName 
+  editRunDescription,
+  editRunName,
+  loading,
+  dataDesc,
+  dataName
 }) => {
   const [runDetailsState, runDetailsDispatch] = useReducer(
     (state, action) => {
@@ -84,7 +84,7 @@ const EditRunDetailsContent = ({
 const RunHeader = ({
 
 }) => {
-  const { runID } = useCrescentContext()
+  const { runID, userID: currentUserID } = useCrescentContext()
   const { run, editRunDescription, editRunName, loading, dataDesc, dataName } = useEditRunDetailsMutation({ runID })
   const [open, setOpen] = useState(false) // for the edit run details Modal
 
@@ -99,7 +99,8 @@ const RunHeader = ({
     createdOn,
     status,
     createdBy: {
-      name: creatorName
+      name: creatorName,
+      userID: createdUserID
     },
 
     datasets //{datasetID, name, size, hasMetadata}
@@ -110,6 +111,7 @@ const RunHeader = ({
     completed: 'green',
     failed: 'red'
   })
+  const currentUserIsCreator = R.equals(currentUserID, createdUserID)
 
   return (
     <Modal
@@ -121,11 +123,15 @@ const RunHeader = ({
         <Popup
           on='hover'
           trigger={
+            currentUserIsCreator ? (
             <Label key={runName} as={Button} basic onClick={() => setOpen(true)}>
               <Header textAlign="center">{projectName}
                 <Header.Subheader>{runName}</Header.Subheader>
               </Header>
             </Label>
+            ) : (
+              <Header textAlign='center' content={projectName} subheader={runName} />
+            )
           }
           wide='very'
           position='bottom center'

@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect } from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import { Button, Input, Form, Modal, Dropdown, Segment, Header, Label } from 'semantic-ui-react'
+import { Button, Input, Form, Modal, Dropdown, Segment, Header, Container, Label } from 'semantic-ui-react'
 
 import { useCrescentContext } from '../../redux/hooks'
 import { useProjectDetailsQuery } from '../../apollo/hooks/project'
@@ -91,7 +91,7 @@ function useProjectDetails(projectID) {
 const ProjectHeader = ({
 
 }) => {
-  const { projectID } = useCrescentContext()
+  const { projectID, userID: currentUserID } = useCrescentContext()
   const { state, dispatch, loading } = useProjectDetails(projectID)
 
   if (R.isNil(state.project)) {
@@ -99,10 +99,12 @@ const ProjectHeader = ({
   }
 
   const oldName = state.project.name
+  const createdUserID = state.project.createdBy.userID
   const sameName = R.equals(oldName, state.form.name)
   const sameDesc = R.equals(state.project.description, state.form.description)
-  const sameOwner = R.equals(state.project.createdBy.userID, state.form.ownerID)
+  const sameOwner = R.equals(createdUserID, state.form.ownerID)
   const disabled = R.or(loading, RA.allEqualTo(true, [sameName, sameDesc, sameOwner])) // disable button when loading or unchanged description/name/owner
+  const currentUserIsCreator = R.equals(currentUserID, createdUserID)
 
   // call dispatch with appropriate action(s) after Save is clicked
   const submitButtonHandler = () => {
@@ -112,49 +114,52 @@ const ProjectHeader = ({
   }
 
   return (
-    <Modal basic open={state.open} onOpen={() => dispatch({ type: 'setOpen', payload: { isOpen: true } })} onClose={() => dispatch({ type: 'setOpen', payload: { isOpen: false } })}
-      trigger={
-        <Label as={Button} basic onClick={() => dispatch({ type: 'setOpen', payload: { isOpen: true } })}>
-          <Header textAlign="center">{oldName}
-          </Header>
-        </Label>
-      }
-    >
-      <Modal.Content>
-        <Segment.Group>
-          <Segment attatched='top' >
-            <Header icon='edit' content={oldName} subheader='Edit the details of this project?' />
-          </Segment >
-          <Segment attatched='top bottom'>
-            <Header as='h4'>Project Name</Header>
-            <Input fluid value={state.form.name} onChange={(e, { value }) => { dispatch({ type: 'updateFormName', payload: { newName: value } }) }} />
-            <Header as='h4'>Project Description</Header>
-            <Form>
-              <Form.TextArea
-                value={state.form.description}
-                onChange={(e, { value }) => { dispatch({ type: 'updateFormDescription', payload: { newDescription: value } }) }}
-              />
-            </Form>
-            <Header as='h4'>Project Owner</Header>
-            <Dropdown placeholder='Select a User' fluid selection onChange={(e, { value }) => { dispatch({ type: 'updateFormOwner', payload: { newOwnerID: value } }) }}
-              options={
-                R.map(
-                  ({ name, userID }) => ({
-                    key: userID,
-                    value: userID,
-                    text: name
-                  }),
-                  state.project.sharedWith
-                )
-              } />
-          </Segment>
-          <Segment attatched='bottom'>
-            <Button color='black' disabled={disabled} loading={loading} fluid content='Save' onClick={submitButtonHandler} />
-          </Segment>
-        </Segment.Group>
-      </Modal.Content>
+    currentUserIsCreator ? (
+      <Modal basic open={state.open} onOpen={() => dispatch({ type: 'setOpen', payload: { isOpen: true } })} onClose={() => dispatch({ type: 'setOpen', payload: { isOpen: false } })}
+        trigger={
+          <Label as={Button} basic onClick={() => dispatch({ type: 'setOpen', payload: { isOpen: true } })}>
+            <Header textAlign="center">{oldName}</Header>
+          </Label>
+        }
+      >
+        <Modal.Content>
+          <Segment.Group>
+            <Segment attatched='top' >
+              <Header icon='edit' content={oldName} subheader='Edit the details of this project?' />
+            </Segment >
+            <Segment attatched='top bottom'>
+              <Header as='h4'>Project Name</Header>
+              <Input fluid value={state.form.name} onChange={(e, { value }) => { dispatch({ type: 'updateFormName', payload: { newName: value } }) }} />
+              <Header as='h4'>Project Description</Header>
+              <Form>
+                <Form.TextArea
+                  value={state.form.description}
+                  onChange={(e, { value }) => { dispatch({ type: 'updateFormDescription', payload: { newDescription: value } }) }}
+                />
+              </Form>
+              <Header as='h4'>Project Owner</Header>
+              <Dropdown placeholder='Select a User' fluid selection onChange={(e, { value }) => { dispatch({ type: 'updateFormOwner', payload: { newOwnerID: value } }) }}
+                options={
+                  R.map(
+                    ({ name, userID }) => ({
+                      key: userID,
+                      value: userID,
+                      text: name
+                    }),
+                    state.project.sharedWith
+                  )
+                } />
+            </Segment>
+            <Segment attatched='bottom'>
+              <Button color='black' disabled={disabled} loading={loading} fluid content='Save' onClick={submitButtonHandler} />
+            </Segment>
+          </Segment.Group>
+        </Modal.Content>
+      </Modal>
+    ) : (
+      <Header textAlign="center">{oldName}</Header>
+    )
 
-    </Modal>
   )
 }
 
