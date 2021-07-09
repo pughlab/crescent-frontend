@@ -12,6 +12,9 @@ import useRunLogsQuery from './useRunLogsQuery'
 import useUploadRunMetadataMutation from './useUploadRunMetadataMutation'
 import useUploadRunGenesetMutation from './useUploadRunGenesetMutation'
 import useUpdateRunReferenceDatasetsMutation from './useUpdateRunReferenceDatasetsMutation'
+import useSavePlotQueryMutation from './useSavePlotQueryMutation'
+import useRemoveSavedPlotQueryMutation from './useRemoveSavedPlotQueryMutation'
+import useUpdateSavedPlotQueryMutation from './useUpdateSavedPlotQueryMutation'
 
 
 export {
@@ -29,4 +32,7 @@ export {
   useUploadRunMetadataMutation,
   useUploadRunGenesetMutation,
   useUpdateRunReferenceDatasetsMutation,
+  useSavePlotQueryMutation,
+  useRemoveSavedPlotQueryMutation,
+  useUpdateSavedPlotQueryMutation
 }
