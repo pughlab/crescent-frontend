@@ -21,7 +21,7 @@ const QualityControlMenu = ({
   const datasetsOptions = useRunDatasetsDropdownQuery(runID, {
     onNonEmptyOptions: options => {
       const [{value}] = options
-      dispatch(setSelectedQCDataset({value}))
+      if (!selectedQCDataset) dispatch(setSelectedQCDataset({value}))
     }
   })
   
