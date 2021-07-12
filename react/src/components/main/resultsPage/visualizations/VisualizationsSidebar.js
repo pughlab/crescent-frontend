@@ -47,7 +47,7 @@ const MultiPlotSelector = ({
               <Menu.Item key={idx} active={R.equals(activePlot, idx)} onClick={() => dispatch(setActivePlot({value: idx}))}>
                 {R.inc(idx)}
                 {plot.plotQueryID && (
-                  <Label floating color="orange" style={{ paddingRight: 0, paddingLeft: "-9px" }} icon={<Icon name='pin'/>}/>
+                  <Label floating color="violet" style={{ paddingRight: 0, paddingLeft: "-9px" }} icon={<Icon name='pin'/>}/>
                 )}
               </Menu.Item>
             ))
@@ -57,7 +57,7 @@ const MultiPlotSelector = ({
       </Menu>
       { plotQueryID ? (
         <Button.Group fluid attached="bottom">
-          <Button color='green' animated='vertical' style={{borderRadius: 0}} onClick={updateSavedPlotQuery} loading={updatePlotQueryLoading}>
+          <Button color='violet' animated='vertical' style={{borderRadius: 0}} onClick={updateSavedPlotQuery} loading={updatePlotQueryLoading}>
             <Button.Content visible><Icon name='sync'/></Button.Content>
             <Button.Content hidden content="Update saved plot"/>
           </Button>
@@ -67,7 +67,7 @@ const MultiPlotSelector = ({
           </Button>
         </Button.Group>
       ) : (
-        <Button color='orange' animated='vertical' fluid  style={{borderRadius: 0}} onClick={savePlotQuery} loading={savePlotQueryLoading}>
+        <Button color="violet" animated='vertical' fluid style={{borderRadius: 0}} onClick={savePlotQuery} loading={savePlotQueryLoading}>
           <Button.Content visible><Icon name='save'/></Button.Content>
           <Button.Content hidden content="Save plot"/>
         </Button>
