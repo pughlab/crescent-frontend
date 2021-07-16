@@ -30,3 +30,5 @@ old_builds/*
 graphene/src/schema/minioIP.txt
 
 neo4j/
+node_modules
+react/node_modules
