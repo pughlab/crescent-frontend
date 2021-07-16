@@ -1,74 +1,209 @@
-import React from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
-import {Header, Popup, Message, Label, Divider} from 'semantic-ui-react'
+import { Header, Popup, Message, Label, Form, Divider, Modal, Button, Segment, Input } from 'semantic-ui-react'
 
-import {useCrescentContext} from '../../redux/hooks'
-import {useRunDetailsQuery} from '../../apollo/hooks/run'
+import { useCrescentContext } from '../../redux/hooks'
+import { useRunDetailsQuery } from '../../apollo/hooks/run'
+import { useEditRunDetailsMutation } from '../../apollo/hooks/run'
 
 import moment from 'moment'
+
+function useRunDetails(runID) {
+  const {
+    run: runQuery,
+    editRunDescription,
+    editRunName,
+    loading,
+    dataDesc,
+    dataName
+  } = useEditRunDetailsMutation({ runID })
+
+  const [state, dispatch] = useReducer((state, action) => {
+    const { type, payload } = action
+    if (type === 'resetForm') {
+      const form = { name: state.run.name, description: state.run.description }
+      return { ...state, form }
+    } else if (type === 'updateFormName') {
+      const { newName } = payload
+      const form = { ...state.form, name: newName }
+      return { ...state, form }
+    } else if (type === 'updateFormDescription') {
+      const { newDescription } = payload
+      const form = { ...state.form, description: newDescription }
+      return { ...state, form }
+    } else if (type === 'setRunData') {
+      const { run } = payload
+      const { name, description } = run
+      const form = { name, description }
+      return { ...state, run, form }
+    } else if (type === 'setOpen') {
+      const { isOpen } = payload
+      const open = isOpen
+      return { ...state, open }
+    } else if (type === 'mutateName') {
+      editRunName({ variables: { newName: state.form.name } })
+      return state
+    } else if (type === 'mutateDesc') {
+      editRunDescription({ variables: { newDescription: state.form.description } })
+      return state
+    } else {
+      return state
+    }
+  }, {
+    run: null,
+    form: { name: '', description: '' },
+    open: false
+  })
+
+  //useEffect to listen for runQuery to be non-null (to setRunData)
+  useEffect(() => {
+    if (RA.isNotNil(runQuery)) {
+      dispatch({ type: 'setRunData', payload: { run: runQuery } })
+    }
+  }, [runQuery])
+
+  // when modal is open, set new name, description to match the old ones
+  useEffect(() => {
+    if (state.open) {
+      dispatch({ type: 'resetForm' })
+    }
+  }, [state.open])
+
+  // close Modal when mutation successful
+  useEffect(() => {
+    if (R.or(RA.isNotNil(dataDesc), RA.isNotNil(dataName))) {
+      dispatch({ type: 'setOpen', payload: { isOpen: false } })
+    }
+  }, [dataDesc, dataName])
+
+  return { state, dispatch, loading }
+}
+
 
 const RunHeader = ({
 
 }) => {
-  const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
-  if (R.isNil(run)) {
+  const { runID, userID: currentUserID } = useCrescentContext()
+  const { state, dispatch, loading } = useRunDetails(runID)
+
+  if (R.isNil(state.run)) {
     return null
   }
+
   const {
     name: runName,
-    project: {name: projectName},
+    description: runDescription,
+    project: { name: projectName },
     createdOn,
     status,
     createdBy: {
-      name: creatorName
+      name: creatorName,
+      userID: createdUserID
     },
-
     datasets //{datasetID, name, size, hasMetadata}
-  } = run
+  } = state.run
   const color = R.prop(status, {
     pending: 'orange',
     submitted: 'yellow',
     completed: 'green',
     failed: 'red'
   })
+
+  const currentUserIsCreator = R.equals(currentUserID, createdUserID)
+  const sameName = R.equals(runName, state.form.name)
+  const sameDesc = R.equals(runDescription, state.form.description)
+  const disabled = R.or(loading, R.and(sameName, sameDesc)) // disable button when loading or unchanged description/name/owner
+
+  // call dispatch with appropriate action(s) after Save is clicked
+  const submitButtonHandler = () => {
+    if (!sameName) { dispatch({ type: 'mutateName' }) }
+    if (!sameDesc) { dispatch({ type: 'mutateDesc' }) }
+  }
+
   return (
-    <Popup
+    <Modal
+      basic
+      open={state.open}
+      onClose={() => dispatch({ type: 'setOpen', payload: { isOpen: false } })}
+      onOpen={() => dispatch({ type: 'setOpen', payload: { isOpen: true } })}
       trigger={
-        <Header textAlign='center' content={projectName} subheader={runName} />
-      }
-      wide='very'
-      position='bottom center'
-    >
-      <Message color={color}>
-        <Message.Content>
-        <Message.Header as={Header} textAlign='center'>
-          Created by {creatorName} on {moment(createdOn).format('D MMMM YYYY, h:mm a')}
-        </Message.Header>
-        <Divider horizontal content='Datasets' />
-        <Label.Group>
-        {
-          R.map(
-            ({datasetID, name, cancerTag, size, hasMetadata}) => (
-              <Label key={datasetID} 
-                color={R.prop(cancerTag, {
-                  true: 'pink',
-                  false: 'purple',
-                  null: 'blue',
-                })}
-              >
-                {name}
-                {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />}
+        <Popup
+          on='hover'
+          trigger={
+            currentUserIsCreator ? (
+              <Label key={runName} as={Button} basic onClick={() => dispatch({ type: 'setOpen', payload: { isOpen: true } }) }>
+                <Header textAlign="center">{projectName}
+                  <Header.Subheader>{runName}</Header.Subheader>
+                </Header>
               </Label>
-            ),
-            datasets
-          )
-        }
-        </Label.Group>
-        </Message.Content>
-      </Message>
-    </Popup>
+            ) : (
+              <Header textAlign='center' content={projectName} subheader={runName} />
+            )
+          }
+          wide='very'
+          position='bottom center'
+        >
+          <Message color={color}>
+            <Message.Content>
+              <Message.Header as={Header} textAlign='center'>
+                Created by {creatorName} on {moment(createdOn).format('D MMMM YYYY, h:mm a')}
+              </Message.Header>
+              {
+                R.and(RA.isNotEmpty(runDescription), RA.isNotNil(runDescription)) &&
+                <>
+                  <Divider horizontal content='Details' />
+                  <p>{runDescription}</p>
+                </>
+              }
+              <Divider horizontal content='Datasets' />
+              <Label.Group>
+                {
+                  R.map(
+                    ({ datasetID, name, cancerTag, size, hasMetadata }) => (
+                      <Label key={datasetID}
+                        color={R.prop(cancerTag, {
+                          true: 'pink',
+                          false: 'purple',
+                          null: 'blue',
+                        })}
+                      >
+                        {name}
+                        {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'} />}
+                      </Label>
+                    ),
+                    datasets
+                  )
+                }
+              </Label.Group>
+            </Message.Content>
+          </Message>
+        </Popup>
+      }
+    >
+      <Modal.Content>
+        <Segment.Group>
+          <Segment attatched='top' >
+            <Header icon='edit' content={runName} subheader='Edit the details of this run?' />
+          </Segment >
+          <Segment attatched='top bottom'>
+            <Header as='h4'>Run Name</Header>
+            <Input fluid value={state.form.name} onChange={(e, { value }) => { dispatch({ type: 'updateFormName', payload: { newName: value } }) }} />
+            <Header as='h4'>Run Description</Header>
+            <Form>
+              <Form.TextArea
+                value={state.form.description}
+                onChange={(e, { value }) => { dispatch({ type: 'updateFormDescription', payload: { newDescription: value } }) }}
+              />
+            </Form>
+          </Segment>
+          <Segment attatched='bottom'>
+            <Button color='black' disabled={disabled} loading={loading} fluid content='Save' onClick={submitButtonHandler} />
+          </Segment>
+        </Segment.Group>
+      </Modal.Content>
+    </Modal>
   )
 }
 

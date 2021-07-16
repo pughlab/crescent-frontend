@@ -4,9 +4,16 @@ import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 
 import {grapheneClient as client} from '../../clients'
+import { useDispatch } from 'react-redux'
+import { sendSuccess } from '../../../redux/actions/resultsPage'
+import { useService } from '@xstate/react'
+import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 
-export default function useHeatmap(runID) {
-  const [heatmap, setHeatmap] = useState(null)
+export default function useHeatmap(runID, plotQueryIndex) {
+  const dispatch = useDispatch()
+  const { service } = useResultsPagePlotQuery(plotQueryIndex)
+  const [current, send] = useService(service)
+
   const { loading, data, error, refetch } = useQuery(gql`
     query Heatmap($runID: ID) {
       heatmap(runID: $runID) {
@@ -22,10 +29,7 @@ export default function useHeatmap(runID) {
     fetchPolicy: 'cache-and-network',
     variables: {runID},
     onCompleted: ({ heatmap }) => {
-      R.compose(
-        setHeatmap,
-        R.map(R.evolve({ mode: R.join('+') })),
-      )(heatmap)
+      dispatch(sendSuccess({send, data:  R.map(R.evolve({ mode: R.join('+') }), heatmap)}))
     },
   })
 
@@ -34,7 +38,5 @@ export default function useHeatmap(runID) {
       refetch()
     }
   }, [error])
-
-  return {heatmap, loading}
 }
 

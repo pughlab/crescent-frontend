@@ -7,6 +7,7 @@ import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Shake from 'react-reveal/Shake'
+import { useService } from '@xstate/react';
 
 import * as R from 'ramda'
 
@@ -20,16 +21,18 @@ const Heatmap = ({
   plotQueryIndex
 }) => {
   const { runID } = useCrescentContext()
-  const { activeResult } = useResultsPagePlotQuery(plotQueryIndex)
-  const plots = useResultsAvailableQuery(runID)
-  const {heatmap, loading} = useHeatmapQuery(runID)
-  const [selectedCell, setSelectedCell] = useState(null)
+  const { activeResult, service } = useResultsPagePlotQuery(plotQueryIndex)
+  const [current, send] = useService(service)
 
+  const plots = useResultsAvailableQuery(runID)
+  useHeatmapQuery(runID, plotQueryIndex)
+  const [selectedCell, setSelectedCell] = useState(null)
+  
   if (R.any(R.isNil, [plots])) {
     return null
   }
   
-  if (R.any(R.isNil, [heatmap])) {
+  if (current.matches('initialLoading')) {
     return (
       <Segment basic style={{height: '100%'}} placeholder>
         <Tada forever duration={1000}>
@@ -48,10 +51,10 @@ const Heatmap = ({
   return (
     <>
       <Header textAlign='center' content={'GSVA Heatmap'} />
-      <Segment basic loading={loading} style={{height: '100%'}}>
+      <Segment basic style={{height: '100%'}}>
         <Plot
           config={{ showTips: false }}
-          data={heatmap}
+          data={current.context.plotData}
           useResizeHandler
           style={{ width: '100%',height: '90%'}}
           onClick={e => setSelectedCell({x: e.points[0].x, y: e.points[0].y, z: e.points[0].z})}

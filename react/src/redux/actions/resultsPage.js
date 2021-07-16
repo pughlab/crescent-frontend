@@ -31,73 +31,92 @@ const setActiveResult = ({result}) => ({
   }
 })
 
-const setSelectedQC = ({value}) => ({
+const setSelectedQC = ({value, send}) => ({
   type: 'resultsPage/setSelectedQC',
   payload: {
-    value
+    value,
+    send
   }
 })
 
-const setSelectedQCDataset = ({value}) => ({
+const setSelectedQCDataset = ({value, send}) => ({
   type: 'resultsPage/setSelectedQCDataset',
   payload: {
-    value
+    value,
+    send
   }
 })
 
-const setSelectedFeature = ({value}) => ({
+const setSelectedFeature = ({value, send}) => ({
   type: 'resultsPage/setSelectedFeature',
   payload: {
-    value
+    value,
+    send
   }
 })
 
-const addSelectedFeature = ({value}) => ({
+const addSelectedFeature = ({value, send}) => ({
   type: 'resultsPage/addSelectedFeature',
   payload: {
-    value
+    value,
+    send
   }
 })
 
-const removeSelectedFeature = ({value}) => ({
+const removeSelectedFeature = ({value, send}) => ({
   type: 'resultsPage/removeSelectedFeature',
   payload: {
-    value
+    value,
+    send,
   }
 })
 
-const setSelectedScaleBy = ({value}) => ({
+const setSelectedScaleBy = ({value, send}) => ({
   type: 'resultsPage/setSelectedScaleBy',
   payload: {
-    value
+    value,
+    send
   }
 })
 
-const setSelectedExpRange = ({value}) => ({
+const setSelectedExpRange = ({value, send}) => ({
   type: 'resultsPage/setSelectedExpRange',
   payload: {
-    value
+    value,
+    send
   }
 })
 
-const setSelectedGroup = ({value}) => ({
+const setSelectedGroup = ({value, send}) => ({
   type: 'resultsPage/setSelectedGroup',
   payload: {
-    value
+    value,
+    send,
   }
 })
 
-const setSelectedAssay = ({value}) => ({
+const setSelectedAssay = ({value, send}) => ({
   type: 'resultsPage/setSelectedAssay',
   payload: {
-    value
+    value, 
+    send
   }
 })
 
-const setSelectedDiffExpression = ({value}) => ({
+const setSelectedDiffExpression = ({value, send}) => ({
   type: 'resultsPage/setSelectedDiffExpression',
   payload: {
-    value
+    value,
+    send
+  }
+})
+
+const sendSuccess = ({send, data, type}) => ({
+  type: 'resultsPage/sendSuccess',
+  payload: {
+    send,
+    data,
+    type
   }
 })
 
@@ -134,6 +153,7 @@ export {
   setSelectedGroup,
   setSelectedAssay,
   setSelectedDiffExpression,
+  sendSuccess,
   resetResultsPage,
   addPlot,
   setActivePlot,

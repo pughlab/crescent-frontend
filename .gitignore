@@ -28,3 +28,5 @@ old_builds/*
 **/.vscode
 
 graphene/src/schema/minioIP.txt
+
+neo4j/

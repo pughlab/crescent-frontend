@@ -1,10 +1,12 @@
 import React, {useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import { Button, Form, Divider, Segment, Popup, Label, Icon, Header, Grid } from 'semantic-ui-react'
+import { Fade } from 'react-reveal'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
+import { useService } from '@xstate/react';
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
@@ -22,10 +24,11 @@ const VisualizationMenu = ({
 
   // console.log("use results: ", useResultsPage())
   const {activePlot} = useResultsPage()
-  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay} = useResultsPagePlotQuery(activePlot)
+  const {activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay, service} = useResultsPagePlotQuery(activePlot)
   const isActiveResult = R.equals(activeResult)
   const isActiveAssay = R.equals(selectedAssay)
 
+ const [current, send] = useService(service)
   //available groups & top expressed must be queries
   const diffExpression = useDiffExpressionQuery(runID)
   
@@ -59,12 +62,12 @@ const VisualizationMenu = ({
     }
   }
 
-  const handleSelectFeature = (e, {value}) => dispatch(setSelectedFeature({value}))
+  const handleSelectFeature = (e, {value}) => { if (!R.equals(value, selectedFeature)) dispatch(setSelectedFeature({value, send}))}
 
   const resetSelectFeature = () => {
     setCurrentSearch('')
     setCurrentOptions([])
-    dispatch(setSelectedFeature({value: null}))
+    dispatch(setSelectedFeature({value: null, send}))
   }
 
   const FeatureButton = ({gene, pVal, avgLogFc, cluster}) => {
@@ -74,6 +77,7 @@ const VisualizationMenu = ({
         inverted
         trigger={
           <Button value={gene} size='tiny'
+            disabled = {R.test(/.*Loading/, current.value)}
             onClick={handleSelectFeature}
             color='violet'
             style={{margin: '0.25rem'}}
@@ -95,87 +99,93 @@ const VisualizationMenu = ({
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
   
   return(
-    <Form>
-        <Divider horizontal content='Datasets' />
-        <Form.Field>
-        <Form.Dropdown fluid selection labeled
-          value={selectedDiffExpression}
-          options={diffExpression}
-          onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value}))}
-        />
-        </Form.Field>
+    <Fade>
+      <Form>
+          <Divider horizontal content='Datasets' />
+          <Form.Field>
+          <Form.Dropdown fluid selection labeled
+            disabled = {R.test(/.*Loading/, current.value)}
+            value={selectedDiffExpression}
+            options={diffExpression}
+            onChange={(e, {value}) => dispatch(setSelectedDiffExpression({value, send}))}
+          />
+          </Form.Field>
 
-        {!isActiveAssay('legacy') && 
-        <>
-          <Divider horizontal content='RNA Normalization' />
+          {!isActiveAssay('legacy') && 
+          <>
+            <Divider horizontal content='RNA Normalization' />
+            <Form.Field>
+              <Form.Dropdown fluid selection labeled
+                disabled = {R.test(/.*Loading/, current.value)}
+                value={selectedAssay}
+                // options={formatList(R.map(R.toUpper)(assays))}
+                options={R.compose(R.map(R.evolve({text: R.toUpper})), formatList)(assays)}
+                onChange={(e, { value }) => dispatch(setSelectedAssay({ value, send }))}
+              />
+            </Form.Field>
+          </>
+          }
+
+
+          <Divider horizontal content='Colour By' />
           <Form.Field>
             <Form.Dropdown fluid selection labeled
-              value={selectedAssay}
-              // options={formatList(R.map(R.toUpper)(assays))}
-              options={R.compose(R.map(R.evolve({text: R.toUpper})), formatList)(assays)}
-              onChange={(e, { value }) => dispatch(setSelectedAssay({ value }))}
+              disabled = {R.test(/.*Loading/, current.value)}
+              // All groups! assumes that first group is categorical (might not be true in the future)
+              value={selectedGroup}
+              options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
+              // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
+              onChange={(e, {value}) => dispatch(setSelectedGroup({value, send}))}
             />
           </Form.Field>
-        </>
+        <Divider horizontal content='Search Genes' />
+        <Form.Group>
+          <Form.Field width={12}>
+            <Form.Dropdown
+              disabled = {R.test(/.*Loading/, current.value)}
+              placeholder={"Enter Gene Symbol"}
+              fluid
+              search
+              searchQuery={currentSearch}
+              selection
+              options={searchOptions}
+              value={selectedFeature}
+              onSearchChange={handleSearchChange}
+              onChange={handleSelectFeature}
+            />
+          </Form.Field>
+
+          <Form.Field width={4}>
+            <Button fluid disabled={R.isNil(selectedFeature) || R.test(/.*Loading/, current.value)} icon='close' color='violet' onClick={() => resetSelectFeature()} />
+          </Form.Field>
+        </Form.Group>
+
+        <Divider horizontal content='Top Differentially Expressed Genes' />
+        {
+          RA.isNotEmpty(topExpressed) &&
+          <Segment basic
+            style={{maxHeight: '30vh', overflowY: 'scroll'}}
+          >
+            {
+              R.compose(
+                R.map(
+                  ([cluster, features]) => (
+                    <Segment key={cluster} size='small'>
+                      <Label attached='top' content={`Cluster ${cluster}`} />
+                      {
+                        R.addIndex(R.map)((feature, idx) => <FeatureButton key={idx} {...feature} />)(features)
+                      }
+                    </Segment>
+                  )
+              ),
+                R.toPairs,
+                R.groupBy(R.prop('cluster'))
+              )(topExpressed)
+            }
+          </Segment>
         }
-
-
-        <Divider horizontal content='Colour By' />
-        <Form.Field>
-          <Form.Dropdown fluid selection labeled
-            // All groups! assumes that first group is categorical (might not be true in the future)
-            value={selectedGroup}
-            options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
-            // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
-            onChange={(e, {value}) => dispatch(setSelectedGroup({value}))}
-          />
-        </Form.Field>
-      <Divider horizontal content='Search Genes' />
-      <Form.Group>
-        <Form.Field width={12}>
-          <Form.Dropdown
-            placeholder={"Enter Gene Symbol"}
-            fluid
-            search
-            searchQuery={currentSearch}
-            selection
-            options={searchOptions}
-            value={selectedFeature}
-            onSearchChange={handleSearchChange}
-            onChange={handleSelectFeature}
-          />
-        </Form.Field>
-
-        <Form.Field width={4}>
-           <Button fluid disabled={R.isNil(selectedFeature)} icon='close' color='violet' onClick={() => resetSelectFeature()} />
-        </Form.Field>
-      </Form.Group>
-
-      <Divider horizontal content='Top Differentially Expressed Genes' />
-      {
-        RA.isNotEmpty(topExpressed) &&
-        <Segment basic
-          style={{maxHeight: '30vh', overflowY: 'scroll'}}
-        >
-          {
-            R.compose(
-              R.map(
-                ([cluster, features]) => (
-                  <Segment key={cluster} size='small'>
-                    <Label attached='top' content={`Cluster ${cluster}`} />
-                    {
-                      R.addIndex(R.map)((feature, idx) => <FeatureButton key={idx} {...feature} />)(features)
-                    }
-                  </Segment>
-                )
-             ),
-              R.toPairs,
-              R.groupBy(R.prop('cluster'))
-            )(topExpressed)
-          }
-        </Segment>
-      }
-      </Form>
+        </Form>
+      </Fade>
   )
 }
 

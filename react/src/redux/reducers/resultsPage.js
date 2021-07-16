@@ -2,6 +2,12 @@ import * as R from 'ramda'
 import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
 
+import { interpret } from 'xstate';
+
+import { initiallyIdleMachine } from '../helpers/machines/initiallyIdleMachine'
+import { initiallyLoadingMachine } from '../helpers/machines/initiallyLoadingMachine';
+import { QCMachine } from '../helpers/machines/QCMachine';
+
 const initialPlotQuery = {
   activeResult: null,
   selectedQC: 'Before_After_Filtering',
@@ -13,6 +19,7 @@ const initialPlotQuery = {
   selectedAssay: null,
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
+  service: null,
 }
 
 const initialState = {
@@ -75,15 +82,30 @@ export default createReducer(
     'resultsPage/setActiveResult': (state, payload) => {
       const {result} = payload
       const {activePlot} = state
+      const getMachine = R.cond([
+        [R.includes(R.__, ['violin', 'dot']),   R.always(initiallyIdleMachine('idle'))],
+        [R.includes(R.__, ['heatmap']),   R.always(initiallyIdleMachine('initialLoading'))],
+        [R.includes(R.__, ['tsne', 'umap']),   R.always(initiallyLoadingMachine)],
+        [R.includes(R.__, ['qc']),   R.always(QCMachine)],
+      ])
+      const renewService = () => {
+        const currService = state.plotQueries[activePlot].service
+        if(currService) currService.stop()
+        return interpret(getMachine(result)).start()
+      }
       return R.evolve({
         // activeResult: R.always(result)
-        plotQueries: evolveAtIndex({activeResult: R.always(result)}, activePlot)
+        plotQueries: evolveAtIndex({
+          activeResult: R.always(result), 
+          service: renewService
+        }, activePlot)
       })(state)
     },
     // for plot
     'resultsPage/setSelectedQC': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      send({type: R.equals(value, 'Before_After_Filtering') ? 'SELECT_VIOLIN' : 'SELECT_UMAP'})
       return R.evolve({
         // selectedQC: R.always(value)
         plotQueries: evolveAtIndex({selectedQC: R.always(value)}, activePlot)
@@ -91,8 +113,9 @@ export default createReducer(
     },
     // for plot
     'resultsPage/setSelectedQCDataset': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      if (send) send({type: 'CHANGE_PARAMETER'})
       return R.evolve({
         // selectedQCDataset: R.always(value)
         plotQueries: evolveAtIndex({selectedQCDataset: R.always(value)}, activePlot)
@@ -100,8 +123,9 @@ export default createReducer(
     },
     // for plot
     'resultsPage/setSelectedGroup': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      send({type: 'CHANGE_PARAMETER'})
       return R.evolve({
         // selectedGroup: R.always(value)
         plotQueries: evolveAtIndex({selectedGroup: R.always(value)}, activePlot)
@@ -109,8 +133,9 @@ export default createReducer(
     },
     // for plot
     'resultsPage/setSelectedAssay': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      send({type: 'CHANGE_PARAMETER'})
       return R.evolve({
         // selectedGroup: R.always(value)
         plotQueries: evolveAtIndex({selectedAssay: R.always(value)}, activePlot)
@@ -118,8 +143,9 @@ export default createReducer(
     },
     // for plot
     'resultsPage/setSelectedFeature': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      send({type: value ? 'ADD_GENE' : 'CLEAR_GENES'})
       return R.evolve({
         // selectedFeature: R.always(value)
         plotQueries: evolveAtIndex({selectedFeature: R.always(value), selectedExpRange: R.always([0, 0])}, activePlot)
@@ -127,42 +153,45 @@ export default createReducer(
     },
     // for plot
     'resultsPage/addSelectedFeature': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      send({type: 'ADD_GENE'})
       return R.evolve({
-        // selectedFeature: R.always(value)
         plotQueries: evolveAtIndex({selectedFeatures: R.append(value)}, activePlot)
       })(state)
     },
     // for plot
     'resultsPage/removeSelectedFeature': (state, payload) => {
-      const {value} = payload
-      const {activePlot} = state
+      const {value, send} = payload
+      const {activePlot, plotQueries} = state      
+      send({type: R.length(plotQueries[activePlot].selectedFeatures) <= 1 ? 'CLEAR_GENES' : 'CHANGE_PARAMETER'})
       return R.evolve({
-        // selectedFeature: R.always(value)
         plotQueries: evolveAtIndex({selectedFeatures: R.without([value])}, activePlot)
       })(state)
     },
     // for plot
      'resultsPage/setSelectedScaleBy': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      send({type: 'CHANGE_PARAMETER'})
       return R.evolve({
         plotQueries: evolveAtIndex({selectedScaleBy: R.always(value)}, activePlot)
       })(state)
     },
     // for plot
     'resultsPage/setSelectedExpRange': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      send({type: 'CHANGE_PARAMETER'})
       return R.evolve({
         plotQueries: evolveAtIndex({selectedExpRange: R.always(value)}, activePlot)
       })(state)
     },
     // for plot
     'resultsPage/setSelectedDiffExpression': (state, payload) => {
-      const {value} = payload
+      const {value, send} = payload
       const {activePlot} = state
+      send({type: 'CHANGE_PARAMETER'})
       return R.evolve({
         plotQueries: evolveAtIndex(
           {
@@ -172,6 +201,12 @@ export default createReducer(
           activePlot
         )
       })(state)
+    },
+    // for plot: send success event to the state machine
+    'resultsPage/sendSuccess': (state, payload) => {
+      const {send, data, type} = payload
+      send({type: type || 'SUCCESS', data})
+      return state
     },
 
     'resultsPage/addPlot': (state, payload) => {

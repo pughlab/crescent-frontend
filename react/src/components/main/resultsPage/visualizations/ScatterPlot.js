@@ -3,6 +3,7 @@ import Plot from 'react-plotly.js'
 import { Image, Container, Header, Segment, Dimmer, Button, Grid, Popup, Icon } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import { useService } from '@xstate/react';
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
@@ -26,17 +27,17 @@ const ScatterPlot = ({
 
   const dispatch = useDispatch()
   const { sidebarCollapsed } = useResultsPage()
-  const { activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange, selectedAssay } = useResultsPagePlotQuery(plotQueryIndex)
+  const { activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange, selectedAssay, service } = useResultsPagePlotQuery(plotQueryIndex)
   const isFeatureNotSelected = R.or(R.isNil, R.isEmpty)(selectedFeature)
 
+  const [current, send] = useService(service)
 
   const plots = useResultsAvailableQuery(runID)
-  const { scatter, loading: scatterLoading } = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
+  useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression, selectedFeature, plotQueryIndex)
   const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  const { opacity, loading: opacityLoading } = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay)
+  useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay, plotQueryIndex)
 
   // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
-
   const [resetSliderValues, setResetSliderValues] = useState(null)
 
   // useEffect(() => {
@@ -61,7 +62,7 @@ const ScatterPlot = ({
     return null
   }
 
-  if (R.any(R.isNil, [scatter])) {
+  if (current.matches('initialLoading')) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
@@ -177,11 +178,11 @@ const ScatterPlot = ({
   //     })
   //   }
   // }, [selectedFeature])
-
+  const { isOpacityComplete, plotData } = current.context
   const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
-  const globalMax = R.isNil(opacity) || opacity[0]["globalmax"]
-  const initialminmax = R.isNil(opacity) || opacity[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
-  const initialRange = R.isNil(opacity) ? [0, 0] : initialminmax
+  const globalMax = !isOpacityComplete || Math.round(plotData[0]["globalmax"] * 10) / 10
+  const initialminmax = !isOpacityComplete || plotData[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
+  const initialRange = !isOpacityComplete ? [0, 0] : initialminmax
 
   return (
     // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
@@ -191,7 +192,7 @@ const ScatterPlot = ({
     // <Segment style={{height: '100%'}}>
     <>
       <Header textAlign='center' content={currentScatterPlotType} />
-      <Segment basic loading={isFeatureNotSelected ? scatterLoading : opacityLoading} style={{ height: '100%' }}>
+      <Segment basic loading={R.test(/.*Loading/, current.value)} style={{ height: '100%' }}>
 
       {
         (isFeatureNotSelected || sidebarCollapsed) || (
@@ -215,7 +216,7 @@ const ScatterPlot = ({
                     railStyle={{ backgroundColor: lightViolet }}
                     defaultValue={R.equals(selectedExpRange, [0, 0]) ? initialRange : selectedExpRange}
                     // defaultValue={selectedExpRange}
-                    onAfterChange={value => dispatch(setSelectedExpRange({ value }))}
+                    onAfterChange={value => dispatch(setSelectedExpRange({ value, send }))}
                   />
 
                 </div>
@@ -225,7 +226,7 @@ const ScatterPlot = ({
                   <Popup inverted size='tiny'
                     trigger={
                       <Button color='violet' icon='chart area'
-                        onClick={() => dispatch(setSelectedExpRange({ value: initialRange }))}
+                        onClick={() => dispatch(setSelectedExpRange({ value: initialRange, send }))}
                       />
                     }
                     content={
@@ -235,7 +236,7 @@ const ScatterPlot = ({
                   <Popup inverted size='tiny'
                     trigger={
                       <Button basic color='violet' icon='balance scale'
-                        onClick={() => dispatch(setSelectedExpRange({ value: [0, globalMax] }))}
+                        onClick={() => dispatch(setSelectedExpRange({ value: [0, globalMax], send }))}
                       />
                     }
                     content={
@@ -251,7 +252,7 @@ const ScatterPlot = ({
         <Plot
           config={{ showTips: false }}
           // data={opacity}
-          data={isFeatureNotSelected ? scatter : opacity}
+          data={plotData}
           // data={scatterData}
           useResizeHandler
           style={{ width: '100%', height: '90%' }}

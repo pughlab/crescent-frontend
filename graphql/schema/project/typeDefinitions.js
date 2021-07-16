@@ -85,6 +85,15 @@ const typeDefs = gql`
       link: String
       type: String
     ): Project
+
+    # Update the project's description
+    updateProjectDescription(projectID: ID, newDescription: String): Project
+
+    # Update the project's name
+    updateProjectName(projectID: ID, newName: String): Project
+
+    # Change ownership of project
+    changeProjectOwnership(projectID: ID, userID: ID): Project
   }
 `
 

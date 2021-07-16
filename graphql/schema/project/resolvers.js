@@ -50,6 +50,7 @@ const resolvers = {
         const project = await Projects.create({
           name, description,
           createdBy: userID,
+          sharedWith: R.append(userID, sharedWith),
           mergedProjectIDs: projectIDs,
           uploadedDatasetIDs: datasetIDs
         })
@@ -111,6 +112,28 @@ const resolvers = {
       const project = await Projects.findOne({projectID})
       const existingUrls = project.externalUrls  
       project.externalUrls = R.append({label, link, type}, existingUrls)
+      await project.save()
+      return project
+    },
+
+    updateProjectDescription: async (parent, {projectID, newDescription}, {Projects}) => {
+      // finds the project with the corresponding ID, updates the description, save, and return
+      const project = await Projects.findOne({projectID})
+      project.description = newDescription
+      await project.save()
+      return project
+    },
+
+    updateProjectName: async(parent, {projectID, newName}, {Projects}) => {
+      const project = await Projects.findOne({projectID})
+      project.name = newName
+      await project.save()
+      return project
+    },
+
+    changeProjectOwnership: async(parent, {projectID, userID}, {Projects}) => {
+      const project = await Projects.findOne({projectID})
+      project.createdBy = userID
       await project.save()
       return project
     }

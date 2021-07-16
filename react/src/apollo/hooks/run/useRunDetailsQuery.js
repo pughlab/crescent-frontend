@@ -14,6 +14,7 @@ export default function useRunDetails(runID) {
           name
         }
         name
+        description
         # params
 
         parameters
