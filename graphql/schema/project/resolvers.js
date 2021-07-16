@@ -38,6 +38,7 @@ const resolvers = {
       {
         userID,
         name, description,
+        sharedWith,
         projectIDs = [],
         datasetIDs = [],
       },
