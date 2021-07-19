@@ -24,7 +24,7 @@ const TagOncotreeModal = ({
   const [open, setOpen] = useState(false)
   const oncotree = useOncotreeQuery()
   const { dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset } = useEditDatasetTagsMutation(datasetID)
-  
+
   if (R.any(R.isNil, [oncotree, dataset])) {
 
     // return null
@@ -49,8 +49,9 @@ const TagOncotreeModal = ({
           flowing
           on='hover'
           trigger={
-          <Label 
-            as={Button} 
+            <Button as='div' labelPosition='right'>
+            <Button 
+            // as={Button} 
             // size='big'
             basic
             color={R.prop(cancerTag, {
@@ -63,7 +64,23 @@ const TagOncotreeModal = ({
               {/* {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />} */}
               {/* {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
               <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
-            </Label>
+            </Button>
+            <Label
+            icon='cloud download'
+            download
+            target='_blank'
+            // Should only work with nginx reverse proxy
+            // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
+            href={`/express/download/${datasetID}`}
+            color={R.prop(cancerTag, {
+              true: 'pink',
+              false: 'purple',
+              null: 'blue',
+            })}            
+            pointing='left'
+            />
+            </Button>
+            
           }
           content={
             <>
