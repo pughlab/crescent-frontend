@@ -38,7 +38,6 @@ const resolvers = {
       {
         userID,
         name, description,
-        sharedWith,
         projectIDs = [],
         datasetIDs = [],
       },
@@ -51,7 +50,6 @@ const resolvers = {
         const project = await Projects.create({
           name, description,
           createdBy: userID,
-          sharedWith: R.append(userID, sharedWith),
           mergedProjectIDs: projectIDs,
           uploadedDatasetIDs: datasetIDs
         })
@@ -111,7 +109,7 @@ const resolvers = {
 
     addExternalUrl: async (parent, {projectID, label, link, type}, {Projects}) => {
       const project = await Projects.findOne({projectID})
-      const existingUrls = project.externalUrls  
+      const existingUrls = project.externalUrls
       project.externalUrls = R.append({label, link, type}, existingUrls)
       await project.save()
       return project
@@ -132,9 +130,11 @@ const resolvers = {
       return project
     },
 
-    changeProjectOwnership: async(parent, {projectID, userID}, {Projects}) => {
+    changeProjectOwnership: async(parent, {projectID, oldOwnerID, newOwnerID}, {Projects}) => {
       const project = await Projects.findOne({projectID})
-      project.createdBy = userID
+      const { sharedWith } = project
+      project.createdBy = newOwnerID
+      project.sharedWith = R.append(oldOwnerID, sharedWith)
       await project.save()
       return project
     }
@@ -187,7 +187,7 @@ const resolvers = {
             const {
               mergedProjectIDs: childrenProjectIDs,
               uploadedDatasetIDs: childrenDatasetIDs
-            } = await Projects.findOne({projectID}) 
+            } = await Projects.findOne({projectID})
             console.log(projectID, childrenProjectIDs, childrenDatasetIDs)
             if (RA.isNotEmpty(childrenDatasetIDs)) {
               datasetIDs.push(...childrenDatasetIDs)
