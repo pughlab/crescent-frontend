@@ -95,8 +95,8 @@ export default function useEditProjectDetailsMutation({projectID}) {
   }, [dataName])
 
   const [changeProjectOwnership, {loading: loadingOwner, data: dataOwner, error: errorOwner}] = useMutation(gql`
-    mutation ChangeProjectOwnership($projectID: ID, $userID: ID) {
-      changeProjectOwnership(projectID: $projectID, userID: $userID) {
+    mutation ChangeProjectOwnership($projectID: ID, $oldOwnerID: ID, $newOwnerID: ID) {
+      changeProjectOwnership(projectID: $projectID, oldOwnerID: $oldOwnerID, newOwnerID: $newOwnerID) {
         createdBy {
           name
         }
