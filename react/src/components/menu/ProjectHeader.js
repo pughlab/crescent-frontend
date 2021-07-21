@@ -40,7 +40,7 @@ function useProjectDetails(projectID) {
       return { ...state, project, form }
     } else if (type === 'setOpen') {
       const { open } = payload
-      return { ...state, open}
+      return { ...state, open }
     } else if (type === 'setSecondOpen') {
       const { open } = payload
       return { ...state, secondOpen: open }
@@ -98,14 +98,31 @@ const ProjectHeader = ({
     return null
   }
 
-  const oldName = state.project.name
-  const createdUserID = state.project.createdBy.userID
-  const sameName = R.equals(oldName, state.form.name)
-  const sameDesc = R.equals(state.project.description, state.form.description)
-  const sameOwner = R.equals(createdUserID, state.form.ownerID)
+  const {
+    project: {
+      name: oldName,
+      description: oldDescription,
+      createdBy: {
+        userID: createdUserID,
+        name: oldOwnerName
+      },
+      sharedWith
+    },
+    form: {
+      name: newName,
+      description: newDescription,
+      ownerID: newOwnerID
+    },
+    open,
+    secondOpen
+  } = state
+
+  const sameName = R.equals(oldName, newName)
+  const sameDesc = R.equals(oldDescription, newDescription)
+  const sameOwner = R.equals(createdUserID, newOwnerID)
   const disabled = R.or(loading, RA.allEqualTo(true, [sameName, sameDesc, sameOwner])) // disable button when loading or unchanged description/name/owner
   const currentUserIsCreator = R.equals(currentUserID, createdUserID)
-  const notShared = R.equals(0, R.length(state.project.sharedWith))
+  const notShared = R.equals(0, R.length(sharedWith))
 
   // call dispatch with appropriate action(s) after Save is clicked
   const submitButtonHandler = () => {
@@ -117,7 +134,7 @@ const ProjectHeader = ({
   return (
     currentUserIsCreator ? (
       <>
-        <Modal basic open={state.open} onOpen={() => dispatch({ type: 'setOpen', payload: { open: true } })} onClose={() => dispatch({ type: 'setOpen', payload: { open: false } })}
+        <Modal basic open={open} onOpen={() => dispatch({ type: 'setOpen', payload: { open: true } })} onClose={() => dispatch({ type: 'setOpen', payload: { open: false } })}
           trigger={
             <Label as={Button} basic onClick={() => dispatch({ type: 'setOpen', payload: { open: true } })}>
               <Header textAlign="center">{oldName}</Header>
@@ -131,11 +148,11 @@ const ProjectHeader = ({
               </Segment >
               <Segment attatched='top bottom'>
                 <Header as='h4'>Project Name</Header>
-                <Input fluid value={state.form.name} onChange={(e, { value }) => { dispatch({ type: 'updateFormName', payload: { newName: value } }) }} />
+                <Input fluid value={newName} onChange={(e, { value }) => { dispatch({ type: 'updateFormName', payload: { newName: value } }) }} />
                 <Header as='h4'>Project Description</Header>
                 <Form>
                   <Form.TextArea
-                    value={state.form.description}
+                    value={newDescription}
                     onChange={(e, { value }) => { dispatch({ type: 'updateFormDescription', payload: { newDescription: value } }) }}
                   />
                 </Form>
@@ -162,7 +179,7 @@ const ProjectHeader = ({
                           value: userID,
                           text: name
                         }),
-                        state.project.sharedWith
+                        sharedWith
                       )
                     } />
                 }
@@ -174,22 +191,22 @@ const ProjectHeader = ({
           </Modal.Content>
         </Modal>
         <Modal onClose={() => dispatch({ type: 'setSecondOpen', payload: { open: false } })}
-          open={state.secondOpen}>
+          open={secondOpen}>
           <Modal.Header>Confirm project details</Modal.Header>
           <Modal.Content>
             <Header as='h4' content="Name" />
-            <p>{sameName ? oldName : state.form.name}</p>
+            <p>{sameName ? oldName : newName}</p>
             <Header as='h4' content="Description" />
-            <p>{sameDesc ? state.project.description : state.form.description}</p>
+            <p>{sameDesc ? oldDescription : newDescription}</p>
             <Header as='h4' content="Owner" />
             <p>
               {sameOwner ?
-                state.project.createdBy.name
+                oldOwnerName
                 :
                 R.compose(
                   R.prop('name'),
-                  R.find(R.propEq('userID', state.form.ownerID))
-                )(state.project.sharedWith)
+                  R.find(R.propEq('userID', newOwnerID))
+                )(sharedWith)
               }
             </p>
           </Modal.Content>
