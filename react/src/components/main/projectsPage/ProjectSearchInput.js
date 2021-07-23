@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import * as R from 'ramda'
 import {Input, Segment, Dropdown, Grid, Button, Divider, Form, Checkbox, Popup} from 'semantic-ui-react'
 
@@ -9,6 +9,8 @@ import {setSearchFilter, setTissueFilter, setOncotreeFilter} from '../../../redu
 
 import {useOncotreeQuery} from '../../../apollo/hooks/dataset'
 
+import {useDebouncedCallback} from 'use-debounce'
+
 import Fade from 'react-reveal/Fade'
 
 const ProjectSearchInput = ({
@@ -18,6 +20,11 @@ const ProjectSearchInput = ({
 
   const dispatch = useDispatch()
   const {activeProjectKind, searchFilter, tissueFilter, oncotreeFilter} = useProjectsPage()
+  const [searchFilterValue, setSearchFilterValue] = useState(searchFilter);
+
+  useEffect(useDebouncedCallback(() => {
+    dispatch(setSearchFilter({value: searchFilterValue}))
+  }, 500), [searchFilterValue]);
 
   if (R.isNil(oncotree)) {
     return null
@@ -34,9 +41,8 @@ const ProjectSearchInput = ({
       <Segment>
         <Input fluid
           placeholder='Search project names and descriptions'
-          value={searchFilter}
-          // TODO: debounce
-          onChange={ (e, {value}) => dispatch(setSearchFilter({value}))}
+          value={searchFilterValue}
+          onChange={(e, {value}) => setSearchFilterValue(value)}
         />
       </Segment>
 
