@@ -42,10 +42,10 @@
     "reselect": "^4.0.0",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.86.0",
-    "use-debounce": "^3.4.3",
+    "use-debounce": "^7.0.0",
+    "xstate": "^4.19.1",
     "yup": "^0.27.0",
-    "zlib": "^1.0.5",
-    "xstate": "^4.19.1"
+    "zlib": "^1.0.5"
   },
   "scripts": {
     "start": "react-scripts start",
