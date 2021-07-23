@@ -15,53 +15,41 @@ function useProjectDetails(projectID) {
     dataDesc, dataName, dataOwner
   } = useEditProjectDetailsMutation({ projectID })
 
-  // hold all state (project data, form data, modal open) in reducer
-  const [state, dispatch] = useReducer((state, action) => {
-    const { type, payload } = action
-    if (type === 'resetForm') {
-      const form = { name: state.project.name, description: state.project.description, ownerID: state.project.createdBy.userID }
-      return { ...state, form }
-    } else if (type === 'updateFormName') {
-      const { newName } = payload
-      const form = { ...state.form, name: newName }
-      return { ...state, form }
-    } else if (type === 'updateFormDescription') {
-      const { newDescription } = payload
-      const form = { ...state.form, description: newDescription }
-      return { ...state, form }
-    } else if (type === 'updateFormOwner') {
-      const { newOwnerID } = payload
-      const form = { ...state.form, ownerID: newOwnerID }
-      return { ...state, form }
-    } else if (type === 'setProjectData') {
-      const { project } = payload
-      const { name, description, createdBy } = project
-      const form = { name, description, ownerID: createdBy.userID }
-      return { ...state, project, form }
-    } else if (type === 'setOpen') {
-      const { open } = payload
-      return { ...state, open }
-    } else if (type === 'setSecondOpen') {
-      const { open } = payload
-      return { ...state, secondOpen: open }
-    } else if (type === 'mutateName') {
-      editProjectName({ variables: { newName: state.form.name } })
-      return state
-    } else if (type === 'mutateDesc') {
-      editProjectDescription({ variables: { newDescription: state.form.description } })
-      return state
-    } else if (type === 'mutateOwner') {
-      changeProjectOwnership({ variables: { newOwnerID: state.form.ownerID, oldOwnerID: state.project.createdBy.userID } })
-      return state
-    } else {
-      return state
-    }
-  }, {
+  const initialState = {
     project: null,
     form: { name: '', description: '', ownerID: '' },
     open: false,
     secondOpen: false
-  })
+  }
+
+  // hold all state (project data, form data, modal open) in reducer
+  const [state, dispatch] = useReducer((state, action) => {
+    const { type, payload } = action
+
+    const reducer = {
+      'resetForm': (payload, {project: {name, description, createdBy: {userID: ownerID}}, ...restState}) => ({ ...restState, form: {name, description, ownerID} }),
+      'updateFormName': ({ newName }, state) => ({ ...state, form: {...state.form, name: newName} }),
+      'updateFormDescription': ({ newDescription }, state) => ({ ...state, form: { ...state.form, description: newDescription } }),
+      'updateFormOwner': ({ newOwnerID }, state) => ({ ...state, form: { ...state.form, ownerID: newOwnerID } }),
+      'setProjectData': ({project: {name, description, createdBy: {userID: ownerID}}}, state) => ({ ...state, project, form: { name, description, ownerID } }),
+      'setOpen': ({open}, state) => ({ ...state, open }),
+      'setSecondOpen': ({open: secondOpen}, state) => ({ ...state, secondOpen}),
+      'mutateName': (payload, state) => {
+        editProjectName({ variables: { newName: state.form.name } })
+        return state
+      },
+      'mutateDesc': (payload, state) => {
+        editProjectDescription({ variables: { newDescription: state.form.description } })
+        return state
+      },
+      'mutateOwner': (payload, state) => {
+        changeProjectOwnership({ variables: { newOwnerID: state.form.ownerID, oldOwnerID: state.project.createdBy.userID } })
+        return state
+      },
+    }
+
+    return R.has(type, reducer) ? reducer[type](payload, state) : state
+  }, initialState)
 
   //useEffect to listen for projectQuery to be non-null (to setProjectData)
   useEffect(() => {
