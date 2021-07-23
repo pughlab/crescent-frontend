@@ -24,14 +24,20 @@ function useProjectDetails(projectID) {
 
   // hold all state (project data, form data, modal open) in reducer
   const [state, dispatch] = useReducer((state, action) => {
-    const { type, payload } = action
-
+    const { type, payload={} } = action
+    console.log(state, action)
     const reducer = {
-      'resetForm': (payload, {project: {name, description, createdBy: {userID: ownerID}}, ...restState}) => ({ ...restState, form: {name, description, ownerID} }),
+      'resetForm': (payload, state) => {
+        const {project: {name, description, createdBy: {userID: ownerID}}} = state
+        return {...state, form: {name, description, ownerID}}
+      },
       'updateFormName': ({ newName }, state) => ({ ...state, form: {...state.form, name: newName} }),
       'updateFormDescription': ({ newDescription }, state) => ({ ...state, form: { ...state.form, description: newDescription } }),
       'updateFormOwner': ({ newOwnerID }, state) => ({ ...state, form: { ...state.form, ownerID: newOwnerID } }),
-      'setProjectData': ({project: {name, description, createdBy: {userID: ownerID}}}, state) => ({ ...state, project, form: { name, description, ownerID } }),
+      'setProjectData': ({project}, state) => {
+        const {name, description, createdBy: {userID: ownerID}} = project
+        return { ...state, project, form: { name, description, ownerID } }
+      },
       'setOpen': ({open}, state) => ({ ...state, open }),
       'setSecondOpen': ({open: secondOpen}, state) => ({ ...state, secondOpen}),
       'mutateName': (payload, state) => {
@@ -54,6 +60,7 @@ function useProjectDetails(projectID) {
   //useEffect to listen for projectQuery to be non-null (to setProjectData)
   useEffect(() => {
     if (RA.isNotNil(projectQuery)) {
+      console.log(projectQuery)
       dispatch({ type: 'setProjectData', payload: { project: projectQuery } })
     }
   }, [projectQuery])
@@ -81,7 +88,6 @@ const ProjectHeader = ({
 }) => {
   const { projectID, userID: currentUserID } = useCrescentContext()
   const { state, dispatch, loading } = useProjectDetails(projectID)
-
   if (R.isNil(state.project)) {
     return null
   }
@@ -105,12 +111,13 @@ const ProjectHeader = ({
     secondOpen
   } = state
 
+  const isProjectCreatorID = R.equals(createdUserID)
   const sameName = R.equals(oldName, newName)
   const sameDesc = R.equals(oldDescription, newDescription)
-  const sameOwner = R.equals(createdUserID, newOwnerID)
+  const sameOwner = isProjectCreatorID(newOwnerID)
   const disabled = R.or(loading, RA.allEqualTo(true, [sameName, sameDesc, sameOwner])) // disable button when loading or unchanged description/name/owner
-  const currentUserIsCreator = R.equals(currentUserID, createdUserID)
-  const notShared = R.equals(0, R.length(sharedWith))
+  const currentUserIsCreator = isProjectCreatorID(currentUserID)
+  const notShared = R.isEmpty(sharedWith)
 
   // call dispatch with appropriate action(s) after Save is clicked
   const submitButtonHandler = () => {
@@ -124,7 +131,7 @@ const ProjectHeader = ({
       <>
         <Modal basic open={open} onOpen={() => dispatch({ type: 'setOpen', payload: { open: true } })} onClose={() => dispatch({ type: 'setOpen', payload: { open: false } })}
           trigger={
-            <Label as={Button} basic onClick={() => dispatch({ type: 'setOpen', payload: { open: true } })}>
+            <Label as={Button} basic >
               <Header textAlign="center">{oldName}</Header>
             </Label>
           }
