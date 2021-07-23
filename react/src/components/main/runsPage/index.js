@@ -7,6 +7,7 @@ import moment from 'moment'
 import ArchiveProjectModal from './ArchiveProjectModal'
 import ShareProjectModal from './ShareProjectModal'
 import UnsubscribeProjectModal from './UnsubscribeProjectModal'
+import ManageRunsModal from './ManageRunsModal'
 
 import MergedProjectsDetails from './MergedProjectsDetails'
 import UploadedDatasetsDetails from './UploadedDatasetsDetails'
@@ -67,7 +68,8 @@ const RunsPageComponent = ({
         R.and(isUploadedProject, currentUserIsCreator) &&
         <Button.Group attached='top' widths={2} size='large'>
           <ShareProjectModal {...{project}} />
-          <ArchiveProjectModal {...{project}} />
+          {/*<ArchiveProjectModal {...{project}} />*/}
+          <ManageRunsModal />
         </Button.Group>
       }
 
@@ -75,8 +77,9 @@ const RunsPageComponent = ({
           {/*SHARED WITH ACTIONS */}
           {
             R.and(isUploadedProject, !currentUserIsCreator) &&
-            <Button.Group attached='top' widths={1} size='large'>
+            <Button.Group attached='top' widths={2} size='large'>
               <UnsubscribeProjectModal {...{ project }} />
+              <ManageRunsModal />
             </Button.Group>
           }
 

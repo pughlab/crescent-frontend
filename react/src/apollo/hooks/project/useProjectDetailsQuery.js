@@ -27,6 +27,11 @@ export default function useProjectDetailsQuery(projectID) {
           runID
           name
           status
+          createdOn
+          createdBy {
+            userID
+            name
+          }
         }
 
         mergedProjects {

@@ -41,20 +41,20 @@ const UnsubscribeProjectModal = ({
         <Modal basic size='small'
             trigger={
                 <Button
-                    color='red'
+                    color='twitter'
                     animated='vertical'
                 >
-                    <Button.Content visible><Icon name='x' /></Button.Content>
+                    <Button.Content visible><Icon name='user delete' /></Button.Content>
                     <Button.Content hidden content='Unsubscribe from project' />
                 </Button>
             }
         >
             <Modal.Content>
                 <Segment attached='top'>
-                    <Header icon='x' content={projectName} subheader='Are you sure you want to unsubscribe from this project?' />
+                    <Header icon='user delete' content={projectName} subheader='Are you sure you want to unsubscribe from this project?' />
                 </Segment>
                 <Segment attached='bottom'>
-                    <Button fluid color='red' inverted onClick={() => unshareProjectByUserID({ variables: { userID } })}>
+                    <Button fluid onClick={() => unshareProjectByUserID({ variables: { userID } })}>
                         <Icon name='checkmark' />
                         Yes, unsubscribe from this project
                     </Button>
