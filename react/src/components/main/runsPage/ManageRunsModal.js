@@ -6,14 +6,10 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import moment from 'moment'
 
-import { useMutation } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
-import { useDispatch } from 'react-redux'
-
 import { useCrescentContext } from '../../../redux/hooks'
 import { useProjectDetailsQuery } from '../../../apollo/hooks/project';
-//import { useDeleteMultipleRunsMutation } from '../../../apollo/hooks/run';
-import { goBack } from '../../../redux/actions/context'
+import { useDeleteMultipleRunsMutation } from '../../../apollo/hooks/run';
+import { useArchiveProjectMutation } from '../../../apollo/hooks/project';
 
 
 const ManageRunsModal = ({
@@ -21,29 +17,22 @@ const ManageRunsModal = ({
 }) => {
   const { userID: currentUserID, projectID } = useCrescentContext()
   const project = useProjectDetailsQuery(projectID)
-  const dispatch = useDispatch()
-  //const {deleteMultipleRuns} = useDeleteMultipleRunsMutation()
+  const { deleteMultipleRuns } = useDeleteMultipleRunsMutation()
+  const { archiveProject } = useArchiveProjectMutation({projectID})
 
-  const [archiveProject, {loading, data, error}] = useMutation(gql`
-    mutation ArchiveProject($projectID: ID) {
-      archiveProject(projectID: $projectID) {
-        projectID
-        archived
-      }
-    }
-  `, {
-    variables: {projectID},
-    onCompleted: data => {
-      dispatch(goBack())
-    }
-  })
-  
+  const initialManageRunsState = {
+    selectedRunIDs: [],
+    menuOpen: false,
+    confirmRunsOpen: false,
+    confirmProjectOpen: false
+  }
+
   const [manageRunsState, manageRunsDispatch] = useReducer(
     (state, action) => {
       const { type } = action
       switch (type) {
         case 'RESET':
-          return { selectedRunIDs: [] }
+          return { ...state, selectedRunIDs: [] }
         case 'TOGGLE_RUN':
           const { runID } = action
           return R.evolve({
@@ -56,10 +45,11 @@ const ManageRunsModal = ({
         default:
           return state
       }
-    }, {
-    selectedRunIDs: []
-  }
-  )
+    }, initialManageRunsState)
+
+  const {
+    selectedRunIDs
+  } = manageRunsState
 
   if (R.isNil(project)) {
     return null
@@ -78,7 +68,7 @@ const ManageRunsModal = ({
   const deletableRuns = R.filter(userCanDelete, allProjectRuns)
 
   return (
-    <Modal basic size='large' onClose={() => manageRunsDispatch({type: 'RESET'})}
+    <Modal basic size='large' onClose={() => manageRunsDispatch({ type: 'RESET' })}
       trigger={
         <Button
           color='red'
@@ -96,7 +86,7 @@ const ManageRunsModal = ({
 
         {currentUserIsCreator &&
           <Segment attached>
-            <Button color='red' fluid inverted content='Delete entire project' onClick={() => archiveProject()}/>
+            <Button color='red' fluid inverted content='Delete entire project' onClick={() => archiveProject()} />
             <Header content={'OR'} textAlign='center' />
           </Segment>
         }
@@ -125,6 +115,7 @@ const ManageRunsModal = ({
                     }
                   } = run
 
+                  console.log(runID, name)
                   const isSelectedToDelete = R.compose(
                     R.includes(runID),
                     R.prop('selectedRunIDs')
@@ -157,7 +148,7 @@ const ManageRunsModal = ({
                       <Card.Content>
                         <Label.Group>
                           <Label content={<Icon style={{ margin: 0 }} name='user' />} detail={creatorName} />
-                          <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
+                          <Label content={<Icon style={{ margin: 0 }} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
                         </Label.Group>
                       </Card.Content>
                     </Card>
@@ -167,7 +158,7 @@ const ManageRunsModal = ({
             </Card.Group>}
         </Segment>
         <Segment attached='bottom'>
-          <Button color='red' fluid inverted content='Delete selected runs' disabled={R.isEmpty(deletableRuns)} />
+          <Button color='red' fluid inverted content='Delete selected runs' disabled={R.isEmpty(deletableRuns)} onClick={() => deleteMultipleRuns({ variables: { runIDs: selectedRunIDs } })} />
         </Segment>
       </Modal.Content>
     </Modal>

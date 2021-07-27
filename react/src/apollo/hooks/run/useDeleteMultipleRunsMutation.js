@@ -11,9 +11,10 @@ export default function useDeleteMultipleRunsMutation() {
     const [deleteMultipleRuns, { loading, data, error }] = useMutation(gql`
     mutation DeleteMultipleRuns($runIDs: [ID]) {
         deleteMultipleRuns(runIDs: $runIDs) {
+            name
       }
     }
   `)
 
-  return {deleteMultipleRuns, loading, data}
+    return { deleteMultipleRuns, loading, data }
 }
