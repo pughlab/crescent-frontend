@@ -3,18 +3,19 @@ import React from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {Header, Card, Segment, Icon, Transition} from 'semantic-ui-react'
+import { Header, Card, Segment, Icon, Transition } from 'semantic-ui-react'
 
 import RunCard from './RunCard'
 
-import {useCrescentContext, useRunsPage} from '../../../../redux/hooks'
-import {useProjectRunsQuery} from '../../../../apollo/hooks/project'
+import { useCrescentContext, useRunsPage } from '../../../../redux/hooks'
+import { useProjectRunsQuery } from '../../../../apollo/hooks/project'
+import { useDeleteMultipleRunsMutation } from '../../../../apollo/hooks/run'
 
 const ProjectRunsList = () => {
-  const {projectID} = useCrescentContext()
-  const projectRuns = useProjectRunsQuery(projectID)
-
-  const {activeRunsFilter} = useRunsPage()
+  const { projectID } = useCrescentContext()
+  //const projectRuns = useProjectRunsQuery(projectID)
+  const { projectRuns } = useDeleteMultipleRunsMutation({ projectID })
+  const { activeRunsFilter } = useRunsPage()
 
   // const filteredProjectRuns = R.compose(
   //   isUploadedProject ? R.filter(
@@ -38,6 +39,10 @@ const ProjectRunsList = () => {
   //       )
   //   ]))
   // )(projectRuns)
+  if (R.isNil(projectRuns)) {
+    console.log("null")
+    return null
+  }
 
   const filteredProjectRuns = R.compose(
     R.filter(
@@ -48,28 +53,29 @@ const ProjectRunsList = () => {
     )
   )(projectRuns)
 
+
   return (
     R.isEmpty(filteredProjectRuns) ?
       <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
-      <Segment basic>
-        <Segment placeholder>
-          <Header icon>
-            <Icon name='exclamation' />
-            No Runs
-          </Header>
+        <Segment basic>
+          <Segment placeholder>
+            <Header icon>
+              <Icon name='exclamation' />
+              No Runs
+            </Header>
+          </Segment>
         </Segment>
-      </Segment>
       </Transition>
-    :
+      :
       <Card.Group itemsPerRow={3}>
-      {
-        R.addIndex(R.map)(
-          (run, index) => (
-            <RunCard key={index} {...{run}} />
-          ),
-          filteredProjectRuns
-        )
-      }
+        {
+          R.addIndex(R.map)(
+            (run, index) => (
+              <RunCard key={index} {...{ run }} />
+            ),
+            filteredProjectRuns
+          )
+        }
       </Card.Group>
   )
 }

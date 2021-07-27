@@ -17,7 +17,7 @@ const ManageRunsModal = ({
 }) => {
   const { userID: currentUserID, projectID } = useCrescentContext()
   const project = useProjectDetailsQuery(projectID)
-  const { deleteMultipleRuns } = useDeleteMultipleRunsMutation()
+  const { deleteMultipleRuns } = useDeleteMultipleRunsMutation({projectID})
   const { archiveProject } = useArchiveProjectMutation({projectID})
 
   const initialManageRunsState = {
