@@ -12,6 +12,7 @@ import { useDispatch } from 'react-redux'
 
 import { useCrescentContext } from '../../../redux/hooks'
 import { useProjectDetailsQuery } from '../../../apollo/hooks/project';
+//import { useDeleteMultipleRunsMutation } from '../../../apollo/hooks/run';
 import { goBack } from '../../../redux/actions/context'
 
 
@@ -20,12 +21,29 @@ const ManageRunsModal = ({
 }) => {
   const { userID: currentUserID, projectID } = useCrescentContext()
   const project = useProjectDetailsQuery(projectID)
+  const dispatch = useDispatch()
+  //const {deleteMultipleRuns} = useDeleteMultipleRunsMutation()
+
+  const [archiveProject, {loading, data, error}] = useMutation(gql`
+    mutation ArchiveProject($projectID: ID) {
+      archiveProject(projectID: $projectID) {
+        projectID
+        archived
+      }
+    }
+  `, {
+    variables: {projectID},
+    onCompleted: data => {
+      dispatch(goBack())
+    }
+  })
+  
   const [manageRunsState, manageRunsDispatch] = useReducer(
     (state, action) => {
       const { type } = action
       switch (type) {
         case 'RESET':
-          return { ...state, selectedRunIDs: [] }
+          return { selectedRunIDs: [] }
         case 'TOGGLE_RUN':
           const { runID } = action
           return R.evolve({
@@ -78,7 +96,7 @@ const ManageRunsModal = ({
 
         {currentUserIsCreator &&
           <Segment attached>
-            <Button color='red' fluid inverted content='Delete entire project' />
+            <Button color='red' fluid inverted content='Delete entire project' onClick={() => archiveProject()}/>
             <Header content={'OR'} textAlign='center' />
           </Segment>
         }
@@ -149,7 +167,7 @@ const ManageRunsModal = ({
             </Card.Group>}
         </Segment>
         <Segment attached='bottom'>
-          <Button color='red' fluid inverted content='Delete selected runs' />
+          <Button color='red' fluid inverted content='Delete selected runs' disabled={R.isEmpty(deletableRuns)} />
         </Segment>
       </Modal.Content>
     </Modal>

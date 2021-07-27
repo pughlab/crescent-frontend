@@ -12,7 +12,7 @@ const execSync = require('child_process').execSync;
 const { async } = require('ramda-adjunct');
 
 // Cleans the temp dirs created by a run
-async function cleanTempDir(wesID, wesAPI, response=null) {
+async function cleanTempDir(wesID, wesAPI, response = null) {
   try {
     let mount = "/var/lib/toil/"
     if (response == null)
@@ -22,36 +22,36 @@ async function cleanTempDir(wesID, wesAPI, response=null) {
     let dir = response.run_log.stderr.substring(start, end)
     console.log("Removing " + dir)
     rimraf.sync(dir);
-    
+
   }
-  catch (err){
+  catch (err) {
     console.log("Unable to clean for " + wesID + " because of " + err)
   }
 }
 
 const resolvers = {
   Query: {
-    allRuns: async (parent, variables, {Runs}) => {
+    allRuns: async (parent, variables, { Runs }) => {
       return await Runs.find({})
     },
-    runs: async (parent, {projectID}, {Runs}) => {
-      const runs = await Runs.find({projectID})
+    runs: async (parent, { projectID }, { Runs }) => {
+      const runs = await Runs.find({ projectID })
       return runs
     },
-    run: async (parent, {runID}, {Runs}) => {
-      const run = await Runs.findOne({runID})
+    run: async (parent, { runID }, { Runs }) => {
+      const run = await Runs.findOne({ runID })
       // console.log(run)
       return run
     },
   },
   Mutation: {
-    createUnsubmittedRun: async (parent, {name, description, projectID, userID, datasetIDs}, {Runs, Minio, ToolSteps}) => {
+    createUnsubmittedRun: async (parent, { name, description, projectID, userID, datasetIDs }, { Runs, Minio, ToolSteps }) => {
       try {
         const isSingleDataset = R.compose(R.equals(1), R.length)(datasetIDs)
 
-        const defaultReferenceDatasetIDs = isSingleDataset ? {referenceDatasetIDs: datasetIDs} : {} //if single dataset run then default to that one dataset
-        const run = await Runs.create({name, description, projectID, createdBy: userID, datasetIDs, ... defaultReferenceDatasetIDs})
-        const {runID} = run
+        const defaultReferenceDatasetIDs = isSingleDataset ? { referenceDatasetIDs: datasetIDs } : {} //if single dataset run then default to that one dataset
+        const run = await Runs.create({ name, description, projectID, createdBy: userID, datasetIDs, ...defaultReferenceDatasetIDs })
+        const { runID } = run
 
         // Add default parameters
         const defaultParameters = R.compose(
@@ -65,7 +65,7 @@ const resolvers = {
           R.map(
             R.compose(
               R.mergeAll,
-              R.map(({parameter, input: {defaultValue}}) => ({[parameter]: defaultValue}))
+              R.map(({ parameter, input: { defaultValue } }) => ({ [parameter]: defaultValue }))
             )
           ),
           R.groupBy(R.prop('step')),
@@ -85,16 +85,16 @@ const resolvers = {
 
     updateRunParameterValue: async (
       parent,
-      {runID, step, parameter, value},
-      {Runs}
+      { runID, step, parameter, value },
+      { Runs }
     ) => {
       try {
-        const run = await Runs.findOne({runID})
+        const run = await Runs.findOne({ runID })
         // For non-QC parameters
-        const {parameters} = run
+        const { parameters } = run
         let newParameters
         if (R.equals(step, 'quality')) {
-          const {value: newValue, datasetID} = value
+          const { value: newValue, datasetID } = value
           newParameters = R.assocPath([step, datasetID, parameter], newValue, parameters)
         } else {
           newParameters = R.assocPath([step, parameter], value, parameters)
@@ -111,11 +111,11 @@ const resolvers = {
 
     bulkUpdateRunParameterValues: async (
       parent,
-      {runID, parameters},
-      {Runs}
+      { runID, parameters },
+      { Runs }
     ) => {
       try {
-        const run = await Runs.findOne({runID})
+        const run = await Runs.findOne({ runID })
         run.parameters = parameters
         await run.save()
         return run
@@ -126,10 +126,10 @@ const resolvers = {
 
     // Determine how many datasets this run uses and submit
     // appropriate CWL job to Express (should be replaced by WES)
-    submitRun: async (parent, {runID}, {Runs}) => {
+    submitRun: async (parent, { runID }, { Runs }) => {
       try {
-        const run = await Runs.findOne({runID})
-        const {name, datasetIDs} = run
+        const run = await Runs.findOne({ runID })
+        const { name, datasetIDs } = run
         // console.log('Submitting run', runID, datasetIDs)
         // run.params = params
         run.status = 'submitted'
@@ -140,69 +140,81 @@ const resolvers = {
             `/express/runs/submit`,
             {},
             // axios params 
-            {params: {name, runID}}
+            { params: { name, runID } }
           )
         } else {
           await axios.post(
             `/express/runs/submitMerged`,
             {},
             // DatasetIDs can be parsed from the params object quality control field
-            {params: {name, runID}}
+            { params: { name, runID } }
           )
         }
         return run
-      } catch(error) {
+      } catch (error) {
         console.log(error)
       }
     },
 
-    deleteRun: async(parent, {runID}, {Runs}) => {
+    deleteRun: async (parent, { runID }, { Runs }) => {
       try {
-        const run = await Runs.findOne({runID})
-        await Runs.deleteOne({runID})
+        const run = await Runs.findOne({ runID })
+        await Runs.deleteOne({ runID })
         return run
-      } catch(error) {
+      } catch (error) {
         console.error(error)
       }
     },
-    cancelRun: async(parent, {runID}, {Docker, Runs}) => {
+
+    deleteMultipleRuns: async (parent, { runIDs }, { Runs }) => {
+      try {
+        return await Promise.all(R.map(
+          runID => Runs.deleteOne({ runID }),
+          runIDs
+        ))
+      } catch (error) {
+        console.error(error)
+      }
+    },
+
+    cancelRun: async (parent, { runID }, { Docker, Runs }) => {
       try {
         const containerID = await Docker.getContainerId(runID);
         if (R.isNil(containerID)) {
           return null
         } else {
           await Docker.killContainer(containerID);
-          await Runs.updateOne({runID}, {$set: {"status": 'failed'}})
+          await Runs.updateOne({ runID }, { $set: { "status": 'failed' } })
           return "failed"
         }
       } catch (error) {
         console.log(error)
       }
     },
-    uploadRunMetadata: async (parent, {runID, metadata}, {Runs, Minio}) => {
+    uploadRunMetadata: async (parent, { runID, metadata }, { Runs, Minio }) => {
       try {
-        const run = await Runs.findOne({runID})
+        const run = await Runs.findOne({ runID })
         if (RA.isNotNil(run)) {
           const bucketName = `run-${runID}`
-          await Minio.putUploadIntoBucket(bucketName, metadata, 'SEURAT/CRESCENT_CLOUD/frontend_metadata/metadata.tsv')  
-        
+          await Minio.putUploadIntoBucket(bucketName, metadata, 'SEURAT/CRESCENT_CLOUD/frontend_metadata/metadata.tsv')
+
           const m = await metadata
           run.uploadNames.metadata = m.filename
-          await run.save()        
+          await run.save()
 
           return run
         }
-      } catch(error) {
+      } catch (error) {
         console.log(error)
       }
     },
 
-    uploadRunGeneset: async (parent, {runID, geneset}, {Runs, Minio}) => {
+    uploadRunGeneset: async (parent, { runID, geneset }, { Runs, Minio }) => {
       try {
-        const run = await Runs.findOne({runID})
+        const run = await Runs.findOne({ runID })
         if (RA.isNotNil(run)) {
           const bucketName = `run-${runID}`
-          await Minio.putUploadIntoBucket(bucketName, geneset, 'GSVA/GSVA_INPUTS/geneset.gmt')      
+          await Minio.putUploadIntoBucket(bucketName, geneset, 'GSVA/GSVA_INPUTS/geneset.gmt')
 
           // const g = await geneset
           // run.uploadNames.gsva = g.filename
@@ -210,66 +222,66 @@ const resolvers = {
 
           return run
         }
-      } catch(error) {
+      } catch (error) {
         console.log(error)
       }
     },
 
-    updateRunReferenceDatasets: async (parent, {runID, datasetIDs}, {Runs}) => {
+    updateRunReferenceDatasets: async (parent, { runID, datasetIDs }, { Runs }) => {
       try {
-        const run = await Runs.findOne({runID})
+        const run = await Runs.findOne({ runID })
         run.referenceDatasetIDs = datasetIDs
         await run.save()
         return run
-      } catch(error) {
+      } catch (error) {
         console.log(error)
       }
     },
 
     // edit run description
-    updateRunDescription: async (parent, {runID, newDescription}, {Runs}) => {
-      const run = await Runs.findOne({runID})
+    updateRunDescription: async (parent, { runID, newDescription }, { Runs }) => {
+      const run = await Runs.findOne({ runID })
       run.description = newDescription
       await run.save()
       return run
     },
 
     // edit run name
-    updateRunName: async (parent, {runID, newName}, {Runs}) => {
-      const run = await Runs.findOne({runID})
+    updateRunName: async (parent, { runID, newName }, { Runs }) => {
+      const run = await Runs.findOne({ runID })
       run.name = newName
       await run.save()
       return run
     }
   },
   Run: {
-    createdBy: async({createdBy}, variables, {Users}) => {
-      const user = await Users.findOne({userID: createdBy})
+    createdBy: async ({ createdBy }, variables, { Users }) => {
+      const user = await Users.findOne({ userID: createdBy })
       return user
     },
     // Subfield resolvers
-    project: async ({projectID}, variables, {Projects}) => {
+    project: async ({ projectID }, variables, { Projects }) => {
       // Find project that run belongs to
-      const project = await Projects.findOne({projectID})
+      const project = await Projects.findOne({ projectID })
       return project
     },
 
-    datasets: async({datasetIDs}, variables, {Datasets}) => {
+    datasets: async ({ datasetIDs }, variables, { Datasets }) => {
       try {
-        return await Datasets.find({datasetID: {$in: datasetIDs}})
-      } catch(error) {
+        return await Datasets.find({ datasetID: { $in: datasetIDs } })
+      } catch (error) {
         console.log(error)
       }
     },
-    referenceDatasets: async ({referenceDatasetIDs}, variables, {Datasets}) => {
+    referenceDatasets: async ({ referenceDatasetIDs }, variables, { Datasets }) => {
       try {
-        return await Datasets.find({datasetID: {$in: referenceDatasetIDs}})
-      } catch(error) {
+        return await Datasets.find({ datasetID: { $in: referenceDatasetIDs } })
+      } catch (error) {
         console.log(error)
       }
     },
 
-    logs: async({runID}, variables, {Docker}) => {
+    logs: async ({ runID }, variables, { Docker }) => {
       try {
         let containerID = await Docker.getContainerId(runID);
         if (containerID == null)
@@ -280,7 +292,7 @@ const resolvers = {
       }
     },
 
-    hasResults: async ({runID}, variables, {Minio}) => {
+    hasResults: async ({ runID }, variables, { Minio }) => {
       try {
         const runBucketObjects = await Minio.bucketObjectsList(`run-${runID}`)
         const hasResultsDir = R.any(R.propEq('prefix', 'SEURAT/'))
@@ -290,13 +302,13 @@ const resolvers = {
       }
     },
 
-    status: async({wesID, status}, variables, {Runs, dataSources, Docker}) => {
-      
-      
+    status: async ({ wesID, status }, variables, { Runs, dataSources, Docker }) => {
+
+
       // If it has not been submitted yet
       if (wesID == null)
         return status;
-      
+
       // Make request to wes and figure out status
       let ret = status;
       // Assuming run status can never change from completed or failed, we don't need to ask wes
@@ -304,7 +316,7 @@ const resolvers = {
         try {
           response = await dataSources.wesAPI.getStatus(wesID);
         }
-        catch (error){
+        catch (error) {
           console.log("Error geting status of " + wesID + " from wes");
           return ret;
         }
@@ -317,7 +329,7 @@ const resolvers = {
           ret = "submitted";
         }
         // Update status in mongo to conform with status from wes, unless the run is already completed
-        await Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
+        await Runs.updateOne({ "wesID": wesID }, { $set: { "status": ret } }, function (err, res) {
           if (err)
             console.log(err);
         });
@@ -325,13 +337,13 @@ const resolvers = {
 
       return ret;
     },
-    completedOn: async({wesID, runID, completedOn, submittedOn}, variables, {Runs, Minio, dataSources}) => {
+    completedOn: async ({ wesID, runID, completedOn, submittedOn }, variables, { Runs, Minio, dataSources }) => {
       // If we have already found completedOn, we don't want to recalculate it
-      if (completedOn != null){
+      if (completedOn != null) {
         return completedOn;
       }
       // If the run has not been submitted yet
-      if (wesID == null){
+      if (wesID == null) {
         return completedOn;
       }
 
@@ -342,12 +354,12 @@ const resolvers = {
       try {
         response = await dataSources.wesAPI.getRunData(wesID);
       }
-      catch (error){
+      catch (error) {
         console.log("Error getting response from wes")
         return completedOn;
       }
       // Check if run failed or succeded, in which case there should be a log
-      if (response.state == 'EXECUTOR_ERROR'){
+      if (response.state == 'EXECUTOR_ERROR') {
         // Put log file in minio and check completedOn from mtime of log file
         // response = await dataSources.wesAPI.getRunData(wesID);
         // Send response.data.run_log.stderr to minio via buffer
@@ -356,13 +368,13 @@ const resolvers = {
 
         // Now update completedOn by checking lastModified date of failed log file
         let logFilePrefix = "failed_file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
-        
+
         try {
           // We check for multiple failed log files in case retryCount for jobs is set to > 1
           let logFiles = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
           // Try to get mtime of failed log file
           let latestLogDate = null;
-        
+
           // Find the latest log file and record it's last modified date
           logFiles.forEach(element => {
             const logFileStats = fs.statSync("wes/logs/" + element);
@@ -378,8 +390,8 @@ const resolvers = {
         await cleanTempDir(wesID, dataSources.wesAPI, response)
 
       }
-      else if (response.state == "COMPLETE"){
-        
+      else if (response.state == "COMPLETE") {
+
         // Put log file in minio and update completedOn
         try {
           response = await dataSources.wesAPI.getRunData(wesID);
@@ -404,16 +416,16 @@ const resolvers = {
 
         // Sum running times of each job and add to submittedOn
         let files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
-        
+
         let totalSeconds = parseFloat('0');
         files.forEach(element => {
           // Sum the timing information from these files by spawning processes that tail the last line
-          let line = execSync('tail -1 wes/logs/' + element, {encoding: 'utf-8'});
+          let line = execSync('tail -1 wes/logs/' + element, { encoding: 'utf-8' });
           line = line.toString().split(' ');
           totalSeconds += parseFloat(line[line.length - 2]);
         });
         // Now do date math with submittedOn
-        completionDate = new Date(submittedOn.getTime() + totalSeconds*1000);
+        completionDate = new Date(submittedOn.getTime() + totalSeconds * 1000);
 
         await cleanTempDir(wesID, dataSources.wesAPI, response)
       }
@@ -423,57 +435,57 @@ const resolvers = {
       }
 
       // If logfile space is an issue, the log files can be deleted here
-      
+
       // Finally upload date to mongo and return it
-      Runs.updateOne({"wesID": wesID}, {$set: {"completedOn": completionDate}}, function(err, res) {
+      Runs.updateOne({ "wesID": wesID }, { $set: { "completedOn": completionDate } }, function (err, res) {
         if (err)
           console.log(err);
       });
-      
+
       return completionDate;
     },
   },
   SecondaryRun: {
-    status: async ({wesID, status}, variables, {Runs, dataSources}) => {
+    status: async ({ wesID, status }, variables, { Runs, dataSources }) => {
       try {
         // If it has not been submitted yet
         if (wesID == null)
           return status;
-        
+
         // Make request to wes and figure out status
         let ret = status;
         // Assuming run status can never change from completed or failed, we don't need to ask wes
         // if (status != 'completed' && status != 'failed') {
-          try {
-            response = await dataSources.wesAPI.getStatus(wesID);
-          }
-          catch (error){
-            console.log("Error geting status of " + wesID + " from wes");
-            return ret;
-          }
-          // Translate WES status to Run status
-          if (response.state == "COMPLETE") {
-            ret = "completed";
-          } else if (response.state == "EXECUTOR_ERROR") {
-            ret = "failed";
-          } else if (response.state == "RUNNING") {
-            ret = "submitted";
-          }
-          // Update status in mongo to conform with status from wes, unless the run is already completed
-          
-          // fix 
-          await Runs.updateOne({"secondaryRuns.wesID": wesID}, {$set: {"secondaryRuns.$.status": ret}}, function(err, res) {
+        try {
+          response = await dataSources.wesAPI.getStatus(wesID);
+        }
+        catch (error) {
+          console.log("Error geting status of " + wesID + " from wes");
+          return ret;
+        }
+        // Translate WES status to Run status
+        if (response.state == "COMPLETE") {
+          ret = "completed";
+        } else if (response.state == "EXECUTOR_ERROR") {
+          ret = "failed";
+        } else if (response.state == "RUNNING") {
+          ret = "submitted";
+        }
+        // Update status in mongo to conform with status from wes, unless the run is already completed
+
+        // fix 
+        await Runs.updateOne({ "secondaryRuns.wesID": wesID }, { $set: { "secondaryRuns.$.status": ret } }, function (err, res) {
           // await Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
-            if (err)
-              console.log(err);
-          });
+          if (err)
+            console.log(err);
+        });
         // }
         return ret;
       } catch (error) {
         console.log(error)
       }
     },
-    logs: async({runID}, variables, {Docker}) => {
+    logs: async ({ runID }, variables, { Docker }) => {
       try {
         let containerID = await Docker.getContainerId(runID);
         if (containerID == null)
@@ -483,18 +495,18 @@ const resolvers = {
         console.log(error)
       }
     },
-    completedOn: async({wesID, completedOn, submittedOn}, variables, {Runs, Minio, dataSources}) => {
+    completedOn: async ({ wesID, completedOn, submittedOn }, variables, { Runs, Minio, dataSources }) => {
       // If we have already found completedOn, we don't want to recalculate it
-      if (completedOn != null){
+      if (completedOn != null) {
         return completedOn;
       }
       // If the run has not been submitted yet
-      if (wesID == null){
+      if (wesID == null) {
         return completedOn;
       }
 
-      const run = await Runs.findOne({"secondaryRuns.wesID": wesID})
-      const runID = run.runID  
+      const run = await Runs.findOne({ "secondaryRuns.wesID": wesID })
+      const runID = run.runID
 
       // Otherwise we now find completedOn and upload log file:
 
@@ -503,12 +515,12 @@ const resolvers = {
       try {
         response = await dataSources.wesAPI.getRunData(wesID);
       }
-      catch (error){
+      catch (error) {
         console.log("Error getting response from wes")
         return completedOn;
       }
       // Check if run failed or succeded, in which case there should be a log
-      if (response.state == 'EXECUTOR_ERROR'){
+      if (response.state == 'EXECUTOR_ERROR') {
         // Put log file in minio and check completedOn from mtime of log file
         // response = await dataSources.wesAPI.getRunData(wesID);
         // Send response.data.run_log.stderr to minio via buffer
@@ -517,13 +529,13 @@ const resolvers = {
 
         // Now update completedOn by checking lastModified date of failed log file
         let logFilePrefix = "failed_file:---" + response.request.workflow_attachment.substring(8).split('/').join('-');
-        
+
         try {
           // We check for multiple failed log files in case retryCount for jobs is set to > 1
           let logFiles = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
           // Try to get mtime of failed log file
           let latestLogDate = null;
-        
+
           // Find the latest log file and record it's last modified date
           logFiles.forEach(element => {
             const logFileStats = fs.statSync("wes/logs/" + element);
@@ -539,8 +551,8 @@ const resolvers = {
         await cleanTempDir(wesID, dataSources.wesAPI, response)
 
       }
-      else if (response.state == "COMPLETE"){
-        
+      else if (response.state == "COMPLETE") {
+
         // Put log file in minio and update completedOn
         try {
           response = await dataSources.wesAPI.getRunData(wesID);
@@ -565,16 +577,16 @@ const resolvers = {
 
         // Sum running times of each job and add to submittedOn
         let files = fs.readdirSync('wes/logs').filter(fn => fn.startsWith(logFilePrefix));
-        
+
         let totalSeconds = parseFloat('0');
         files.forEach(element => {
           // Sum the timing information from these files by spawning processes that tail the last line
-          let line = execSync('tail -1 wes/logs/' + element, {encoding: 'utf-8'});
+          let line = execSync('tail -1 wes/logs/' + element, { encoding: 'utf-8' });
           line = line.toString().split(' ');
           totalSeconds += parseFloat(line[line.length - 2]);
         });
         // Now do date math with submittedOn
-        completionDate = new Date(submittedOn.getTime() + totalSeconds*1000);
+        completionDate = new Date(submittedOn.getTime() + totalSeconds * 1000);
 
         await cleanTempDir(wesID, dataSources.wesAPI, response)
       }
@@ -584,13 +596,13 @@ const resolvers = {
       }
 
       // If logfile space is an issue, the log files can be deleted here
-      
+
       // Finally upload date to mongo and return it
-      Runs.updateOne({"secondaryRuns.wesID": wesID}, {$set: {"secondaryRuns.$.completedOn": completionDate}}, function(err, res) {
+      Runs.updateOne({ "secondaryRuns.wesID": wesID }, { $set: { "secondaryRuns.$.completedOn": completionDate } }, function (err, res) {
         if (err)
           console.log(err);
       });
-      
+
       return completionDate;
     },
   }

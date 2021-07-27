@@ -13,6 +13,7 @@ import useUploadRunMetadataMutation from './useUploadRunMetadataMutation'
 import useUploadRunGenesetMutation from './useUploadRunGenesetMutation'
 import useUpdateRunReferenceDatasetsMutation from './useUpdateRunReferenceDatasetsMutation'
 import useEditRunDetailsMutation from './useEditRunDetailsMutation'
+import useDeleteMultipleRunsMutation from './useDeleteMultipleRunsMutation'
 
 export {
   useRunDetailsQuery,
@@ -30,4 +31,5 @@ export {
   useUploadRunGenesetMutation,
   useUpdateRunReferenceDatasetsMutation,
   useEditRunDetailsMutation,
+  useDeleteMultipleRunsMutation
 }
