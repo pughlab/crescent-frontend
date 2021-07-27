@@ -14,7 +14,7 @@ import { useDeleteMultipleRunsMutation } from '../../../../apollo/hooks/run'
 const ProjectRunsList = () => {
   const { projectID } = useCrescentContext()
   //const projectRuns = useProjectRunsQuery(projectID)
-  const { projectRuns } = useDeleteMultipleRunsMutation({ projectID })
+  const { project } = useDeleteMultipleRunsMutation({ projectID })
   const { activeRunsFilter } = useRunsPage()
 
   // const filteredProjectRuns = R.compose(
@@ -39,11 +39,11 @@ const ProjectRunsList = () => {
   //       )
   //   ]))
   // )(projectRuns)
-  if (R.isNil(projectRuns)) {
-    console.log("null")
+  if (R.isNil(project)) {
     return null
   }
 
+  const { runs: projectRuns } = project
   const filteredProjectRuns = R.compose(
     R.filter(
       R.compose(

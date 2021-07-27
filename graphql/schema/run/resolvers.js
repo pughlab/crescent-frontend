@@ -168,10 +168,8 @@ const resolvers = {
 
     deleteMultipleRuns: async (parent, { runIDs }, { Runs }) => {
       try {
-        return await Promise.all(R.map(
-          runID => Runs.deleteOne({ runID }),
-          runIDs
-        ))
+        await Runs.deleteMany({runID: {$in: runIDs}})
+        return true
       } catch (error) {
         console.error(error)
       }
