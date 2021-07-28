@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react'
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 import { useTagDatasetMutation, useAddCustomTagDatasetMutation, useRemoveCustomTagDatasetMutation } from './'
 
@@ -10,15 +11,21 @@ export default function useEditDatasetTagsMutation(datasetID) {
     const {dataset: datasetFromRemove, removeCustomTagDataset}  = useRemoveCustomTagDatasetMutation(datasetID)
 
     useEffect(() => {
-        setDataset(datasetFromTag)
+        if (RA.isNotNil(datasetFromTag)) {
+            setDataset(datasetFromTag)
+        }
     }, [datasetFromTag])
 
     useEffect(() => {
-        R.isNil(datasetFromAdd) ? setDataset(datasetFromAdd) : setDataset({...dataset, customTags: datasetFromAdd.customTags})
+        if (RA.isNotNil(datasetFromAdd)) {
+            setDataset(datasetFromAdd)
+        }
     }, [datasetFromAdd])
 
     useEffect(() => {
-        R.isNil(datasetFromRemove) ? setDataset(datasetFromRemove) : setDataset({...dataset, customTags: datasetFromRemove.customTags})
+        if (RA.isNotNil(datasetFromRemove)) {
+            setDataset(datasetFromRemove)
+        }
     }, [datasetFromRemove])
 
     return {dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset}

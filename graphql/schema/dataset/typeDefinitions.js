@@ -9,7 +9,7 @@ const typeDefs = gql`
     numGenes: Int
     numCells: Int
     # Ontology tagging
-    cancerTag: Boolean
+    cancerTag: String
     oncotreeCode: String
     customTags: [String]
   }
@@ -33,7 +33,7 @@ const typeDefs = gql`
 
     tagDataset(
       datasetID: ID!
-      cancerTag: Boolean
+      cancerTag: String
       oncotreeCode: String
     ): Dataset
 
