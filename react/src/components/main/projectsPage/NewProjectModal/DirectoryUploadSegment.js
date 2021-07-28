@@ -98,13 +98,13 @@ const DatasetCard = ({
           <Label content={<Icon style={{ margin: 0 }} name='dna' />} detail={`${dataset.numGenes} genes`} />
           <Label
             color={R.prop(dataset.cancerTag, {
-              true: 'pink',
-              false: 'purple',
-              null: 'blue',
+              'cancer': 'pink',
+              'non-cancer': 'purple',
+              'immune': 'blue',
             })}
             >
               {<Icon style={{margin: 0}} name='paperclip' /> }             
-              {<Label.Detail content={dataset.cancerTag ? 'CANCER' : R.equals(dataset.cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'} />}
+              {<Label.Detail content={R.toUpper(dataset.cancerTag)} />}
               {RA.isNotNil(dataset.oncotreeCode) && <Label.Detail content={dataset.oncotreeCode} />}
           </Label>
           {R.map((tag, index) => <Label key={`tag-${index}`} content={<Icon style={{ margin: 0 }} name='paperclip'/>} detail={R.toUpper(tag)} />, dataset.customTags)}
