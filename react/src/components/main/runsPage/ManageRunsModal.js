@@ -28,30 +28,21 @@ const ManageRunsModal = ({
 
   const [manageRunsState, manageRunsDispatch] = useReducer(
     (state, action) => {
-      const { type, payload } = action
-      if (type === 'RESET') {
-        return { ...state, selectedRunIDs: [] }
-      } else if (type === 'TOGGLE_RUN') {
-        const { runID } = action
-        return R.evolve({
+      const { type, payload = {} } = action
+      const reducer = {
+        'RESET': (state) => ({ ...state, selectedRunIDs: [] }),
+        'TOGGLE_RUN': ({ runID }, state) => R.evolve({
           selectedRunIDs: R.ifElse(
             R.includes(runID),
             R.without([runID]),
             R.append(runID)
           )
-        }, state)
-      } else if (type === 'SET_MENU_OPEN') {
-        const { open } = payload
-        return { ...state, menuOpen: open }
-      } else if (type === 'SET_CONFIRM_RUNS_OPEN') {
-        const { open } = payload
-        return { ...state, confirmRunsOpen: open }
-      } else if (type === 'SET_CONFIRM_PROJECT_OPEN') {
-        const { open } = payload
-        return { ...state, confirmProjectOpen: open }
-      } else {
-        return state
+        }, state),
+        'SET_MENU_OPEN': ({ open: menuOpen }, state) => ({ ...state, menuOpen }),
+        'SET_CONFIRM_RUNS_OPEN': ({ open: confirmRunsOpen }, state) => ({ ...state, confirmRunsOpen }),
+        'SET_CONFIRM_PROJECT_OPEN': ({ open: confirmProjectOpen }, state) => ({ ...state, confirmProjectOpen }),
       }
+      return R.has(type, reducer) ? reducer[type](payload, state) : state
     }, initialManageRunsState)
 
   const {
@@ -171,7 +162,7 @@ const ManageRunsModal = ({
                     return (
                       <Card key={index} link
                         color={isSelectedToDelete ? 'red' : 'grey'}
-                        onClick={() => manageRunsDispatch({ type: 'TOGGLE_RUN', runID })}
+                        onClick={() => manageRunsDispatch({ type: 'TOGGLE_RUN', payload: { runID: runID } })}
                       >
                         <Popup
                           size='large' wide='very'
@@ -284,14 +275,14 @@ const ManageRunsModal = ({
                     failed: 'red'
                   })
                   return (
-                  <List.Item key={runID}>
-                    <List.Icon color={statusColor} name='file outline' size='large' verticalAlign='middle' />
-                    <List.Content>
-                      <List.Header>{name}</List.Header>
-                      <List.Description>Created on {moment(createdOn).format('D MMMM YYYY')}</List.Description>
-                    </List.Content>
-                    <Marquee text={description} />
-                  </List.Item>)
+                    <List.Item key={runID}>
+                      <List.Icon color={statusColor} name='file outline' size='large' verticalAlign='middle' />
+                      <List.Content>
+                        <List.Header>{name}</List.Header>
+                        <List.Description>Created on {moment(createdOn).format('D MMMM YYYY')}</List.Description>
+                      </List.Content>
+                      <Marquee text={description} />
+                    </List.Item>)
                 })(selectedRuns)
               }
             </List>
