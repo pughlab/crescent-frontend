@@ -26,5 +26,5 @@ export default function useArchiveProjectMutation({projectID}) {
     }
   })
 
-    return { archiveProject }
+    return { archiveProject, data, loading }
 }

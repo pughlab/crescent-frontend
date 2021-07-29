@@ -73,7 +73,6 @@ export default function useDeleteMultipleRunsMutation({ projectID }) {
 
     useEffect(() => {
         if (!!dataDetails) {
-            console.log(dataDetails)
             setProject(dataDetails.project)
         }
     }, [dataDetails])

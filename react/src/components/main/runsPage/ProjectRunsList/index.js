@@ -8,12 +8,10 @@ import { Header, Card, Segment, Icon, Transition } from 'semantic-ui-react'
 import RunCard from './RunCard'
 
 import { useCrescentContext, useRunsPage } from '../../../../redux/hooks'
-import { useProjectRunsQuery } from '../../../../apollo/hooks/project'
 import { useDeleteMultipleRunsMutation } from '../../../../apollo/hooks/run'
 
 const ProjectRunsList = () => {
   const { projectID } = useCrescentContext()
-  //const projectRuns = useProjectRunsQuery(projectID)
   const { project } = useDeleteMultipleRunsMutation({ projectID })
   const { activeRunsFilter } = useRunsPage()
 
