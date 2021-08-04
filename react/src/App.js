@@ -15,6 +15,7 @@ import ErrorComponent from './components/error'
 import {useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
 
+import { CREATE_GUEST_USER } from './apollo/queries/user'
 
 import {setUser} from './redux/actions/context'
 // Hooks
@@ -27,15 +28,7 @@ const App = () => {
   const dispatch = useDispatch()
   
   // TODO: put into custom hoook
-  const [createGuestUser] = useMutation(gql`
-    mutation CreateGuestUser {
-      createGuestUser {
-        userID
-        email
-        name
-      }
-    }
-  `, {
+  const [createGuestUser] = useMutation(CREATE_GUEST_USER, {
     onCompleted: ({createGuestUser: user}) => {
       console.log(user)
       dispatch(setUser({user}))
