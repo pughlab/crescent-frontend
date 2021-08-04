@@ -8,6 +8,7 @@ import * as R_ from 'ramda-extension'
 
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
+import { useCreateUnsubmittedRunMutation } from '../../../../apollo/hooks/run'
 
 import DataForm from './DataForm'
 
@@ -57,39 +58,54 @@ const NewRunModal = ({
     []
   )
 
-  const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
-    mutation CreateUnsubmittedRun(
-      $name: String!,
-      $description: String!,
-      $projectID: ID!,
-      $userID: ID!
-      $datasetIDs: [ID!]!
-    ) {
-      createUnsubmittedRun(
-        name: $name
-        description: $description
-        datasetIDs: $datasetIDs
-        projectID: $projectID
-        userID: $userID
-      ) {
-        runID
-      }
-    }
-  `, {
-    variables: {
-      name: runName,
-      description: runDescription,
-      datasetIDs: datasetsState,
-      projectID, userID,
-    },
+  const [createUnsubmittedRun, {loading, data, error}] = useCreateUnsubmittedRunMutation({
     onCompleted: ({createUnsubmittedRun: run}) => {
       console.log(run)
       if (RA.isNotNil(run)) {
         const {runID} = run
         dispatch(setRun({runID}))
       }
+    },
+    variables: {
+      name: runName,
+      description: runDescription,
+      datasetIDs: datasetsState,
+      projectID, userID,
     }
   })
+  // const [createUnsubmittedRun, {loading, data, error}] = useMutation(gql`
+  //   mutation CreateUnsubmittedRun(
+  //     $name: String!,
+  //     $description: String!,
+  //     $projectID: ID!,
+  //     $userID: ID!
+  //     $datasetIDs: [ID!]!
+  //   ) {
+  //     createUnsubmittedRun(
+  //       name: $name
+  //       description: $description
+  //       datasetIDs: $datasetIDs
+  //       projectID: $projectID
+  //       userID: $userID
+  //     ) {
+  //       runID
+  //     }
+  //   }
+  // `, {
+    // variables: {
+    //   name: runName,
+    //   description: runDescription,
+    //   datasetIDs: datasetsState,
+    //   projectID, userID,
+    // },
+    // onCompleted: ({createUnsubmittedRun: run}) => {
+    //   console.log(run)
+    //   if (RA.isNotNil(run)) {
+    //     const {runID} = run
+    //     dispatch(setRun({runID}))
+    //   }
+    // }
+  // })
 
   const disabled = R.or(
     R.isEmpty(runName),
