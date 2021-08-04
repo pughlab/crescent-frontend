@@ -15,6 +15,10 @@ import * as RA from 'ramda-adjunct'
 import {setUser} from '../../redux/actions/context'
 import {useDispatch} from 'react-redux'
 
+import { AUTHENTICATE_USER } from '../../apollo/queries/user'
+
+import {useAuthenticateUserMutation} from '../../apollo/hooks/user'
+
 // Yup form validation
 const LoginValidationSchema = Yup.object().shape({
   email: Yup.string()
@@ -32,16 +36,7 @@ const LoginForm = ({
   const dispatch = useDispatch()
   const [showErrorModal, setShowErrorModal] = useState(false)
   // GraphQL mutation hook to call mutation and use result
-  const [authenticateUser, {loading, data, error}] = useMutation(gql`
-    mutation AuthenticateUser($email: Email!, $password: String!) {
-      authenticateUser(email: $email, password: $password) {
-        userID
-        name
-        email
-        sessionToken
-      }
-    }
-  `, {
+  const [authenticateUser, {loading, data, error}] = useAuthenticateUserMutation({
     onCompleted: ({authenticateUser: user}) => {
       if (RA.isNotNil(user)) {
         dispatch(setUser({user}))
@@ -51,6 +46,16 @@ const LoginForm = ({
       }
     }
   })
+  // const [authenticateUser, {loading, data, error}] = useMutation(AUTHENTICATE_USER, {
+  // onCompleted: ({authenticateUser: user}) => {
+  //   if (RA.isNotNil(user)) {
+  //     dispatch(setUser({user}))
+  //     setOpen(false)
+  //   } else {
+  //     setShowErrorModal(true)
+  //   }
+  // }
+  // })
   return (
     <Formik
       initialValues={{ email: '', password: '' }}
