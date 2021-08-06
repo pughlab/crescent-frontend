@@ -24,8 +24,22 @@ const goHome = R.always({
   type: 'context/goHome'
 })
 
-const goBack = R.always({
-  type: 'context/goBack'
+const goBack = ({comparePagePlots}) => ({
+  type: 'context/goBack',
+  payload: {
+    comparePagePlots
+  }
+})
+
+const goToCompare = R.always({
+  type: 'context/goToCompare'
+})
+
+const goToResults = ({runID}) => ({
+  type: 'context/goToResults',
+  payload: {
+    runID
+  }
 })
 
 export {
@@ -34,4 +48,6 @@ export {
   setRun,
   goHome,
   goBack,
+  goToCompare,
+  goToResults
 }
