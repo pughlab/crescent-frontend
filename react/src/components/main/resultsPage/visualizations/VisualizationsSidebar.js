@@ -9,34 +9,61 @@ import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useSavePlotQueryMutation, useRemoveSavedPlotQueryMutation, useUpdateSavedPlotQueryMutation} from '../../../../apollo/hooks/run'
 import {useResultsAvailableQuery} from '../../../../apollo/hooks/results'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage';
-import {setActiveResult, addPlot, setActivePlot, setPlotQueryID} from '../../../../redux/actions/resultsPage'
+import {setActiveResult, addEmptyPlot, setActivePlot, setPlotQueryID} from '../../../../redux/actions/resultsPage'
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
 import DotPlotVisualizationMenu from '../../resultsPage/visualizations/DotPlotVisualizationMenu'
 import HeatmapVisualizationMenu from '../../resultsPage/visualizations/HeatmapVisualizationMenu'
 import QualityControlMenu from '../../resultsPage/visualizations/QualityControlMenu'
 
+import { plotQueryFields } from '../../../../utils';
+
 const MultiPlotSelector = ({
-  runID
+  runID,
+  runOwner
 }) => {
   const [numPlots, setNumPlots] = useState(1)
-  
+
   const dispatch = useDispatch()
+  const {userID} = useCrescentContext()
   const {activePlot, plotQueries} = useResultsPage()
   const {plotQueryID} = useResultsPagePlotQuery(activePlot)
   const {savePlotQuery, loading: savePlotQueryLoading} = useSavePlotQueryMutation(
     runID, 
     R.compose(
       R.over(R.lensProp('selectedExpRange'), R.map(num => num.toString()), R.__),
-      R.omit(['plotQueryID'])
+      R.pick(plotQueryFields),
     )(plotQueries[activePlot]),
     (id) => dispatch(setPlotQueryID({value: id}))
   )
   const { removeSavedPlotQuery, loading: removePlotQueryLoading } = useRemoveSavedPlotQueryMutation(runID, plotQueryID, () => dispatch(setPlotQueryID({value: null})))
   const { updateSavedPlotQuery, loading: updatePlotQueryLoading } = useUpdateSavedPlotQueryMutation(
     runID,
-    R.over(R.lensProp('selectedExpRange'), R.map(num => num.toString()), plotQueries[activePlot])
+    R.compose(
+      R.over(R.lensProp('selectedExpRange'), R.map(num => num.toString()), R.__),
+      R.pick(plotQueryFields),
+    )(plotQueries[activePlot])
   )
+
+  const PlotSavingButtons = () => {
+    return plotQueryID ? (
+      <Button.Group fluid attached="bottom">
+        <Button color='violet' animated='vertical' style={{borderRadius: 0}} onClick={updateSavedPlotQuery} loading={updatePlotQueryLoading}>
+          <Button.Content visible><Icon name='sync'/></Button.Content>
+          <Button.Content hidden content="Update saved plot"/>
+        </Button>
+        <Button color='red' animated='vertical'  style={{borderRadius: 0}} onClick={removeSavedPlotQuery} loading={removePlotQueryLoading}>
+          <Button.Content visible><Icon name='trash'/></Button.Content>
+          <Button.Content hidden content="Remove plot"/>
+        </Button>
+      </Button.Group>
+    ) : (
+      <Button color="violet" animated='vertical' fluid style={{borderRadius: 0}} onClick={savePlotQuery} loading={savePlotQueryLoading}>
+        <Button.Content visible><Icon name='save'/></Button.Content>
+        <Button.Content hidden content="Save plot"/>
+      </Button>
+    )
+  }
 
   return (
     <>
@@ -53,25 +80,12 @@ const MultiPlotSelector = ({
             ))
           )(plotQueries)
         }
-        <Menu.Item icon='plus' onClick={() => dispatch(addPlot())} />
+        <Menu.Item icon='plus' onClick={() => dispatch(addEmptyPlot())} />
       </Menu>
-      { plotQueryID ? (
-        <Button.Group fluid attached="bottom">
-          <Button color='violet' animated='vertical' style={{borderRadius: 0}} onClick={updateSavedPlotQuery} loading={updatePlotQueryLoading}>
-            <Button.Content visible><Icon name='sync'/></Button.Content>
-            <Button.Content hidden content="Update saved plot"/>
-          </Button>
-          <Button color='red' animated='vertical'  style={{borderRadius: 0}} onClick={removeSavedPlotQuery} loading={removePlotQueryLoading}>
-            <Button.Content visible><Icon name='trash'/></Button.Content>
-            <Button.Content hidden content="Remove plot"/>
-          </Button>
-        </Button.Group>
-      ) : (
-        <Button color="violet" animated='vertical' fluid style={{borderRadius: 0}} onClick={savePlotQuery} loading={savePlotQueryLoading}>
-          <Button.Content visible><Icon name='save'/></Button.Content>
-          <Button.Content hidden content="Save plot"/>
-        </Button>
-      )}
+      {
+        R.equals(runOwner, userID) && (<PlotSavingButtons />)
+      }
+      
     </>
   )
 }
@@ -96,7 +110,7 @@ const VisualizationsSidebar = ({
   if (R.any(R.isNil, [run, plots])) {
     return null
   }
-  const {status: runStatus} = run
+  const {status: runStatus, createdBy: {userID: runOwner}} = run
   const runStatusEquals = R.equals(runStatus)
   if (runStatusEquals('failed')) {
     return (
@@ -131,7 +145,7 @@ const VisualizationsSidebar = ({
         </Step.Group>
       ) : (
         <>
-          <MultiPlotSelector {...{runID}}/>
+          <MultiPlotSelector {...{runID, runOwner}}/>
           <Segment as={Form} attached>
             <Divider horizontal content='Plots' />
             <Form.Group>
