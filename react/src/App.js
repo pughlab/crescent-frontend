@@ -10,6 +10,7 @@ import MenuComponent from './components/menu'
 import ProjectsPageComponent from './components/main/projectsPage'
 import RunsPageComponent from './components/main/runsPage'
 import ResultsPageComponent from './components/main/resultsPage'
+import ComparePageComponent from './components/main/comparePage'
 import ErrorComponent from './components/error'
 
 import {useMutation} from '@apollo/react-hooks'
@@ -74,6 +75,9 @@ const App = () => {
           )],
           [R.equals('results'), R.always(
             <ResultsPageComponent key={runID} />
+          )],
+          [R.equals('compare'), R.always(
+            <ComparePageComponent key={projectID} />
           )],
         ])(view)
       }
