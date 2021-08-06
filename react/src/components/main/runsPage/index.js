@@ -25,6 +25,7 @@ import {useCrescentContext} from '../../../redux/hooks'
 
 import {useDispatch} from 'react-redux'
 import {resetRunsPage} from '../../../redux/actions/runsPage'
+import CompareModal from '../comparePage/CompareModal';
 
 
 const RunsPageComponent = ({
@@ -57,90 +58,93 @@ const RunsPageComponent = ({
   const isUploadedProject = R.equals(projectKind, 'uploaded')
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
   return (
-    <Fade duration={2000}>
-    <Segment basic>
-    <Container>
-      {/* PROJECT CREATOR ACTIONS */}
-      {
-        R.and(isUploadedProject, currentUserIsCreator) &&
-        <Button.Group attached='top' widths={2} size='large'>
-          <ShareProjectModal {...{project}} />
-          {/* <AddMetadataModal {...{project}} /> */}
-          <ArchiveProjectModal {...{project}} />
-        </Button.Group>
-      }
-
-      {/* PROJECT ABSTRACT AND DETAILS */}
-      <Segment attached>
-        <Divider horizontal>
-          <Header content={'Project Details'} />
-        </Divider>
+    <>
+      <Fade duration={2000}>
+      <Segment basic>
+      <Container>
+        {/* PROJECT CREATOR ACTIONS */}
         {
-            RA.isNotNil(accession) &&
-            <Label as='a' ribbon content='ID' detail={accession} />
+          R.and(isUploadedProject, currentUserIsCreator) &&
+          <Button.Group attached='top' widths={2} size='large'>
+            <ShareProjectModal {...{project}} />
+            {/* <AddMetadataModal {...{project}} /> */}
+            <ArchiveProjectModal {...{project}} />
+          </Button.Group>
         }
-        <Header
-          content={projectName}
-          subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
-        />
-        <Divider horizontal />
-        {description}
-        {
-          RA.isNotEmpty(externalUrls) && 
-          <>
-          <Divider horizontal />
+
+        {/* PROJECT ABSTRACT AND DETAILS */}
+        <Segment attached>
+          <Divider horizontal>
+            <Header content={'Project Details'} />
+          </Divider>
           {
-            R.map(
-              ({label, link, type}) => (
-                <Popup key={label}
-                  inverted
-                  trigger={<Label as='a' href={link} icon={type} target="_blank" content={label}/>}
-                  content={link}
-                />
-              ),
-              externalUrls
-            )
-            }
-          </>
+              RA.isNotNil(accession) &&
+              <Label as='a' ribbon content='ID' detail={accession} />
+          }
+          <Header
+            content={projectName}
+            subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
+          />
+          <Divider horizontal />
+          {description}
+          {
+            RA.isNotEmpty(externalUrls) && 
+            <>
+            <Divider horizontal />
+            {
+              R.map(
+                ({label, link, type}) => (
+                  <Popup key={label}
+                    inverted
+                    trigger={<Label as='a' href={link} icon={type} target="_blank" content={label}/>}
+                    content={link}
+                  />
+                ),
+                externalUrls
+              )
+              }
+            </>
+          }
+        </Segment>
+
+        {
+          R.and(R.isEmpty(uploadedDatasets), RA.isNotEmpty(mergedProjects)) ?
+            // {/* LIST OF MERGED PROJECTS  */}
+            <MergedProjectsDetails />
+          : R.and(R.isEmpty(mergedProjects), RA.isNotEmpty(uploadedDatasets)) ?
+            // {/* LIST OF UPLOADED DATASETS */}
+            <UploadedDatasetsDetails />
+          :
+            <Segment attached as={Grid} columns={2}>
+              <Grid.Column>  
+                <MergedProjectsDetails />
+              </Grid.Column>
+              <Grid.Column>
+                <UploadedDatasetsDetails />
+              </Grid.Column>
+            </Segment>
         }
+
+
+        <Segment attached='bottom'>
+          <Divider horizontal>
+            <Header content={'Project Runs'} />
+          </Divider>
+          {/* CREATE NEW RUN MODAL */}
+          <NewRunModal {...{project}} />
+          {/* SHOW RUNS BY STATUS */}
+          {/* {isUploadedProject && <RunsStatusLegend />} */}
+          { <RunsStatusLegend />}
+
+          <ProjectRunsList />
+
+        </Segment>
+        
+      </Container>
       </Segment>
-
-      {
-        R.and(R.isEmpty(uploadedDatasets), RA.isNotEmpty(mergedProjects)) ?
-          // {/* LIST OF MERGED PROJECTS  */}
-          <MergedProjectsDetails />
-        : R.and(R.isEmpty(mergedProjects), RA.isNotEmpty(uploadedDatasets)) ?
-          // {/* LIST OF UPLOADED DATASETS */}
-          <UploadedDatasetsDetails />
-        :
-          <Segment attached as={Grid} columns={2}>
-            <Grid.Column>  
-              <MergedProjectsDetails />
-            </Grid.Column>
-            <Grid.Column>
-              <UploadedDatasetsDetails />
-            </Grid.Column>
-          </Segment>
-      }
-
-
-      <Segment attached='bottom'>
-        <Divider horizontal>
-          <Header content={'Project Runs'} />
-        </Divider>
-        {/* CREATE NEW RUN MODAL */}
-        <NewRunModal {...{project}} />
-        {/* SHOW RUNS BY STATUS */}
-        {/* {isUploadedProject && <RunsStatusLegend />} */}
-        { <RunsStatusLegend />}
-
-        <ProjectRunsList />
-
-      </Segment>
-      
-    </Container>
-    </Segment>
-    </Fade>
+      </Fade>
+      <CompareModal />
+    </>
   )
 }
 
