@@ -7,6 +7,7 @@ import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Shake from 'react-reveal/Shake'
+import PlotHeader from './PlotHeader';
 
 import * as R from 'ramda'
 
@@ -27,14 +28,16 @@ const grey = '#a1a1a2'
 const DotPlot = ({
   plotQueryIndex
 }) => {
-  const { runID } = useCrescentContext()
+  const { runID, view } = useCrescentContext()
 
   const dispatch = useDispatch()
-  const { activeResult, selectedFeature, selectedFeatures, selectedGroup, selectedDiffExpression, selectedScaleBy, selectedExpRange, selectedAssay } = useResultsPagePlotQuery(plotQueryIndex)
+  const { activeResult, selectedFeatures, selectedGroup, selectedScaleBy, selectedExpRange, selectedAssay, runID: compareRunID, plotQueryID } = useResultsPagePlotQuery(plotQueryIndex)
   const { sidebarCollapsed } = useResultsPage()
 
-  const plots = useResultsAvailableQuery(runID)
+  const plots = useResultsAvailableQuery(runID || compareRunID)
+
   const [resetSliderValues, setResetSliderValues] = useState(true)
+  const inMultiPlot = sidebarCollapsed || R.equals(view, 'compare')
 
   let dotPlot = [] //list of dot plot plotly object
   let queryGenes = [] //list of genes to send along the query
@@ -52,7 +55,7 @@ const DotPlot = ({
       queryGenes = R.append(gene, queryGenes)
     }
   }, selectedFeatures)
-  const { dotPlot: queryResult, loading } = useDotPlotQuery(queryGenes, selectedGroup, runID, selectedScaleBy, selectedExpRange, selectedAssay, sidebarCollapsed)
+  const { dotPlot: queryResult, loading } = useDotPlotQuery(queryGenes, selectedGroup, runID || compareRunID, selectedScaleBy, selectedExpRange, selectedAssay, inMultiPlot)
   const result = queryResult === null ? [] : queryResult.filter(trace => trace["group"] === selectedGroup && trace["scaleby"] === selectedScaleBy)
   dotPlot = R.concat(dotPlot, result)
 
@@ -175,150 +178,142 @@ const DotPlot = ({
     // </Dimmer>
     // <Segment style={{height: '100%'}}>
     <>
-      <Header textAlign='center' content={currentScatterPlotType} />
-      {/* <Header textAlign='center'>
-        {currentScatterPlotType}
-        <Popup
-          content="Dot plot can be used to compare expression between different genes and cluster groups. Each dot has 2 properties: opacity and size. Size represents the precentage of cells expressed a specific gene in a cluster group. The opacity shows the average gene expression across the cluster group."
-          position="bottom center"
-          wide
-          trigger={<Icon color="yellow" size="mini" name='info circle' style={{marginLeft: "10px", fontSize: "1em" }}/>}
-          
-        />
-      </Header> */}
-            <Segment basic loading={loading} style={{ height: '100%' }}>
-
-      { sidebarCollapsed ||
-        (
-          <Grid divided='vertically'>
-            <Grid.Row columns={3}>
-              <Grid.Column textAlign="center" verticalAlign="middle" width={selectedScaleBy == "matrix" ? 5 : 7}>
-                <Header size='small' style={{ display: "inline", paddingRight: "10px" }}>Scale By: </Header>
-                <Dropdown
-                  key={`dropdown-${plotQueryIndex}`}
-                  selection
-                  defaultValue={selectedScaleBy}
-                  onChange={(e, { value }) => dispatch(setSelectedScaleBy({ value }))}
-                  options={[{ text: "gene", value: "gene" },
-                  { text: "matrix", value: "matrix" }]}
-                />
-              </Grid.Column>
-              <Grid.Column verticalAlign="middle" width={9}>
-                  <div style={{ display: 'flex', justifyContent: "center", alignContent: "center" }}>
-                  {selectedScaleBy !== "matrix" || (
-
-                    <>
-                      <Header size='small' style={{ margin: 0 }}>
-                        Gene Expression Range:
-                      </Header>
-                      <SliderWithTooltip
-                        key={`slider-${plotQueryIndex}`}
-                        min={0}
-                        max={possibleMaxExp}
-                        step={0.1}
-                        marks={{ 0: 0, [possibleMaxExp]: possibleMaxExp }}
-                        allowCross={false}
-                        disabled={selectedScaleBy === "gene"}
-                        style={{ maxWidth: "300px", margin: "auto", marginBottom: "10px" }}
-                        trackStyle={[{ backgroundColor: getColor() }]}
-                        handleStyle={[{ backgroundColor: getColor(), border: "none", boxShadow: "none" }, { backgroundColor: getColor(), border: "none", boxShadow: "none" }]}
-                        railStyle={{ backgroundColor: lightViolet }}
-                        // defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, possibleMaxExp] : selectedExpRange}
-                        defaultValue={R.equals(selectedExpRange, [0, 0]) ? initialRange : selectedExpRange}
-                        onAfterChange={(value) => { dispatch(setSelectedExpRange({ value })); }}
-                      />
-                    </>
-                                    )}
-
-                  </div>
-              </Grid.Column>
-              <Grid.Column textAlign="center" verticalAlign="middle" width={2}>
-                {selectedScaleBy !== "matrix" || (
-
-                  <Button.Group fluid widths={2} size='mini'>
-                    <Popup inverted size='tiny'
-                      trigger={
-                        <Button color='violet' icon='chart area'
-                          onClick={() => dispatch(setSelectedExpRange({ value: initialRange }))}
-                          disabled={selectedScaleBy === "gene"}
-
-                        />
-                      }
-                      content={
-                        'Set Gene Expression Range to 10th/90th Percentiles'
-                      }
+      <PlotHeader {...{plotQueryID}} name={currentScatterPlotType} runID={runID || compareRunID} />
+      <Segment basic loading={loading} style={{ height: '100%' }}>
+        <>
+          { inMultiPlot ||
+            (
+              <Grid divided='vertically'>
+                <Grid.Row columns={3}>
+                  <Grid.Column textAlign="center" verticalAlign="middle" width={selectedScaleBy == "matrix" ? 5 : 7}>
+                    <Header size='small' style={{ display: "inline", paddingRight: "10px" }}>Scale By: </Header>
+                    <Dropdown
+                      key={`dropdown-${plotQueryIndex}`}
+                      selection
+                      defaultValue={selectedScaleBy}
+                      onChange={(e, { value }) => dispatch(setSelectedScaleBy({ value }))}
+                      options={[{ text: "gene", value: "gene" },
+                      { text: "matrix", value: "matrix" }]}
                     />
-                    <Popup inverted size='tiny'
-                      trigger={
-                        <Button basic color='violet' icon='balance scale'
-                          onClick={() => dispatch(setSelectedExpRange({ value: [0, possibleMaxExp] }))}
-                          disabled={selectedScaleBy === "gene"}
-                        />
-                      }
-                      content={
-                        'Set Gene Expression Range to Min/Max'
-                      }
-                    />
-                  </Button.Group>
-                )}
-              </Grid.Column>
-            </Grid.Row>
-          </Grid>
-        )
-      }
+                  </Grid.Column>
+                  <Grid.Column verticalAlign="middle" width={9}>
+                      <div style={{ display: 'flex', justifyContent: "center", alignContent: "center" }}>
+                      {selectedScaleBy !== "matrix" || (
 
-        <Plot
-          data={sizeLegend}
-          style={{ width: '100%', height: 60 }}
-          layout={{
-            showlegend: false,
-            margin: { l: 100, r: 100, b: 0, t: 0 },
-            xaxis: {
-              visible: false
-            },
-            yaxis: {
-              visible: false
-            },
-          }}
-          config={{
-            displayModeBar: false,
-            staticPlot: true
-          }}
-        />
-        <Plot
-          config={{ showTips: false }}
-          data={dotPlot}
-          useResizeHandler
-          style={{ width: '100%', height: plotHeight }}
-          layout={{
-            autosize: true,
-            hovermode: 'closest',
-            hoverlabel: { bgcolor: "#FFF" },
-            margin: { l: 50, r: 30, b: 50, t: 20 },
-            legend: { "orientation": "v" },
-            showlegend: false,
-            xaxis: {
-              title: 'Genes',
-              showline: true,
-              showgrid: true,
-              autorange: true,
-              automargin: true,
-              type: 'category',
-              categoryorder: 'array',
-            },
-            yaxis: {
-              title: 'Cluster Groups',
-              showline: true,
-              showgrid: true,
-              autorange: true,
-              automargin: true,
-              type: 'category',
-              categoryorder: 'array',
-            },
-            hovermode: 'closest'
-          }}
-        />
-        {/* </Dimmer.Dimmable> */}
+                        <>
+                          <Header size='small' style={{ margin: 0 }}>
+                            Gene Expression Range:
+                          </Header>
+                          <SliderWithTooltip
+                            key={`slider-${plotQueryIndex}`}
+                            min={0}
+                            max={possibleMaxExp}
+                            step={0.1}
+                            marks={{ 0: 0, [possibleMaxExp]: possibleMaxExp }}
+                            allowCross={false}
+                            disabled={selectedScaleBy === "gene"}
+                            style={{ maxWidth: "300px", margin: "auto", marginBottom: "10px" }}
+                            trackStyle={[{ backgroundColor: getColor() }]}
+                            handleStyle={[{ backgroundColor: getColor(), border: "none", boxShadow: "none" }, { backgroundColor: getColor(), border: "none", boxShadow: "none" }]}
+                            railStyle={{ backgroundColor: lightViolet }}
+                            // defaultValue={R.equals(selectedExpRange, [0, 0]) ? [0, possibleMaxExp] : selectedExpRange}
+                            defaultValue={R.equals(selectedExpRange, [0, 0]) ? initialRange : selectedExpRange}
+                            onAfterChange={(value) => { dispatch(setSelectedExpRange({ value })); }}
+                          />
+                        </>
+                                        )}
+
+                      </div>
+                  </Grid.Column>
+                  <Grid.Column textAlign="center" verticalAlign="middle" width={2}>
+                    {selectedScaleBy !== "matrix" || (
+
+                      <Button.Group fluid widths={2} size='mini'>
+                        <Popup inverted size='tiny'
+                          trigger={
+                            <Button color='violet' icon='chart area'
+                              onClick={() => dispatch(setSelectedExpRange({ value: initialRange }))}
+                              disabled={selectedScaleBy === "gene"}
+
+                            />
+                          }
+                          content={
+                            'Set Gene Expression Range to 10th/90th Percentiles'
+                          }
+                        />
+                        <Popup inverted size='tiny'
+                          trigger={
+                            <Button basic color='violet' icon='balance scale'
+                              onClick={() => dispatch(setSelectedExpRange({ value: [0, possibleMaxExp] }))}
+                              disabled={selectedScaleBy === "gene"}
+                            />
+                          }
+                          content={
+                            'Set Gene Expression Range to Min/Max'
+                          }
+                        />
+                      </Button.Group>
+                    )}
+                  </Grid.Column>
+                </Grid.Row>
+              </Grid>
+            )
+          }
+
+            <Plot
+              data={sizeLegend}
+              useResizeHandler
+              style={{ width: '100%', height: 60 }}
+              layout={{
+                showlegend: false,
+                margin: { l: 100, r: 100, b: 0, t: 0 },
+                xaxis: {
+                  visible: false
+                },
+                yaxis: {
+                  visible: false
+                },
+              }}
+              config={{
+                displayModeBar: false,
+                staticPlot: true
+              }}
+            />
+            <Plot
+              config={{ showTips: false }}
+              data={dotPlot}
+              useResizeHandler
+              style={{ width: '100%', height: plotHeight }}
+              layout={{
+                autosize: true,
+                hovermode: 'closest',
+                hoverlabel: { bgcolor: "#FFF" },
+                margin: { l: 50, r: 30, b: 50, t: 20 },
+                legend: { "orientation": "v" },
+                showlegend: false,
+                xaxis: {
+                  title: 'Genes',
+                  showline: true,
+                  showgrid: true,
+                  autorange: true,
+                  automargin: true,
+                  type: 'category',
+                  categoryorder: 'array',
+                },
+                yaxis: {
+                  title: 'Cluster Groups',
+                  showline: true,
+                  showgrid: true,
+                  autorange: true,
+                  automargin: true,
+                  type: 'category',
+                  categoryorder: 'array',
+                },
+                hovermode: 'closest'
+              }}
+            />
+            {/* </Dimmer.Dimmable> */}
+        </>
       </Segment>
     </>
   )

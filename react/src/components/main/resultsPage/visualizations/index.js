@@ -24,7 +24,7 @@ import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
 import {Button} from 'semantic-ui-react'
 
-const CrescentPlot = ({
+export const CrescentPlot = ({
   plotQueryIndex
 }) => {
   const {activeResult} = useResultsPagePlotQuery(plotQueryIndex)
@@ -42,12 +42,11 @@ const VisualizationsComponent = ({
 
 }) => {
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
-  const plots = useResultsAvailableQuery(runID)
-
 
   const dispatch = useDispatch()
-  const {activeResult, activePlot, plotQueries, sidebarCollapsed, activeSidebarTab} = useResultsPage()
+  const {activeResult, activePlot, plotQueries, sidebarCollapsed, runID: compareRunID} = useResultsPage()
+  const run = useRunDetailsQuery(runID || compareRunID)
+  const plots = useResultsAvailableQuery(runID || compareRunID)
   const [showLogs, setShowLogs] = useState(false)
 
   if (R.any(R.isNil, [run, plots])) {

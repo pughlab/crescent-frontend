@@ -7,6 +7,7 @@ import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Shake from 'react-reveal/Shake'
+import PlotHeader from './PlotHeader';
 
 import * as R from 'ramda'
 
@@ -20,9 +21,9 @@ const Heatmap = ({
   plotQueryIndex
 }) => {
   const { runID } = useCrescentContext()
-  const { activeResult } = useResultsPagePlotQuery(plotQueryIndex)
-  const plots = useResultsAvailableQuery(runID)
-  const {heatmap, loading} = useHeatmapQuery(runID)
+  const { activeResult, runID: compareRunID, plotQueryID } = useResultsPagePlotQuery(plotQueryIndex)
+  const plots = useResultsAvailableQuery(runID || compareRunID)
+  const {heatmap, loading} = useHeatmapQuery(runID || compareRunID)
   const [selectedCell, setSelectedCell] = useState(null)
 
   if (R.any(R.isNil, [plots])) {
@@ -47,7 +48,7 @@ const Heatmap = ({
 
   return (
     <>
-      <Header textAlign='center' content={'GSVA Heatmap'} />
+      <PlotHeader {...{plotQueryID}} name={'GSVA Heatmap'} runID={runID || compareRunID} />
       <Segment basic loading={loading} style={{height: '100%'}}>
         <Plot
           config={{ showTips: false }}

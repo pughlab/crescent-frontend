@@ -5,6 +5,7 @@ import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
+import PlotHeader from './PlotHeader'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -23,7 +24,7 @@ const QCScatterPlot = ({
 
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
+  const {selectedQC, plotQueryID} = useResultsPagePlotQuery(plotQueryIndex)
 
   const {qcScatter, loading} = useQCScatterQuery(selectedQC, runID, datasetID)
 
@@ -42,7 +43,7 @@ const QCScatterPlot = ({
   
   return (
     <>
-      <Header textAlign='center' content={R.isNil(selectedQC) ? '' : R.equals(selectedQC)('Number_of_Reads') ? "Number of UMI Counts for "+name+" (UMAP)" : (selectedQC.replace(/_/g," ")+" for "+name+" (UMAP)")} />
+      <PlotHeader {...{plotQueryID, runID}} name={R.isNil(selectedQC) ? '' : R.equals(selectedQC)('Number_of_Reads') ? "Number of UMI Counts for "+name+" (UMAP)" : (selectedQC.replace(/_/g," ")+" for "+name+" (UMAP)")}/>
       <Segment basic loading={loading} style={{height: '100%'}}>
         <Plot
           config={{showTips: false}}

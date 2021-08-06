@@ -6,6 +6,7 @@ import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
+import PlotHeader from './PlotHeader'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -19,7 +20,7 @@ const QCViolinPlot = ({
   name,
   plotQueryIndex
 }) => { 
-  const {selectedQC} = useResultsPagePlotQuery(plotQueryIndex)
+  const {selectedQC, plotQueryID} = useResultsPagePlotQuery(plotQueryIndex)
 
   const {qcViolin, loading} = useQCViolinQuery({runID, datasetID})
 
@@ -35,7 +36,7 @@ const QCViolinPlot = ({
   
   return (
     <>
-    <Header textAlign='center' content={R.isNil(selectedQC) ? '' : `Metrics Before and After QC for ${name} (Violins)`} />
+    <PlotHeader {...{plotQueryID, runID}} name={R.isNil(selectedQC) ? '' : `Metrics Before and After QC for ${name} (Violins)`}/>
     <Segment basic loading={loading} style={{height: '100%'}}>
       <Plot
         config={{showTips: false}}

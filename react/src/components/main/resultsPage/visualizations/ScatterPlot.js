@@ -7,6 +7,7 @@ import 'rc-slider/assets/index.css';
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import { ClimbingBoxLoader } from 'react-spinners'
+import PlotHeader from './PlotHeader';
 
 import * as R from 'ramda'
 
@@ -22,18 +23,20 @@ const lightViolet = '#c5b3eb'
 const ScatterPlot = ({
   plotQueryIndex
 }) => {
-  const { runID } = useCrescentContext()
+  
+  const { runID, view } = useCrescentContext()
 
   const dispatch = useDispatch()
   const { sidebarCollapsed } = useResultsPage()
-  const { activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange, selectedAssay } = useResultsPagePlotQuery(plotQueryIndex)
+  const { activeResult, selectedFeature, selectedGroup, selectedDiffExpression, selectedExpRange, selectedAssay, runID: compareRunID, plotQueryID } = useResultsPagePlotQuery(plotQueryIndex)
   const isFeatureNotSelected = R.or(R.isNil, R.isEmpty)(selectedFeature)
+  const inMultiPlot = sidebarCollapsed || R.equals(view, 'compare')
 
 
-  const plots = useResultsAvailableQuery(runID)
-  const { scatter, loading: scatterLoading } = useScatterQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID, selectedDiffExpression)
-  const { opacity, loading: opacityLoading } = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedExpRange, selectedAssay)
+  const plots = useResultsAvailableQuery(runID || compareRunID)
+  const { scatter, loading: scatterLoading } = useScatterQuery(activeResult, selectedGroup, runID || compareRunID, selectedDiffExpression)
+  const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID || compareRunID, selectedDiffExpression)
+  const { opacity, loading: opacityLoading } = useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID || compareRunID, selectedDiffExpression, selectedExpRange, selectedAssay)
 
   // const numericGroups = useNumericGroupsQuery(runID, selectedDiffExpression)
 
@@ -190,11 +193,11 @@ const ScatterPlot = ({
     // </Dimmer>
     // <Segment style={{height: '100%'}}>
     <>
-      <Header textAlign='center' content={currentScatterPlotType} />
+      <PlotHeader {...{plotQueryID}} name={currentScatterPlotType} runID={runID || compareRunID}/>
       <Segment basic loading={isFeatureNotSelected ? scatterLoading : opacityLoading} style={{ height: '100%' }}>
 
       {
-        (isFeatureNotSelected || sidebarCollapsed) || (
+        (isFeatureNotSelected || inMultiPlot) || (
           <Grid divided='vertically'>
             <Grid.Row columns={2} >
               <Grid.Column verticalAlign="middle" width={12}>
