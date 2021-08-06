@@ -58,6 +58,7 @@ export default function useRunDetails(runID) {
         }
 
         project {
+          projectID
           name
           createdBy {
             userID
