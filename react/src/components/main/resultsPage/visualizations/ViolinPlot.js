@@ -6,6 +6,7 @@ import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
 import Shake from 'react-reveal/Shake'
+import PlotHeader from './PlotHeader'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -21,8 +22,8 @@ const ViolinPlot = ({
 }) => {
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay, service} = useResultsPagePlotQuery(plotQueryIndex)
-  useViolinQuery(selectedFeature, selectedGroup, runID, selectedDiffExpression, selectedAssay, plotQueryIndex)
+  const {selectedFeature, selectedGroup, selectedDiffExpression, selectedAssay, runID: compareRunID, plotQueryID, service} = useResultsPagePlotQuery(plotQueryIndex)
+  useViolinQuery(selectedFeature, selectedGroup, runID || compareRunID, selectedDiffExpression, selectedAssay, plotQueryIndex)
 
   const [current, send] = useService(service)
 
@@ -98,7 +99,7 @@ const ViolinPlot = ({
     // :
     // Plot data
     <>
-    <Header textAlign='center' content='Gene Expression Violin' />
+      <PlotHeader {...{plotQueryID}} name="Gene Expression Violin" runID={runID || compareRunID} />
       <Segment basic loading={current.matches('dataLoading')} style={{height: '100%'}} >
         <Plot
           config={{showTips: false}}

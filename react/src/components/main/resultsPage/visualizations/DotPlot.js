@@ -8,6 +8,7 @@ import Logo from '../../../login/logo.jpg'
 import { ClimbingBoxLoader } from 'react-spinners'
 import Shake from 'react-reveal/Shake'
 import { useService } from '@xstate/react';
+import PlotHeader from './PlotHeader';
 
 import * as R from 'ramda'
 
@@ -25,18 +26,20 @@ const grey = '#a1a1a2'
 const DotPlot = ({
   plotQueryIndex
 }) => {
-  const { runID } = useCrescentContext()
+  const { runID, view } = useCrescentContext()
 
   const dispatch = useDispatch()
-  const { activeResult, selectedFeatures, selectedGroup, selectedScaleBy, selectedExpRange, selectedAssay, service } = useResultsPagePlotQuery(plotQueryIndex)
-  const { sidebarCollapsed, activePlot } = useResultsPage()
-  
+  const { activeResult, selectedFeatures, selectedGroup, selectedScaleBy, selectedExpRange, selectedAssay, runID: compareRunID, plotQueryID } = useResultsPagePlotQuery(plotQueryIndex)
+  const { sidebarCollapsed } = useResultsPage()
+
+  const plots = useResultsAvailableQuery(runID || compareRunID)
   const [current, send] = useService(service)
   
-  const plots = useResultsAvailableQuery(runID)
   const firstUpdate = useRef(true);
+  const [resetSliderValues, setResetSliderValues] = useState(true)
+  const inMultiPlot = sidebarCollapsed || R.equals(view, 'compare')
 
-  useDotPlotQuery(selectedFeatures, selectedGroup, runID, selectedScaleBy, selectedExpRange, selectedAssay, sidebarCollapsed, plotQueryIndex)
+  useDotPlotQuery(selectedFeatures, selectedGroup, runID || compareRunID , selectedScaleBy, selectedExpRange, selectedAssay, sidebarCollapsed, plotQueryIndex)
 
   useEffect(() => {
     // do not run on first render when sidebar not collapsed
@@ -44,7 +47,6 @@ const DotPlot = ({
       firstUpdate.current = false
       return
     }
-
     if(!(R.test(/multiPlot.*/, current.value) && sidebarCollapsed)) send({type: "COLLAPSE_SIDEBAR"})
   }, [sidebarCollapsed])
 
@@ -123,15 +125,10 @@ const DotPlot = ({
   const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
   const getColor = () => selectedScaleBy === "gene" ? grey : violet
   return (
-    // <Dimmer.Dimmable dimmed={isLoading} style={{height:'100%'}}>
-    // <Dimmer active={isLoading} inverted>
-    //   <ClimbingBoxLoader color='#6435c9' />
-    // </Dimmer>
-    // <Segment style={{height: '100%'}}>
     <>
-      <Header textAlign='center' content={currentScatterPlotType} />
-      <Segment basic loading={R.test(/.*Loading/, current.value)} style={{ height: '100%' }}>
-      { sidebarCollapsed ||
+      <PlotHeader {...{plotQueryID}} name={currentScatterPlotType} runID={runID || compareRunID} />
+      <Segment basic loading={loading} style={{ height: '100%' }}>
+      { inMultiPlot ||
         (
           <Grid divided='vertically'>
             <Grid.Row columns={3}>
@@ -261,7 +258,6 @@ const DotPlot = ({
             hovermode: 'closest'
           }}
         />
-        {/* </Dimmer.Dimmable> */}
       </Segment>
     </>
   )

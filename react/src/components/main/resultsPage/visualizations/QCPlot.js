@@ -20,9 +20,9 @@ const QCPlot = ({
   plotQueryIndex
 }) => { 
   const {runID} = useCrescentContext()
-  const {selectedQC, selectedQCDataset} = useResultsPagePlotQuery(plotQueryIndex)
+  const {selectedQC, selectedQCDataset, runID: compareRunID} = useResultsPagePlotQuery(plotQueryIndex)
 
-  const run = useRunDatasetsQuery(runID)
+  const run = useRunDatasetsQuery(runID || compareRunID)
   if (R.isNil(run)) {
     return null
   }
@@ -32,8 +32,8 @@ const QCPlot = ({
     <> 
     {
       R.equals(selectedQC, 'Before_After_Filtering') ? 
-        <QCViolinPlot {...{runID, datasetID: selectedQCDataset, name, plotQueryIndex}} />
-      : <QCScatterPlot {...{runID, datasetID: selectedQCDataset, name, plotQueryIndex}} />
+        <QCViolinPlot {...{runID: runID || compareRunID, datasetID: selectedQCDataset, name, plotQueryIndex}} />
+      : <QCScatterPlot {...{runID: runID || compareRunID, datasetID: selectedQCDataset, name, plotQueryIndex}} />
     } 
     </>
   )
