@@ -1,6 +1,7 @@
 
 import * as R from 'ramda'
 import * as R_ from 'ramda-extension'
+import * as RA from 'ramda-adjunct'
 import createReducer from './createReducer'
 
 const initialState = {
@@ -62,13 +63,15 @@ export default createReducer(
     },
     
     'context/goBack': (state, payload) => {
-      const {view: currentView} = state
+      const {comparePagePlots} = payload
+      const {view: currentView, projectID: currentProjectID} = state
       const view = R.compose(
         R.always,
         R.prop(R.__, {
           'projects': 'projects',
           'runs': 'projects',
-          'results': 'runs'
+          'results': RA.isNilOrEmpty(comparePagePlots) ? 'runs' : 'compare',
+          'compare': currentProjectID ? 'runs' : 'projects'
         })
       )(currentView)
       // Going back will always unselect run
@@ -80,6 +83,20 @@ export default createReducer(
         runID,
         view,
       })(state)
-    }
+    },
+
+    'context/goToCompare': (state, payload) => {
+      return R.evolve({
+        view: R.always('compare')
+      })(state)
+    },
+
+    'context/goToResults': (state, payload) => {
+      const {runID} = payload
+      return R.evolve({
+        runID: R.always(runID),
+        view: R.always('results')
+      })(state)
+    },
   }
 )
