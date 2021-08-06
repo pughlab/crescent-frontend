@@ -1,6 +1,8 @@
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
+import { plotQueryFields } from '../../utils'
 
 const initialPlotQuery = {
   activeResult: null,
@@ -14,6 +16,7 @@ const initialPlotQuery = {
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
   plotQueryID: null,
+  runID: null
 }
 
 const initialState = {
@@ -26,7 +29,6 @@ const initialState = {
   sidebarCollapsed: false,
   activePlot: 0,
   plotQueries: [
-    initialPlotQuery
     // {
     //   activeResult: null, //results select in side
     //   selectedQC: 'Before_After_Filtering',
@@ -41,6 +43,14 @@ const initialState = {
 }
 
 const evolveAtIndex = (transformations, index) => R.over(R.lensIndex(index), R.evolve(transformations))
+// converting selectedExpRange to float, remove __typename, rename id to plotQueryID and add runID field
+const cleanUpPlotQuery = R.compose(
+  RA.renameKeys({ id: 'plotQueryID'}),
+  R.pick(R.concat(['id', 'runID'], plotQueryFields)),
+  R.evolve({
+    selectedExpRange: R.map(str => parseFloat(str)),
+  })
+)
 
 export default createReducer(
   initialState, {
@@ -175,7 +185,7 @@ export default createReducer(
       })(state)
     },
 
-    'resultsPage/addPlot': (state, payload) => {
+    'resultsPage/addEmptyPlot': (state, payload) => {
       const {plotQueries} = state
       const addAndSetActivePlot =         R.evolve({
         activePlot: R.always(R.length(plotQueries)),
@@ -204,17 +214,20 @@ export default createReducer(
 
     'resultsPage/reset': R.always(initialState),
 
-    'resultsPage/addSavedPlots': (state, payload) => {
-      const {value} = payload
-      // function for converting selectedExpRange to float and remove __typename
-      const cleanUpPlotQuery = R.compose(
-        R.map(R.omit(['__typename'])),
-        R.map(R.evolve({selectedExpRange: R.map(str => parseFloat(str))}))
-      )
+    // add saved plots and set active plot
+    'resultsPage/initializePlots': (state, payload) => {
+      const {value, selectedPlotID} = payload
+      const plots = R.map(cleanUpPlotQuery, value)
       return R.evolve({
-        plotQueries: R.isEmpty(value) 
-          ? [R.always(initialPlotQuery)] 
-          : R.always(cleanUpPlotQuery(value))
+        activePlot: R.always(
+          R.ifElse(
+            R.equals(-1),
+            R.always(0),
+            R.identity
+          )(R.findIndex(R.propEq('plotQueryID', selectedPlotID))(plots))
+        ),
+        selectedPlotID: R.always(null),
+        plotQueries: R.always(R.isEmpty(value) ? [initialPlotQuery] : plots) 
       })(state)
     },
 
@@ -223,6 +236,29 @@ export default createReducer(
       const {activePlot} = state
       return R.evolve({
         plotQueries: evolveAtIndex({plotQueryID: R.always(value)}, activePlot)
+      })(state)
+    },
+
+    // for compare modal
+    'resultsPage/addPlots': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        plotQueries: R.concat(R.map(cleanUpPlotQuery, value))
+      })(state)
+    },
+
+    // for compare modal
+    'resultsPage/removePlots': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        plotQueries: R.filter(({plotQueryID}) => !R.includes(plotQueryID, value))
+      })(state)
+    },
+
+    // for compare modal
+    'resultsPage/clearPlots': (state, payload) => {
+      return R.evolve({
+        plotQueries: R.always([])
       })(state)
     },
   }
