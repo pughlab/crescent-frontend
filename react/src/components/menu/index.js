@@ -16,14 +16,15 @@ import RunHeader from './RunHeader'
 
 import {useDispatch} from 'react-redux'
 import {goHome, goBack} from '../../redux/actions/context'
-import {useCrescentContext} from '../../redux/hooks'
+import {useCrescentContext, useComparePage} from '../../redux/hooks'
 
 const MenuComponent = ({
 
 }) => {
   const dispatch = useDispatch()
   const context = useCrescentContext()
-  const {view} = context
+  const {plotQueries: comparePagePlots} = useComparePage()
+  const {view, projectID} = context
   const isCurrentView = R.equals(view)
   return (
     <Segment attached='top' as={Grid}>
@@ -53,7 +54,7 @@ const MenuComponent = ({
               trigger={
                 <Button icon basic inverted color='grey'
                   disabled={isCurrentView('projects')}
-                  onClick={() => {dispatch(goBack())}}
+                  onClick={() => {dispatch(goBack({comparePagePlots}))}}
                 >
                   <Icon color='black' name='left arrow' size='large' />
                 </Button>
@@ -63,7 +64,9 @@ const MenuComponent = ({
                 : isCurrentView('runs') ?
                   'Go back to projects'
                 : isCurrentView('results') ?
-                  'Go back to runs'
+                  R.isEmpty(comparePagePlots) ? 'Go back to runs' : 'Go back to compare page'
+                : isCurrentView('compare') ?
+                  R.isNil(projectID) ? 'Go back to projects' : 'Go back to runs'
                 : 'Back' //Should also never be reached
               }
               position='bottom center'
@@ -83,6 +86,8 @@ const MenuComponent = ({
           <ProjectHeader />
         : isCurrentView('results') ?
           <RunHeader />
+        : isCurrentView('compare') ?
+          <Header textAlign='center' content="Compare Plots" />
         : null
       }
       </Grid.Column>
