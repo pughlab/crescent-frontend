@@ -8,6 +8,21 @@ const queryIsNotNil = R.curry(
   )(data)
 )
 
+const plotQueryFields = [
+  'plotQueryID',
+  'activeResult',
+  'selectedQC',
+  'selectedFeature',
+  'selectedFeatures',
+  'selectedScaleBy',
+  'selectedExpRange',
+  'selectedGroup',
+  'selectedAssay',
+  'selectedDiffExpression',
+  'selectedQCDataset',
+ ]
+
 export {
-  queryIsNotNil
+  queryIsNotNil,
+  plotQueryFields
 }
