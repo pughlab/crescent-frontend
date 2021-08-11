@@ -57,12 +57,13 @@ def add_barcodes(plotly_obj, column_name, barcode_values, barcode_coords, num_ce
     #colourscale = [[barcode_values[i][0], gradient[i]] for i in range(0,len(barcode_values))]
 
     template_obj = {
+        "name": "",
         "mode": "markers",
         "text": [],
         "hovertext": [],
         "marker": {
             'color': [], # put sorted markers' colours here from the gradient
-            'colorscale':[[0, poly_gradient[0]],[1, poly_gradient[-1]]],
+            'colorscale':[[0, '#dfdfdf'], [0.5, '#e9835c'], [1, '#b20a1c']],
             #'colorscale': colourscale,
             'showscale': True
         },
@@ -78,8 +79,8 @@ def add_barcodes(plotly_obj, column_name, barcode_values, barcode_coords, num_ce
 
     gradient_iter = 0
     for barcode, value in barcode_values:
-        template_obj["text"].append(barcode)
-        template_obj["hovertext"].append(str(value)+" ("+column_name+")")
+        template_obj["text"].append(str(value)+" ("+barcode+")") # for scatter
+        template_obj["hovertext"].append(str(value)+" ("+column_name+")") # for qc scatter
         template_obj["x"].append(barcode_coords[barcode][0])
         template_obj["y"].append(barcode_coords[barcode][1])
         template_obj["marker"]["color"].append(int(value))
