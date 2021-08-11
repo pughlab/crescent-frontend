@@ -11,7 +11,7 @@ import {useResultsPage} from '../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 
 
-export default function useDiffExpressionCategoricalGroups(runID, selectedDiffExpression) {
+export default function useDiffExpressionCategoricalGroups(runID, selectedDiffExpression, initializeSelectedGroup) {
   const dispatch = useDispatch()
   const categoricalGroups = useCategoricalGroupsQuery(runID, selectedDiffExpression)
   const [current, send] = useMachineService()
@@ -21,7 +21,7 @@ export default function useDiffExpressionCategoricalGroups(runID, selectedDiffEx
   // assume groups is never empty 
 
   useEffect(() => {
-    if (RA.isNotNil(categoricalGroups) && RA.isNilOrEmpty(selectedGroup)) {
+    if (RA.isNotNil(categoricalGroups) && RA.isNilOrEmpty(selectedGroup) && initializeSelectedGroup) {
       dispatch(setSelectedGroup({value: categoricalGroups[0], send}))  
     }
   }, [categoricalGroups])
