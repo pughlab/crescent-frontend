@@ -1,7 +1,7 @@
-import { gql } from '@apollo/client';
+import { gql } from 'apollo-boost'
 
 export const CORE_USER_FIELDS = gql`
-    fragment CORE_USER_FIELDS on User {
+    fragment CoreUserFields on User {
         userID
         email
         name

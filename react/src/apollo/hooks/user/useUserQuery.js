@@ -11,10 +11,10 @@ import { CORE_USER_FIELDS } from '../../fragments/user';
 export default function useUserQuery(userID) {
   const [user, setUser] = useState(null)
   const {loading, data, error} = useQuery(gql`
+    ${CORE_USER_FIELDS}
     query UserDetails($userID: ID!) {
-      ${CORE_USER_FIELDS}
       user(userID: $userID) {
-        ... CORE_USER_FIELDS
+        ...CoreUserFields
       }
     }
   `, {

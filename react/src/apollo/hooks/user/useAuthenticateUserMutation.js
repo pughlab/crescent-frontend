@@ -1,4 +1,4 @@
-import { AUTHENTICATE_USER } from '../../fragments/user'
+import { AUTHENTICATE_USER } from '../../queries/user'
 import { useMutation } from '@apollo/react-hooks'
 
 export default function useAuthenticateUserMutation ({
