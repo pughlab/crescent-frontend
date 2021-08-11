@@ -24,6 +24,8 @@ export default function useScatter(vis, group, runID, datasetID, selectedFeature
         y
         marker {
             color
+            colorscale
+            showscale
         }
       }
     }

@@ -87,11 +87,12 @@ const setSelectedExpRange = ({value, send}) => ({
   }
 })
 
-const setSelectedGroup = ({value, send}) => ({
+const setSelectedGroup = ({value, send, type}) => ({
   type: 'resultsPage/setSelectedGroup',
   payload: {
     value,
     send,
+    type
   }
 })
 

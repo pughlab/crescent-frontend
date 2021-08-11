@@ -37,6 +37,7 @@ export const initiallyLoadingMachine = Machine({
       on:{
         CHANGE_PARAMETER: 'scatterLoading',
         ADD_GENE: 'opacityLoading',
+        CHANGE_GROUP_TO_NUMERIC: "scatterLoading",
       }
     },
     opacityLoading: {
@@ -55,7 +56,9 @@ export const initiallyLoadingMachine = Machine({
       on: {
         CLEAR_GENES: "scatterLoading",
         ADD_GENE: 'opacityLoading',
-        CHANGE_PARAMETER: "opacityLoading"        
+        CHANGE_PARAMETER: "opacityLoading",
+        CHANGE_GROUP_TO_NUMERIC: "scatterLoading",
+        CHANGE_ASSAY: "opacityLoading"
       }
     }
   }

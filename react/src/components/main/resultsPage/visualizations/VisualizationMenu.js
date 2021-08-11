@@ -35,7 +35,7 @@ const VisualizationMenu = ({
   // const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
 
   const groups = useDiffExpressionGroupsQuery(runID, selectedDiffExpression)
-  const categoricalGroups = useDiffExpressionCategoricalGroupsQuery(runID, selectedDiffExpression)
+  const categoricalGroups = useDiffExpressionCategoricalGroupsQuery(runID, selectedDiffExpression, isActiveResult('violin'))
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
 
   const assays = useSetAssaysQuery(runID)
@@ -48,9 +48,19 @@ const VisualizationMenu = ({
     setCurrentSearch(selectedFeature || '')
   }, [selectedFeature])
 
+  // clear selected feature when a numeric group is selected
+   useEffect(() => {
+    if(categoricalGroups && selectedFeature && !R.includes(selectedGroup, categoricalGroups)){
+      dispatch(setSelectedFeature({value: null, send}))
+    }
+  }, [selectedGroup])
+
   if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, topExpressed, searchOptions, assays])) {
     return null
   }
+
+  // when selected group is numerical, disable gene selection
+  const disableGeneSelection = !R.includes(selectedGroup, categoricalGroups) 
 
   const handleSearchChange = (event, {searchQuery}) => {
     // console.log("SEARCH QUERY", searchQuery)
@@ -77,7 +87,7 @@ const VisualizationMenu = ({
         inverted
         trigger={
           <Button value={gene} size='tiny'
-            disabled = {R.test(/.*Loading/, current.value)}
+            disabled = {R.test(/.*Loading/, current.value) || disableGeneSelection}
             onClick={handleSelectFeature}
             color='violet'
             style={{margin: '0.25rem'}}
@@ -135,14 +145,14 @@ const VisualizationMenu = ({
               value={selectedGroup}
               options={isActiveResult('violin') ? formatList(categoricalGroups) : formatList(groups)}
               // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
-              onChange={(e, {value}) => dispatch(setSelectedGroup({value, send}))}
+              onChange={(e, {value}) => dispatch(setSelectedGroup({value, send, type: R.includes(value, categoricalGroups) ? "CHANGE_PARAMETER" : "CHANGE_GROUP_TO_NUMERIC"}))}
             />
           </Form.Field>
         <Divider horizontal content='Search Genes' />
         <Form.Group>
           <Form.Field width={12}>
             <Form.Dropdown
-              disabled = {R.test(/.*Loading/, current.value)}
+              disabled = {R.test(/.*Loading/, current.value) || disableGeneSelection}
               placeholder={"Enter Gene Symbol"}
               fluid
               search
@@ -156,7 +166,13 @@ const VisualizationMenu = ({
           </Form.Field>
 
           <Form.Field width={4}>
-            <Button fluid disabled={R.isNil(selectedFeature) || R.test(/.*Loading/, current.value)} icon='close' color='violet' onClick={() => resetSelectFeature()} />
+            <Button 
+              fluid 
+              disabled={R.isNil(selectedFeature) || R.test(/.*Loading/, current.value) || disableGeneSelection} 
+              icon='close' 
+              color='violet' 
+              onClick={() => resetSelectFeature()} 
+            />
           </Form.Field>
         </Form.Group>
 

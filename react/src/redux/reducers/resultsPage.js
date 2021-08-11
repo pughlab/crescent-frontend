@@ -91,7 +91,7 @@ export default createReducer(
       const renewService = () => {
         const currService = state.plotQueries[activePlot].service
         if(currService) currService.stop()
-        return interpret(getMachine(result)).start()
+        return interpret(getMachine(result), {devTools: true}).start()
       }
       return R.evolve({
         // activeResult: R.always(result)
@@ -123,9 +123,9 @@ export default createReducer(
     },
     // for plot
     'resultsPage/setSelectedGroup': (state, payload) => {
-      const {value, send} = payload
+      const {value, send, type} = payload
       const {activePlot} = state
-      send({type: 'CHANGE_PARAMETER'})
+      send({type: type || 'CHANGE_PARAMETER'})
       return R.evolve({
         // selectedGroup: R.always(value)
         plotQueries: evolveAtIndex({selectedGroup: R.always(value)}, activePlot)
@@ -135,7 +135,7 @@ export default createReducer(
     'resultsPage/setSelectedAssay': (state, payload) => {
       const {value, send} = payload
       const {activePlot} = state
-      send({type: 'CHANGE_PARAMETER'})
+      send({type: 'CHANGE_ASSAY'})
       return R.evolve({
         // selectedGroup: R.always(value)
         plotQueries: evolveAtIndex({selectedAssay: R.always(value)}, activePlot)
