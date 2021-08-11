@@ -32,8 +32,7 @@ const DotPlotVisualizationMenu = ({
 
   // const groups = useAvailableGroupsQuery(runID, selectedDiffExpression)
 
-  const groups = useDiffExpressionGroupsQuery(runID, selectedDiffExpression)
-  const categoricalGroups = useDiffExpressionCategoricalGroupsQuery(runID, selectedDiffExpression)
+  const categoricalGroups = useDiffExpressionCategoricalGroupsQuery(runID, selectedDiffExpression, true)
   // const categoricalGroups = useCategoricalGroupsQuery(runID)
 
   const assays = useSetAssaysQuery(runID)
@@ -47,7 +46,7 @@ const DotPlotVisualizationMenu = ({
   //   setCurrentSearch(selectedFeature || '')
   // }, [selectedFeature])
 
-  if (R.any(R.isNil, [diffExpression, groups, categoricalGroups, topExpressed, searchOptions, assays])) {
+  if (R.any(R.isNil, [diffExpression, categoricalGroups, topExpressed, searchOptions, assays])) {
     return null
   }
 
@@ -137,7 +136,7 @@ const DotPlotVisualizationMenu = ({
             disabled = {R.test(/.*Loading/, current.value)}
             // All groups! assumes that first group is categorical (might not be true in the future)
             value={selectedGroup}
-            options={isActiveResult('dot') ? formatList(categoricalGroups) : formatList(groups)}
+            options={formatList(categoricalGroups)}
             // options={R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))(groups)}
             onChange={(e, { value }) => dispatch(setSelectedGroup({ value, send }))}
           />
