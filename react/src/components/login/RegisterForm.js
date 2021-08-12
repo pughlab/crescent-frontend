@@ -14,6 +14,7 @@ import Logo from './logo.jpg'
 
 import {useDispatch} from 'react-redux'
 import {setUser} from '../../redux/actions/context'
+import { CREATE_USER } from '../../apollo/queries/user'
 
 // See LoginForm.js for congruent comments regarding structure of component
 const RegisterValidationSchema = Yup.object().shape({
@@ -40,25 +41,7 @@ const RegisterForm = ({
   const [showErrorModal, setShowErrorModal] = useState(false)
 
   const dispatch = useDispatch()
-  const [createUser, {loading, data, error}] = useMutation(gql`
-    mutation CreateUser(
-      $firstName: String!,
-      $lastName: String!,
-      $email: Email!,
-      $password: String!
-    ) {
-      createUser(
-        firstName: $firstName,
-        lastName: $lastName,
-        email: $email,
-        password: $password
-      ) {
-        userID
-        name
-        email
-      }
-    }
-  `, {
+  const [createUser, {loading, data, error}] = useMutation( CREATE_USER, {
     onCompleted: ({createUser: user}) => {
       if (RA.isNotNil(user)) {
         dispatch(setUser({user}))

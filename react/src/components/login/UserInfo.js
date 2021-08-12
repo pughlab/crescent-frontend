@@ -15,7 +15,7 @@ import {setUser} from '../../redux/actions/context'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../redux/hooks'
 import {useUserQuery} from '../../apollo/hooks/user'
-
+import { CREATE_GUEST_USER } from '../../apollo/queries/user'
 
 const UserInfo = ({
   setOpen
@@ -25,15 +25,7 @@ const UserInfo = ({
   const {userID} = context
   const user = useUserQuery(userID)
   // Create guest user to sign out
-  const [createGuestUser, {loading, data, error}] = useMutation(gql`
-    mutation CreateGuestUser {
-      createGuestUser {
-        userID
-        email
-        name
-      }
-    }
-  `, {
+  const [createGuestUser, {loading, data, error}] = useMutation( CREATE_GUEST_USER, {
     onCompleted: ({createGuestUser: user}) => {
       dispatch(setUser({user}))
       setOpen(false)

@@ -15,8 +15,6 @@ import * as RA from 'ramda-adjunct'
 import {setUser} from '../../redux/actions/context'
 import {useDispatch} from 'react-redux'
 
-import { AUTHENTICATE_USER } from '../../apollo/queries/user'
-
 import {useAuthenticateUserMutation} from '../../apollo/hooks/user'
 
 // Yup form validation
