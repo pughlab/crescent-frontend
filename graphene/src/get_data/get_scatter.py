@@ -83,7 +83,7 @@ def add_barcodes(plotly_obj, column_name, barcode_values, barcode_coords, num_ce
         template_obj["hovertext"].append(str(value)+" ("+column_name+")") # for qc scatter
         template_obj["x"].append(barcode_coords[barcode][0])
         template_obj["y"].append(barcode_coords[barcode][1])
-        template_obj["marker"]["color"].append(int(value))
+        template_obj["marker"]["color"].append(value)
         gradient_iter += 1
 
     if all_zeros:
