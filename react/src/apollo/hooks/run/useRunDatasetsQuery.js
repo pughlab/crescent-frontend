@@ -1,26 +1,13 @@
 import {useState, useEffect} from 'react'
 import { useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
+import { RUN_DATASETS } from '../../queries/run'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
 export default function useRunDatasetsQuery(runID) {
   const [run, setRun] = useState(null)
-  const {loading, data, error} = useQuery(gql`
-    query RunDatasets($runID: ID) {
-      run(runID: $runID) {
-
-        parameters
-
-        datasets {
-          datasetID
-          name
-          size
-          hasMetadata
-        }
-      }
-    }
-  `, {
+  const {loading, data, error} = useQuery(RUN_DATASETS, {
     fetchPolicy: 'cache-and-network',
     variables: {runID},
     onCompleted: ({run}) => {

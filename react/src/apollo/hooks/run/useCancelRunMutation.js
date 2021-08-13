@@ -5,6 +5,7 @@ import { createUploadLink } from 'apollo-upload-client'
 import { useState, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
+import { RUN_STATUS, CANCEL_RUN } from '../../queries/run'
 
 import * as RA from 'ramda-adjunct'
 
@@ -13,14 +14,7 @@ export default function useCancelRunMutation(runID) {
   const [runStatus, setRunStatus] = useState(null)
   const [cancelFailed, setCancelFailed] = useState(null)
 
-  const { loading, data, error } = useQuery(gql`
-    query RunStatus($runID: ID) {
-      run(runID: $runID) {
-        status
-        logs
-      }
-    }
-  `, {
+  const { loading, data, error } = useQuery(RUN_STATUS, {
     variables: {
       runID
     },
@@ -35,11 +29,7 @@ export default function useCancelRunMutation(runID) {
     }
   }, [data])
 
-  const [cancelRun, { loading: loadingCancelRun }] = useMutation(gql`
-    mutation cancelRun($runID: ID) {
-      cancelRun(runID: $runID)
-    }
-  `, {
+  const [cancelRun, { loading: loadingCancelRun }] = useMutation(CANCEL_RUN, {
     variables: { runID },
     onCompleted: ({cancelRun}) => {
       if (cancelRun == "failed"){

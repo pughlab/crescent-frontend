@@ -15,12 +15,5 @@ export const RUN_DATE_FIELDS = gql`
         completedOn
     }
 `
-export const SECONDARY_RUN_FIELDS = gql`
-    fragment SecondaryRunFields on Run {
-        wesID
-        status
-        submittedOn
-        completedOn
-    }
-`
+
 
