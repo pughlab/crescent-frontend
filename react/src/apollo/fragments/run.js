@@ -8,4 +8,19 @@ export const CORE_RUN_FIELDS = gql`
         description
     }
 `
+export const RUN_DATE_FIELDS = gql`
+    fragment RunDateFields on Run {
+        createdOn
+        submittedOn
+        completedOn
+    }
+`
+export const SECONDARY_RUN_FIELDS = gql`
+    fragment SecondaryRunFields on Run {
+        wesID
+        status
+        submittedOn
+        completedOn
+    }
+`
 
