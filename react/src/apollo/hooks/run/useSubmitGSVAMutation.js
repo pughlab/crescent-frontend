@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
+import { RUN_STATUS_SUBMIT_GSVA, SUBMIT_GSVA } from '../../queries/run'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
@@ -10,18 +11,7 @@ export default function useSubmitGSVAMutation(runID) {
 
   const [run, setRun] = useState(null)
   const [submitted, setSubmitted] = useState(true) //start true
-  const {loading: loadingRunQuery, data, error, refetch: refetchRunStatus} = useQuery(gql`
-    query RunStatus($runID: ID) {
-      run(runID: $runID) {
-        secondaryRuns {
-          wesID
-          status
-          submittedOn
-          completedOn
-        }
-      }
-    }
-  `, {
+  const {loading: loadingRunQuery, data, error, refetch: refetchRunStatus} = useQuery(RUN_STATUS_SUBMIT_GSVA, {
     variables: {
       runID
     },
@@ -40,13 +30,7 @@ export default function useSubmitGSVAMutation(runID) {
     }
   }, [data])
 
-  const [submitGsva, {loading: loadingSubmitGSVA, data: gsvaData}] = useMutation(gql`
-    mutation SubmitGSVA($runID: ID) {
-      submitGsva(runId: $runID) {
-        wesID
-      }
-    }
-  `, {
+  const [submitGsva, {loading: loadingSubmitGSVA, data: gsvaData}] = useMutation(SUBMIT_GSVA, {
     client,
     variables: {runID},    
     onCompleted: ({submitGsva}) => {

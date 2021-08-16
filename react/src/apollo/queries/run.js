@@ -7,8 +7,8 @@ import { CORE_USER_FIELDS } from '../fragments/user'
 export const RUN_STATUS = gql`
     query RunStatus($runID: ID) {
         run(runID: $runID) {
-        status
-        logs
+            status
+            logs
         }
     }
   `
@@ -111,5 +111,147 @@ export const RUN_LOGS = gql`
         run(runID: $runID) {
             logs
         }
+    }
+`
+
+export const RUN_PARAMETERS = gql `
+    ${CORE_DATASET_FIELDS}
+    query RunParameters($runID: ID) {
+        run(runID: $runID) {
+            parameters
+            datasets {
+                ...CoreDatasetFields
+            }
+        }
+    }
+`
+
+export const BULK_UPDATE_RUN_PARAMETER_VALUES = gql`
+    mutation BulkUpdateRunParameterValues($runID: ID!, $parameters: RunParameters!) {
+        bulkUpdateRunParameterValues(runID: $runID, parameters: $parameters) {
+            parameters
+        }
+    }
+`
+
+export const SECONDARY_RUN_DETAILS = gql`
+    ${SECONDARY_RUN_FIELDS}
+    query SecondaryRunDetails($runID: ID) {
+        run(runID: $runID) {
+            runID
+            secondaryRuns {
+                ...SecondaryRunFields
+            }
+        }
+    }
+`
+
+export const RUN_STATUS_SUBMIT_GSVA = gql`
+    ${SECONDARY_RUN_FIELDS}
+    query RunStatus($runID: ID) {
+        run(runID: $runID) {
+            secondaryRuns {
+                ...SecondaryRunFields
+            }
+        }
+    }
+`
+
+export const SUBMIT_GSVA = gql`
+    mutation SubmitGSVA($runID: ID) {
+        submitGsva(runId: $runID) {
+            wesID
+        }
+    }
+`
+
+export const RUN_STATUS_SUBMIT = gql`
+    ${CORE_RUN_FIELDS}
+    ${CORE_DATASET_FIELDS}
+    query RunStatus($runID: ID) {
+        run(runID: $runID) {
+            wesID
+            ...CoreRunFields
+            referenceDatasets {
+                ...CoreDatasetFields
+            }
+        }
+    }
+`
+
+export const SUBMIT_RUN = gql`
+    mutation SubmitRun($runID: ID) {
+        submitRun(runId: $runID) {
+            wesID
+        }
+    }
+`
+
+export const RUN_PARAMETERS_UPDATE = gql`
+    ${CORE_RUN_FIELDS}
+    query RunParameters($runID: ID) {
+        run(runID: $runID) {
+            ...CoreRunFields
+            parameters
+        }
+    }
+`
+export const UPDATE_RUN_PARAMETER_VALUE = gql`
+    ${CORE_RUN_FIELDS}
+    mutation UpdateRunParameterValue(
+    $runID: ID!
+    $step: String!
+    $parameter: String!
+    $value: ToolParameterValue!
+    ) {
+        updateRunParameterValue(
+            runID: $runID,
+            step: $step,
+            parameter: $parameter,
+            value: $value,
+        ) {
+            ...CoreRunFields
+            parameters
+        }
+    }
+`
+
+export const RUN_REFERENCE_DATASETS = gql`
+    ${CORE_RUN_FIELDS}
+    ${CORE_DATASET_FIELDS}
+    query RunDatasets($runID: ID) {
+        run(runID: $runID) {
+            ...CoreRunFields
+            datasets {
+                ...CoreDatasetFields
+                hasMetadata
+            }
+            referenceDatasets {
+                ...CoreDatasetFields
+            }
+        }
+    }
+`
+
+export const UPDATE_RUN_REFERENCE_DATASETS = gql`
+    ${CORE_RUN_FIELDS}
+    ${CORE_DATASET_FIELDS}  
+    mutation UpdateRunReferenceDatasets(
+    $runID: ID!
+    $datasetIDs: [ID]
+    ) {
+    updateRunReferenceDatasets(
+        runID: $runID
+        datasetIDs: $datasetIDs
+    ) {
+        ...CoreRunFields
+        datasets {
+            ...CoreDatasetFields
+            hasMetadata
+        }
+        referenceDatasets {
+            ...CoreDatasetFields
+        }
+    }
     }
 `

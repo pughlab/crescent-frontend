@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
+import { RUN_STATUS_SUBMIT , SUBMIT_RUN} from '../../queries/run'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
@@ -10,17 +11,7 @@ export default function useSubmitRunMutation(runID) {
 
   const [run, setRun] = useState(null)
   const [submitted, setSubmitted] = useState(true) //start true
-  const {loading: loadingRunQuery, data, error, refetch} = useQuery(gql`
-    query RunStatus($runID: ID) {
-      run(runID: $runID) {
-        wesID
-        status
-        referenceDatasets {
-          datasetID
-        }
-      }
-    }
-  `, {
+  const {loading: loadingRunQuery, data, error, refetch} = useQuery(RUN_STATUS_SUBMIT, {
     variables: {
       runID
     },
@@ -33,13 +24,7 @@ export default function useSubmitRunMutation(runID) {
     }
   })
 
-  const [submitRun, {loading: loadingSubmitRun}] = useMutation(gql`
-    mutation SubmitRun($runID: ID) {
-      submitRun(runId: $runID) {
-        wesID
-      }
-    }
-  `, {
+  const [submitRun, {loading: loadingSubmitRun}] = useMutation(SUBMIT_RUN, {
     client,
     variables: {runID},    
     onCompleted: ({submitRun}) => {

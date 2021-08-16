@@ -1,6 +1,7 @@
 import {useState, useEffect} from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
+import { RUN_REFERENCE_DATASETS, UPDATE_RUN_REFERENCE_DATASETS } from '../../queries/run'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
@@ -10,22 +11,7 @@ export default function useUpdateRunReferenceDatasetsMutation ({
   runID
 }) {
   const [run, setRun] = useState(null)
-  const {data: dataDatasets, refetch} = useQuery(gql`
-    query RunDatasets($runID: ID) {
-      run(runID: $runID) {
-        status
-        datasets {
-          datasetID
-          name
-          size
-          hasMetadata
-        }
-        referenceDatasets {
-          datasetID
-        }
-      }
-    }
-  `, {
+  const {data: dataDatasets, refetch} = useQuery(RUN_REFERENCE_DATASETS, {
     variables: {runID},
     fetchPolicy: 'network-only',
     onCompleted: ({run}) => {
@@ -40,28 +26,7 @@ export default function useUpdateRunReferenceDatasetsMutation ({
     }
   }, [dataDatasets])
 
-  const [updateRunReferenceDatasets, {loading, data, error}] = useMutation(gql`
-    mutation UpdateRunReferenceDatasets(
-      $runID: ID!
-      $datasetIDs: [ID]
-    ) {
-      updateRunReferenceDatasets(
-        runID: $runID
-        datasetIDs: $datasetIDs
-      ) {
-        status
-        datasets {
-          datasetID
-          name
-          size
-          hasMetadata
-        }
-        referenceDatasets {
-          datasetID
-        }
-      }
-    }
-  `, {
+  const [updateRunReferenceDatasets, {loading, data, error}] = useMutation(UPDATE_RUN_REFERENCE_DATASETS, {
     variables: {runID},
     onCompleted: ({updateRunReferenceDatasets: run}) => {if (RA.isNotNil(run)) {setRun(run)}},
   })

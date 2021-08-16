@@ -1,6 +1,7 @@
 import {useState, useEffect, useCallback} from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
+import { RUN_PARAMETERS, BULK_UPDATE_RUN_PARAMETER_VALUES } from '../../queries/run'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import * as jsonexport from 'jsonexport/dist'
@@ -9,17 +10,7 @@ import * as papaparse from 'papaparse'
 export default function useRunParametersDownloadUploadMutation(runID) {
   // Hold GQL run query in local state
   const [run, setRun] = useState(null)
-  const {loading, data, error, refetch} = useQuery(gql`
-    query RunParameters($runID: ID) {
-      run(runID: $runID) {
-        parameters
-        datasets {
-          datasetID
-          name
-        }
-      }
-    }
-  `, {
+  const {loading, data, error, refetch} = useQuery(RUN_PARAMETERS, {
     fetchPolicy: 'cache-and-network',
     pollInterval: 1000,
     variables: {runID},
@@ -28,13 +19,7 @@ export default function useRunParametersDownloadUploadMutation(runID) {
     }
   })
   // GQL mutation to override run.parameter field
-  const [bulkUpdateRunParameterValues, {}] = useMutation(gql`
-    mutation BulkUpdateRunParameterValues($runID: ID!, $parameters: RunParameters!) {
-      bulkUpdateRunParameterValues(runID: $runID, parameters: $parameters) {
-        parameters
-      }
-    }
-  `, {
+  const [bulkUpdateRunParameterValues, {}] = useMutation(BULK_UPDATE_RUN_PARAMETER_VALUES, {
     variables: {runID},
     onCompleted: ({bulkUpdateRunParameterValues: run}) => {
       // Update run in local state
