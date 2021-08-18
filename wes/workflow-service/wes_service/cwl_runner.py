@@ -8,6 +8,7 @@ import uuid
 from wes_service.util import WESBackend
 
 docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
+
 class Workflow(object):
     def __init__(self, run_id):
         super(Workflow, self).__init__()
@@ -177,6 +178,18 @@ class Workflow(object):
                 "status_code": 500
             }
 
+    def getdockerlogs(self):
+        try:
+            container_id = self.getcontainerid()
+            container = docker_client.containers.get(container_id)
+            docker_logs = container.logs(stderr=False).decode("utf-8")
+        except:
+            docker_logs = ""
+
+        return {
+            "docker_logs": docker_logs
+        }
+
 
 class CWLRunnerBackend(WESBackend):
     def GetServiceInfo(self):
@@ -223,6 +236,10 @@ class CWLRunnerBackend(WESBackend):
     def GetRunLog(self, run_id):
         job = Workflow(run_id)
         return job.getlog()
+
+    def GetDockerLogs(self, run_id):
+        job = Workflow(run_id)
+        return job.getdockerlogs()
 
     def CancelRun(self, run_id):
         job = Workflow(run_id)

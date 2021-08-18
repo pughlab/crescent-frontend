@@ -279,6 +279,41 @@ paths:
           type: string
       tags:
         - WorkflowExecutionService
+  /runs/{run_id}/logs:
+    get:
+      summary: Get the Docker logs for a workflow run.
+      description: >-
+        This endpoint provides the Docker logs for a given workflow run.
+      x-swagger-router-controller: ga4gh.wes.server
+      operationId: GetDockerLogs
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/DockerLogs'
+        '401':
+          description: The request is unauthorized.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: The requested workflow run not found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '403':
+          description: The requester is not authorized to perform this action.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: An unexpected error occurred.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      parameters:
+        - name: run_id
+          in: path
+          required: true
+          type: string
+      tags:
+        - WorkflowExecutionService
   /runs/{run_id}/status:
     get:
       summary: Get quick status info about a workflow run.
@@ -332,6 +367,14 @@ definitions:
     description: >-
       A message that allows one to describe default parameters for a workflow
       engine.
+  DockerLogs:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The Docker logs for the given workflow run
+    description: >-
+      The Docker logs for the given workflow run.
   Log:
     type: object
     properties:

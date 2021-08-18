@@ -267,12 +267,10 @@ const resolvers = {
       }
     },
 
-    logs: async({runID}, variables, {Docker}) => {
+    logs: async({runID}, variables, {dataSources}) => {
       try {
-        let containerID = await Docker.getContainerId(runID);
-        if (containerID == null)
-          return null;
-        return await Docker.getLogs(containerID);
+        const {docker_logs} = await dataSources.wesAPI.getLogs(runID);
+        return docker_logs
       } catch (error) {
         console.log(error)
       }
@@ -471,12 +469,10 @@ const resolvers = {
         console.log(error)
       }
     },
-    logs: async({runID}, variables, {Docker}) => {
+    logs: async({runID}, variables, {dataSources}) => {
       try {
-        let containerID = await Docker.getContainerId(runID);
-        if (containerID == null)
-          return null;
-        return await Docker.getLogs(containerID);
+        const {docker_logs} = await dataSources.wesAPI.getLogs(runID);
+        return docker_logs
       } catch (error) {
         console.log(error)
       }
