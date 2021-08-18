@@ -1,0 +1,6 @@
+connexion
+docker
+ruamel.yaml
+schema-salad
+toil[cwl]==3.21.0
+werkzeug==0.16.1
