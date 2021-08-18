@@ -167,9 +167,9 @@ const resolvers = {
     },
     cancelRun: async(parent, {runID}, {Runs, dataSources}) => {
       try {
-        const {status} = await dataSources.wesAPI.cancelRun(runID)
+        const {status_code} = await dataSources.wesAPI.cancelRun(runID)
 
-        if (RA.isUndefined(status)) {
+        if (RA.isUndefined(status_code)) {
           await Runs.updateOne({runID}, {$set: {"status": 'failed'}})
           return "failed";
         }
