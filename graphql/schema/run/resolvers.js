@@ -165,18 +165,16 @@ const resolvers = {
         console.error(error)
       }
     },
-    cancelRun: async(parent, {runID}, {Docker, Runs}) => {
+    cancelRun: async(parent, {runID}, {Runs, dataSources}) => {
       try {
-        const containerID = await Docker.getContainerId(runID);
-        if (R.isNil(containerID)) {
-          return null
-        } else {
-          await Docker.killContainer(containerID);
+        const {status} = await dataSources.wesAPI.cancelRun(runID)
+
+        if (RA.isUndefined(status)) {
           await Runs.updateOne({runID}, {$set: {"status": 'failed'}})
-          return "failed"
+          return "failed";
         }
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     },
     uploadRunMetadata: async (parent, {runID, metadata}, {Runs, Minio}) => {

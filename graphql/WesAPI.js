@@ -15,5 +15,9 @@ module.exports = {
         async getRunData(wesID){
             return this.get(`/ga4gh/wes/v1/runs/${wesID}`);
         }
+
+        async cancelRun(runID) {
+            return this.post(`/ga4gh/wes/v1/runs/${runID}/cancel`)
+        }
     }
 }
