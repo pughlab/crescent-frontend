@@ -184,7 +184,7 @@ class Workflow(object):
             container = docker_client.containers.get(container_id)
             docker_logs = container.logs(stderr=False).decode("utf-8")
         except:
-            docker_logs = ""
+            docker_logs = None
 
         return {
             "docker_logs": docker_logs
