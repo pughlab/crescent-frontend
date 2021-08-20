@@ -11,6 +11,7 @@ import {useDispatch} from 'react-redux'
 
 import {useCrescentContext} from '../../../redux/hooks'
 import {goBack} from '../../../redux/actions/context'
+import { ARCHIVE_PROJECT } from '../../../apollo/queries/project';
 
 const ArchiveProjectModal = ({
   // Props
@@ -20,14 +21,7 @@ const ArchiveProjectModal = ({
 }) => {
   const dispatch = useDispatch()
   const {projectID} = useCrescentContext()
-  const [archiveProject, {loading, data, error}] = useMutation(gql`
-    mutation ArchiveProject($projectID: ID) {
-      archiveProject(projectID: $projectID) {
-        projectID
-        archived
-      }
-    }
-  `, {
+  const [archiveProject, {loading, data, error}] = useMutation(ARCHIVE_PROJECT, {
     variables: {projectID},
     onCompleted: data => {
       dispatch(goBack())

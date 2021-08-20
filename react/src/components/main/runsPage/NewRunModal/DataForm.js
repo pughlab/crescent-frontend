@@ -11,24 +11,14 @@ import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../../utils'
 
 import {useCrescentContext} from '../../../../redux/hooks'
+import { PROJECT_DATASETS } from '../../../../apollo/queries/project'
 
 const ProjectDatasetSelect = ({
   projectID, name,
   // 
   datasetsState, datasetsDispatch
 }) => {
-  const {loading, data, error, refetch} = useQuery(gql`
-    query ProjectDatasets($projectID: ID) {
-      project(projectID: $projectID) {
-        projectID
-
-        allDatasets {
-          datasetID
-          name
-        }
-      }
-    }
-  `, {
+  const {loading, data, error, refetch} = useQuery(PROJECT_DATASETS, {
     fetchPolicy: 'cache-and-network',
     variables: {projectID},
   })

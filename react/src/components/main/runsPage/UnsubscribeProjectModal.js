@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux'
 
 import { useCrescentContext } from '../../../redux/hooks'
 import { goBack } from '../../../redux/actions/context'
+import { UNSHARE_PROJECT_BY_USERID } from '../../../apollo/queries/project';
 
 const UnsubscribeProjectModal = ({
     // Props
@@ -21,16 +22,7 @@ const UnsubscribeProjectModal = ({
     const dispatch = useDispatch()
     const { projectID, userID } = useCrescentContext()
 
-    const [unshareProjectByUserID, { error: unshareProjectByUserIDError }] = useMutation(gql`
-    mutation UnshareProjectByUserID($projectID: ID, $userID: ID) {
-      unshareProjectByUserID(projectID: $projectID, userID: $userID) {
-        projectID
-        sharedWith {
-          userID
-        }
-      }
-    }
-  `, {
+    const [unshareProjectByUserID, { error: unshareProjectByUserIDError }] = useMutation(UNSHARE_PROJECT_BY_USERID, {
         variables: { projectID },
         onCompleted: data => {
             dispatch(goBack())

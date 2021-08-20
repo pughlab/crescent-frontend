@@ -8,7 +8,7 @@ import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import moment from 'moment'
-
+import { CURATED_PROJECTS, USER_PROJECTS } from '../../../../apollo/queries/project';
 import {queryIsNotNil} from '../../../../utils'
 
 import {useDropzone} from 'react-dropzone'
@@ -107,25 +107,7 @@ const PublicProjects = ({
   newProjectState, newProjectDispatch
 }) => {
   // GQL query to find all public projects
-  const {loading, data, error} = useQuery(gql`
-    query {
-      curatedProjects {
-        projectID
-        name
-        kind
-        createdOn
-        createdBy {
-          name
-          userID
-        }
-        allDatasets {
-          datasetID
-          name
-          oncotreeCode
-        }
-      }
-    }
-  `, {
+  const {loading, data, error} = useQuery(CURATED_PROJECTS, {
     fetchPolicy: 'cache-and-network'
   })
   const curatedProjects = R.ifElse(
@@ -159,24 +141,7 @@ const UploadedProjects = ({
 }) => {
   const {userID} = useCrescentContext()
   // GQL query to find all projects of which user is a member of
-  const {loading, data, error, refetch} = useQuery(gql`
-    query UserProjects($userID: ID) {
-      projects(userID: $userID) {
-        projectID
-        name
-        createdOn
-        createdBy {
-          name
-          userID
-        }
-        allDatasets {
-          datasetID
-          name
-          oncotreeCode
-        }
-      }
-    }
-  `, {
+  const {loading, data, error, refetch} = useQuery(USER_PROJECTS, {
     fetchPolicy: 'network-only',
     variables: {userID}
   })

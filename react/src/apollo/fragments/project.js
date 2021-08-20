@@ -5,5 +5,6 @@ export const CORE_PROJECT_FIELDS = gql`
         projectID
         name
         description
+        kind
     }
 `

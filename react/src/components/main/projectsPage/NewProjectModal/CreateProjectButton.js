@@ -4,7 +4,7 @@ import { useMutation, useQuery } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-
+import { CREATE_MERGED_PROJECT } from '../../../../apollo/queries/project'
 import {Form, Card, Header, Message, Button, Segment, Modal, Label, Divider, Icon, Image, Popup, Grid, Step} from 'semantic-ui-react'
 
 
@@ -23,25 +23,7 @@ const CreateProjectButton = ({
   const dispatch = useDispatch()
   const {userID} = useCrescentContext()
   // GQL mutation to create a project
-  const [createMergedProject, {loading, data, error}] = useMutation(gql`
-    mutation CreateMergedProject(
-      $userID: ID!,
-      $name: String!,
-      $description: String!,
-      $projectIDs: [ID]!,
-      $datasetIDs: [ID]!,
-    ) {
-      createMergedProject(
-        userID: $userID,
-        name: $name,
-        description: $description,
-        projectIDs: $projectIDs,
-        datasetIDs: $datasetIDs,
-      ) {
-        projectID
-      }
-    }
-  `, {
+  const [createMergedProject, {loading, data, error}] = useMutation(CREATE_MERGED_PROJECT, {
     variables: {
       userID, name, description,
       projectIDs: mergedProjectIDs,

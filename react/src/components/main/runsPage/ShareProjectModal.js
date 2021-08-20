@@ -9,6 +9,7 @@ import { gql } from 'apollo-boost'
 import {queryIsNotNil} from '../../../utils'
 
 import {useCrescentContext} from '../../../redux/hooks'
+import { PROJECT_USERS, SHARE_PROJECT_BY_EMAIL, UNSHARE_PROJECT_BY_USERID } from '../../../apollo/queries/project';
 
 const ShareProjectModal = ({
   project: {
@@ -30,19 +31,7 @@ const ShareProjectModal = ({
     data: dataProjectUsers,
     error: errorProjectUsers,
     refetch: refetchProjectUsers
-  } = useQuery(gql`
-    query ProjectUsers($projectID: ID) {
-      project(projectID: $projectID) {
-        createdBy {
-          userID
-          name
-        }
-        sharedWith {
-          userID
-          name
-        }
-      }
-    }`, {
+  } = useQuery(PROJECT_USERS, {
     fetchPolicy: 'network-only',
       variables: {projectID}
     })
@@ -53,29 +42,14 @@ const ShareProjectModal = ({
   )(dataProjectUsers)
 
   // Share and unshare project GQL mutations
-  const [unshareProjectByUserID, {error: unshareProjectByUserIDError}] = useMutation(gql`
-    mutation UnshareProjectByUserID($projectID: ID, $userID: ID) {
-      unshareProjectByUserID(projectID: $projectID, userID: $userID) {
-        projectID
-        sharedWith {
-          userID
-        }
-      }
-    }
-  `, {
+  const [unshareProjectByUserID, {error: unshareProjectByUserIDError}] = useMutation(UNSHARE_PROJECT_BY_USERID, {
     variables: {projectID},
     onCompleted: ({unshareProjectByUserID}) => {
       setEmailToShare('')
       refetchProjectUsers()
     }
   })
-  const [shareProjectByEmail, {error: shareProjectByEmailError}] = useMutation(gql`
-    mutation ShareProjectByEmail($projectID: ID, $email: Email) {
-      shareProjectByEmail(projectID: $projectID, email: $email) {
-        projectID
-      }
-    }
-  `, {
+  const [shareProjectByEmail, {error: shareProjectByEmailError}] = useMutation(SHARE_PROJECT_BY_EMAIL, {
     variables: {projectID},
     onCompleted: ({shareProjectByEmail}) => {
       if (R.isNil(shareProjectByEmail)) {
