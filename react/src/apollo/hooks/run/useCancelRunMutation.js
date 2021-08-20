@@ -30,7 +30,10 @@ export default function useCancelRunMutation(runID) {
   useEffect(() => {
     if (RA.isNotNil(data)) {
       const {run: {status, logs}} = data
-      setRunStatus(status)
+      // Don't update runStatus if the run has been canceled but the run's status hasn't been updated from "submitted" to "failed" in Mongo yet
+      if (runStatus !== "canceled" || status !== "submitted") {
+        setRunStatus(status)
+      }
       setCancellable(RA.isNotNil(logs)) // if logs is not null then set cancellable to true
     }
   }, [data])
