@@ -3,26 +3,11 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
+import { ADD_CUSTOM_TAG_DATASET, DATASET_DETAILS_CUSTOM_TAG } from '../../queries/dataset'
 
 export default function useAddCustomTagDatasetMutation(datasetID, customTag) {
   const [dataset, setDataset] = useState(null)
-  const {loading, data, error, refetch: refetchDatasetDetails} = useQuery(gql`
-    query DatasetDetails (
-      $datasetID: ID!
-    ) {
-      dataset(
-        datasetID: $datasetID
-      ) {
-        datasetID
-        name
-        hasMetadata
-        size
-        cancerTag
-        oncotreeCode
-        customTags
-      }
-    }
-  `, {
+  const {loading, data, error, refetch: refetchDatasetDetails} = useQuery(DATASET_DETAILS_CUSTOM_TAG, {
     fetchPolicy: 'network-only',
     variables: {
       datasetID
@@ -33,20 +18,7 @@ export default function useAddCustomTagDatasetMutation(datasetID, customTag) {
       }
     }
   })
-  const [addCustomTagDataset] = useMutation(gql`
-    mutation AddCustomTagDataset(
-      $datasetID: ID!
-      $customTag: String
-    ) {
-      addCustomTagDataset(
-        datasetID: $datasetID
-        customTag: $customTag
-      ) {
-        datasetID
-        customTags
-      }
-    }
-  `, {
+  const [addCustomTagDataset] = useMutation(ADD_CUSTOM_TAG_DATASET, {
     variables: {
       datasetID
     },

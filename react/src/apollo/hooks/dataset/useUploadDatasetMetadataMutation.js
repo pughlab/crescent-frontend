@@ -3,24 +3,13 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
+import { UPLOAD_DATASET_METADATA } from '../../queries/dataset'
 
 export default function useUploadDatasetMetadataMutation({
   datasetID
 }) {
   const [success, setSuccess] = useState(false)
-  const [uploadDatasetMetadata, {loading, data, error}] = useMutation(gql`
-    mutation UploadDatasetMetadata(
-      $datasetID: ID!
-      $metadata: Upload!
-    ) {
-      uploadDatasetMetadata(
-        datasetID: $datasetID
-        metadata: $metadata
-      ) {
-        datasetID
-      }
-    }
-  `, {
+  const [uploadDatasetMetadata, {loading, data, error}] = useMutation(UPLOAD_DATASET_METADATA, {
     variables: {
       datasetID
     },

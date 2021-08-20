@@ -14,6 +14,7 @@ import { Form, Card, Header, Button, Segment, Modal, Label, Icon, Grid, List, Me
 
 import { useOncotreeQuery, useEditDatasetTagsMutation} from '../../../../apollo/hooks/dataset'
 import { TagOncotreeModalContent } from '../../runsPage/UploadedDatasetsDetails/index'
+import { CREATE_DATASET, DELETE_DATASET } from '../../../../apollo/queries/dataset';
 
 const maxFileSize = 209715200
 const validFileTypes = ['.mtx.gz', '.tsv.gz']
@@ -65,17 +66,7 @@ const DatasetCard = ({
 }) => {
 
   const { dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset } = useEditDatasetTagsMutation(datasetID)
-  const [deleteDataset, { }] = useMutation(gql`
-    mutation DeleteDataset(
-      $datasetID: ID!
-    ) {
-      deleteDataset(
-        datasetID: $datasetID
-      ) {
-        datasetID
-      }
-    }
-  `, {
+  const [deleteDataset, { }] = useMutation(DELETE_DATASET, {
     variables: { datasetID },
     onCompleted: ({ deleteDataset }) => {
       if (RA.isNotNil(deleteDataset)) {
@@ -229,23 +220,7 @@ const DirectoryUploadSegment = ({
   const [uploadErrMsgs, setUploadErrMsgs] = useState([])
 
   // GQL mutation to create a dataset on mount
-  const [createDataset, { loading }] = useMutation(gql`
-    mutation CreateDataset(
-      $name: String!
-      $matrix: Upload!
-      $features: Upload!
-      $barcodes: Upload!
-    ) {
-      createDataset(
-        name: $name
-        matrix: $matrix
-        features: $features
-        barcodes: $barcodes
-      ) {
-        datasetID
-      }
-    }
-  `, {
+  const [createDataset, { loading }] = useMutation(CREATE_DATASET, {
     onCompleted: ({ createDataset }) => {
       if (RA.isNotNil(createDataset)) {
         const { datasetID } = createDataset

@@ -3,28 +3,11 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
+import { DATASET_DETAILS_QUERY, TAG_DATASET } from '../../queries/dataset'
 
 export default function useTagDatasetMutation(datasetID) {
   const [dataset, setDataset] = useState(null)
-  const {loading, data, error} = useQuery(gql`
-    query DatasetDetails (
-      $datasetID: ID!
-    ) {
-      dataset(
-        datasetID: $datasetID
-      ) {
-        datasetID
-        name
-        hasMetadata
-        size
-        numGenes
-        numCells
-        cancerTag
-        oncotreeCode
-        customTags
-      }
-    }
-  `, {
+  const {loading, data, error} = useQuery(DATASET_DETAILS_QUERY, {
     fetchPolicy: 'cache-and-network',
     variables: {
       datasetID
@@ -35,29 +18,7 @@ export default function useTagDatasetMutation(datasetID) {
       }
     }
   })
-  const [tagDataset] = useMutation(gql`
-    mutation TagDataset(
-      $datasetID: ID!
-      $cancerTag: Boolean
-      $oncotreeCode: String
-    ) {
-      tagDataset(
-        datasetID: $datasetID
-        cancerTag: $cancerTag
-        oncotreeCode: $oncotreeCode
-      ) {
-        datasetID
-        name
-        hasMetadata
-        size
-        numGenes
-        numCells
-        cancerTag
-        oncotreeCode
-        customTags
-      }
-    }
-  `, {
+  const [tagDataset] = useMutation(TAG_DATASET, {
     variables: {
       datasetID
     },

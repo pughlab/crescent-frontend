@@ -3,26 +3,11 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
+import { DATASET_DETAILS_QUERY, REMOVE_CUSTOM_TAG_DATASET } from '../../queries/dataset'
 
 export default function useRemoveCustomTagDatasetMutation(datasetID, customTag) {
   const [dataset, setDataset] = useState(null)
-  const {loading, data, error, refetch: refetchDatasetDetails} = useQuery(gql`
-    query DatasetDetails (
-      $datasetID: ID!
-    ) {
-      dataset(
-        datasetID: $datasetID
-      ) {
-        datasetID
-        name
-        hasMetadata
-        size
-        cancerTag
-        oncotreeCode
-        customTags
-      }
-    }
-  `, {
+  const {loading, data, error, refetch: refetchDatasetDetails} = useQuery(DATASET_DETAILS_QUERY, {
     fetchPolicy: 'network-only',
     variables: {
       datasetID
@@ -33,20 +18,7 @@ export default function useRemoveCustomTagDatasetMutation(datasetID, customTag) 
       }
     }
   })
-  const [removeCustomTagDataset] = useMutation(gql`
-    mutation RemoveCustomTagDataset(
-      $datasetID: ID!
-      $customTag: String
-    ) {
-      removeCustomTagDataset(
-        datasetID: $datasetID
-        customTag: $customTag
-      ) {
-        datasetID
-        customTags
-      }
-    }
-  `, {
+  const [removeCustomTagDataset] = useMutation(REMOVE_CUSTOM_TAG_DATASET, {
     variables: {
       datasetID
     },
