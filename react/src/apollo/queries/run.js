@@ -255,3 +255,33 @@ export const UPDATE_RUN_REFERENCE_DATASETS = gql`
     }
     }
 `
+
+export const UPLOAD_RUN_GENESET = gql`
+    ${CORE_RUN_FIELDS}
+    mutation UploadRunGeneset(
+    $runID: ID!
+    $geneset: Upload!
+    ) {
+        uploadRunGeneset(
+            runID: $runID
+            geneset: $geneset
+        ) {
+            ...CoreRunFields
+        }
+    }
+`
+
+export const UPLOAD_RUN_METADATA = gql`
+    ${CORE_RUN_FIELDS}
+    mutation UploadRunMetadata(
+    $runID: ID!
+    $metadata: Upload!
+    ) {
+        uploadRunMetadata(
+            runID: $runID
+            metadata: $metadata
+        ) {
+            ...CoreRunFields
+        }
+    }
+`
