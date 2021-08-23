@@ -10,12 +10,12 @@ from wes_service.util import WESBackend
 docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 
 class Workflow(object):
-    def __init__(self, run_id):
+    def __init__(self, run_id, is_wes_id=True):
         super(Workflow, self).__init__()
         self.run_id = run_id
         self.workdir = os.path.join(os.getcwd(), "workflows", self.run_id)
         self.outdir = os.path.join(self.workdir, 'outdir')
-        if not os.path.exists(self.outdir):
+        if is_wes_id and not os.path.exists(self.outdir):
             os.makedirs(self.outdir)
 
     def run(self, request, tempdir, opts):
@@ -238,11 +238,11 @@ class CWLRunnerBackend(WESBackend):
         return job.getlog()
 
     def GetDockerLogs(self, run_id):
-        job = Workflow(run_id)
+        job = Workflow(run_id, False)
         return job.getdockerlogs()
 
     def CancelRun(self, run_id):
-        job = Workflow(run_id)
+        job = Workflow(run_id, False)
         return job.cancel()
 
     def GetRunStatus(self, run_id):
