@@ -79,6 +79,10 @@ services:
       - ./wes/logs:/root/logs:rw
     ports:
       - "${WES_PORT}:8081"
+    environment:
+      - MINIO_HOST_PORT=${MINIO_HOST_PORT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
     entrypoint: /root/mesos-wes.sh
     command:
       - --port=8081

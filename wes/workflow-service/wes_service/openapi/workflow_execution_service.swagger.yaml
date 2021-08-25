@@ -279,6 +279,56 @@ paths:
           type: string
       tags:
         - WorkflowExecutionService
+  /runs/completed-on:
+    get:
+      summary: Get the completed on time for a workflow run.
+      description: >-
+        This endpoint provides the completed on time for a given workflow run.
+      x-swagger-router-controller: ga4gh.wes.server
+      operationId: GetCompletedOn
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/CompletedOn'
+        '401':
+          description: The request is unauthorized.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: The requested workflow run not found.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '403':
+          description: The requester is not authorized to perform this action.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: An unexpected error occurred.
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+      parameters:
+        - name: is_secondary_run
+          in: query
+          type: boolean
+        - name: run_id
+          in: query
+          type: string
+        - name: state
+          in: query
+          type: string
+          enum:
+            - EXECUTOR_ERROR
+            - COMPLETE
+        - name: submitted_on_time
+          in: query
+          type: string
+          format: datetime
+        - name: wes_id
+          in: query
+          type: string
+      tags:
+        - WorkflowExecutionService
   /runs/{run_id}/logs:
     get:
       summary: Get the Docker logs for a workflow run.
@@ -352,6 +402,14 @@ paths:
       tags:
         - WorkflowExecutionService
 definitions:
+  CompletedOn:
+    type: object
+    properties:
+      completed_on:
+        type: string
+        format: datetime
+        description: >-
+          The completed on time for the given workflow run.
   DefaultWorkflowEngineParameter:
     type: object
     properties:
