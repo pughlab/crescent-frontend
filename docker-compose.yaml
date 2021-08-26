@@ -55,6 +55,7 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MONGO_URL=${MONGO_URL}
       - WES_PORT=${WES_PORT}
+      - WES_SERVER=${WES_SERVER}
       - GRAPHENE_DEV=${GRAPHENE_DEV}
     volumes:
       - ./graphene/src:/app/src
@@ -68,7 +69,7 @@ services:
 
   wes-server:
     build: wes
-    image: kevin/wes-server
+    # image: kevin/wes-server
     container_name: "wes-server"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
