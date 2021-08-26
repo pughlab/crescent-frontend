@@ -259,7 +259,7 @@ class SubmitRun(Mutation):
 
             # Set up WESClient object
             clientObject = util.WESClient(
-                {'auth': '', 'proto': 'http', 'host': "wes-server:" + environ['WES_PORT']}) # should come from env var
+                {'auth': '', 'proto': 'http', 'host': environ['WES_SERVER'] + ":" + environ['WES_PORT']}) # should come from env var
       
             # Sending request to WES container
             # All workflow related files must be passed as attachments here, excluding files in minio such as the script and datasets
