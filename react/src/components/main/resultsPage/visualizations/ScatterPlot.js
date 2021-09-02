@@ -64,8 +64,8 @@ const ScatterPlot = ({
   if (R.any(R.isNil, [plots])) {
     return null
   }
-
-  if (current.matches('initialLoading')) {
+  
+  if (R.test(/initial.*Loading/, current.value)) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
