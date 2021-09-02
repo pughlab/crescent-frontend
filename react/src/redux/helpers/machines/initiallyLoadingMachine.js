@@ -1,15 +1,15 @@
 import { Machine, assign } from 'xstate';
 
 // State machine for tSNE and UMAP
-export const initiallyLoadingMachine = Machine({
+export const initiallyLoadingMachine = (initialState) => Machine({
   id: 'initiallyLoadingMachine',
-  initial: 'initialLoading',
+  initial: initialState,
   context: {
     plotData: [],
     isOpacityComplete: false,
   },
   states: {
-    initialLoading: {
+    initialScatterLoading: {
       on: {
         SCATTER_SUCCESS: {
           target: "scatterComplete",
@@ -17,6 +17,18 @@ export const initiallyLoadingMachine = Machine({
             assign({
               plotData: (context, { data}) => data,
               isOpacityComplete: false
+            })
+        },
+      }
+    },
+    initialOpacityLoading: {
+      on: {
+        OPACITY_SUCCESS: {
+          target: "opacityComplete",
+          actions: 
+            assign({
+              plotData: (context, { data}) => data,
+              isOpacityComplete: true
             })
         },
       }
