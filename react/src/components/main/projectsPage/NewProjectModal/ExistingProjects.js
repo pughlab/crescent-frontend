@@ -21,7 +21,7 @@ import Marquee from 'react-marquee'
 
 import {useCrescentContext} from '../../../../redux/hooks'
 
-const DatasetsPopoverContent = ({
+export const DatasetsPopoverContent = ({
   allDatasets
 }) => {
   return (

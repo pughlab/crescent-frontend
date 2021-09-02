@@ -55,13 +55,13 @@ const TagOncotreeModal = ({
             // size='big'
             basic
             color={R.prop(cancerTag, {
-              true: 'pink',
-              false: 'purple',
-              null: 'blue',
+              'cancer': 'pink',
+              'non-cancer': 'purple',
+              'immune': 'blue',
             })}
             onClick={() => setOpen(true)}>
               {name}
-              {/* {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />} */}
+              {/* {<Label.Detail content={R.toUpper(cancerTag)}  />} */}
               {/* {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
               <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
             </Button>
@@ -73,9 +73,9 @@ const TagOncotreeModal = ({
             // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
             href={`/express/download/${datasetID}`}
             color={R.prop(cancerTag, {
-              true: 'pink',
-              false: 'purple',
-              null: 'blue',
+              'cancer': 'pink',
+              'non-cancer': 'purple',
+              'immune': 'blue',
             })}            
             pointing='left'
             />
@@ -86,13 +86,13 @@ const TagOncotreeModal = ({
             <>
               <Label
               color={R.prop(cancerTag, {
-                true: 'pink',
-                false: 'purple',
-                null: 'blue',
+                'cancer': 'pink',
+                'non-cancer': 'purple',
+                'immune': 'blue',
               })}
               >
                 {<Icon style={{margin: 0}} name='paperclip' /> }      
-                {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />}
+                {<Label.Detail content={R.toUpper(cancerTag)} />}
                 {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
               </Label>
               {R.map(tag => <Label key={tag} content={<Icon style={{ margin: 0 }} name='paperclip'/>} detail={R.toUpper(tag)} />, dataset.customTags)}
@@ -141,30 +141,30 @@ export function TagOncotreeModalContent({
             <Button.Group fluid widths={3}>
               <Button content='Cancer'
                 disabled={disabledTagging}
-                active={cancerTag}
-                color={cancerTag ? 'pink' : undefined}
-                onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode}})}
+                active={R.equals(cancerTag, 'cancer')}
+                color={R.equals(cancerTag, 'cancer') ? 'pink' : undefined}
+                onClick={() => tagDataset({variables: {cancerTag: 'cancer', oncotreeCode}})}
               />
               <Button.Or />
               <Button content='Immune'
                 disabled={disabledTagging}
-                active={R.equals(cancerTag, null)}
-                color={R.equals(cancerTag, null) ? 'blue' : undefined}
-                onClick={() => tagDataset({variables: {cancerTag: null, oncotreeCode: null}})}
+                active={R.equals(cancerTag, 'immune')}
+                color={R.equals(cancerTag, 'immune') ? 'blue' : undefined}
+                onClick={() => tagDataset({variables: {cancerTag: 'immune', oncotreeCode: null}})}
               />
               <Button.Or />
               <Button content='Non-cancer'
                 disabled={disabledTagging}
-                active={R.equals(cancerTag, false)}
-                color={R.equals(cancerTag, false) ? 'purple' : undefined}
-                onClick={() => tagDataset({variables: {cancerTag: false, oncotreeCode: null}})}
+                active={R.equals(cancerTag, 'non-cancer')}
+                color={R.equals(cancerTag, 'non-cancer') ? 'purple' : undefined}
+                onClick={() => tagDataset({variables: {cancerTag: 'non-cancer', oncotreeCode: null}})}
               />
             </Button.Group>
 
             {/* <OncotreeSunburst /> */}
             {/* <OncotreeTree /> */}
             {
-              cancerTag ?
+              R.equals(cancerTag, 'cancer') ?
                 <OncotreeDirectory {...{dataset, tagDataset, disabledTagging}} />
               : 
                 <>

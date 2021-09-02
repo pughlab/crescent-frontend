@@ -121,8 +121,8 @@ const sendSuccess = ({send, data, type}) => ({
   }
 })
 
-const addPlot = () => ({
-  type: 'resultsPage/addPlot',
+const addEmptyPlot = () => ({
+  type: 'resultsPage/addEmptyPlot',
   payload: {}
 })
 
@@ -137,6 +137,38 @@ const toggleSidebarCollapsed = () => ({
 })
 
 const resetResultsPage = R.always({type: 'resultsPage/reset'})
+
+const initializePlots = ({value, selectedPlotID}) =>({
+  type: 'resultsPage/initializePlots',
+  payload: {
+    value,
+    selectedPlotID
+  }
+})
+
+const setPlotQueryID = ({value}) => ({
+  type: 'resultsPage/setPlotQueryID',
+  payload: {value}
+})
+
+const addPlots = ({value}) => ({
+  type: 'resultsPage/addPlots',
+  payload: {
+    value
+  }
+})
+
+const removePlots = ({value}) => ({
+  type: 'resultsPage/removePlots',
+  payload: {
+    value
+  }
+})
+
+const clearPlots = R.always({
+  type: 'resultsPage/clearPlots',
+})
+
 
 export {
   setActiveSidebarTab,
@@ -156,7 +188,12 @@ export {
   setSelectedDiffExpression,
   sendSuccess,
   resetResultsPage,
-  addPlot,
+  addEmptyPlot,
   setActivePlot,
-  toggleSidebarCollapsed
+  toggleSidebarCollapsed,
+  initializePlots,
+  setPlotQueryID,
+  addPlots,
+  removePlots,
+  clearPlots,
 }

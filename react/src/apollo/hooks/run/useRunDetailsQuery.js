@@ -21,6 +21,20 @@ export default function useRunDetails(runID) {
 
         status
 
+        savedPlotQueries {
+          id
+          activeResult
+          selectedQC
+          selectedFeature
+          selectedFeatures
+          selectedGroup
+          selectedAssay
+          selectedDiffExpression
+          selectedQCDataset
+          selectedScaleBy
+          selectedExpRange
+        }
+
         secondaryRuns {
           wesID
           status
@@ -44,6 +58,7 @@ export default function useRunDetails(runID) {
         }
 
         project {
+          projectID
           name
           createdBy {
             userID

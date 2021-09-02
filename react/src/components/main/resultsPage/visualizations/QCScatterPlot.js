@@ -6,6 +6,7 @@ import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import {ClimbingBoxLoader} from 'react-spinners'
 import { useService } from '@xstate/react';
+import PlotHeader from './PlotHeader'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -24,13 +25,11 @@ const QCScatterPlot = ({
 
   const {runID} = useCrescentContext()
   const dispatch = useDispatch()
-  const {selectedQC, service} = useResultsPagePlotQuery(plotQueryIndex)
-  
+  const {selectedQC, plotQueryID, service} = useResultsPagePlotQuery(plotQueryIndex)
   useQCScatterQuery(selectedQC, runID, datasetID, plotQueryIndex)
-  
   const [current, send] = useService(service)
 
-  if (current.matches('initialLoading')) {
+  if (R.test(/initial.*Loading/, current.value)) {
     return (
       <Segment style={{height: '100%'}} basic placeholder>
       <Tada forever duration={1000}>
@@ -42,7 +41,7 @@ const QCScatterPlot = ({
 
   return (
     <>
-      <Header textAlign='center' content={R.isNil(selectedQC) ? '' : R.equals(selectedQC)('Number_of_Reads') ? "Number of UMI Counts for "+name+" (UMAP)" : (selectedQC.replace(/_/g," ")+" for "+name+" (UMAP)")} />
+      <PlotHeader {...{plotQueryID, runID}} name={R.isNil(selectedQC) ? '' : R.equals(selectedQC)('Number_of_Reads') ? "Number of UMI Counts for "+name+" (UMAP)" : (selectedQC.replace(/_/g," ")+" for "+name+" (UMAP)")}/>
       <Segment basic loading={current.matches('umapLoading')} style={{height: '100%'}}>
         <Plot
           config={{showTips: false}}

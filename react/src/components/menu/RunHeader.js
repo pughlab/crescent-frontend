@@ -164,13 +164,13 @@ const RunHeader = ({
                     ({ datasetID, name, cancerTag, size, hasMetadata }) => (
                       <Label key={datasetID}
                         color={R.prop(cancerTag, {
-                          true: 'pink',
-                          false: 'purple',
-                          null: 'blue',
+                          'cancer': 'pink',
+                          'non-cancer': 'purple',
+                          'immune': 'blue',
                         })}
                       >
                         {name}
-                        {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'} />}
+                        {<Label.Detail content={R.toUpper(cancerTag)} />}
                       </Label>
                     ),
                     datasets

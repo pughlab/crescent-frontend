@@ -37,7 +37,7 @@ const typeDefs = gql`
 
     projects(userID: ID): [Project]
   }
- 
+
   #  Make datasets separately for scaling reasons
   # input DatasetDirectory {
   #   directoryName: String!
@@ -55,8 +55,8 @@ const typeDefs = gql`
       projectIDs: [ID]!
       datasetIDs: [ID]!
     ): Project
-    
-    
+
+
     shareProjectByEmail(
       projectID: ID
       email: Email
@@ -93,7 +93,7 @@ const typeDefs = gql`
     updateProjectName(projectID: ID, newName: String): Project
 
     # Change ownership of project
-    changeProjectOwnership(projectID: ID, userID: ID): Project
+    changeProjectOwnership(projectID: ID, oldOwnerID: ID, newOwnerID: ID): Project
   }
 `
 

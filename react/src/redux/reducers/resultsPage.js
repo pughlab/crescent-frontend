@@ -1,6 +1,8 @@
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
+import { plotQueryFields } from '../../utils'
 
 import { interpret } from 'xstate';
 
@@ -20,6 +22,8 @@ const initialPlotQuery = {
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
   service: null,
+  plotQueryID: null,
+  runID: null
 }
 
 const initialState = {
@@ -32,7 +36,6 @@ const initialState = {
   sidebarCollapsed: false,
   activePlot: 0,
   plotQueries: [
-    initialPlotQuery
     // {
     //   activeResult: null, //results select in side
     //   selectedQC: 'Before_After_Filtering',
@@ -47,6 +50,27 @@ const initialState = {
 }
 
 const evolveAtIndex = (transformations, index) => R.over(R.lensIndex(index), R.evolve(transformations))
+const getMachine = ({activeResult, selectedFeature, selectedFeatures, selectedQC}) => {
+  return R.cond([
+  [R.includes(R.__, ['violin']),   R.always(initiallyIdleMachine(selectedFeature ? 'initialLoading' : 'idle'))],
+  [R.includes(R.__, ['dot']),   R.always(initiallyIdleMachine(R.isEmpty(selectedFeatures) ? 'idle' : 'initialLoading'))],
+  [R.includes(R.__, ['heatmap']),   R.always(initiallyIdleMachine('initialLoading'))],
+  [R.includes(R.__, ['tsne', 'umap']),   R.always(initiallyLoadingMachine(selectedFeature ? 'initialOpacityLoading' : 'initialScatterLoading'))],
+  [R.includes(R.__, ['qc']),   R.always(QCMachine(R.equals(selectedQC, 'Before_After_Filtering') ? 'initialViolinLoading' : 'initialUmapLoading'))],
+])(activeResult)
+}
+const initiateService = (plotQuery) => ({
+  ...plotQuery,
+  service: interpret(getMachine(plotQuery)).start()
+})
+// converting selectedExpRange to float, remove __typename, rename id to plotQueryID and add runID field
+const cleanUpPlotQuery = R.compose(
+  RA.renameKeys({ id: 'plotQueryID'}),
+  R.pick(R.concat(['id', 'runID'], plotQueryFields)),
+  R.evolve({
+    selectedExpRange: R.map(str => parseFloat(str)),
+  })
+)
 
 export default createReducer(
   initialState, {
@@ -82,16 +106,10 @@ export default createReducer(
     'resultsPage/setActiveResult': (state, payload) => {
       const {result} = payload
       const {activePlot} = state
-      const getMachine = R.cond([
-        [R.includes(R.__, ['violin', 'dot']),   R.always(initiallyIdleMachine('idle'))],
-        [R.includes(R.__, ['heatmap']),   R.always(initiallyIdleMachine('initialLoading'))],
-        [R.includes(R.__, ['tsne', 'umap']),   R.always(initiallyLoadingMachine)],
-        [R.includes(R.__, ['qc']),   R.always(QCMachine)],
-      ])
       const renewService = () => {
         const currService = state.plotQueries[activePlot].service
         if(currService) currService.stop()
-        return interpret(getMachine(result), {devTools: true}).start()
+        return interpret(getMachine({...initialPlotQuery, activeResult: result})).start()
       }
       return R.evolve({
         // activeResult: R.always(result)
@@ -209,7 +227,7 @@ export default createReducer(
       return state
     },
 
-    'resultsPage/addPlot': (state, payload) => {
+    'resultsPage/addEmptyPlot': (state, payload) => {
       const {plotQueries} = state
       const addAndSetActivePlot =         R.evolve({
         activePlot: R.always(R.length(plotQueries)),
@@ -237,5 +255,53 @@ export default createReducer(
 
 
     'resultsPage/reset': R.always(initialState),
+
+    // add saved plots and set active plot
+    'resultsPage/initializePlots': (state, payload) => {
+      const {value, selectedPlotID} = payload
+      const plots = R.map(R.compose(initiateService, cleanUpPlotQuery), value)
+      return R.evolve({
+        activePlot: R.always(
+          R.ifElse(
+            R.equals(-1),
+            R.always(0),
+            R.identity
+          )(R.findIndex(R.propEq('plotQueryID', selectedPlotID))(plots))
+        ),
+        selectedPlotID: R.always(null),
+        plotQueries: R.always(R.isEmpty(value) ? [initialPlotQuery] : plots),
+      })(state)
+    },
+
+    'resultsPage/setPlotQueryID': (state, payload) => {
+      const {value} = payload
+      const {activePlot} = state
+      return R.evolve({
+        plotQueries: evolveAtIndex({plotQueryID: R.always(value)}, activePlot)
+      })(state)
+    },
+
+    // for compare modal
+    'resultsPage/addPlots': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        plotQueries: R.concat(R.map(R.compose(initiateService, cleanUpPlotQuery), value))
+      })(state)
+    },
+
+    // for compare modal
+    'resultsPage/removePlots': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        plotQueries: R.filter(({plotQueryID}) => !R.includes(plotQueryID, value))
+      })(state)
+    },
+
+    // for compare modal
+    'resultsPage/clearPlots': (state, payload) => {
+      return R.evolve({
+        plotQueries: R.always([])
+      })(state)
+    },
   }
 )

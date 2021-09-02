@@ -58,7 +58,7 @@ function OncotreeDirectoryNode ({
           }
           content={
             <Button color='pink' content={`Tag dataset as '${name} (${title})' `}
-              onClick={() => tagDataset({variables: {cancerTag: true, oncotreeCode: title}})}
+              onClick={() => tagDataset({variables: {cancerTag: 'cancer', oncotreeCode: title}})}
             
             />
           }

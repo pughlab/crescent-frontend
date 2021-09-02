@@ -17,6 +17,8 @@ export default function useAddCustomTagDatasetMutation(datasetID, customTag) {
         name
         hasMetadata
         size
+        numGenes
+        numCells
         cancerTag
         oncotreeCode
         customTags
@@ -43,6 +45,13 @@ export default function useAddCustomTagDatasetMutation(datasetID, customTag) {
         customTag: $customTag
       ) {
         datasetID
+        name
+        hasMetadata
+        size
+        numGenes
+        numCells
+        cancerTag
+        oncotreeCode
         customTags
       }
     }

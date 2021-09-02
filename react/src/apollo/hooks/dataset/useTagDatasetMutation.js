@@ -38,7 +38,7 @@ export default function useTagDatasetMutation(datasetID) {
   const [tagDataset] = useMutation(gql`
     mutation TagDataset(
       $datasetID: ID!
-      $cancerTag: Boolean
+      $cancerTag: String
       $oncotreeCode: String
     ) {
       tagDataset(

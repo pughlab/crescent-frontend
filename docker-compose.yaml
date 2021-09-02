@@ -41,9 +41,9 @@ services:
       - mongo
 
   graphene: 
-    # image: crescentdev/graphene-server
+    image: crescentdev/graphene
     privileged: true
-    build: graphene
+    # build: graphene
     container_name: graphene
     expose:
       - ${GRAPHENE_PORT}
@@ -55,6 +55,7 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
       - MONGO_URL=${MONGO_URL}
       - WES_PORT=${WES_PORT}
+      - WES_SERVER=${WES_SERVER}
       - GRAPHENE_DEV=${GRAPHENE_DEV}
     volumes:
       - ./graphene/src:/app/src
@@ -67,8 +68,9 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port ${GRAPHENE_PORT} --reload
 
   wes-server:
-    image: candig/wes-server:${WES_VERSION}
-    container_name: wes-server
+    build: wes
+    # image: kevin/wes-server
+    container_name: "wes-server"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:rw
       - /var/lib/docker/volumes:/var/lib/docker/volumes:rw
@@ -78,7 +80,11 @@ services:
       - ./wes/logs:/root/logs:rw
     ports:
       - "${WES_PORT}:8081"
-    entrypoint: ["wes-server"]
+    environment:
+      - MINIO_HOST_PORT=${MINIO_HOST_PORT}
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+    entrypoint: /root/mesos-wes.sh
     command:
       - --port=8081
       - --backend=${WES_BACKEND}

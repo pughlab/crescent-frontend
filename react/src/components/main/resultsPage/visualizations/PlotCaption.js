@@ -14,7 +14,7 @@ export default function CrescentPlotCaption ({
 }) {
   const plotQuery = useResultsPagePlotQuery(plotQueryIndex)
   const {runID} = useCrescentContext()
-  const run = useRunDatasetsQuery(runID)
+  const run = useRunDatasetsQuery(runID || plotQuery.runID)
   const {
     activeResult,
     selectedQC,

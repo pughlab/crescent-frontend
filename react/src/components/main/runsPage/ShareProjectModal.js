@@ -113,7 +113,6 @@ const ShareProjectModal = ({
                 {
                   R.addIndex(R.map)(
                     ({userID, name}, index) => (
-                      (creatorUserID !== userID) &&
                       <Label key={index}
                         basic
                         color='grey'
@@ -132,7 +131,7 @@ const ShareProjectModal = ({
               </Grid.Column>
             }
             <Grid.Column width={12}>
-              <Input 
+              <Input
                 placeholder='Enter user email to share'
                 fluid
                 value={emailToShare}

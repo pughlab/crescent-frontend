@@ -119,13 +119,13 @@ const ProjectCard = ({
                         ({datasetID, name, cancerTag, oncotreeCode, hasMetadata}) => (
                           <Label key={datasetID}
                             color={R.prop(cancerTag, {
-                              true: 'pink',
-                              false: 'purple',
-                              null: 'blue',
+                              'cancer': 'pink',
+                              'non-cancer': 'purple',
+                              'immune': 'blue',
                             })}
                           >
                             {name}
-                            {<Label.Detail content={cancerTag ? 'CANCER' : R.equals(cancerTag, null) ? 'IMMUNE' : 'NON-CANCER'}  />}
+                            {<Label.Detail content={R.toUpper(cancerTag)}  />}
                             {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
                             {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
                           </Label>
@@ -155,15 +155,15 @@ const ProjectCard = ({
             <Label.Group>
               <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(allDatasets)} dataset(s)`} />
               {
-                R.includes(true,uniqueCancerTagsArray) &&
+                R.includes('cancer', uniqueCancerTagsArray) &&
                 <Label color='pink' content={<Icon style={{margin: 0}} name='paperclip' />} detail={'CANCER'} />
               }
               {
-                R.includes(false,uniqueCancerTagsArray) &&
+                R.includes('non-cancer', uniqueCancerTagsArray) &&
                 <Label color='purple' content={<Icon style={{margin: 0}} name='paperclip' />} detail={'NON-CANCER'} />
               }
               {
-                R.includes(null,uniqueCancerTagsArray) &&
+                R.includes('immune', uniqueCancerTagsArray) &&
                 <Label color='blue' content={<Icon style={{margin: 0}} name='paperclip' />} detail={'IMMUNE'} />
               }
               </Label.Group>

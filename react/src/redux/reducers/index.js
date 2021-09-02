@@ -8,6 +8,7 @@ import context from './context'
 import projectsPage from './projectsPage'
 import runsPage from './runsPage'
 import resultsPage from './resultsPage'
+import comparePage from './comparePage'
 
 // Reducer
 const initialState = {
@@ -395,5 +396,6 @@ export default combineReducers({
   projectsPage,
   runsPage,
   resultsPage,
+  comparePage
   // app
 })

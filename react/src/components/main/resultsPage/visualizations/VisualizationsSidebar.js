@@ -6,36 +6,87 @@ import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
+import {useRunDetailsQuery, useSavePlotQueryMutation, useRemoveSavedPlotQueryMutation, useUpdateSavedPlotQueryMutation} from '../../../../apollo/hooks/run'
 import {useResultsAvailableQuery} from '../../../../apollo/hooks/results'
-import {setActiveResult, addPlot, setActivePlot} from '../../../../redux/actions/resultsPage'
+import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage';
+import {setActiveResult, addEmptyPlot, setActivePlot, setPlotQueryID} from '../../../../redux/actions/resultsPage'
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
 import DotPlotVisualizationMenu from '../../resultsPage/visualizations/DotPlotVisualizationMenu'
 import HeatmapVisualizationMenu from '../../resultsPage/visualizations/HeatmapVisualizationMenu'
 import QualityControlMenu from '../../resultsPage/visualizations/QualityControlMenu'
 
-const MultiPlotSelector = ({
+import { plotQueryFields } from '../../../../utils';
 
+const MultiPlotSelector = ({
+  runID,
+  runOwner
 }) => {
   const [numPlots, setNumPlots] = useState(1)
-  
+
   const dispatch = useDispatch()
+  const {userID} = useCrescentContext()
   const {activePlot, plotQueries} = useResultsPage()
+  const {plotQueryID} = useResultsPagePlotQuery(activePlot)
+  const {savePlotQuery, loading: savePlotQueryLoading} = useSavePlotQueryMutation(
+    runID, 
+    R.compose(
+      R.over(R.lensProp('selectedExpRange'), R.map(num => num.toString()), R.__),
+      R.pick(plotQueryFields),
+    )(plotQueries[activePlot]),
+    (id) => dispatch(setPlotQueryID({value: id}))
+  )
+  const { removeSavedPlotQuery, loading: removePlotQueryLoading } = useRemoveSavedPlotQueryMutation(runID, plotQueryID, () => dispatch(setPlotQueryID({value: null})))
+  const { updateSavedPlotQuery, loading: updatePlotQueryLoading } = useUpdateSavedPlotQueryMutation(
+    runID,
+    R.compose(
+      R.over(R.lensProp('selectedExpRange'), R.map(num => num.toString()), R.__),
+      R.pick(plotQueryFields),
+    )(plotQueries[activePlot])
+  )
+
+  const PlotSavingButtons = () => {
+    return plotQueryID ? (
+      <Button.Group fluid attached="bottom">
+        <Button color='violet' animated='vertical' style={{borderRadius: 0}} onClick={updateSavedPlotQuery} loading={updatePlotQueryLoading}>
+          <Button.Content visible><Icon name='sync'/></Button.Content>
+          <Button.Content hidden content="Update saved plot"/>
+        </Button>
+        <Button color='red' animated='vertical'  style={{borderRadius: 0}} onClick={removeSavedPlotQuery} loading={removePlotQueryLoading}>
+          <Button.Content visible><Icon name='trash'/></Button.Content>
+          <Button.Content hidden content="Remove plot"/>
+        </Button>
+      </Button.Group>
+    ) : (
+      <Button color="violet" animated='vertical' fluid style={{borderRadius: 0}} onClick={savePlotQuery} loading={savePlotQueryLoading}>
+        <Button.Content visible><Icon name='save'/></Button.Content>
+        <Button.Content hidden content="Save plot"/>
+      </Button>
+    )
+  }
 
   return (
-    <Menu attached='top' color='violet'>
+    <>
+      <Menu attached='top' color='violet'>
+        {
+          R.compose(
+            R.addIndex(R.map)((plot, idx) => (
+              <Menu.Item key={idx} active={R.equals(activePlot, idx)} onClick={() => dispatch(setActivePlot({value: idx}))}>
+                {R.inc(idx)}
+                {plot.plotQueryID && (
+                  <Label floating color="violet" style={{ paddingRight: 0, paddingLeft: "-9px" }} icon={<Icon name='pin'/>}/>
+                )}
+              </Menu.Item>
+            ))
+          )(plotQueries)
+        }
+        <Menu.Item icon='plus' onClick={() => dispatch(addEmptyPlot())} />
+      </Menu>
       {
-        R.compose(
-          R.addIndex(R.map)((plot, idx) => (
-            <Menu.Item key={idx} active={R.equals(activePlot, idx)} content={R.inc(idx)}
-              onClick={() => dispatch(setActivePlot({value: idx}))}
-            />
-          ))
-        )(plotQueries)
+        R.equals(runOwner, userID) && (<PlotSavingButtons />)
       }
-      <Menu.Item icon='plus' onClick={() => dispatch(addPlot())} />
-    </Menu>
+      
+    </>
   )
 }
 
@@ -59,7 +110,7 @@ const VisualizationsSidebar = ({
   if (R.any(R.isNil, [run, plots])) {
     return null
   }
-  const {status: runStatus} = run
+  const {status: runStatus, createdBy: {userID: runOwner}} = run
   const runStatusEquals = R.equals(runStatus)
   if (runStatusEquals('failed')) {
     return (
@@ -94,7 +145,7 @@ const VisualizationsSidebar = ({
         </Step.Group>
       ) : (
         <>
-          <MultiPlotSelector />
+          <MultiPlotSelector {...{runID, runOwner}}/>
           <Segment as={Form} attached>
             <Divider horizontal content='Plots' />
             <Form.Group>

@@ -46,8 +46,8 @@ const PublicProjectsList = () => {
     const {allDatasets} = project
     const {cancer, nonCancer} = tissueFilter
     const datasetHasCancerTissueFilter = ({cancerTag}) => R.or(
-      R.and(cancer, cancerTag),
-      R.and(nonCancer, R.not(cancerTag))
+      R.and(cancer, R.equals(cancerTag, 'cancer')),
+      R.and(nonCancer, R.complement(R.equals)(cancerTag, 'cancer'))
     )
     return R.any(datasetHasCancerTissueFilter, allDatasets)
   }
