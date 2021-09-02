@@ -30,7 +30,7 @@ const ArchiveProjectModal = ({
   `, {
     variables: {projectID},
     onCompleted: data => {
-      dispatch(goBack())
+      dispatch(goBack({comparePagePlots: null}))
     }
   })
   return (

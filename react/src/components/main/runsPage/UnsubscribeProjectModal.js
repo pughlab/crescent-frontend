@@ -33,7 +33,7 @@ const UnsubscribeProjectModal = ({
   `, {
         variables: { projectID },
         onCompleted: data => {
-            dispatch(goBack())
+            dispatch(goBack({comparePagePlots: null}))
         }
     })
 

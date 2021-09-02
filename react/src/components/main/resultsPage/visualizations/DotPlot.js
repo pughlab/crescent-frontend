@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Plot from 'react-plotly.js'
 import { Image, Container, Header, Segment, Dimmer, Icon, Popup, Dropdown, Grid, Button } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
@@ -29,8 +29,8 @@ const DotPlot = ({
   const { runID, view } = useCrescentContext()
 
   const dispatch = useDispatch()
-  const { activeResult, selectedFeatures, selectedGroup, selectedScaleBy, selectedExpRange, selectedAssay, runID: compareRunID, plotQueryID } = useResultsPagePlotQuery(plotQueryIndex)
-  const { sidebarCollapsed } = useResultsPage()
+  const { activeResult, selectedFeatures, selectedGroup, selectedScaleBy, selectedExpRange, selectedAssay, runID: compareRunID, plotQueryID, service } = useResultsPagePlotQuery(plotQueryIndex)
+  const { sidebarCollapsed, activePlot } = useResultsPage()
 
   const plots = useResultsAvailableQuery(runID || compareRunID)
   const [current, send] = useService(service)
@@ -39,7 +39,7 @@ const DotPlot = ({
   const [resetSliderValues, setResetSliderValues] = useState(true)
   const inMultiPlot = sidebarCollapsed || R.equals(view, 'compare')
 
-  useDotPlotQuery(selectedFeatures, selectedGroup, runID || compareRunID , selectedScaleBy, selectedExpRange, selectedAssay, sidebarCollapsed, plotQueryIndex)
+  useDotPlotQuery(selectedFeatures, selectedGroup, runID || compareRunID , selectedScaleBy, selectedExpRange, selectedAssay, inMultiPlot, plotQueryIndex)
 
   useEffect(() => {
     // do not run on first render when sidebar not collapsed
@@ -52,7 +52,7 @@ const DotPlot = ({
 
   useEffect(() => {
     if(!(R.test(/multiPlot.*/, current.value) && sidebarCollapsed)) send({type: "CHANGE_ACTIVE_PLOT"})
-  }, [ activePlot])
+  }, [activePlot])
 
   if (R.any(R.isNil, [plots])) {
     return null
@@ -127,7 +127,7 @@ const DotPlot = ({
   return (
     <>
       <PlotHeader {...{plotQueryID}} name={currentScatterPlotType} runID={runID || compareRunID} />
-      <Segment basic loading={loading} style={{ height: '100%' }}>
+      <Segment basic loading={R.test(/.*Loading/, current.value)} style={{ height: '100%' }}>
       { inMultiPlot ||
         (
           <Grid divided='vertically'>
