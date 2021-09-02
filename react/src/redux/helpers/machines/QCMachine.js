@@ -1,17 +1,28 @@
 import { Machine, assign } from 'xstate';
 
 // For QC
-export const QCMachine = Machine({
+export const QCMachine = (initialState) => Machine({
   id: 'QCMachine',
-  initial: 'initialLoading',
+  initial: initialState,
   context: {
     plotData: [],
   },
   states: {
-    initialLoading: {
+    initialViolinLoading: {
       on: {
         VIOLIN_SUCCESS: {
           target: "violinComplete",
+          actions: 
+            assign({
+              plotData: (context, {data}) => data,
+            })
+        },
+      }
+    },
+    initialUmapLoading: {
+      on: {
+        UMAP_SUCCESS: {
+          target: "umapComplete",
           actions: 
             assign({
               plotData: (context, {data}) => data,
@@ -61,8 +72,7 @@ export const QCMachine = Machine({
           target: "umapComplete",
           actions: 
             assign({
-              plotData: (context, {data}) => data,
-              isOpacityComplete: true
+              plotData: (context, {data}) => data
             })
         },
       }

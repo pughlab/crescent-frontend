@@ -25,7 +25,7 @@ const QCViolinPlot = ({
   useQCViolinQuery({runID, datasetID}, plotQueryIndex)
   const [current, send] = useService(service)
 
-  if (current.matches('initialLoading')) {
+  if (R.test(/initial.*Loading/, current.value)) {
     return (
     <Segment basic style={{height: '100%'}} placeholder>
       <Tada forever duration={1000}>
