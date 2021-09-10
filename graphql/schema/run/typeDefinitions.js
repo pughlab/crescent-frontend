@@ -171,7 +171,7 @@ const typeDefs = gql`
     updateSavedPlotQuery(
       runID: ID!,
       input: PlotQueryInput!
-    ): Run
+    ): PlotQuery
 
     removeSavedPlotQuery(
       runID: ID!,

@@ -290,7 +290,9 @@ const resolvers = {
           R.omit(['plotQueryID'])
         )(input)
         await Runs.updateOne({runID}, {$set: fieldsToChange})
-        return run
+        const updatedRun = await Runs.findOne({runID})
+        // return the updated plot query
+        return updatedRun.savedPlotQueries[plotQueryIndex]
       } catch (err) {
         console.log(err)
       }
