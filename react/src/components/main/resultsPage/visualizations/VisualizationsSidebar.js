@@ -9,6 +9,7 @@ import {useRunDetailsQuery, useSavePlotQueryMutation, useRemoveSavedPlotQueryMut
 import {useResultsAvailableQuery} from '../../../../apollo/hooks/results'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage';
 import {setActiveResult, addEmptyPlot, setActivePlot, setPlotQueryID} from '../../../../redux/actions/resultsPage'
+import {updatePlot} from '../../../../redux/actions/comparePage'
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
 import DotPlotVisualizationMenu from '../../resultsPage/visualizations/DotPlotVisualizationMenu'
@@ -34,13 +35,14 @@ const MultiPlotSelector = ({
     (id) => dispatch(setPlotQueryID({value: id}))
   )
   const { removeSavedPlotQuery, loading: removePlotQueryLoading } = useRemoveSavedPlotQueryMutation(runID, plotQueryID, () => dispatch(setPlotQueryID({value: null})))
-  const { updateSavedPlotQuery, loading: updatePlotQueryLoading } = useUpdateSavedPlotQueryMutation(
+  const { updateSavedPlotQuery, loading: updatePlotQueryLoading } = useUpdateSavedPlotQueryMutation({
     runID,
-    R.compose(
+    input: R.compose(
       R.over(R.lensProp('selectedExpRange'), R.map(num => num.toString()), R.__),
       R.pick(plotQueryFields),
-    )(plotQueries[activePlot])
-  )
+    )(plotQueries[activePlot]),
+    onComplete: plotQuery => dispatch(updatePlot({plotQuery}))
+    })
 
   const PlotSavingButtons = () => {
     return plotQueryID ? (

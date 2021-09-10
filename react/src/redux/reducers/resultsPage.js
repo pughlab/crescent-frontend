@@ -2,7 +2,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
-import { plotQueryFields } from '../../utils'
+import { cleanUpPlotQuery } from '../../utils'
 
 import { interpret } from 'xstate';
 
@@ -62,14 +62,6 @@ const initiateService = (plotQuery) => ({
   ...plotQuery,
   service: interpret(getMachine(plotQuery)).start()
 })
-// converting selectedExpRange to float, remove __typename, rename id to plotQueryID and add runID field
-const cleanUpPlotQuery = R.compose(
-  RA.renameKeys({ id: 'plotQueryID'}),
-  R.pick(R.concat(['id', 'runID'], plotQueryFields)),
-  R.evolve({
-    selectedExpRange: R.map(str => parseFloat(str)),
-  })
-)
 
 export default createReducer(
   initialState, {

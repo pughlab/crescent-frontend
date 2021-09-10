@@ -9,7 +9,15 @@ const cacheComparePage = ({plotQueryID, plotQueries}) => ({
   }
 })
 
+const updatePlot = ({plotQuery}) => ({
+  type: 'comparePage/updatePlot',
+  payload: {
+    plotQuery
+  }
+})
+
 export {
   resetComparePage,
   cacheComparePage,
+  updatePlot
 }

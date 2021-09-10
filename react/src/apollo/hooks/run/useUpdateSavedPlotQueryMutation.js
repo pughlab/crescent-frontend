@@ -1,9 +1,11 @@
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-
-export default function useUpdateSavedPlotQueryMutation(
+import { cleanUpPlotQuery } from '../../../utils'
+export default function useUpdateSavedPlotQueryMutation({
   runID,
   input,
+  onComplete
+}
 ) {
   const [updateSavedPlotQuery, {loading, error}] = useMutation(gql`
     mutation UpdateSavedPlotQuery(
@@ -14,13 +16,27 @@ export default function useUpdateSavedPlotQueryMutation(
         runID: $runID,
         input: $input
       ) {
-        runID
+          id
+          activeResult
+          selectedQC
+          selectedFeature
+          selectedFeatures
+          selectedScaleBy
+          selectedExpRange
+          selectedGroup
+          selectedAssay
+          selectedDiffExpression
+          selectedQCDataset
       }
     }
   `, {
     variables: {
       runID, input
     },
+    onCompleted: ({updateSavedPlotQuery: plotQuery}) => {
+      // update the plot in multiplot page
+      onComplete(cleanUpPlotQuery({...plotQuery, runID}))
+    }
   })
   return {updateSavedPlotQuery, loading}
 }

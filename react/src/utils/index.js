@@ -22,7 +22,20 @@ const plotQueryFields = [
   'selectedQCDataset',
  ]
 
+// converting selectedExpRange to float, remove __typename, rename id to plotQueryID
+ const cleanUpPlotQuery = R.compose(
+  // rename id to plotQueryID
+  RA.renameKeys({ id: 'plotQueryID'}),
+  // keep plotQuery fields, id and runID
+  R.pick(R.concat(['id', 'runID'], plotQueryFields)),
+  // convert selectedExpRange to float
+  R.evolve({
+    selectedExpRange: R.map(str => parseFloat(str)),
+  })
+)
+
 export {
   queryIsNotNil,
-  plotQueryFields
+  plotQueryFields,
+  cleanUpPlotQuery
 }

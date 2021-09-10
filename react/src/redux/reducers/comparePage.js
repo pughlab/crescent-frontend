@@ -20,5 +20,17 @@ export default createReducer(
       })(state)
     },
 
+    'comparePage/updatePlot': (state, payload) => {
+      const {plotQueries: comparePagePlots} = state
+      const {plotQuery} = payload
+      const plotToUpdate = R.find(R.propEq('plotQueryID', plotQuery.plotQueryID))(comparePagePlots)
+      return R.evolve({
+        plotQueries: R.always(R.update(
+          R.findIndex(R.propEq('plotQueryID', plotQuery.plotQueryID))(comparePagePlots),
+          R.merge(plotToUpdate, plotQuery),
+          comparePagePlots
+        ))
+      })(state)
+    },
   }
 )
