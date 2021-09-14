@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import * as R from 'ramda'
 
-import {Header, Button, Segment, Modal, Icon, Card, Popup, Step} from 'semantic-ui-react'
+import {Header, Button, Segment, Modal, Icon, Card, Popup, Step, Transition} from 'semantic-ui-react'
 import PlotCard from './PlotCard'
 import ProjectsForm from './ProjectsForm'
 
@@ -56,6 +56,7 @@ const CompareModal = ({
       name: 'projects',
       label: 'Projects',
       icon: 'folder',
+      disabled: false,
       component: (
         <ProjectsForm {...{selectedProjectIDs, setSelectedProjectIDs, curatedProjects, uploadedProjects}} />
       )
@@ -64,26 +65,47 @@ const CompareModal = ({
       name: 'plots',
       label: 'Saved Plots',
       icon: 'area graph',
+      disabled: R.isEmpty(selectedProjectIDs),
       component: (
         R.isEmpty(plots) ? (
           <Segment placeholder>
             <Header icon>
               <Icon name='exclamation' />
-              {
-                R.isEmpty(selectedProjectIDs) 
-                ? "No Project Selected" 
-                : "No Saved Plots"
-              }
+              No Saved Plots
             </Header>
           </Segment>
         ) : (
-          <Card.Group itemsPerRow={3}>
-            {
-              R.map(plot => (
-                <PlotCard key={plot.query.id} {...{plot}} />
-              ), plots)
-            }
-          </Card.Group>
+          <>
+            <Card.Group itemsPerRow={3}>
+              {
+                R.map(plot => (
+                  <PlotCard key={plot.query.id} {...{plot}} />
+                ), plots)
+              }
+            </Card.Group>          
+            <Transition visible animation='fade up' duration={1000} unmountOnHide={true} transitionOnMount={true}>
+              <Segment basic style={{padding: 0}}>
+                <Popup
+                  trigger={
+                    <span>
+                      <Button
+                        fluid
+                        size="huge"
+                        content="Compare"
+                        onClick={() => {setOpen(false); dispatch(goToCompare())}}
+                        disabled={R.isEmpty(plotQueries)}
+                        color={R.isEmpty(plotQueries) ? undefined : 'black'}
+                      />
+                    </span>
+                  }
+                  content='Select at least one plot'
+                  disabled={!R.isEmpty(plotQueries)}
+                  position='bottom center'
+                  inverted
+                />
+              </Segment>
+            </Transition>
+          </>
         ) 
       )
     }
@@ -129,9 +151,9 @@ const CompareModal = ({
         <Step.Group fluid size='small' widths={4}>
           {
             R.map(
-              ({name, label, icon}) => (
+              ({name, label, icon, disabled}) => (
                 <Step key={name} title={label} onClick={() => setCurrentContent(name)} icon={icon}
-                  active={R.equals(currentContent, name)}
+                  active={R.equals(currentContent, name)} disabled={disabled}
                 />
               ),
               CONTENTS
@@ -147,27 +169,6 @@ const CompareModal = ({
           )(CONTENTS)
         }      
       </Modal.Content>
-     
-      <Modal.Actions>
-        <Popup
-          trigger={
-            <span>
-              <Button
-                fluid
-                size="huge"
-                content="Compare"
-                onClick={() => {setOpen(false); dispatch(goToCompare())}}
-                disabled={R.isEmpty(plotQueries)}
-                color={R.isEmpty(plotQueries) ? undefined : 'black'}
-              />
-            </span>
-          }
-          content='Select at least one plot'
-          disabled={!R.isEmpty(plotQueries)}
-          position='bottom center'
-          inverted
-        />
-      </Modal.Actions>
     </Modal>
   )
 }
