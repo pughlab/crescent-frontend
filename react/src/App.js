@@ -12,6 +12,7 @@ import RunsPageComponent from './components/main/runsPage'
 import ResultsPageComponent from './components/main/resultsPage'
 import ComparePageComponent from './components/main/comparePage'
 import ErrorComponent from './components/error'
+import CacheReloadModal from './components/cacheBusting'
 
 import {useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
@@ -61,6 +62,7 @@ const App = () => {
 
   return (
     <div ref={stickyRef} style={{minHeight: '100vh'}}>
+      <CacheReloadModal />
       {/* <Sticky context={stickyRef}> */}
         <MenuComponent />
       {/* </Sticky> */}
