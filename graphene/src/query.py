@@ -21,7 +21,8 @@ from get_data.get_others import (
     get_GSVA_metrics
 )
 from get_data.search_features import run_search
-from get_data.get_heatmap import get_heatmap_data
+from get_data.get_gsva_heatmap import get_GSVA_heatmap_data
+from get_data.get_infercnv_heatmap import get_inferCNV_heatmap_data
 
 from schema.dropdown_form import DropdownForm
 from schema.gsva_metrics import GSVAMetrics
@@ -78,10 +79,15 @@ class Query(ObjectType):
     def resolve_GSVA_metrics(parent, info, runID):
         return get_GSVA_metrics(runID)
 
-    heatmap = List(NonNull(HeatmapData), runID=ID())
+    GSVA_heatmap = List(NonNull(HeatmapData), runID=ID())
     @staticmethod
-    def resolve_heatmap(parent, info, runID):
-        return get_heatmap_data(runID)
+    def resolve_GSVA_heatmap(parent, info, runID):
+        return get_GSVA_heatmap_data(runID)
+    
+    inferCNV_heatmap = List(NonNull(HeatmapData), runID=ID())
+    @staticmethod
+    def resolve_inferCNV_heatmap(parent, info, runID):
+        return get_inferCNV_heatmap_data(runID)
 
     opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID(), datasetID=ID(), expRange=List(Float), assay=String())
     @staticmethod
