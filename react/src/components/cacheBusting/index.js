@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import {Button, Container, Grid, Header, Icon, Label, Message, Modal} from 'semantic-ui-react'
+import Shake from 'react-reveal/Shake'
 import {useSemverCheck} from '../../utils/hooks'
 
 const CacheReloadModal = () => {
@@ -32,6 +33,7 @@ const CacheReloadModal = () => {
         </Message>
         <Grid
           columns={3}
+          textAlign="center"
           verticalAlign="middle"
         >
           <Grid.Column width={7}>
@@ -41,19 +43,18 @@ const CacheReloadModal = () => {
               icon="angle down"
             />
           </Grid.Column>
-          <Grid.Column
-            width={2}
-            textAlign="center"
-          >
-            <Icon
-              name="long arrow alternate right"
-              size="big"
-            />
+          <Grid.Column width={2}>
+            <Shake
+              duration={7500}
+              forever
+            >
+              <Icon
+                name="arrow right"
+                size="big"
+              />
+            </Shake>
           </Grid.Column>
-          <Grid.Column
-            width={7}
-            textAlign="right"
-          >
+          <Grid.Column width={7}>
             <Header content="Latest Version" />
             <Label
               icon="angle up"
