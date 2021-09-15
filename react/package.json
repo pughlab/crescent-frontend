@@ -49,6 +49,9 @@
     "zlib": "^1.0.5"
   },
   "scripts": {
+    "patch": "npm version --no-git-tag-version patch",
+    "minor": "npm version --no-git-tag-version minor",
+    "major": "npm version --no-git-tag-version major",
     "prestart": "node generate-build-version.js",
     "start": "react-scripts start",
     "prebuild": "node generate-build-version.js",

@@ -29,7 +29,7 @@ const useSemverCheck = () => {
       // Get the latest version from meta.json
       // Specify no-store for the cache option to ensure that we always fetch an uncached meta.json
       const res = await fetch('/meta.json', {
-        cache: 'no-store',
+        cache: 'no-store'
       })
       const meta = await res.json()
       const latestVersion = meta.version
