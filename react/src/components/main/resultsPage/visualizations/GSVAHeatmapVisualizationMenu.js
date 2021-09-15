@@ -8,7 +8,7 @@ import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useGSVAMetricsQuery } from '../../../../apollo/hooks/results'
 
-const HeatmapVisualizationMenu = ({
+const GSVAHeatmapVisualizationMenu = ({
 }) => {
   const { runID } = useCrescentContext()
   const GSVAMetrics = useGSVAMetricsQuery(runID)
@@ -62,4 +62,4 @@ const HeatmapVisualizationMenu = ({
   )
 }
 
-export default HeatmapVisualizationMenu 
+export default GSVAHeatmapVisualizationMenu 

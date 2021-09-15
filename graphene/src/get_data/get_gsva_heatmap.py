@@ -10,7 +10,7 @@ from get_data.get_client import get_minio_client
 from get_data.helper import return_error, set_IDs, extract_cluster_label
 from get_data.minio_functions import get_obj_as_2dlist, object_exists
 
-def get_heatmap_data(runID):
+def get_GSVA_heatmap_data(runID):
     """ given a runID, fetch the heatmap data """
     heatmap_data = {}
     paths = {}
