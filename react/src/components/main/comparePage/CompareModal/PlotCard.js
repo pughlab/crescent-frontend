@@ -82,7 +82,7 @@ const PlotCard = ({
                     <Label content='Scale by' detail={selectedScaleBy} />
                   </>
                 )],
-                [R.equals('heatmap'), R.always(
+                [R.includes(R.__, ['gsva', 'infercnv']), R.always(
                   <Label content='No parameter selected'/>
                 )],
                 // tsne, umap, violin
