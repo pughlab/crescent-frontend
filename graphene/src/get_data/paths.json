@@ -85,5 +85,17 @@
     "gsva": {
         "bucket": "run-",
         "object": "GSVA/GSVA_RESULTS/crescent.GSVA_cluster_final_label.tsv"
+    },
+    "infercnv": {
+        "bucket": "run-",
+        "object": "INFERCNV/INFERCNV_RESULTS/infercnv.observations.tsv"
+    },
+    "infercnv_gene_pos": {
+        "bucket": "run-",
+        "object": "INFERCNV/INFERCNV_INPUTS/gencode_v19_gene_pos.txt"
+    },
+    "infercnv_annotation": {
+        "bucket": "run-",
+        "object": "INFERCNV/INFERCNV_INPUTS/glio.wGtexBrain.sample_annots.txt"
     }
 }
