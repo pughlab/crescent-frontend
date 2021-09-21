@@ -46,7 +46,7 @@ export default function PlotCaption ({
     <Label.Group color='violet'>
       <Label ribbon content={`${R.inc(plotQueryIndex)}`} />
       {
-        R.map(({content, detail}) => <Label {...{key: content, content, detail}} />, labels)
+        R.map(({content, detail}) => <Label {...{key: content, content, detail}} style={{wordBreak: 'break-word'}} />, labels)
       }
     </Label.Group>
   )

@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import Plot from 'react-plotly.js'
-import { Button, Grid, Header, Image, Popup, Segment } from 'semantic-ui-react'
+import React, { useEffect, useState } from 'react'
+import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
+import { Image, Container, Header, Segment, Dimmer, Button, Grid, Popup, Icon } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { useService } from '@xstate/react';
@@ -194,10 +194,9 @@ const ScatterPlot = ({
     // <Segment style={{height: '100%'}}>
     <>
       <PlotHeader {...{plotQueryID}} name={currentScatterPlotType} runID={runID || compareRunID}/>
-      <Segment basic loading={R.test(/.*Loading/, current.value)} style={{ height: '100%' }}>
-
+      <ResponsivePlotSegment loading={R.test(/.*Loading/, current.value)}>
       {
-        (isFeatureNotSelected || inMultiPlot) || (
+        !(isFeatureNotSelected || inMultiPlot) && (
           <Grid divided='vertically'>
             <Grid.Row columns={2} >
               <Grid.Column verticalAlign="middle" width={12}>
@@ -251,15 +250,12 @@ const ScatterPlot = ({
             </Grid.Row>
           </Grid>
         )}
-        <Plot
+        <ResponsivePlot
           config={{ showTips: false }}
           // data={opacity}
           data={plotData}
           // data={scatterData}
-          useResizeHandler
-          style={{ width: '100%', height: '90%' }}
           layout={{
-            autosize: true,
             hovermode: 'closest',
             xaxis: { showgrid: false, ticks: '', showticklabels: false },
             yaxis: { showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x" },
@@ -267,7 +263,7 @@ const ScatterPlot = ({
             legend: { "orientation": "v" }
           }}
         />
-      </Segment>
+      </ResponsivePlotSegment>
       {/* </Dimmer.Dimmable> */}
     </>
   )

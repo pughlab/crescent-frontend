@@ -36,3 +36,22 @@
   background-image: url("./memphis-mini.png") !important;
   background-repeat: repeat !important;
 }
+
+/* Start of react-grid-layout styling */
+.react-grid-item.react-grid-placeholder {
+  background: #6435c9 !important; /* Note: #6435c9 is the hexcode for "violet" from Semantic UI React */
+}
+
+.ui.label.corner.plot-draggable-handle::after,
+.ui.label.corner.plot-draggable-handle > .icon {
+  cursor: pointer;
+}
+
+.ui.label.corner.plot-draggable-handle::after {
+  border-top-left-radius: 4px;
+}
+
+.react-resizable-handle::after {
+  content: none !important;
+}
+/* End of react-grid-layout styling */

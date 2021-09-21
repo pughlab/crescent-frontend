@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback } from 'react'
-import Plot from 'react-plotly.js'
+import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
 import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
@@ -41,14 +41,11 @@ const QCScatterPlot = ({
   return (
     <>
       <PlotHeader {...{plotQueryID, runID}} name={R.isNil(selectedQC) ? '' : R.equals(selectedQC)('Number_of_Reads') ? "Number of UMI Counts for "+name+" (UMAP)" : (selectedQC.replace(/_/g," ")+" for "+name+" (UMAP)")}/>
-      <Segment basic loading={current.matches('umapLoading')} style={{height: '100%'}}>
-        <Plot
+      <ResponsivePlotSegment loading={current.matches('umapLoading')}>
+        <ResponsivePlot
           config={{showTips: false}}
           data={current.context.plotData}
-          useResizeHandler
-          style={{width: '100%', height:'95%'}}
           layout={{
-            autosize: true,
             hovermode: 'closest',
             xaxis: {showgrid: false, ticks: '', showticklabels: false},
             yaxis: {showgrid: false, ticks: '', showticklabels: false, scaleanchor: "x"},
@@ -56,7 +53,7 @@ const QCScatterPlot = ({
             legend: {"orientation": "v"}
           }}
         />
-      </Segment>
+      </ResponsivePlotSegment>
     </>
   )
 }

@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback } from 'react'
-import Plot from 'react-plotly.js'
+import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
 
 import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 
@@ -39,14 +39,11 @@ const QCViolinPlot = ({
   return (
     <>
     <PlotHeader {...{plotQueryID, runID}} name={R.isNil(selectedQC) ? '' : `Metrics Before and After QC for ${name} (Violins)`}/>
-    <Segment basic loading={current.matches('violinLoading')} style={{height: '100%'}}>
-      <Plot
+    <ResponsivePlotSegment loading={current.matches('violinLoading')}>
+      <ResponsivePlot
         config={{showTips: false}}
         data={plotData}
-        useResizeHandler
-        style={{width: '100%', height:'90%'}}
         layout={{
-          autosize: true,
           grid: {rows: 1, columns: 4, pattern: 'independent'},
           margin: {l:40, r:40, b:20, t:30},
           showlegend: false,
@@ -107,7 +104,7 @@ const QCViolinPlot = ({
             ]
         }}
       />
-    </Segment>
+    </ResponsivePlotSegment>
     </>
   )
 }

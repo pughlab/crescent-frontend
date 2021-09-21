@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
-import Plot from 'react-plotly.js'
-import { Image, Segment, Label } from 'semantic-ui-react'
+import React, { useState, useEffect, useCallback } from 'react'
+import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
+import { Image, Container, Header, Segment, Label } from 'semantic-ui-react'
+import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
@@ -48,15 +49,14 @@ const GSVAHeatmap = ({
   return (
     <>
       <PlotHeader {...{plotQueryID}} name={currentPlotType} runID={runID || compareRunID} />
-      <Segment basic style={{height: '100%'}}>
-        <Plot
+      <ResponsivePlotSegment
+        // loading={loading}
+      >
+        <ResponsivePlot
           config={{ showTips: false }}
           data={current.context.plotData}
-          useResizeHandler
-          style={{ width: '100%', height: '90%'}}
           onClick={e => setSelectedCell({x: e.points[0].x, y: e.points[0].y, z: e.points[0].z})}
           layout={{
-            autosize: true,
             hovermode: 'closest',
             hoverlabel: { bgcolor: "#FFF" },
             margin: { l: 50, r: 30, b: 20, t: 20 },
@@ -96,7 +96,7 @@ const GSVAHeatmap = ({
             </Label>
           </Segment>
         }
-      </Segment>
+      </ResponsivePlotSegment>
     </>
   )
 }
