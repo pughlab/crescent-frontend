@@ -8,27 +8,24 @@ import PlotCaption from './PlotCaption'
 
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useComparePage} from '../../../redux/hooks'
-import {resetResultsPage, addPlots} from '../../../redux/actions/resultsPage'
-import {resetComparePage} from '../../../redux/actions/comparePage'
+import {resetResultsPage, initializePlots} from '../../../redux/actions/resultsPage'
 
 const ComparePageComponent = ({
 
 }) => {
   const dispatch = useDispatch()
   const {plotQueries} = useResultsPage()
-  const {plotQueries: cachedPlotQueries} = useComparePage()
+  const {plotQueries: selectedPlotQueries, selectedPlotID} = useComparePage()
 
   useEffect(() => {
     // on compare page unmount, reset results page to remove all plots
     return () => dispatch(resetResultsPage())
-  }, []);
+  }, [])
+
   useEffect(() => {
-    if(R.isEmpty(plotQueries)){
-      // add all cached plots back
-      dispatch(addPlots({value: cachedPlotQueries}))
-      dispatch(resetComparePage())
-    }
-  })
+    // on compare page mount, initialized the plots
+    dispatch(initializePlots({value: selectedPlotQueries, selectedPlotID}))
+  }, [])
 
   return (
     <Fade duration={2000}>

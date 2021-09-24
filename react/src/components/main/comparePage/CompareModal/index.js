@@ -6,8 +6,8 @@ import PlotCard from './PlotCard'
 import ProjectsForm from './ProjectsForm'
 
 import {useDispatch} from 'react-redux'
-import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {clearPlots} from '../../../../redux/actions/resultsPage'
+import {useComparePage, useCrescentContext} from '../../../../redux/hooks'
+import {clearPlots} from '../../../../redux/actions/comparePage'
 import {goToCompare} from '../../../../redux/actions/context'
 
 import {useUserPlotsQuery} from '../../../../apollo/hooks/user'
@@ -17,7 +17,7 @@ const CompareModal = ({
 }) => {
   const dispatch = useDispatch()
   const {userID, projectID} = useCrescentContext()
-  const {plotQueries} = useResultsPage()
+  const {plotQueries} = useComparePage()
 
   const uploadedProjects = useUserPlotsQuery(userID)  
   const curatedProjects = useCuratedProjectPlotsQuery()

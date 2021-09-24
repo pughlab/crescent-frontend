@@ -1,14 +1,9 @@
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 import * as R_ from 'ramda-extension'
 import createReducer from './createReducer'
-import { cleanUpPlotQuery } from '../../utils'
+import { cleanUpPlotQuery, getMachine, initiateService } from '../../utils'
 
 import { interpret } from 'xstate';
-
-import { initiallyIdleMachine } from '../helpers/machines/initiallyIdleMachine'
-import { initiallyLoadingMachine } from '../helpers/machines/initiallyLoadingMachine';
-import { QCMachine } from '../helpers/machines/QCMachine';
 
 const initialPlotQuery = {
   activeResult: null,

@@ -1,4 +1,5 @@
 import * as R from 'ramda'
+import { cleanUpPlotQuery, initiateService } from '../../utils'
 import createReducer from './createReducer'
 
 const initialState = {
@@ -30,6 +31,26 @@ export default createReducer(
           R.merge(plotToUpdate, plotQuery),
           comparePagePlots
         ))
+      })(state)
+    },
+    
+    'comparePage/addPlots': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        plotQueries: R.concat(R.map(R.compose(initiateService, cleanUpPlotQuery), value))
+      })(state)
+    },
+
+    'comparePage/removePlots': (state, payload) => {
+      const {value} = payload
+      return R.evolve({
+        plotQueries: R.filter(({plotQueryID}) => !R.includes(plotQueryID, value))
+      })(state)
+    },
+
+    'comparePage/clearPlots': (state, payload) => {
+      return R.evolve({
+        plotQueries: R.always([])
       })(state)
     },
   }

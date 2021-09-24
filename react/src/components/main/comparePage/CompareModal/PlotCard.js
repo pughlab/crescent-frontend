@@ -5,14 +5,14 @@ import {Header, Button, Label, Icon, Card, Transition} from 'semantic-ui-react'
 import moment from 'moment'
 
 import {useDispatch} from 'react-redux'
-import {useResultsPage} from '../../../../redux/hooks'
-import {addPlots, removePlots} from '../../../../redux/actions/resultsPage'
+import {useComparePage} from '../../../../redux/hooks'
+import {addPlots, removePlots} from '../../../../redux/actions/comparePage'
 
 const PlotCard = ({
 	plot
 }) => {  
   const dispatch = useDispatch()
-  const {plotQueries} = useResultsPage()
+  const {plotQueries} = useComparePage()
   const {
     projectName,
     runName, 

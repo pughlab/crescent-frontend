@@ -12,18 +12,17 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
-import {useCrescentContext} from '../../../../redux/hooks'
 import {useQCScatterQuery} from '../../../../apollo/hooks/results'
 
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
  
 const QCScatterPlot = ({
+  runID,
   datasetID,
   name,
   plotQueryIndex
 }) => { 
 
-  const {runID} = useCrescentContext()
   const dispatch = useDispatch()
   const {selectedQC, plotQueryID, service} = useResultsPagePlotQuery(plotQueryIndex)
   useQCScatterQuery(selectedQC, runID, datasetID, plotQueryIndex)
