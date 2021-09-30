@@ -16,6 +16,7 @@ const initialPlotQuery = {
   selectedAssay: null,
   selectedDiffExpression: 'All',
   selectedQCDataset: null,
+  selectedInferCNVType: 'observations',
   service: null,
   plotQueryID: null,
   runID: null
@@ -193,6 +194,21 @@ export default createReducer(
         )
       })(state)
     },
+    // for plot
+    'resultsPage/setInferCNVType': (state, payload) => {
+      const {value, send} = payload
+      const {activePlot} = state
+      send({type: 'CHANGE_PARAMETER'})
+      return R.evolve({
+        plotQueries: evolveAtIndex(
+          {
+            selectedInferCNVType: R.always(value)
+          },
+          activePlot
+        )
+      })(state)
+    },
+
     // for plot: send success event to the state machine
     'resultsPage/sendSuccess': (state, payload) => {
       const {send, data, type} = payload

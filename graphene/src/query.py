@@ -18,7 +18,8 @@ from get_data.get_others import (
     get_qc_metrics,
     get_top_expressed_data,
     total_size,
-    get_GSVA_metrics, 
+    get_GSVA_metrics,
+    get_inferCNV_types,
     get_sample_annots_data
 )
 from get_data.search_features import run_search
@@ -85,16 +86,16 @@ class Query(ObjectType):
     def resolve_GSVA_heatmap(parent, info, runID):
         return get_GSVA_heatmap_data(runID)
     
-    inferCNV_heatmap = List(NonNull(HeatmapData), runID=ID())
+    inferCNV_heatmap = List(NonNull(HeatmapData), runID=ID(), inferCNVType=String())
     @staticmethod
-    def resolve_inferCNV_heatmap(parent, info, runID):
-        return get_inferCNV_heatmap_data(runID)
+    def resolve_inferCNV_heatmap(parent, info, runID, inferCNVType):
+        return get_inferCNV_heatmap_data(runID, inferCNVType)
     
-    # sample_annots = List(SampleAnnots, runID=ID())
-    # @staticmethod
-    # def resolve_sample_annots(parent, info, runID):
-    #     return get_sample_annots_data(runID)
-
+    inferCNV_types = List(DropdownForm, runID=ID())
+    @staticmethod
+    def resolve_inferCNV_types(parent, info, runID):
+        return get_inferCNV_types(runID)
+    
     sample_annots = List(String, runID=ID())
     @staticmethod
     def resolve_sample_annots(parent, info, runID):

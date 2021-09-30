@@ -25,6 +25,7 @@ const plotQueryFields = [
   'selectedAssay',
   'selectedDiffExpression',
   'selectedQCDataset',
+  'selectedInferCNVType'
  ]
 
 // converting selectedExpRange to float, remove __typename, rename id to plotQueryID

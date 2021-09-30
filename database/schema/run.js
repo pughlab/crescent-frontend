@@ -77,6 +77,10 @@ const PlotQuerySchema = new mongoose.Schema ({
     type: mongoose.Schema.Types.ObjectId,
     default: null
   },
+  selectedInferCNVType: {
+    type: String,
+    default: null
+  }
 })
 
 const RunSchema = new mongoose.Schema({

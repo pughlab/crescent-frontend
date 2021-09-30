@@ -52,6 +52,7 @@ export default function useRunDetails(runID) {
           selectedQCDataset
           selectedScaleBy
           selectedExpRange
+          selectedInferCNVType
         }
 
         secondaryRuns {

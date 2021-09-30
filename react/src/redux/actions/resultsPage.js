@@ -112,6 +112,14 @@ const setSelectedDiffExpression = ({value, send}) => ({
   }
 })
 
+const setInferCNVType = ({value, send}) => ({
+  type: 'resultsPage/setInferCNVType',
+  payload: {
+    value,
+    send
+  }
+})
+
 const sendSuccess = ({send, data, type}) => ({
   type: 'resultsPage/sendSuccess',
   payload: {
@@ -192,6 +200,7 @@ export {
   setSelectedGroup,
   setSelectedAssay,
   setSelectedDiffExpression,
+  setInferCNVType,
   sendSuccess,
   resetResultsPage,
   addEmptyPlot,
