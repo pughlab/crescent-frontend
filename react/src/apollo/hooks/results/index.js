@@ -15,6 +15,7 @@ import useDotPlotQuery from './useDotPlotQuery'
 import useGSVAMetricsQuery from './useGSVAMetricsQuery'
 import useGSVAHeatmapQuery from './useGSVAHeatmapQuery'
 import useInferCNVHeatmapQuery from './useInferCNVHeatmapQuery'
+import useInferCNVTypes from './useInferCNVTypes'
 import useScatterNumericQuery from './useScatterNumericQuery'
 import useOpacityQuery from './useOpacityQuery'
 import useSearchFeaturesQuery from './useSearchFeaturesQuery'
@@ -42,6 +43,7 @@ export {
   useGSVAMetricsQuery,
   useGSVAHeatmapQuery,
   useInferCNVHeatmapQuery,
+  useInferCNVTypes,
   useScatterNumericQuery,
   useOpacityQuery,
   useSearchFeaturesQuery,

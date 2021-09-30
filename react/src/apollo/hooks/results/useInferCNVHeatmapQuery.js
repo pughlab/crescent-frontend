@@ -8,14 +8,14 @@ import { sendSuccess } from '../../../redux/actions/resultsPage'
 import { useService } from '@xstate/react'
 import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 
-export default function useInferCNVHeatmap(runID, plotQueryIndex) {
+export default function useInferCNVHeatmap(runID, inferCNVType, plotQueryIndex) {
   const dispatch = useDispatch()
   const { service } = useResultsPagePlotQuery(plotQueryIndex)
   const [current, send] = useService(service)
 
   const { error, refetch } = useQuery(gql`
-    query InferCNVHeatmap($runID: ID) {
-      inferCNVHeatmap(runID: $runID) {
+    query InferCNVHeatmap($runID: ID, $inferCNVType: String) {
+      inferCNVHeatmap(runID: $runID, inferCNVType: $inferCNVType) {
         type
         x
         y
@@ -29,7 +29,7 @@ export default function useInferCNVHeatmap(runID, plotQueryIndex) {
     `, {
     client,
     fetchPolicy: 'cache-and-network',
-    variables: {runID},
+    variables: {runID, inferCNVType},
     onCompleted: ({inferCNVHeatmap}) => {
       dispatch(sendSuccess({send, data: inferCNVHeatmap}))
     },
