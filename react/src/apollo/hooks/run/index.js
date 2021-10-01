@@ -9,7 +9,9 @@ import useSubmitGSVAMutation from './useSubmitGSVAMutation'
 import useSubmitInferCNVMutation from './useSubmitInferCNVMutation'
 import useRunParametersDownloadUploadMutation from './useRunParametersDownloadUploadMutation'
 import useCancelRunMutation from './useCancelRunMutation'
+import useCancelSecondaryRunMutation from './useCancelSecondaryRunMutation'
 import useRunLogsQuery from './useRunLogsQuery'
+import useSecondaryRunLogsQuery from './useSecondaryRunLogsQuery'
 import useUploadRunMetadataMutation from './useUploadRunMetadataMutation'
 import useUploadRunGenesetMutation from './useUploadRunGenesetMutation'
 import useUploadSampleAnnotsMutation from './useUploadSampleAnnotsMutation'
@@ -35,7 +37,9 @@ export {
   useSubmitInferCNVMutation,
   useRunParametersDownloadUploadMutation,
   useCancelRunMutation,
+  useCancelSecondaryRunMutation,
   useRunLogsQuery,
+  useSecondaryRunLogsQuery,
   useUploadRunMetadataMutation,
   useUploadRunGenesetMutation,
   useUploadSampleAnnotsMutation,

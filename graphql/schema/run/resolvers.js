@@ -22,6 +22,12 @@ const resolvers = {
       // console.log(run)
       return run
     },
+    secondaryRun: async (parent, {runID, wesID}, {Runs}) => {
+      const run = await Runs.findOne({runID})
+      const secondaryRun = R.find(R.propEq('wesID', wesID), run.secondaryRuns)
+
+      return secondaryRun
+    }
   },
   Mutation: {
     createUnsubmittedRun: async (parent, {name, description, projectID, userID, datasetIDs}, {Runs, Minio, ToolSteps}) => {
@@ -154,6 +160,18 @@ const resolvers = {
         }
       } catch (error) {
         console.log(error);
+      }
+    },
+    cancelSecondaryRun: async(parent, {runID, wesID}, {Runs, dataSources}) => {
+      try {
+        const {status_code} = await dataSources.wesAPI.cancelRun(runID)
+
+        if (RA.isUndefined(status_code)) {
+          await Runs.updateOne({"secondaryRuns.wesID": wesID}, {$set: {"secondaryRuns.$.status": 'failed'}})
+          return "failed"
+        }
+      } catch (error) {
+        console.log(error)
       }
     },
     uploadRunMetadata: async (parent, {runID, metadata}, {Runs, Minio}) => {
@@ -355,40 +373,31 @@ const resolvers = {
       }
     },
 
-    status: async({wesID, status}, variables, {Runs, dataSources, Docker}) => {
+    status: async ({wesID, status}, variables, {Runs, dataSources}) => {
+      // Don't check the status of the run if it hasn't been submitted yet or if its status is "completed" or "failed"
+      // (assuming that the status can't change from "completed" or "failed")
+      if (R.or(R.isNil(wesID), R.either(R.equals('completed'), R.equals('failed'))(status))) return status;
       
-      
-      // If it has not been submitted yet
-      if (wesID == null)
-        return status;
-      
-      // Make request to wes and figure out status
-      let ret = status;
-      // Assuming run status can never change from completed or failed, we don't need to ask wes
-      if (status != 'completed' && status != 'failed') {
-        try {
-          response = await dataSources.wesAPI.getStatus(wesID);
-        }
-        catch (error){
-          console.log("Error geting status of " + wesID + " from wes");
-          return ret;
-        }
-        // Translate WES status to Run status
-        if (response.state == "COMPLETE") {
-          ret = "completed";
-        } else if (response.state == "EXECUTOR_ERROR") {
-          ret = "failed";
-        } else if (response.state == "RUNNING") {
-          ret = "submitted";
-        }
-        // Update status in mongo to conform with status from wes, unless the run is already completed
-        await Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
-          if (err)
-            console.log(err);
-        });
-      }
+      let runStatus = status
 
-      return ret;
+      try {
+        // Make a request to WES API to get the status of the run
+        const {state} = await dataSources.wesAPI.getStatus(wesID);
+        
+        // Translate the WES status into to its corresponding run status
+        runStatus = R.propOr(status, state, {
+          'COMPLETE': 'completed',
+          'EXECUTOR_ERROR': 'failed',
+          'RUNNING': 'submitted'
+        });
+        
+        // Update the status in Mongo to conform with the status from WES API
+        await Runs.updateOne({"wesID": wesID}, {$set: {"status": runStatus}});
+      } catch (error) {
+        console.log(error)
+      } finally {
+        return runStatus;
+      }
     },
     completedOn: async({wesID, runID, completedOn, submittedOn}, variables, {Runs, Minio, dataSources}) => {
       // Don't recalculate completedOn if it's already been calculated
@@ -453,45 +462,32 @@ const resolvers = {
   },
   SecondaryRun: {
     status: async ({wesID, status}, variables, {Runs, dataSources}) => {
+      // Don't check the status of the secondary run if it hasn't been submitted yet or if its status is "completed" or "failed"
+      // (assuming that the status can't change from "completed" or "failed")
+      if (R.or(R.isNil(wesID), R.either(R.equals('completed'), R.equals('failed'))(status))) return status;
+      
+      let runStatus = status
+
       try {
-        // If it has not been submitted yet
-        if (wesID == null)
-          return status;
+        // Make a request to WES API to get the status of the secondary run
+        const {state} = await dataSources.wesAPI.getStatus(wesID);
         
-        // Make request to wes and figure out status
-        let ret = status;
-        // Assuming run status can never change from completed or failed, we don't need to ask wes
-        // if (status != 'completed' && status != 'failed') {
-          try {
-            response = await dataSources.wesAPI.getStatus(wesID);
-          }
-          catch (error){
-            console.log("Error geting status of " + wesID + " from wes");
-            return ret;
-          }
-          // Translate WES status to Run status
-          if (response.state == "COMPLETE") {
-            ret = "completed";
-          } else if (response.state == "EXECUTOR_ERROR") {
-            ret = "failed";
-          } else if (response.state == "RUNNING") {
-            ret = "submitted";
-          }
-          // Update status in mongo to conform with status from wes, unless the run is already completed
-          
-          // fix 
-          await Runs.updateOne({"secondaryRuns.wesID": wesID}, {$set: {"secondaryRuns.$.status": ret}}, function(err, res) {
-          // await Runs.updateOne({"wesID": wesID}, {$set: {"status": ret}}, function(err, res) {
-            if (err)
-              console.log(err);
-          });
-        // }
-        return ret;
+        // Translate the WES status into to its corresponding run status
+        runStatus = R.propOr(status, state, {
+          'COMPLETE': 'completed',
+          'EXECUTOR_ERROR': 'failed',
+          'RUNNING': 'submitted'
+        });
+        
+        // Update the status in Mongo to conform with the status from WES API
+        await Runs.updateOne({"secondaryRuns.wesID": wesID}, {$set: {"secondaryRuns.$.status": runStatus}});
       } catch (error) {
         console.log(error)
+      } finally {
+        return runStatus;
       }
     },
-    logs: async({runID}, variables, {dataSources}) => {
+    logs: async(parent, {runID}, {dataSources}) => {
       try {
         const {docker_logs} = await dataSources.wesAPI.getLogs(runID);
         return docker_logs

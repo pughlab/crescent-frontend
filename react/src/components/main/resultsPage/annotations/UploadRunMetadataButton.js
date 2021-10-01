@@ -52,7 +52,7 @@ export default function UploadMetadataButton({
               RA.isNotNil(metadataFile) &&
               <Button color='purple'
                 onClick={() => uploadRunMetadata({variables: {metadata: metadataFile}})}
-                content={success ? 'Uploaded' : 'Confirm'}
+                content={R.toUpper(success ? 'Uploaded' : 'Confirm')}
               />
             }
           </Segment>

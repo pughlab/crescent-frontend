@@ -2,14 +2,18 @@ import {useState, useEffect} from 'react'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
+import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import {useDispatch} from 'react-redux'
+import {setSecondaryRun} from '../../../redux/actions/annotations'
+import {useAnnotations} from '../../../redux/hooks'
 
 export default function useSubmitGSVAMutation(runID) {
-  // const {run} = useRunDetailsQuery(runID)
-
+  const dispatch = useDispatch()
+  const {secondaryRunSubmitted} = useAnnotations()
   const [run, setRun] = useState(null)
-  const [submitted, setSubmitted] = useState(true) //start true
-  const {loading: loadingRunQuery, data, error, refetch: refetchRunStatus} = useQuery(gql`
+
+  const {loading: loadingRunQuery, data, refetch: refetchRunStatus} = useQuery(gql`
     query RunStatus($runID: ID) {
       run(runID: $runID) {
         secondaryRuns {
@@ -24,20 +28,24 @@ export default function useSubmitGSVAMutation(runID) {
     variables: {
       runID
     },
-    fetchPolicy: 'network-only',
-    onCompleted: ({run}) => {
-      if (!!run) {
-        setRun(run)
-        setSubmitted(RA.isNotNil(run.secondaryRuns.wesID))
-      }
-    }
+    fetchPolicy: 'network-only'
   })
 
   useEffect(() => {
-    if (data) {
-      setRun(data.run)
+    if (data) setRun(data.run)
+  }, [dispatch, data])
+
+  useEffect(() => {
+    if (RA.isNotNil(run) && RA.isNonEmptyArray(run.secondaryRuns)) {
+      // Get the status and wesID of the most recent secondary run
+      const [latestSecondaryRunStatus, latestSecondaryRunWesID] = R.compose(
+        R.props(['status', 'wesID']),
+        R.last
+      )(run.secondaryRuns)
+
+      if (R.equals('submitted', latestSecondaryRunStatus)) dispatch(setSecondaryRun({secondaryRunWesID: latestSecondaryRunWesID}))
     }
-  }, [data])
+  }, [dispatch, run])
 
   const [submitGsva, {loading: loadingSubmitGSVA, data: gsvaData}] = useMutation(gql`
     mutation SubmitGSVA($runID: ID) {
@@ -47,20 +55,16 @@ export default function useSubmitGSVAMutation(runID) {
     }
   `, {
     client,
-    variables: {runID},    
+    variables: {runID},
     onCompleted: ({submitGsva}) => {
-      if (RA.isNotNil(submitGsva.wesID)) {
-        setSubmitted(true)
-      }
+      if (RA.isNotNil(submitGsva.wesID)) dispatch(setSecondaryRun({secondaryRunWesID: submitGsva.wesID}))
     },
   })
 
   useEffect(() => {
-    if (gsvaData) {
-      refetchRunStatus()
-    }
-  }, [gsvaData])
+    if (gsvaData) refetchRunStatus()
+  }, [gsvaData, refetchRunStatus])
 
   const loading = loadingRunQuery || loadingSubmitGSVA
-  return {submitGsva, run, loading, submitted}
+  return {submitGsva, run, loading, secondaryRunSubmitted}
 }

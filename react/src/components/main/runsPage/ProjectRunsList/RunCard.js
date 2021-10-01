@@ -9,7 +9,9 @@ import Marquee from 'react-marquee'
 import moment from 'moment'
 
 import { useDispatch } from 'react-redux'
+import { useAnnotations } from '../../../../redux/hooks'
 import { useCrescentContext } from '../../../../redux/hooks'
+import { setAnnotationsRunID } from '../../../../redux/actions/annotations'
 import { setRun } from '../../../../redux/actions/context'
 import { useCellCountsQuery } from '../../../../apollo/hooks/results'
 import { useRunDetailsQuery } from '../../../../apollo/hooks/run'
@@ -92,6 +94,7 @@ const RunCard = ({
   run
 }) => {
   const dispatch = useDispatch()
+  const { annotationsRunID } = useAnnotations()
   const { userID: currentUserID } = useCrescentContext()
 
   const {
@@ -156,7 +159,10 @@ const RunCard = ({
   })
   return (
     <Card color={color}
-      onClick={() => dispatch(setRun({ runID }))}
+      onClick={() => {
+        dispatch(setRun({ runID }))
+        if (R.complement(R.equals)(annotationsRunID, runID)) dispatch(setAnnotationsRunID({ runID }))
+      }}
     >
       <Popup
         size='large' wide='very'

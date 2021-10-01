@@ -1,9 +1,13 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 import {Header, Icon, Image, Segment} from 'semantic-ui-react'
 
-import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
+
+import {useDispatch} from 'react-redux'
+import {setGenesetUploaded} from '../../../../redux/actions/annotations'
+import {useAnnotations, useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 
 import UploadedMetadataList from './UploadedMetadataList'
 
@@ -15,12 +19,18 @@ import UploadRunGenesetButton from './UploadRunGenesetButton'
 import UploadRunMetadataButton from './UploadRunMetadataButton'
 import InferCNV from './InferCNV'
 
-export default function AnnotationsComponent () {
+export default function AnnotationsComponent() {
   const {activeAnnotationsAction} = useResultsPage()
   const {runID} = useCrescentContext()
+  const {genesetUploaded} = useAnnotations()
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (RA.isNotNil(genesetUploaded)) dispatch(setGenesetUploaded({uploaded: null}))
+  }, [])
 
   const {run} = useRunDetailsQuery(runID)
-  
   if (R.any(R.isNil, [run])) {
     return (
       <Segment style={{height: '100%'}} color='violet'>
