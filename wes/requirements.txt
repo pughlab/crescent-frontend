@@ -1,8 +1,8 @@
-connexion
-docker
-minio
+connexion==2.3.0
+docker==2.5.1
+minio==7.1.0
 requests==2.23.0
-ruamel.yaml
-schema-salad
+ruamel.yaml==0.15.97
+schema-salad==4.5.20191229160203
 toil[cwl]==3.22.0
 werkzeug==0.16.1
