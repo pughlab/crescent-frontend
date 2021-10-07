@@ -2,7 +2,6 @@
 
 import json
 import numpy as np
-import loompy
 from minio import Minio
 from minio.error import ResponseError
 import os
@@ -22,14 +21,14 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, calculate_n_th_percentile, merge_gsva, natural_keys
-from get_data.minio_functions import count_lines, get_first_line, get_obj_as_2dlist, object_exists, group_exists
+from get_data.minio_functions import count_lines, get_first_line, get_loompy_connect, get_obj_as_2dlist, object_exists, group_exists
 from get_data.get_others import get_paths
 
-def get_barcodes(normalised_counts_path, feature_list):
+def get_barcodes(normalised_counts_path, feature_list, minio_client):
     """ given a list of features, return all the barcodes for the features
     @rtype: [{'feature': str, 'barcode_exp': {barcode: exp}}]
     """
-    with loompy.connect(normalised_counts_path) as ds:
+    with get_loompy_connect(normalised_counts_path, minio_client) as ds:
         feature_barcodes = []
         barcodes = ds.ca.CellID
         features = ds.ra.Gene    
@@ -249,7 +248,7 @@ def get_dot_plot_data(features, group, runID, scaleBy, expRange, assay, sidebarC
     if(len(features) == 0):
         return plotly_obj
     
-    feature_list = get_barcodes(paths["normalised_counts"], features)
+    feature_list = get_barcodes(paths["normalised_counts"], features, minio_client)
 
     if(feature_list == []):
         return plotly_obj

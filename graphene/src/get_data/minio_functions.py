@@ -2,6 +2,7 @@
 
 import os
 import gzip
+import loompy
 
 from minio import Minio
 from minio import ResponseError
@@ -107,3 +108,25 @@ def group_exists(group, file, minio_client):
     """ return True if the specified tsv file exists and group in the header, otherwise return False """
     file_exists = object_exists(file["bucket"], file["object"], minio_client)
     return file_exists and group in get_first_line(file["bucket"], file["object"], minio_client)
+
+def get_loompy_connect(normalised_counts_path, minio_client):
+    # The MinIO bucket name
+    minio_bucket_name = normalised_counts_path["bucket"]
+    # The MinIO object name
+    minio_object_name = normalised_counts_path["object"]["prefix"] + normalised_counts_path["object"]["suffix"]
+    # The relative path for the loom file
+    loom_path = os.path.join(
+        "..",
+        "minio",
+        "upload",
+        minio_bucket_name,
+        minio_object_name
+    )
+
+    # Check if the loom file already exists
+    if not os.path.isfile(loom_path):
+        # If not, save the data from the MinIO object to a file (destination specified by loom_path)
+        minio_client.fget_object(minio_bucket_name, minio_object_name, loom_path)
+    
+    # Return the connection to the loom file
+    return loompy.connect(loom_path)

@@ -46,12 +46,18 @@
         "object": "SEURAT/CRESCENT_CLOUD/frontend_metadata/metadata.tsv"
     },
     "normalised_counts_assay": {
-        "prefix": "../minio/upload/run-",
-        "suffix": "/LOOM_FILES_CWL/"
+        "bucket": "run-",
+        "object": {
+            "prefix": "LOOM_FILES_CWL/",
+            "suffix": "counts_{0}.loom"
+        }
     },
     "normalised_counts": {
-        "prefix": "../minio/upload/run-",
-        "suffix": "/SEURAT/CRESCENT_CLOUD/frontend_normalized/normalized_counts.loom"
+        "bucket": "run-",
+        "object": {
+            "prefix": "SEURAT/CRESCENT_CLOUD/frontend_normalized/",
+            "suffix": "normalized_counts.loom"
+        }
     },
     "qc_data": {
         "bucket": "run-",

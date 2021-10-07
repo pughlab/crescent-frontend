@@ -1,12 +1,11 @@
 #!/bin/python3
 
 import json
-import loompy
 
 from get_data.get_client import get_minio_client
 from get_data.gradient import polylinear_gradient
 from get_data.helper import COLOURS, return_error, set_IDs, set_name_multi, sort_traces, calculate_n_th_percentile, merge_gsva
-from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists
+from get_data.minio_functions import get_first_line, get_loompy_connect, get_obj_as_2dlist, object_exists
 
 colour_dict = {}
 
@@ -142,9 +141,9 @@ def calculate_opacities(feature_row, exp_range):
     opacities = [min_opac if val<=min_exp else round(((max_exp if val >= max_exp else val)*0.95/max_exp + min_opac), 2) for val in exp_values]    
     return opacities    
 
-def get_barcode_exp_values(feature, normalised_counts_path):
+def get_barcode_exp_values(feature, normalised_counts_path, minio_client):
     """ parses the normalized count matrix to get an expression value for each barcode """
-    with loompy.connect(normalised_counts_path) as ds:
+    with get_loompy_connect(normalised_counts_path, minio_client) as ds:
         barcodes = ds.ca.CellID
         features = ds.ra.Gene
         feature_idx = next((i for i in range(len(features)) if features[i] == feature), -1)
@@ -166,7 +165,7 @@ def get_opacity_data(feature, group, runID, datasetID, expRange, assay):
 
     minio_client = get_minio_client()
     
-    barcode_exp_values = get_barcode_exp_values(feature, paths["normalised_counts"])
+    barcode_exp_values = get_barcode_exp_values(feature, paths["normalised_counts"], minio_client)
     exp_values = dict(zip(barcode_exp_values["barcodes"], barcode_exp_values["exp_values"]))
     slider_info = {
         "initial_min_max": [calculate_n_th_percentile(10, list(exp_values.values())), 
