@@ -23,6 +23,7 @@ import useCategoricalGroupsQuery from './useCategoricalGroupsQuery'
 import useNumericGroupsQuery from './useNumericGroupsQuery'
 import useCellCountsQuery from './useCellCountsQuery'
 import useMachineService from './useMachineService'
+import usePresignedURLQuery from './usePresignedURLQuery'
 
 export {
   useResultsAvailableQuery,
@@ -49,5 +50,6 @@ export {
   useCategoricalGroupsQuery,
   useNumericGroupsQuery,
   useCellCountsQuery,
-  useMachineService
+  useMachineService,
+  usePresignedURLQuery
 }

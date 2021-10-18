@@ -6,6 +6,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {usePresignedURLQuery} from '../../../../apollo/hooks/results'
 
 
 const DownloadModal = () => {
@@ -14,7 +15,9 @@ const DownloadModal = () => {
   const {runID} = useCrescentContext()
   const {runStatus} = useResultsPage()
   const [clicked, setClicked] = useState(false)
-
+  const resultsPresignedURL = usePresignedURLQuery(`run-${runID}`, '/')
+  const loomObjectsPresignedURL = usePresignedURLQuery(`run-${runID}`, 'LOOM_FILES_CWL')
+  const rObjectsPresignedURL = usePresignedURLQuery(`run-${runID}`, 'R_OBJECTS_CWL')
 
   if (R.isNil(runStatus)) {
     return null
@@ -65,43 +68,38 @@ const DownloadModal = () => {
           target='_blank'
           // Should only work with nginx reverse proxy
           // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
-          href={`/express/download/${runID}`}
+          href={resultsPresignedURL}
           onClick={() => {
             setClicked(true)
           }}
-          disabled={
-              clicked
-            }
-        >
-        </Button> 
-        <Divider/>
+          disabled={clicked}
+        />
+        <Divider />
         <Button fluid inverted color='violet' size='massive'
           content='Download Loom Objects'
           download
           target='_blank'
           // Should only work with nginx reverse proxy
           // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
-          href={`/express/download/${runID}/LOOM_FILES_CWL`}
+          href={loomObjectsPresignedURL}
           onClick={() => {
             setClicked(true)
           }}
           disabled
-        >
-        </Button> 
-        <Divider/>
+        />
+        <Divider />
         <Button fluid inverted color='violet' size='massive'
           content='Download R Objects'
           download
           target='_blank'
           // Should only work with nginx reverse proxy
           // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
-          href={`/express/download/${runID}/R_OBJECTS_CWL`}
+          href={rObjectsPresignedURL}
           onClick={() => {
             setClicked(true)
           }}
           disabled
-        >
-        </Button> 
+        />
       </Segment>
     }
   </Modal.Content>

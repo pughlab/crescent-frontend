@@ -11,6 +11,15 @@ const resolvers = {
     allRuns: async (parent, variables, {Runs}) => {
       return await Runs.find({archived: {$eq: null}}) // Run must not be archived
     },
+    presignedURL: async (parent, {bucketName, objectName}, {Minio}) => {
+      try {
+        const presignedURL = await Minio.client.presignedGetObject(bucketName, objectName)
+        
+        return presignedURL
+      } catch (error) {
+        console.log(error)
+      }
+    },
     runs: async (parent, {projectID}, {Runs}) => {
       return await Runs.find({
         projectID,

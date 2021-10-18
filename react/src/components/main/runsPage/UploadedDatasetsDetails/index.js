@@ -8,6 +8,7 @@ import {PulseLoader} from 'react-spinners'
 
 import {useProjectDetailsQuery} from '../../../../apollo/hooks/project'
 import {useOncotreeQuery, useEditDatasetTagsMutation} from '../../../../apollo/hooks/dataset'
+import {usePresignedURLQuery} from '../../../../apollo/hooks/results'
 import {useCrescentContext} from '../../../../redux/hooks'
 
 import OncotreeSunburst from './OncotreeSunburst'
@@ -24,6 +25,7 @@ const TagOncotreeModal = ({
   const [open, setOpen] = useState(false)
   const oncotree = useOncotreeQuery()
   const { dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset } = useEditDatasetTagsMutation(datasetID)
+  const presignedURL = usePresignedURLQuery(`dataset-${datasetID}`, '/')
 
   if (R.any(R.isNil, [oncotree, dataset])) {
 
@@ -71,7 +73,7 @@ const TagOncotreeModal = ({
             target='_blank'
             // Should only work with nginx reverse proxy
             // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
-            href={`/express/download/${datasetID}`}
+            href={presignedURL}
             color={R.prop(cancerTag, {
               'cancer': 'pink',
               'non-cancer': 'purple',

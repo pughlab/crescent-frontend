@@ -79,6 +79,10 @@ const typeDefs = gql`
   }
   type Query {
     allRuns: [Run]
+    presignedURL(
+      bucketName: String!
+      objectName: String!
+    ): String
     runs(
       projectID: ID
     ): [Run]
