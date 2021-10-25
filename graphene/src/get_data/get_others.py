@@ -9,6 +9,7 @@ from get_data.minio_functions import (
     get_first_n_lines,
     get_list_of_object_names,
     get_obj_as_2dlist,
+    get_obj_as_dictionary,
     get_size,
     object_exists
 )
@@ -325,3 +326,19 @@ def get_GSVA_metrics(runID):
         
     GSVA_metrics.sort(key=lambda x: natural_keys(x["cluster"]))
     return GSVA_metrics
+
+def get_sample_annots_data(runID):
+    """ given a runID, fetch the sample annots data """
+    paths = {}
+    with open('get_data/paths.json') as paths_file:
+        paths = json.load(paths_file)
+    paths = set_IDs(paths, runID, ['infercnv_annotation'])
+    annotation = paths['infercnv_annotation']
+    
+    minio_client = get_minio_client()
+    if not object_exists(annotation['bucket'], annotation['object'], minio_client):
+        return_error('infercnv observation file not found')
+
+    sample_annots_dict = get_obj_as_dictionary(annotation['bucket'], annotation['object'], minio_client, 0, 1)
+    sample_annots = list(OrderedSet(sample_annots_dict.values()))
+    return sample_annots

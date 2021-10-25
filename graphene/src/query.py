@@ -18,7 +18,8 @@ from get_data.get_others import (
     get_qc_metrics,
     get_top_expressed_data,
     total_size,
-    get_GSVA_metrics
+    get_GSVA_metrics, 
+    get_sample_annots_data
 )
 from get_data.search_features import run_search
 from get_data.get_gsva_heatmap import get_GSVA_heatmap_data
@@ -88,6 +89,16 @@ class Query(ObjectType):
     @staticmethod
     def resolve_inferCNV_heatmap(parent, info, runID):
         return get_inferCNV_heatmap_data(runID)
+    
+    # sample_annots = List(SampleAnnots, runID=ID())
+    # @staticmethod
+    # def resolve_sample_annots(parent, info, runID):
+    #     return get_sample_annots_data(runID)
+
+    sample_annots = List(String, runID=ID())
+    @staticmethod
+    def resolve_sample_annots(parent, info, runID):
+        return get_sample_annots_data(runID)
 
     opacity = List(NonNull(OpacityData), vis=String(), feature=String(), group=String(), runID=ID(), datasetID=ID(), expRange=List(Float), assay=String())
     @staticmethod
