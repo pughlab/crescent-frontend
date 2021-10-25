@@ -17,7 +17,8 @@ import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
 export default function AnnotationsSecondaryRuns({
-  secondaryRuns
+  secondaryRuns,
+  annotationType
 }) {
   const dispatch = useDispatch()
   // const run = useRunDetailsQuery(runID)
@@ -47,12 +48,12 @@ export default function AnnotationsSecondaryRuns({
   if (R.isEmpty(secondaryRuns)) {
     return(
       <Fade up>
-      <Divider horizontal content={'GSVA Run Status'} />
+      <Divider horizontal content={`${annotationType} Run Status`} />
       <Segment color='purple'>    
         <Segment placeholder>
           <Header icon>
             <Icon name='exclamation' />
-            No GSVA Runs
+            No {annotationType} Runs
           </Header>
         </Segment>
       </Segment>
@@ -62,7 +63,7 @@ export default function AnnotationsSecondaryRuns({
 
   return (
     <>
-      <Divider horizontal content={'GSVA Run Status'} />
+      <Divider horizontal content={`${annotationType} Run Status`} />
       <Segment color='purple'>
         <List divided relaxed selection celled size='large'>
           {
