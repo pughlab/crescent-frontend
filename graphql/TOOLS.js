@@ -114,6 +114,21 @@ const TOOLS = {
           disabled: false,
           singleDataset: true,
           multiDataset: true,
+        },
+        {
+          step: 'quality',
+          parameter: 'downsample',
+          label: 'Downsampled Number of Cells',
+          prompt: 'Set number of cells to downsample to',
+          description: 'The number of cells to keep from this dataset. Default is -1 i.e. skip downsampling.',
+          input: {
+            type: 'integer',
+            step: 1,
+            defaultValue: -1,
+          },
+          disabled: false,
+          singleDataset: false,
+          multiDataset: true,
         }
       ]
     },
@@ -151,12 +166,13 @@ const TOOLS = {
           parameter: 'anchors_function',
           label: 'Integration Anchors Method',
           prompt: 'Select integration anchors method',
-          description: '"Seurat" or "STACAS". "Seurat" anchoring uses FindIntegrationAnchors function from the Seurat R library and "STACAS" anchoring uses FindAnchors function from the STACAS R library. Default is "Seurat".',
+          description: '"Seurat_CCA", "Seurat_RPCA", or "STACAS". "Seurat" anchoring uses FindIntegrationAnchors function from the Seurat R library (reduction = cca or rpca) and "STACAS" anchoring uses FindAnchors function from the STACAS R library. Default is "Seurat_RPCA".',
           input: {
             type: 'select',
-            defaultValue: 'Seurat',
+            defaultValue: 'Seurat_RPCA',
             options: [
-              {key: 'seurat', value: 'Seurat', text: 'Seurat'},
+              {key: 'seurat_rpca', value: 'Seurat_RPCA', text: 'Seurat_RPCA'},
+              {key: 'seurat_cca', value: 'Seurat_CCA', text: 'Seurat_CCA'},
               {key: 'stacas', value: 'STACAS', text: 'STACAS'},
             ]
           },
@@ -164,20 +180,51 @@ const TOOLS = {
           singleDataset: false,
           multiDataset: true,
         },
-        // {
-        //   step: 'integration',
-        //   parameter: 'reference_datasets',
-        //   label: 'Reference Datasets for Anchoring Method',
-        //   prompt: 'Select reference datasets',
-        //   description: 'Select up to 3 datasets to be used as references to obtain anchors (these datasets are expected to cover most expected cell types, with better QC, etc.).',
-        //   input: {
-        //     type: 'multiSelect',
-        //     defaultValue: 'NA',
-        //   },
-        //   disabled: true,
-        //   singleDataset: false,
-        //   multiDataset: true,
-        // }
+        {
+          step: 'integration',
+          parameter: 'k_filter',
+          label: 'Number of Neighbours for Anchor Filtering',
+          prompt: 'Set number of neighbours for anchor filtering',
+          description: 'Max number of neighbours. Error "Cannot find more nearest neighbours than there are points" can be avoided by using a k value smaller than the default. Default is 200.',
+          input: {
+            type: 'integer',
+            step: 10,
+            defaultValue: 200,
+          },
+          disabled: false,
+          singleDataset: false,
+          multiDataset: true,
+        },
+        {
+          step: 'integration',
+          parameter: 'k_weight',
+          label: 'Number of Neighbours to Consider Weighting Anchors',
+          prompt: 'Set number of neighbours for weighting anchors',
+          description: 'Max number of neighbors to consider when weighting anchors. Default is 100.',
+          input: {
+            type: 'integer',
+            step: 10,
+            defaultValue: 100,
+          },
+          disabled: false,
+          singleDataset: false,
+          multiDataset: true,
+        },
+        {
+          step: 'integration',
+          parameter: 'distance_threshold',
+          label: 'Distance Threshold for Anchor Filtering',
+          prompt: 'Set distance threshold (STACAS only)',
+          description: 'Only applied if STACAS is selected for anchoring method. Distance threshold for anchor filtering. Default is 0.8.',
+          input: {
+            type: 'float',
+            step: 0.1,
+            defaultValue: 0.8,
+          },
+          disabled: false,
+          singleDataset: false,
+          multiDataset: true,
+        }
       ]
     },
     {
@@ -192,6 +239,7 @@ const TOOLS = {
           description: 'Max value of PCA dimensions to use for clustering and t-SNE functions. Default is 10.',
           input: {
             type: 'integer',
+            step: 1,
             defaultValue: 10,
           },
           disabled: false,
