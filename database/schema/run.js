@@ -157,6 +157,11 @@ const RunSchema = new mongoose.Schema({
   savedPlotQueries: {
     type: [PlotQuerySchema],
     default: []
+  },
+
+  normalCellTypes: {
+    type: [String],
+    default: []
   }
 })
 
