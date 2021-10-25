@@ -4,7 +4,8 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerPull: crescentdev/crescent-seurat-droplet-gsva-stacas:latest
+    # dockerPull: crescentdev/crescent-seurat-droplet-gsva-stacas:latest
+    dockerPull: crescentdev/crescent-seurat-v4:latest
 
 baseCommand: [Rscript]
 
