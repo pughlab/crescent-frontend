@@ -88,14 +88,14 @@
     },
     "infercnv": {
         "bucket": "run-",
-        "object": "INFERCNV/INFERCNV_RESULTS/infercnv.observations.tsv"
+        "object": "INFERCNV/INFERCNV/infercnv.observations.tsv"
     },
     "infercnv_gene_pos": {
         "bucket": "run-",
-        "object": "INFERCNV/INFERCNV_INPUTS/gencode_v19_gene_pos.txt"
+        "object": "INFERCNV/INFERCNV_INPUTS/gencode_gene_pos.txt"
     },
     "infercnv_annotation": {
         "bucket": "run-",
-        "object": "INFERCNV/INFERCNV_INPUTS/glio.wGtexBrain.sample_annots.txt"
+        "object": "INFERCNV/INFERCNV_INPUTS/sample_annots.txt"
     }
 }
