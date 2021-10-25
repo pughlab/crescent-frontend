@@ -29,7 +29,7 @@ const IntegerParameterInput = ({
   toolParameter,
   datasetID
 }) => {
-  const {step, parameter, label, disabled, input: {defaultValue}} = toolParameter
+  const {step, parameter, label, disabled, input: {defaultValue, step: increaseStep}} = toolParameter
   const {runID} = useCrescentContext()
   const run = useRunDetailsQuery(runID)
   const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter, datasetID})
@@ -47,6 +47,7 @@ const IntegerParameterInput = ({
         type='number'
         label={label}
         disabled={disableInput}
+        step={increaseStep}
         // error={warning}
         value={parseInt(parameterValue)}
         onChange={(e, {value}) => updateRunParameterValue({variables: {value: valueTransform(value)}})}

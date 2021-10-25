@@ -5,6 +5,15 @@ inputs:
   - id: anchors_function
     type: string?
 
+  - id: k_filter
+    type: int?
+
+  - id: k_weight
+    type: int?
+
+  - id: distance_threshold
+    type: float?
+
   - id: reference_datasets
     type: string?
         
@@ -177,6 +186,15 @@ steps:
 
       - id: anchors_function
         source: anchors_function
+
+      - id: k_filter
+        source: k_filter
+
+      - id: k_weight
+        source: k_weight
+
+      - id: distance_threshold
+        source: distance_threshold
 
       - id: reference_datasets
         source: reference_datasets

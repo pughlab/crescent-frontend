@@ -26,7 +26,7 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    devtools::install_github("satijalab/seurat@v3.2.1"),
+    devtools::install_github("satijalab/seurat@v4.0.5"),
     warning = stop
 )
 withCallingHandlers(
@@ -34,7 +34,7 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    devtools::install_github(c('carmonalab/STACAS@1.0.1')),
+    devtools::install_github(c('carmonalab/STACAS')),
     warning = stop
 )
 withCallingHandlers(
