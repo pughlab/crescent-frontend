@@ -191,6 +191,53 @@ const resolvers = {
       }
     },
 
+    uploadSampleAnnots: async (parent, {runID, sampleAnnots}, {Runs, Minio}) => {
+      try {
+        const run = await Runs.findOne({runID})
+        if (RA.isNotNil(run)) {
+          const bucketName = `run-${runID}`
+          await Minio.putUploadIntoBucket(bucketName, sampleAnnots, 'INFERCNV/INFERCNV_INPUTS/sample_annots.txt')      
+
+          // const g = await geneset
+          // run.uploadNames.gsva = g.filename
+          // await run.save()
+
+          return run
+        }
+      } catch(error) {
+        console.log(error)
+      }
+    },
+
+    uploadGenePos: async (parent, {runID, genePos}, {Runs, Minio}) => {
+      try {
+        const run = await Runs.findOne({runID})
+        if (RA.isNotNil(run)) {
+          const bucketName = `run-${runID}`
+          await Minio.putUploadIntoBucket(bucketName, genePos, 'INFERCNV/INFERCNV_INPUTS/gencode_gene_pos.txt')      
+
+          // const g = await geneset
+          // run.uploadNames.gsva = g.filename
+          // await run.save()
+
+          return run
+        }
+      } catch(error) {
+        console.log(error)
+      }
+    },
+
+    updateNormalCellTypes: async (parent, {runID, normalCellTypes}, {Runs}) => {
+      try {
+        const run = await Runs.findOne({runID})
+        run.normalCellTypes = normalCellTypes
+        await run.save()
+        return run
+      } catch(error) {
+        console.log(error)
+      }
+    },
+
     updateRunReferenceDatasets: async (parent, {runID, datasetIDs}, {Runs}) => {
       try {
         const run = await Runs.findOne({runID})

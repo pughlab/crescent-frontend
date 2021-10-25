@@ -71,6 +71,7 @@ const typeDefs = gql`
     datasets: [Dataset]
     # Datasets selected within a run to act as reference/anchors for CWL
     referenceDatasets: [Dataset] 
+    normalCellTypes: [String]
 
     savedPlotQueries: [PlotQuery]
   }
@@ -125,6 +126,21 @@ const typeDefs = gql`
     uploadRunGeneset(
       runID: ID!
       geneset: Upload!
+    ): Run
+
+    uploadSampleAnnots(
+      runID: ID!
+      sampleAnnots: Upload!
+    ): Run
+
+    uploadGenePos(
+      runID: ID!
+      genePos: Upload!
+    ): Run
+
+    updateNormalCellTypes(
+      runID: ID!
+      normalCellTypes: [String]
     ): Run
 
     # Set reference datasets 
