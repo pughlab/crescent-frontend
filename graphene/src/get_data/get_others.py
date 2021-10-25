@@ -9,6 +9,7 @@ from get_data.minio_functions import (
     get_first_n_lines,
     get_list_of_object_names,
     get_obj_as_2dlist,
+    get_obj_as_dictionary,
     get_size,
     object_exists
 )
@@ -135,6 +136,7 @@ def get_plots(runID):
     old_loom_pattern = re.compile(r".*frontend_normalized.*")
     new_loom_pattern = re.compile(r"LOOM_FILES_CWL/.*")
     gsva_heatmap_pattern = re.compile(r".*crescent.GSVA_enrichment_scores_sorted.tsv")
+    infercnv_heatmap_pattern = re.compile(r".*infercnv.observations.tsv")
     object_names = get_list_of_object_names(paths["frontend_coordinates"]["bucket"], minio_client)
 
     for object_name in object_names:
@@ -149,10 +151,12 @@ def get_plots(runID):
         elif ("VIOLIN" not in available_plots) and loom_pattern_match:
             available_plots.append("VIOLIN")
             available_plots.append("DOT")       
-        elif ("HEATMAP" not in available_plots) and (gsva_heatmap_pattern.match(object_name) is not None):
-            available_plots.append("HEATMAP")
+        elif ("GSVAHEATMAP" not in available_plots) and (gsva_heatmap_pattern.match(object_name) is not None):
+            available_plots.append("GSVAHEATMAP")
+        elif ("INFERCNVHEATMAP" not in available_plots) and (infercnv_heatmap_pattern.match(object_name) is not None):
+            available_plots.append("INFERCNVHEATMAP")
     
-    hardcoded_order = ["QC", "TSNE", "UMAP", "VIOLIN", "DOT", "HEATMAP"]
+    hardcoded_order = ["QC", "TSNE", "UMAP", "VIOLIN", "DOT", "GSVAHEATMAP", "INFERCNVHEATMAP"]
     available_plots_with_data = []
 
     for vis in hardcoded_order:
@@ -322,3 +326,19 @@ def get_GSVA_metrics(runID):
         
     GSVA_metrics.sort(key=lambda x: natural_keys(x["cluster"]))
     return GSVA_metrics
+
+def get_sample_annots_data(runID):
+    """ given a runID, fetch the sample annots data """
+    paths = {}
+    with open('get_data/paths.json') as paths_file:
+        paths = json.load(paths_file)
+    paths = set_IDs(paths, runID, ['infercnv_annotation'])
+    annotation = paths['infercnv_annotation']
+    
+    minio_client = get_minio_client()
+    if not object_exists(annotation['bucket'], annotation['object'], minio_client):
+        return_error('infercnv observation file not found')
+
+    sample_annots_dict = get_obj_as_dictionary(annotation['bucket'], annotation['object'], minio_client, 0, 1)
+    sample_annots = list(OrderedSet(sample_annots_dict.values()))
+    return sample_annots

@@ -14,11 +14,15 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    BiocManager::install(c('GSVA', 'qvalue', 'DropletUtils')), 
+    BiocManager::install(c('GSVA', 'qvalue', 'DropletUtils', 'infercnv')), 
     warning = stop
 )
 withCallingHandlers(
     devtools::install_version("SDMTools", version = "1.1-221.2", repos = "http://cran.us.r-project.org"),
+    warning = stop
+)
+withCallingHandlers(
+    devtools::install_github("spatstat/spatstat@v1.64-1"),
     warning = stop
 )
 withCallingHandlers(
@@ -30,7 +34,7 @@ withCallingHandlers(
     warning = stop
 )
 withCallingHandlers(
-    devtools::install_github(c('carmonalab/STACAS')),
+    devtools::install_github(c('carmonalab/STACAS@1.0.1')),
     warning = stop
 )
 withCallingHandlers(

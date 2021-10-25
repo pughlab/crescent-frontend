@@ -1,24 +1,20 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
-import { Image, Container, Header, Segment, Label } from 'semantic-ui-react'
-import Slider, { createSliderWithTooltip } from 'rc-slider';
+import { Image, Segment, Label } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
-import { ClimbingBoxLoader } from 'react-spinners'
-import Shake from 'react-reveal/Shake'
 import { useService } from '@xstate/react';
 import PlotHeader from './PlotHeader';
 
 import * as R from 'ramda'
 
-import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
-import { useResultsAvailableQuery, useHeatmapQuery } from '../../../../apollo/hooks/results'
+import { useResultsAvailableQuery, useGSVAHeatmapQuery } from '../../../../apollo/hooks/results'
 
 
-const Heatmap = ({
+const GSVAHeatmap = ({
   plotQueryIndex
 }) => {
   const { runID } = useCrescentContext()
@@ -26,7 +22,7 @@ const Heatmap = ({
   const { activeResult, runID: compareRunID, plotQueryID, service } = useResultsPagePlotQuery(plotQueryIndex)
   const [current, send] = useService(service)
   const plots = useResultsAvailableQuery(runID || compareRunID)
-  useHeatmapQuery(runID || compareRunID, plotQueryIndex)
+  useGSVAHeatmapQuery(runID || compareRunID, plotQueryIndex)
   const [selectedCell, setSelectedCell] = useState(null)
   
   if (R.any(R.isNil, [plots])) {
@@ -51,16 +47,13 @@ const Heatmap = ({
 
   return (
     <>
-      <PlotHeader {...{plotQueryID}} name={'GSVA Heatmap'} runID={runID || compareRunID} />
-      <Segment basic
-        // loading={loading}
-        style={{height: '100%'}}
-      >
+      <PlotHeader {...{plotQueryID}} name={currentPlotType} runID={runID || compareRunID} />
+      <Segment basic style={{height: '100%'}}>
         <Plot
           config={{ showTips: false }}
           data={current.context.plotData}
           useResizeHandler
-          style={{ width: '100%',height: '90%'}}
+          style={{ width: '100%', height: '90%'}}
           onClick={e => setSelectedCell({x: e.points[0].x, y: e.points[0].y, z: e.points[0].z})}
           layout={{
             autosize: true,
@@ -108,4 +101,4 @@ const Heatmap = ({
   )
 }
 
-export default Heatmap
+export default GSVAHeatmap

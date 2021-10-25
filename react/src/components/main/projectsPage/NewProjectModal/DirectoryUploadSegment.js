@@ -264,6 +264,7 @@ const DirectoryUploadSegment = ({
 
   return (
     <div {...getRootProps()}>
+    <input {...getInputProps()} />
       <Modal
         size="small"
         onClose={() => { setUploadSummary([]); setUploadErrMsgs([]) }}
@@ -310,7 +311,7 @@ const DirectoryUploadSegment = ({
       </Modal>
       <Segment placeholder loading={loading}>
         <Header textAlign='center' >
-          Drag and drop single-cell sample dataset directory
+          Drag and drop single-cell sample dataset directories or click to select directories
           <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-1'> (see required files and formats)</a>
         </Header>
         <Card.Group itemsPerRow={4}>

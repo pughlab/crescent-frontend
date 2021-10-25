@@ -30,10 +30,16 @@
     "description": "Gene Expression Dot Plot",
     "detailedDescription": "Gene expression dot plot shows the selected genes on the x-axis and the groups on the y-axis. The size of the dots refer to the percentage of cells within a cluster that express a specific gene. The opacity of the dots refer to the average expression of a specific gene across all clusters."
   },
-  "HEATMAP": {
-    "label": "Heatmap",
-    "result": "heatmap",
-    "description": "GSVA Heatmap",
+  "GSVAHEATMAP": {
+    "label": "GSVA Heatmap",
+    "result": "gsva",
+    "description": "Gene Set Variation Analysis Heatmap",
     "detailedDescription": "GSVA heatmap shows the predicted cell types on the x-axis and groups on the y-axis. Hovering or clicking on the grid provides the cluster name, predicted cell type and enrichment score."
+  },
+  "INFERCNVHEATMAP": {
+    "label": "InferCNV Heatmap",
+    "result": "infercnv",
+    "description": "Inferred Copy Number Variation Heatmap",
+    "detailedDescription": "InferCNV heatmap description."
   }
 }

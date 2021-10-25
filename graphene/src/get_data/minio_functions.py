@@ -58,6 +58,25 @@ def get_obj_as_2dlist(bucket, objct, minio_client, include_header=True, gzipped=
         _2dlist = [format_line_as_string_list(line) for line in obj]
     return _2dlist
 
+
+def get_obj_as_dictionary(bucket, objct, minio_client, key_index, value_index, include_header=True, gzipped=False):
+    obj = minio_client.get_object(bucket, objct)
+    _dict = {}
+    if(gzipped):
+        with gzip.open(obj, 'rb') as data:
+            if (not include_header):
+                data.readline()
+            for line in data:
+                string_list = format_line_as_string_list(line)
+                _dict[string_list[key_index]] = string_list[value_index]
+    else:
+        if (not include_header):
+            obj.readline()
+        for line in obj:
+            string_list = format_line_as_string_list(line)
+            _dict[string_list[key_index]] = string_list[value_index]
+    return _dict
+
 def count_lines(bucket, objct, minio_client):
     obj = minio_client.get_object(bucket, objct)
     count = 0

@@ -16,6 +16,7 @@ import Shake from 'react-reveal/Shake'
 
 import UploadRunGenesetButton from './UploadRunGenesetButton'
 import UploadRunMetadataButton from './UploadRunMetadataButton'
+import InferCNV from './InferCNV'
 
 export default function AnnotationsComponent ({
 
@@ -64,6 +65,7 @@ export default function AnnotationsComponent ({
     {
       activeAnnotationsActionIs('gsva') ? <> <UploadRunGenesetButton {...{runID}} /> </>
       : activeAnnotationsActionIs('runMetadata') ? <> <UploadRunMetadataButton {...{runID}} /> <UploadedMetadataList {...{runID}} /> </>
+      : activeAnnotationsActionIs('infercnv') ? <> <InferCNV {...{runID}} /> </>
       : null
     }
     </Segment>

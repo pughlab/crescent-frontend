@@ -13,7 +13,7 @@ import {setActiveResult, addEmptyPlot, setActivePlot, setPlotQueryID} from '../.
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
 import DotPlotVisualizationMenu from '../../resultsPage/visualizations/DotPlotVisualizationMenu'
-import HeatmapVisualizationMenu from '../../resultsPage/visualizations/HeatmapVisualizationMenu'
+import GSVAHeatmapVisualizationMenu from '../../resultsPage/visualizations/GSVAHeatmapVisualizationMenu'
 import QualityControlMenu from '../../resultsPage/visualizations/QualityControlMenu'
 
 import { plotQueryFields } from '../../../../utils';
@@ -183,7 +183,8 @@ const VisualizationsSidebar = ({
               R.cond([
                 [R.equals('qc'),   R.always(<QualityControlMenu/>)],
                 [R.equals('dot'), R.always(<DotPlotVisualizationMenu/>)],
-                [R.equals('heatmap'), R.always(<HeatmapVisualizationMenu/>)],
+                [R.equals('gsva'), R.always(<GSVAHeatmapVisualizationMenu/>)],
+                [R.equals('infercnv'), R.always(<></>)],
                 [R.T,            R.always(<VisualizationMenu/>)]
               ])(activeResult)
             }

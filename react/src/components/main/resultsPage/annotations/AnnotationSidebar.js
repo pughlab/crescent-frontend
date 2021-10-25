@@ -44,6 +44,7 @@ export default function AnnotationsSidebar ({
     // ... isSingleDatasetRun ? [] : [{annotationsAction: 'gsva', label: 'GSVA Cell Labelling', description: 'aaa'}]
     {annotationsAction: 'runMetadata', label: 'Custom Metadata', description: 'Upload/replace metadata for this run'},
     {annotationsAction: 'gsva', label: 'GSVA Cluster Labelling', description: 'Run GSVA cell labelling by uploading/replacing geneset for this run'},
+    {annotationsAction: 'infercnv', label: 'InferCNV', description: 'Infer copy number alterations from tumour for this run'},
 
 
 

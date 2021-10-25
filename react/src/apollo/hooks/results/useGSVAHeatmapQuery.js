@@ -9,14 +9,14 @@ import { sendSuccess } from '../../../redux/actions/resultsPage'
 import { useService } from '@xstate/react'
 import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 
-export default function useHeatmap(runID, plotQueryIndex) {
+export default function useGSVAHeatmap(runID, plotQueryIndex) {
   const dispatch = useDispatch()
   const { service } = useResultsPagePlotQuery(plotQueryIndex)
   const [current, send] = useService(service)
 
   const { loading, data, error, refetch } = useQuery(gql`
-    query Heatmap($runID: ID) {
-      heatmap(runID: $runID) {
+    query GSVAHeatmap($runID: ID) {
+      GSVAHeatmap(runID: $runID) {
         type
         x
         y
@@ -28,8 +28,8 @@ export default function useHeatmap(runID, plotQueryIndex) {
     client,
     fetchPolicy: 'cache-and-network',
     variables: {runID},
-    onCompleted: ({ heatmap }) => {
-      dispatch(sendSuccess({send, data:  R.map(R.evolve({ mode: R.join('+') }), heatmap)}))
+    onCompleted: ({GSVAHeatmap}) => {
+      dispatch(sendSuccess({send, data:  R.map(R.evolve({ mode: R.join('+') }), GSVAHeatmap)}))
     },
   })
 

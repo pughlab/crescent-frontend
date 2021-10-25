@@ -20,7 +20,6 @@ export const initiallyIdleMachine = (initialState) =>  Machine({
             actions: 
               assign({
                 plotData: (context, {data}) => data,
-                opacityLoaded: (context, { opacityLoaded}) => opacityLoaded
               })
           },
           COLLAPSE_SIDEBAR: 'multiPlotLoading',
@@ -41,7 +40,6 @@ export const initiallyIdleMachine = (initialState) =>  Machine({
             actions: 
             assign({
               plotData: (context, {data}) => data,
-              opacityLoaded: (context, {opacityLoaded}) => opacityLoaded
             })
           },
           CLEAR_GENES: 'idle',

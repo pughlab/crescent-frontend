@@ -18,6 +18,7 @@ import {useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useSubmitGSVAMutation} from '../../../../apollo/hooks/run'
 
 import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
+const annotationType = 'GSVA'
 
 export default function UploadGenesetButton({
   runID
@@ -53,7 +54,6 @@ export default function UploadGenesetButton({
       <Message color='purple'>
         <Icon name='upload'/>
         Upload/replace geneset for this Run in the GMT format.
-      </Message>
       <Segment inverted={success} color='purple'>
         {
         // disabledUpload ? 
@@ -62,9 +62,10 @@ export default function UploadGenesetButton({
         //   </Segment>
         // :
           <div {...getRootProps()}>
+          <input {...getInputProps()} />
           <Segment placeholder loading={loading}>
             <Header textAlign='center'
-              content={R.isNil(genesetFile) ? 'Drag and drop a geneset.gmt file to run GSVA' : genesetFile.name}
+              content={R.isNil(genesetFile) ? 'Drag and drop a geneset.gmt file or click to select file to run GSVA' : genesetFile.name}
             />
             {
               RA.isNotNil(genesetFile) &&
@@ -77,7 +78,9 @@ export default function UploadGenesetButton({
           </div>
         }
       </Segment>
-      <AnnotationsSecondaryRuns {...{secondaryRuns}} />
+      </Message>
+
+      <AnnotationsSecondaryRuns {...{secondaryRuns, annotationType}} />
     </>
   )
 }
