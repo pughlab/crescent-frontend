@@ -11,11 +11,27 @@ const resolvers = {
     allRuns: async (parent, variables, {Runs}) => {
       return await Runs.find({archived: {$eq: null}}) // Run must not be archived
     },
+    bucketObjects: async (parent, {bucketName}, {Minio}) => {
+      try {
+        return await new Promise(async resolve => {
+          const objectsStream = await Minio.client.listObjects(bucketName, '', true)
+          const objects = []
+
+          objectsStream.on('data', async ({name: objectName}) => {
+            objects.push(objectName)
+          })
+
+          objectsStream.on('end', () => {
+            resolve(objects)
+          })
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    },
     presignedURL: async (parent, {bucketName, objectName}, {Minio}) => {
       try {
-        const presignedURL = await Minio.client.presignedGetObject(bucketName, objectName)
-        
-        return presignedURL
+        return await Minio.client.presignedGetObject(bucketName, objectName)
       } catch (error) {
         console.log(error)
       }

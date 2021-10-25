@@ -10,7 +10,7 @@ import AnnotationsSidebar from '../annotations/AnnotationSidebar'
 
 import SubmitRunButton from './SubmitRunButton'
 import CancelRunButton from './CancelRunButton'
-import DownloadResultsButton from './DownloadResultsButton'
+import DownloadModal from './DownloadModal'
 
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
@@ -95,7 +95,7 @@ const SidebarComponent = () => {
         R.cond([
           [R.compose(R.and(runIsSubmitted), R.equals('logs')), R.always(<CancelRunButton />)],
           [R.compose(R.and(enableSubmit), R.equals('parameters')), R.always(<SubmitRunButton />)],
-          [R.equals('visualizations'), R.always(<DownloadResultsButton />)],
+          [R.equals('visualizations'), R.always(<DownloadModal />)],
           [R.T, R.always(null)]
         ])(activeSidebarTab)
       }

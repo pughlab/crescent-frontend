@@ -1,7 +1,7 @@
 const Minio = require('minio');
 
 module.exports = new Minio.Client({
-    endPoint: 'minio',
+    endPoint: 'crescent-dev.ccm.sickkids.ca',
     port: parseInt(process.env.MINIO_HOST_PORT),
     useSSL: false,
     accessKey: process.env.MINIO_ACCESS_KEY,

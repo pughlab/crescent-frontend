@@ -4,8 +4,9 @@ import {gql} from 'apollo-boost'
 
 const usePresignedURLQuery = (bucketName, objectName) => {
   const [presignedURL, setPresignedURL] = useState(null)
-  const {loading, data, error} = useQuery(gql`
-    query PresignedURL($bucketName: String!, $objectName: String!) {
+  
+  useQuery(gql`
+    query PresignedURLs($bucketName: String!, $objectName: String!) {
       presignedURL(bucketName: $bucketName, objectName: $objectName)
     }
   `, {
