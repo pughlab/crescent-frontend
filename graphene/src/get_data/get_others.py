@@ -35,6 +35,7 @@ def get_top_expressed_data(runID, datasetID, assay):
     except: 
         return[]
     header = top_two_markers[0]
+    header[:] = ["p_val" if x=="p_val_adj" else x for x in header]
     top_two_markers = top_two_markers[1:]
     max_values = {'avg_logFC': 0, 'p_val': 0}
     inf_locations = [] # index and header of value "Inf" in avg_logFC or p_val columns

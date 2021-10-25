@@ -84,6 +84,9 @@ def makeMultiJob(runId: str, run: dict):
     # Filling in structure
     job = {
         "anchors_function": run['parameters']['integration']['anchors_function'],
+        "k_filter": run['parameters']['integration']['k_filter'],
+        "k_weight": run['parameters']['integration']['k_weight'],
+        "distance_threshold": run['parameters']['integration']['distance_threshold'],
         "reference_datasets": refDatasetIDs,
         "assays_for_loom": "RNA,SCT",
         "assays_for_dge" : "RNA,SCT",
@@ -155,7 +158,9 @@ def makeCSV(run: dict, datasetIDs: list, fileName: str):
                             "ngenes_min",
                             "ngenes_max",
                             "nreads_min",
-                            "nreads_max"])
+                            "nreads_max",
+                            "ncells_random"
+                            ])
         # Fill in each row for each dataset
         # I can't believe this worked so nicely :)
         for dataset in run['parameters']['quality']:
@@ -170,7 +175,9 @@ def makeCSV(run: dict, datasetIDs: list, fileName: str):
                                 run['parameters']['quality'][dataset]["number_genes"]["min"],
                                 run['parameters']['quality'][dataset]["number_genes"]["max"],
                                 run['parameters']['quality'][dataset]["number_reads"]["min"],
-                                run['parameters']['quality'][dataset]["number_reads"]["max"],])
+                                run['parameters']['quality'][dataset]["number_reads"]["max"],
+                                run['parameters']['quality'][dataset]["downsample"],
+                                ])
         csvfile.close()
     return fileName
 
@@ -235,10 +242,10 @@ class SubmitRun(Mutation):
                 # minioWorked = minioUpload(scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
 
                 # Upload files for MultiSplit
-                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_MultiDatasets_QC_Normalization.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets_QC_Normalization.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
-                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_MultiDatasets_Integration.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets_Integration.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
-                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_MultiDatasets_PCA_Clustering_DimReduction.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets_PCA_Clustering_DimReduction.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
-                minioWorked = minioUpload(scriptName = "Runs_Seurat_v3_MultiDatasets_DGE.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v3_MultiDatasets_DGE.R", jsonPath= fileName, runId= runId, csvPath= fileName2)                
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v4_MultiDatasets_QC_Normalization.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v4_MultiDatasets_QC_Normalization.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v4_MultiDatasets_Integration.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v4_MultiDatasets_Integration.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v4_MultiDatasets_PCA_Clustering_DimReduction.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v4_MultiDatasets_PCA_Clustering_DimReduction.R", jsonPath= fileName, runId= runId, csvPath= fileName2)
+                minioWorked = minioUpload(scriptName = "Runs_Seurat_v4_MultiDatasets_DGE.R", scriptPath= "/app/crescent/Script/Runs_Seurat_v4_MultiDatasets_DGE.R", jsonPath= fileName, runId= runId, csvPath= fileName2)                
                 
                 # Delete temp csv
                 remove(fileName2)
