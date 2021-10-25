@@ -36,7 +36,6 @@ export default function UploadMetadataButton({
       <Message color='purple'>
         <Icon name='upload'/>
         Upload/replace metadata for this Run in this <a target="_blank" href='https://pughlab.github.io/crescent-frontend/#item-2-2' >format.</a> 
-      </Message>
       <Segment inverted={success} color='purple'>
         {
         disabledUpload ? 
@@ -45,9 +44,10 @@ export default function UploadMetadataButton({
           </Segment>
         :
           <div {...getRootProps()}>
+          <input {...getInputProps()} />
           <Segment placeholder loading={loading}>
             <Header textAlign='center'
-              content={R.isNil(metadataFile) ? 'Drag and drop a metadata.tsv file' : metadataFile.name}
+              content={R.isNil(metadataFile) ? 'Drag and drop a metadata.tsv file or click to select file' : metadataFile.name}
             />
             {
               RA.isNotNil(metadataFile) &&
@@ -60,6 +60,7 @@ export default function UploadMetadataButton({
           </div>
         }
       </Segment>
+      </Message>
     </>
   )
 }
