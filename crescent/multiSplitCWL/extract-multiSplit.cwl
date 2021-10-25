@@ -30,19 +30,19 @@ outputs:
   R_file_QC_Normalization:
     type: File
     outputBinding:
-      glob: ["run-*/Runs_Seurat_v3_MultiDatasets_QC_Normalization.R"]
+      glob: ["run-*/Runs_Seurat_v4_MultiDatasets_QC_Normalization.R"]
   R_file_Integration:
     type: File
     outputBinding:
-      glob: ["run-*/Runs_Seurat_v3_MultiDatasets_Integration.R"]
+      glob: ["run-*/Runs_Seurat_v4_MultiDatasets_Integration.R"]
   R_file_PCA_Clustering:
     type: File
     outputBinding:
-      glob: ["run-*/Runs_Seurat_v3_MultiDatasets_PCA_Clustering_DimReduction.R"]
+      glob: ["run-*/Runs_Seurat_v4_MultiDatasets_PCA_Clustering_DimReduction.R"]
   R_file_DGE:
     type: File
     outputBinding:
-      glob: ["run-*/Runs_Seurat_v3_MultiDatasets_DGE.R"]
+      glob: ["run-*/Runs_Seurat_v4_MultiDatasets_DGE.R"]
   runs_dir:
     type: Directory
     outputBinding:
