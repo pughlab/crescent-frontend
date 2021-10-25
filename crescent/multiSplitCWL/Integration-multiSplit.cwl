@@ -4,8 +4,9 @@ class: CommandLineTool
 
 requirements:
   DockerRequirement:
-    dockerPull: crescentdev/crescent-seurat-droplet-gsva-stacas:latest
-
+    # dockerPull: crescentdev/crescent-seurat-droplet-gsva-stacas:latest
+    dockerPull: crescentdev/crescent-seurat-v4:latest
+    
 baseCommand: [Rscript]
 
 inputs:
@@ -35,28 +36,46 @@ inputs:
       position: 3
       prefix: -y
 
+  k_filter:
+    type: int?
+    inputBinding:
+      position: 4
+      prefix: -n
+
+  k_weight:
+    type: int?
+    inputBinding:
+      position: 5
+      prefix: -r
+
+  distance_threshold:
+    type: float?
+    inputBinding:
+      position: 6
+      prefix: -q
+
   reference_datasets:
     type: string?
     inputBinding:
-      position: 4
+      position: 7
       prefix: -z
 
   project_id:
     type: string
     inputBinding:
-      position: 5
+      position: 8
       prefix: -p
 
   pca_dimensions:
     type: int?
     inputBinding:
-      position: 6
+      position: 9
       prefix: -d
 
   number_cores:
     type: string?
     inputBinding:
-      position: 9
+      position: 10
       prefix: -u
 
   save_r_object:
