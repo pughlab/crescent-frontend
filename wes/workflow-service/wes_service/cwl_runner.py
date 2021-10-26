@@ -12,10 +12,10 @@ from wes_service.util import WESBackend
 
 docker_client = docker.DockerClient(base_url='unix://var/run/docker.sock')
 minio_client = Minio(
-    'minio:' + os.getenv('MINIO_HOST_PORT'),
+    'crescent-dev.ccm.sickkids.ca:' + os.getenv('MINIO_HOST_PORT'),
     access_key=os.getenv('MINIO_ACCESS_KEY'),
     secret_key=os.getenv('MINIO_SECRET_KEY'),
-    secure=False
+    secure=True
 )
 
 class Workflow(object):

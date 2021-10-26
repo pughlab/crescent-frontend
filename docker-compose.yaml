@@ -19,6 +19,7 @@ services:
       - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
     volumes:
       - ./minio/upload:/export
+      - ./nginx/certs:/root/.minio/certs
     command: server /export
 
   server: 

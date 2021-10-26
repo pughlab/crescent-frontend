@@ -8,7 +8,7 @@ import os
 
 # For non-docker
 minio_client = Minio(
-  'localhost:9000',
+  'crescent-dev.ccm.sickkids.ca:9000',
   access_key='minioadmin',
   secret_key='minioadmin',
-  secure=False)
+  secure=True)

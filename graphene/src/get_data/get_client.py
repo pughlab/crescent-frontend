@@ -11,10 +11,10 @@ def get_mongo_client():
 def get_minio_client():
     # """
     return Minio(
-        'minio:'+os.getenv('MINIO_HOST_PORT'),
+        'crescent-dev.ccm.sickkids.ca:'+os.getenv('MINIO_HOST_PORT'),
         access_key=os.getenv('MINIO_ACCESS_KEY'),
         secret_key=os.getenv('MINIO_SECRET_KEY'),
-        secure=False
+        secure=True
     )
     """
     return Minio(
