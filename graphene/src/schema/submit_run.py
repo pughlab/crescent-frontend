@@ -112,7 +112,10 @@ def minioUpload(scriptName: str, scriptPath: str, jsonPath: str, runId: str, csv
     # Attempting to upload all relevant files neccesary for this run to the run bucket
     try:
         # Connect to minio
-        minioEndpoint = 'crescent-dev.ccm.sickkids.ca:' + environ["MINIO_HOST_PORT"]
+        minioEndpoint = "{}:{}".format(
+            environ["MINIO_HOST_NAME_DEV"] if environ["NODE_ENV"] == 'development' else environ["MINIO_HOST_NAME_PROD"],
+            environ["MINIO_HOST_PORT"]
+        )
         minioClient = Minio(minioEndpoint, environ["MINIO_ACCESS_KEY"], environ["MINIO_SECRET_KEY"], secure=True)
 
         # Upload files to bucket
