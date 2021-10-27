@@ -21,7 +21,9 @@ db = mongo_client['crescent']
 
 def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
     # Job creation from mongo run data, specific to Runs_Seurat_v3_SingleDataset.R
-    if (environ["GRAPHENE_DEV"] == "False"):
+    if (environ["NODE_ENV"] == "production"):
+        minioIP = environ["MINIO_HOST_NAME_PROD"]
+    elif (environ["GRAPHENE_DEV"] == "False"):
         with open('/app/src/schema/minioIP.txt', 'r') as file:
             minioIP = file.read().replace('\n', '')
     else:
@@ -53,7 +55,9 @@ def makeJob(runId: str, datasetId: str, run: dict, dataName: str):
     return job
 
 def makeMultiJob(runId: str, run: dict):
-    if (environ["GRAPHENE_DEV"] == "False"):
+    if (environ["NODE_ENV"] == "production"):
+        minioIP = environ["MINIO_HOST_NAME_PROD"]
+    elif (environ["GRAPHENE_DEV"] == "False"):
         with open('/app/src/schema/minioIP.txt', 'r') as file:
             minioIP = file.read().replace('\n', '')
     else:

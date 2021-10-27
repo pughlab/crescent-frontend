@@ -20,7 +20,9 @@ mongo_client = MongoClient(environ.get('MONGO_URL'))
 db = mongo_client['crescent']
 
 def makeGsvaJob(runId: str, run: dict):
-    if (environ["GRAPHENE_DEV"] == "False"):
+    if (environ["NODE_ENV"] == "production"):
+        minioIP = environ["MINIO_HOST_NAME_PROD"]
+    elif (environ["GRAPHENE_DEV"] == "False"):
         with open('/app/src/schema/minioIP.txt', 'r') as file:
             minioIP = file.read().replace('\n', '')
     else:

@@ -5,7 +5,7 @@ hints:
     dockerPull: minio/mc
   EnvVarRequirement:
     envDef: 
-      MC_HOST_minio: http://$(inputs.access):$(inputs.secret)@$(inputs.domain):$(inputs.port)
+      MC_HOST_minio: https://$(inputs.access):$(inputs.secret)@$(inputs.domain):$(inputs.port)
 baseCommand: cp
 inputs:
   - id: GSVA
