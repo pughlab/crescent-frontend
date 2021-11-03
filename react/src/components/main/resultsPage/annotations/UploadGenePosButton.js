@@ -1,29 +1,23 @@
 import React, {useState, useCallback, useEffect} from 'react'
 
-import {Button, Icon, Segment, Header, Message, Image, Grid } from 'semantic-ui-react'
+import {Button, Header, Icon, Message, Segment} from 'semantic-ui-react'
 
 import {useDropzone} from 'react-dropzone'
 
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
-import Tada from 'react-reveal/Tada'
-import Fade from 'react-reveal/Fade'
-import Logo from '../../../login/logo.jpg'
-
 // import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
 
 import {useUploadGenePosMutation} from '../../../../apollo/hooks/run'
 import {useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useSubmitGSVAMutation, useSubmitInferCNVMutation, useSampleAnnotsQuery} from '../../../../apollo/hooks/run'
-
-import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
+import {useSampleAnnotsQuery, useSubmitInferCNVMutation} from '../../../../apollo/hooks/run'
 
 export default function UploadGenePosButton({
   runID
 }) {
   const {userID: currentUserID} = useCrescentContext()
-  // const run = useRunDetailsQuery(runID)
+  // const {run} = useRunDetailsQuery(runID)
   const {uploadGenePos, loading, success} = useUploadGenePosMutation({runID})
   const [genePosFile, setGenePosFile] = useState(null)
   useEffect(() => {if (success) setGenePosFile(null)}, [success])

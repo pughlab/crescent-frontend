@@ -18,7 +18,7 @@ const PlotHeader = ({
   const {plotQueries} = useResultsPage()
 
   const dispatch = useDispatch()
-  const run = useRunDetailsQuery(runID)
+  const {run} = useRunDetailsQuery(runID)
   if (R.any(R.isNil, [run])) {
     return <Header textAlign="center">{name}</Header>
   }

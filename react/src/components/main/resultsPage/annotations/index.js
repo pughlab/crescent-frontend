@@ -1,13 +1,10 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React from 'react';
 import * as R from 'ramda'
-import * as R_ from 'ramda-extension'
-import {Segment, Icon, Header, Image, Grid, Label, Message} from 'semantic-ui-react'
+import {Header, Icon, Image, Segment} from 'semantic-ui-react'
 
-import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
-import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
 import UploadedMetadataList from './UploadedMetadataList'
 
 import Tada from 'react-reveal/Tada'
@@ -18,20 +15,12 @@ import UploadRunGenesetButton from './UploadRunGenesetButton'
 import UploadRunMetadataButton from './UploadRunMetadataButton'
 import InferCNV from './InferCNV'
 
-export default function AnnotationsComponent ({
-
-}) {
+export default function AnnotationsComponent () {
   const {activeAnnotationsAction} = useResultsPage()
   const {runID} = useCrescentContext()
 
-  const dispatch = useDispatch()
-
-  // const run = useRunDetailsQuery(runID)
-  // if (R.any(R.isNil, [run])) {
-  //   return null
-  // }
-
-  const run = useRunDetailsQuery(runID)
+  const {run} = useRunDetailsQuery(runID)
+  
   if (R.any(R.isNil, [run])) {
     return (
       <Segment style={{height: '100%'}} color='violet'>

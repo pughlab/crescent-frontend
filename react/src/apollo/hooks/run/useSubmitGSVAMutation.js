@@ -3,10 +3,9 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
 import * as RA from 'ramda-adjunct'
-import * as R from 'ramda'
 
 export default function useSubmitGSVAMutation(runID) {
-  // const run = useRunDetailsQuery(runID)
+  // const {run} = useRunDetailsQuery(runID)
 
   const [run, setRun] = useState(null)
   const [submitted, setSubmitted] = useState(true) //start true

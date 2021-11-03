@@ -3,8 +3,6 @@ import * as R from 'ramda'
 
 import {Accordion, Dropdown, Icon} from 'semantic-ui-react'
 
-import Fade from 'react-reveal/Fade'
-
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks/run'
@@ -16,14 +14,12 @@ const ParameterAccordionItem = ({
 }) => {
   const dispatch = useDispatch()
   const {activePipelineStep} = useResultsPage()
+  const {runStatus} = useResultsPage()
 
-  const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
-  if (R.isNil(run)) {
+  if (R.isNil(runStatus)) {
     return null
   }
 
-  const {status: runStatus} = run
   const active = R.equals(step, activePipelineStep)
   const runStatusIsPending = R.equals('pending', runStatus)
 
@@ -47,11 +43,9 @@ const ParameterAccordionItem = ({
   )
 }
 
-const ParametersSidebar = ({
-
-}) => {
+const ParametersSidebar = () => {
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {run} = useRunDetailsQuery(runID)
   const toolSteps = useToolStepsQuery()
 
   if (R.any(R.isNil, [run, toolSteps])) {

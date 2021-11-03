@@ -1,8 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React from 'react';
 
-import { Segment, Button, Icon, Step, Header, Modal, Dropdown, Form, Divider, Menu, Accordion } from 'semantic-ui-react'
+import {Accordion} from 'semantic-ui-react'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
@@ -25,14 +24,10 @@ const DataAccordionItem = ({dataAction, label, description}) => {
   )
 }
 
-export default function DataSidebar ({
-
-}) {    
+export default function DataSidebar () {    
   const {userID: currentUserID, runID} = useCrescentContext()
 
-  const run = useRunDetailsQuery(runID)
-
-  const dispatch = useDispatch()
+  const {run} = useRunDetailsQuery(runID)
 
   if (R.any(R.isNil, [run])) {
     return null

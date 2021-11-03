@@ -8,14 +8,13 @@ import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
 import Tada from 'react-reveal/Tada'
-import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
 
 // import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
 
 import {useUploadRunGenesetMutation} from '../../../../apollo/hooks/run'
 import {useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useSubmitGSVAMutation} from '../../../../apollo/hooks/run'
+import {useSubmitGSVAMutation} from '../../../../apollo/hooks/run'
 
 import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
 const annotationType = 'GSVA'
@@ -24,7 +23,7 @@ export default function UploadGenesetButton({
   runID
 }) {
   const {userID: currentUserID} = useCrescentContext()
-  // const run = useRunDetailsQuery(runID)
+  // const {run} = useRunDetailsQuery(runID)
   const {uploadRunGeneset, loading, success} = useUploadRunGenesetMutation({runID})
   const [genesetFile, setGenesetFile] = useState(null)
   useEffect(() => {if (success) setGenesetFile(null)}, [success])

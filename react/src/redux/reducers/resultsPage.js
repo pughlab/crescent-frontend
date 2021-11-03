@@ -44,9 +44,8 @@ const initialState = {
     //   selectedDiffExpression: 'All',
     //   selectedQCDataset: null,
     // }
-  ]
-
-
+  ],
+  runStatus: null
 }
 
 const evolveAtIndex = (transformations, index) => R.over(R.lensIndex(index), R.evolve(transformations))
@@ -303,5 +302,13 @@ export default createReducer(
         plotQueries: R.always([])
       })(state)
     },
+
+    'resultsPage/setRunStatus': (state, payload) => {
+      const {status} = payload
+
+      return R.evolve({
+        runStatus: R.always(status)
+      })(state)
+    }
   }
 )

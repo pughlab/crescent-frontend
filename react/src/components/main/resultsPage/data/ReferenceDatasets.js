@@ -1,30 +1,25 @@
-import React, {useState, useCallback, useEffect} from 'react'
+import React from 'react'
 
-import {Button, Icon, Segment, List, Message, Divider } from 'semantic-ui-react'
+import {Button, Divider, List, Message, Segment} from 'semantic-ui-react'
 
-import {useDropzone} from 'react-dropzone'
-
-import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
-
 import {useUpdateRunReferenceDatasetsMutation} from '../../../../apollo/hooks/run'
-
-
+import {useResultsPage} from '../../../../redux/hooks'
 
 export default function ReferenceDatasets({
   runID
 }) {
-  
+  const {runStatus} = useResultsPage()
   const {run, updateRunReferenceDatasets, loading} = useUpdateRunReferenceDatasetsMutation({runID})
 
   if (R.any(R.isNil, [run])) {
     return null
   }
 
-  const {status, datasets, referenceDatasets} = run
+  const {datasets, referenceDatasets} = run
 
-  const runIsPending = R.equals(status, 'pending')
+  const runIsPending = R.equals(runStatus, 'pending')
   const referenceDatasetIDs = R.pluck('datasetID', referenceDatasets)
   const isReferenceDataset = R.includes(R.__, referenceDatasetIDs)
   const addReferenceDataset = datasetID => updateRunReferenceDatasets({variables: {datasetIDs: R.uniq([... referenceDatasetIDs, datasetID])}})

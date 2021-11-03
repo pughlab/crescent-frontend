@@ -1,23 +1,18 @@
-import React, {useState, useCallback, useEffect} from 'react'
+import React from 'react'
 
-import {Button, Icon, Segment, Header, Message, Image, Grid } from 'semantic-ui-react'
+import {Image, Segment, Grid } from 'semantic-ui-react'
 
-import {useDropzone} from 'react-dropzone'
-
-import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
 import Tada from 'react-reveal/Tada'
-import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
 
 // import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
 import UploadSampleAnnotsButton from './UploadSampleAnnotsButton'
 import UploadGenePosButton from './UploadGenePosButton'
 import AddNormalCellTypesButton from './AddNormalCellTypesButton'
-import {useUploadSampleAnnotsMutation} from '../../../../apollo/hooks/run'
 import {useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useSubmitGSVAMutation, useSubmitInferCNVMutation} from '../../../../apollo/hooks/run'
+import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
 import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
 
@@ -25,7 +20,7 @@ export default function InferCNV({
   runID
 }) {
   const {userID: currentUserID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {run} = useRunDetailsQuery(runID)
 
   // const {uploadSampleAnnots, loading, success} = useUploadSampleAnnotsMutation({runID})
   // const [sampleAnnotsFile, setSampleAnnotsFile] = useState(null)

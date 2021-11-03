@@ -1,7 +1,6 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React from 'react';
 import * as R from 'ramda'
-import * as R_ from 'ramda-extension'
-import {Segment, Icon, Header, Image, Grid, Label, Message} from 'semantic-ui-react'
+import {Header, Icon, Image, Segment} from 'semantic-ui-react'
 
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
@@ -13,15 +12,13 @@ import Shake from 'react-reveal/Shake'
 
 import ReferenceDatasets from './ReferenceDatasets'
 
-export default function DataComponent ({
-
-}) {
+export default function DataComponent () {
   const {activeDataAction} = useResultsPage()
   const {runID} = useCrescentContext()
 
   const dispatch = useDispatch()
 
-  const run = useRunDetailsQuery(runID)
+  const {run} = useRunDetailsQuery(runID)
   if (R.any(R.isNil, [run])) {
     return (
       <Segment style={{height: '100%'}} color='violet'>
