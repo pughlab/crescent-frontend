@@ -1,23 +1,17 @@
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 
-import {Container, Card, Divider, Button, Header, Icon, Popup, Modal, Dropdown, Label, Segment, Grid, Step, Transition} from 'semantic-ui-react'
+import {Icon, Step} from 'semantic-ui-react'
 
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
-import {useCrescentContext, useRunsPage} from '../../../redux/hooks'
-import {useProjectRunsQuery} from '../../../apollo/hooks/project'
+import {useRunsPage} from '../../../redux/hooks'
 import {useDispatch} from 'react-redux'
 import {setActiveRunsFilter} from '../../../redux/actions/runsPage'
 
-const RunsStatusLegend = ({
-}) => {
+const RunsStatusLegend = ({ projectRuns }) => {
   const dispatch = useDispatch()
   const {activeRunsFilter} = useRunsPage()
-
-  const {projectID} = useCrescentContext()
-  const projectRuns = useProjectRunsQuery(projectID)
-
+  
   const {pending: pendingCount, submitted: submittedCount, completed: completedCount, failed: failedCount} = R.reduce(
     (runCountsByStatus, {status}) => R.over(R.lensProp(status), R.inc, runCountsByStatus),
     {pending: 0, submitted: 0, completed: 0, failed: 0},

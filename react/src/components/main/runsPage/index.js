@@ -16,25 +16,24 @@ import RunsStatusLegend from './RunsStatusLegend'
 import ProjectRunsList from './ProjectRunsList'
 
 
-import { Segment, Container, Button, Divider, Header, Popup, Label, Grid, Icon } from 'semantic-ui-react'
+import { Segment, Container, Button, Divider, Header, Popup, Label, Grid } from 'semantic-ui-react'
 
 import Fade from 'react-reveal/Fade'
 
 import { useCrescentContext } from '../../../redux/hooks'
-import {useEditProjectDetailsMutation} from '../../../apollo/hooks/project'
+import {useEditProjectDetailsMutation, useProjectRunsQuery} from '../../../apollo/hooks/project'
 
 import {useDispatch} from 'react-redux'
 import {resetRunsPage} from '../../../redux/actions/runsPage'
 import CompareModal from '../comparePage/CompareModal';
 
 
-const RunsPageComponent = ({
-
-}) => {
+const RunsPageComponent = () => {
   const dispatch = useDispatch()
   const { userID: currentUserID, projectID } = useCrescentContext()
   useEffect(() => () => dispatch(resetRunsPage()), [projectID])
-  const { project } = useEditProjectDetailsMutation({projectID}) 
+  const { project } = useEditProjectDetailsMutation({projectID})
+  const { getUpdatedRun, projectRuns } = useProjectRunsQuery(projectID)
 
   if (R.isNil(project)) {
     return null
@@ -144,9 +143,9 @@ const RunsPageComponent = ({
           <NewRunModal {...{project}} />
           {/* SHOW RUNS BY STATUS */}
           {/* {isUploadedProject && <RunsStatusLegend />} */}
-          { <RunsStatusLegend />}
+          { <RunsStatusLegend {...{projectRuns}} />}
 
-          <ProjectRunsList />
+          <ProjectRunsList {...{getUpdatedRun, projectRuns}} />
 
         </Segment>
         

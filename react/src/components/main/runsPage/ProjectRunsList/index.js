@@ -1,19 +1,14 @@
 import React from 'react'
 
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import {Header, Card, Segment, Icon, Transition} from 'semantic-ui-react'
 
 import RunCard from './RunCard'
 
-import {useCrescentContext, useRunsPage} from '../../../../redux/hooks'
-import {useProjectRunsQuery} from '../../../../apollo/hooks/project'
+import {useRunsPage} from '../../../../redux/hooks'
 
-const ProjectRunsList = () => {
-  const {projectID} = useCrescentContext()
-  const projectRuns = useProjectRunsQuery(projectID)
-
+const ProjectRunsList = ({ getUpdatedRun, projectRuns }) => {
   const {activeRunsFilter} = useRunsPage()
 
   // const filteredProjectRuns = R.compose(
@@ -63,9 +58,9 @@ const ProjectRunsList = () => {
     :
       <Card.Group itemsPerRow={3}>
       {
-        R.addIndex(R.map)(
-          (run, index) => (
-            <RunCard key={index} {...{run}} />
+        R.map(
+          run => (
+            <RunCard key={run.runID} {...{getUpdatedRun, run}} />
           ),
           filteredProjectRuns
         )
