@@ -1,12 +1,6 @@
 const R = require('ramda')
 const RA = require('ramda-adjunct')
 
-const axios = require('axios')
-
-const {
-  ApolloError
-} = require('apollo-server')
-
 const resolvers = {
   Query: {
     // Query a single project
@@ -101,10 +95,23 @@ const resolvers = {
     },
 
     archiveProject: async (parent, {projectID}, {Projects}) => {
-      const project = await Projects.findOne({projectID})
-      project.archived = new Date()
-      await project.save()
-      return project
+      try {
+        await Projects.update({projectID}, {archived: new Date()})
+        return true
+      } catch(error) {
+        console.log(error)
+        return false
+      }
+    },
+
+    archiveRuns: async (parent, {runIDs}, {Runs}) => {
+      try {
+        await Runs.updateMany({runID: {$in: runIDs}}, {archived: new Date()})
+        return true
+      } catch(error) {
+        console.log(error)
+        return false
+      }
     },
 
     addExternalUrl: async (parent, {projectID, label, link, type}, {Projects}) => {
@@ -149,7 +156,10 @@ const resolvers = {
       return await Users.findOne({userID: createdBy})
     },
     runs: async ({projectID}, variables, {Runs}) => {
-      return await Runs.find({projectID})
+      return await Runs.find({
+        projectID,
+        archived: {$eq: null}
+      })
     },
 
     mergedProjects: async ({mergedProjectIDs}, variables, {Projects}) => {

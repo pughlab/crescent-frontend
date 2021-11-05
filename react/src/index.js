@@ -24,6 +24,9 @@ require('dotenv').config()
 const persistConfig = {
   key: 'root',
   storage,
+  blacklist: [
+    'projectArchive'
+  ]
 }
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 // Redux store

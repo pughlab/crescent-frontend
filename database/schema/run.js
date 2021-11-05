@@ -149,6 +149,11 @@ const RunSchema = new mongoose.Schema({
     default: null
   },
 
+  archived: {
+    type: Date,
+    default: null
+  },
+
   uploadNames: {
     type: UploadNamesSchema,
     default: {metadata: null, gsva: null},
