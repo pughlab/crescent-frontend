@@ -8,14 +8,8 @@ import {useSecondaryRunLogsQuery} from '../../../../apollo/hooks/run'
 import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
 
 const SecondaryRunFinishing = () => (
-  <Message
-    color="violet"
-    icon
-  >
-    <Icon
-      loading
-      name='circle notched'
-    />
+  <Message icon color="violet">
+    <Icon loading name="circle notched" />
     <Message.Content>
       <Message.Header>Finishing</Message.Header>
       Please wait a moment...
@@ -42,7 +36,7 @@ const SecondaryRunDockerLogs = () => {
     // Don't poll for logs if logsWasAvailable is true
     // (i.e. when the docker container has stopped after the secondary run has been completed)
     if (logsWasAvailable) stopPolling()
-  }, [stopPolling, logsWasAvailable])
+  }, [logsWasAvailable, stopPolling])
 
   // Utility functions for formatting and cleaning up the logs
   const splitByNewLine = R.compose(R.map(R.trim), R.split('\n'))

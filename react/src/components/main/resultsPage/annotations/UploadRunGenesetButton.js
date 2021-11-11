@@ -9,14 +9,12 @@ import Logo from '../../../login/logo.jpg'
 import {useUploadRunGenesetMutation} from '../../../../apollo/hooks/run'
 import {useSubmitGSVAMutation} from '../../../../apollo/hooks/run'
 
-import {useDispatch} from 'react-redux'
 import {useAnnotations} from '../../../../redux/hooks'
 
 import SecondaryRunLogs from '../logs/SecondaryRunLogs'
 import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
 
 export default function UploadGenesetButton({ runID }) {
-  const dispatch = useDispatch()
   const {secondaryRunWesID} = useAnnotations()
   // const {userID: currentUserID} = useCrescentContext()
   const {uploadRunGeneset, loading: loadingUpload, genesetUploaded} = useUploadRunGenesetMutation({runID})
@@ -25,13 +23,13 @@ export default function UploadGenesetButton({ runID }) {
   const [genesetFile, setGenesetFile] = useState(null)
 
   const onDrop = useCallback(acceptedFiles => {
-    if (RA.isNotEmpty(acceptedFiles)) {
-      setGenesetFile(R.head(acceptedFiles))
-    }
+    if (RA.isNotEmpty(acceptedFiles)) setGenesetFile(R.head(acceptedFiles))
   }, [])
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+  const {getRootProps, getInputProps} = useDropzone({onDrop})
 
   const loading = loadingUpload || loadingGSVA
+
+  const annotationType = 'GSVA'
 
   useEffect(() => {
     if (secondaryRunSubmitted) setGenesetFile(null)
@@ -42,13 +40,21 @@ export default function UploadGenesetButton({ runID }) {
       const {secondaryRuns: secondaryRunsFromQuery} = run
       setSecondaryRuns(secondaryRunsFromQuery)
     }
-  }, [dispatch, run])
+  }, [run])
 
   if (R.isNil(run)) {
     return (
-      <Segment basic style={{ height: '100%' }} placeholder>
+      <Segment
+        basic
+        placeholder
+        style={{ height: '100%' }}
+      >
         <Tada forever duration={1000}>
-          <Image src={Logo} centered size='medium' />
+          <Image
+            centered
+            size="medium"
+            src={Logo}
+          />
         </Tada>
       </Segment>
     )
@@ -60,40 +66,45 @@ export default function UploadGenesetButton({ runID }) {
   return (
     <>
       { R.isNil(secondaryRunWesID) ? (
-        <>
-          <Message color='purple'>
-            <Icon name='upload'/>
-            Upload/replace geneset for this Run in the GMT format.
-          </Message>
-          <Segment inverted={RA.isNotNil(genesetFile)} color='purple'>
+        <Message color="purple">
+          <Icon name="upload" />
+          Upload/replace geneset for this run in the GMT format.
+          <Segment
+            color="purple"
+            inverted={RA.isNotNil(genesetFile)}
+          >
             {
-            // disabledUpload ? 
-            //   <Segment placeholder>
-            //     <Header textAlign='center' content={'You do not have permissions to upload geneset for this run'} />
-            //   </Segment>
-            // :
+              // disabledUpload ?
+              //   <Segment placeholder>
+              //     <Header textAlign='center' content={'You do not have permissions to upload geneset for this run'} />
+              //   </Segment>
+              // :
               <div {...getRootProps()}>
-              <Segment placeholder loading={loading}>
-                <Header
-                  content={R.isNil(genesetFile) ? 'Drag and drop a geneset.gmt file to run GSVA' : genesetFile.name}
-                  textAlign='center'
-                />
-                {
-                  R.or(RA.isNotNil(genesetFile), loading) &&
-                  <Button
-                    color="purple"
-                    disabled={loading}
-                    content={R.toUpper(loadingUpload ? 'Uploading' : R.both(RA.isNotNil, R.not)(genesetUploaded) ? 'Upload failed, please try again' : loadingGSVA ? 'Submitting' : 'Confirm')}
-                    onClick={() => uploadRunGeneset({variables: {geneset: genesetFile}}).then(({data: {uploadRunGeneset}}) => {
-                      if (RA.isNotNil(uploadRunGeneset)) submitGsva()
-                    })}
+                <input {...getInputProps()} />
+                <Segment placeholder loading={loading}>
+                  <Header
+                    content={R.isNil(genesetFile) ? 'Drag and drop a geneset.gmt file or click to select file' : genesetFile.name}
+                    textAlign="center"
                   />
-                }
-              </Segment>
+                  {
+                    R.or(RA.isNotNil(genesetFile), loading) &&
+                    <Button
+                      color="purple"
+                      content={R.toUpper(loadingUpload ? 'Uploading' : R.both(RA.isNotNil, R.not)(genesetUploaded) ? 'Upload failed, please try again' : loadingGSVA ? 'Submitting' : 'Confirm')}
+                      disabled={loading}
+                      onClick={e => {
+                        e.stopPropagation()
+                        uploadRunGeneset({variables: {geneset: genesetFile}}).then(({data: {uploadRunGeneset}}) => {
+                          if (RA.isNotNil(uploadRunGeneset)) submitGsva()
+                        })
+                      }}
+                    />
+                  }
+                </Segment>
               </div>
             }
           </Segment>
-        </>
+        </Message>
       ) : (
         <SecondaryRunLogs />
       )}
@@ -110,7 +121,7 @@ export default function UploadGenesetButton({ runID }) {
           </Segment>
         </Fade>
       ) : (
-        <AnnotationsSecondaryRuns {...{secondaryRuns}} />
+        <AnnotationsSecondaryRuns {...{annotationType, secondaryRuns}} />
       )}
     </>
   )

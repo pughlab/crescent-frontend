@@ -1,14 +1,15 @@
-import {useState, useEffect} from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
-import * as R from 'ramda'
+import { useDispatch } from 'react-redux'
+import { useAnnotations } from '../../../redux/hooks'
+import { setMetadataUploaded } from '../../../redux/actions/annotations'
 
-export default function useUploadRunMetadataMutation({
-  runID
-}) {
-  const [success, setSuccess] = useState(false)
-  const [uploadRunMetadata, {loading, data, error}] = useMutation(gql`
+export default function useUploadRunMetadataMutation({ runID }) {
+  const dispatch = useDispatch()
+  const {metadataUploaded} = useAnnotations()
+
+  const [uploadRunMetadata, {loading}] = useMutation(gql`
     mutation UploadRunMetadata(
       $runID: ID!
       $metadata: Upload!
@@ -25,11 +26,9 @@ export default function useUploadRunMetadataMutation({
       runID
     },
     onCompleted: ({uploadRunMetadata: run}) => {
-      if (RA.isNotNil(run)) {
-        setSuccess(true)
-      }
+      dispatch(setMetadataUploaded({uploaded: RA.isNotNil(run)}))
     }
   })
 
-  return {uploadRunMetadata, loading, success}
+  return {uploadRunMetadata, loading, metadataUploaded}
 }

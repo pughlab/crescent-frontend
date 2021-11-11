@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {Header, Icon, Image, Segment} from 'semantic-ui-react'
@@ -9,34 +9,42 @@ import {useDispatch} from 'react-redux'
 import {setGenesetUploaded} from '../../../../redux/actions/annotations'
 import {useAnnotations, useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 
-import UploadedMetadataList from './UploadedMetadataList'
-
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import Shake from 'react-reveal/Shake'
 
 import UploadRunGenesetButton from './UploadRunGenesetButton'
-import UploadRunMetadataButton from './UploadRunMetadataButton'
+import Metadata from './Metadata'
 import InferCNV from './InferCNV'
 
 export default function AnnotationsComponent() {
-  const {activeAnnotationsAction} = useResultsPage()
+  const dispatch = useDispatch()
   const {runID} = useCrescentContext()
   const {genesetUploaded} = useAnnotations()
-
-  const dispatch = useDispatch()
+  const {activeAnnotationsAction} = useResultsPage()
 
   useEffect(() => {
     if (RA.isNotNil(genesetUploaded)) dispatch(setGenesetUploaded({uploaded: null}))
   }, [])
 
   const {run} = useRunDetailsQuery(runID)
-  if (R.any(R.isNil, [run])) {
+  if (R.isNil(run)) {
     return (
-      <Segment style={{height: '100%'}} color='violet'>
-        <Segment basic style={{ height: '100%' }} placeholder>
+      <Segment
+        color="violet"
+        style={{height: '100%'}}
+      >
+        <Segment
+          basic
+          placeholder
+          style={{ height: '100%' }}
+        >
           <Tada forever duration={1000}>
-            <Image src={Logo} centered size='medium' />
+            <Image
+              centered
+              size="medium"
+              src={Logo}
+            />
           </Tada>
         </Segment>
       </Segment>
@@ -45,28 +53,34 @@ export default function AnnotationsComponent() {
 
   if (R.isNil(activeAnnotationsAction)) {
     return (
-      <Segment placeholder style={{height: '100%'}} color='purple'>
+      <Segment
+        placeholder
+        color="purple"
+        style={{height: '100%'}}
+      >
         <Shake forever duration={10000}>
-        <Header textAlign='center' icon>
-          <Icon name='right arrow' />
-          {'Select an annotation method'}
-        </Header>
+          <Header icon textAlign="center">
+            <Icon name="right arrow" />
+            {'Select an annotation method'}
+          </Header>
         </Shake>
       </Segment>
     )
   }
 
-
   const activeAnnotationsActionIs = R.equals(activeAnnotationsAction)
 
   return (
-    <Segment style={{height: '100%'}} color='purple'>
-    {
-      activeAnnotationsActionIs('gsva') ? <> <UploadRunGenesetButton {...{runID}} /> </>
-      : activeAnnotationsActionIs('runMetadata') ? <> <UploadRunMetadataButton {...{runID}} /> <UploadedMetadataList {...{runID}} /> </>
-      : activeAnnotationsActionIs('infercnv') ? <> <InferCNV {...{runID}} /> </>
-      : null
-    }
+    <Segment
+      color="purple"
+      style={{height: '100%'}}
+    >
+      {
+        activeAnnotationsActionIs('gsva') ? <UploadRunGenesetButton {...{runID}} />
+        : activeAnnotationsActionIs('runMetadata') ? <Metadata {...{runID}} />
+        : activeAnnotationsActionIs('infercnv') ? <InferCNV {...{runID}} />
+        : null
+      }
     </Segment>
   )
 }

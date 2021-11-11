@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import {useQuery, useMutation} from '@apollo/react-hooks'
+import {gql} from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -33,7 +33,7 @@ export default function useSubmitGSVAMutation(runID) {
 
   useEffect(() => {
     if (data) setRun(data.run)
-  }, [dispatch, data])
+  }, [data])
 
   useEffect(() => {
     if (RA.isNotNil(run) && RA.isNonEmptyArray(run.secondaryRuns)) {

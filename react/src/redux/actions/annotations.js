@@ -23,6 +23,13 @@ const setLogs = ({logs}) => ({
   }
 })
 
+const setMetadataUploaded = ({uploaded}) => ({
+  type: 'annotations/setMetadataUploaded',
+  payload: {
+    uploaded
+  }
+})
+
 const setSecondaryRun = ({secondaryRunWesID}) => ({
   type: 'annotations/setSecondaryRun',
   payload: {
@@ -35,5 +42,6 @@ export {
   setAnnotationsRunID,
   setGenesetUploaded,
   setLogs,
+  setMetadataUploaded,
   setSecondaryRun
 }

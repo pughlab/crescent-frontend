@@ -23,7 +23,7 @@ import useEditRunDetailsMutation from './useEditRunDetailsMutation'
 import useSavePlotQueryMutation from './useSavePlotQueryMutation'
 import useRemoveSavedPlotQueryMutation from './useRemoveSavedPlotQueryMutation'
 import useUpdateSavedPlotQueryMutation from './useUpdateSavedPlotQueryMutation'
-
+import useRunUploadNamesQuery from './useRunUploadNamesQuery'
 
 export {
   useRunDetailsQuery,
@@ -50,5 +50,6 @@ export {
   useEditRunDetailsMutation,
   useSavePlotQueryMutation,
   useRemoveSavedPlotQueryMutation,
-  useUpdateSavedPlotQueryMutation
+  useUpdateSavedPlotQueryMutation,
+  useRunUploadNamesQuery
 }

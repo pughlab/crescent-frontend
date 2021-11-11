@@ -8,6 +8,7 @@ const initialState = {
   logs: null,
   logsIsAvailable: false,
   logsWasAvailable: false,
+  metadataUploaded: null,
   secondaryRunSubmitted: false,
   secondaryRunWesID: null
 }
@@ -58,6 +59,13 @@ export default createReducer(
             )
           )
         )
+      })(state)
+    },
+    'annotations/setMetadataUploaded': (state, payload) => {
+      const {uploaded} = payload
+
+      return R.evolve({
+        metadataUploaded: R.always(uploaded)
       })(state)
     },
     'annotations/setSecondaryRun': (state, payload) => {

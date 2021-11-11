@@ -4,12 +4,18 @@ import * as R from 'ramda'
 
 import AnnotationsSecondaryRunEntry from './AnnotationsSecondaryRunEntry'
 
-const AnnotationsSecondaryRuns = ({ secondaryRuns }) => {
+const AnnotationsSecondaryRuns = ({ annotationType, secondaryRuns }) => {
   return (
     <>
-      <Divider horizontal content='GSVA Run Status' />
-      <Segment color='purple'>
-        <List divided relaxed selection celled size='large'>
+      <Divider horizontal content={`${annotationType} Run Status`} />
+      <Segment color="purple">
+        <List
+          celled
+          divided
+          relaxed
+          selection
+          size="large"
+        >
           {
             R.compose(
               R.map(secondaryRun => (

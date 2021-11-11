@@ -28,7 +28,7 @@ const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initial
       R.not(runIsSubmitted),
       R.equals(wesID, secondaryRunWesID)
     )) dispatch(resetAnnotations())
-  }, [])
+  }, [dispatch, runIsSubmitted, secondaryRunWesID, wesID])
 
   useEffect(() => {
     // Only call getStatus() to execute the lazy query and start polling if the secondary run is currently "submitted"
