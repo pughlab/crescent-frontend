@@ -12,7 +12,7 @@ const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
   const [secondaryRunCompletedOn, setSecondaryRunCompletedOn] = useState(null)
   const [secondaryRunStatus, setSecondaryRunStatus] = useState(null)
 
-  const [getStatus, {data: statusData}] = useLazyQuery(gql`
+  const [getStatus, {data: statusData, stopPolling: stopStatusPolling}] = useLazyQuery(gql`
     query SecondaryRunStatus($runID: ID, $secondaryRunWesID: ID) {
       secondaryRun(runID: $runID, wesID: $secondaryRunWesID) {
         status
@@ -75,7 +75,7 @@ const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
     setLoadingCancelSecondaryRun(loadingCancelSecondaryRun => loadingCancelSecondaryRun || loadingFromMutation)
   }, [loadingFromMutation])
 
-  return {cancelFailed, cancelSecondaryRun, getCompletedOn, getStatus, loadingCancelSecondaryRun, secondaryRunCompletedOn, secondaryRunStatus}
+  return {cancelFailed, cancelSecondaryRun, getCompletedOn, getStatus, loadingCancelSecondaryRun, secondaryRunCompletedOn, secondaryRunStatus, stopStatusPolling}
 }
 
 export default useCancelSecondaryRunMutation

@@ -17,8 +17,9 @@ const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initial
   const {runID} = useCrescentContext()
   const [secondaryRunStatus, setSecondaryRunStatus] = useState(initialStatus)
   const [secondaryRunCompletedOn, setSecondaryRunCompletedOn] = useState(initialCompletedOn)
+  const [isPolling, setIsPolling] = useState(false)
 
-  const {cancelFailed, cancelSecondaryRun, getStatus, getCompletedOn, loadingCancelSecondaryRun, secondaryRunCompletedOn: secondaryRunCompletedOnFromQuery, secondaryRunStatus: secondaryRunStatusFromPolling} = useCancelSecondaryRunMutation(runID, wesID)
+  const {cancelFailed, cancelSecondaryRun, getStatus, getCompletedOn, loadingCancelSecondaryRun, secondaryRunCompletedOn: secondaryRunCompletedOnFromQuery, secondaryRunStatus: secondaryRunStatusFromPolling, stopStatusPolling} = useCancelSecondaryRunMutation(runID, wesID)
 
   const runIsSubmitted = R.equals('submitted', secondaryRunStatus)
   const runIsCompleted = R.equals('completed', secondaryRunStatus)
@@ -34,10 +35,15 @@ const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initial
     // Only call getStatus() to execute the lazy query and start polling if the secondary run is currently "submitted"
     if (runIsSubmitted) {
       getStatus()
+      setIsPolling(true)
     } else { // Otherwise, call getCompletedOn() to execute the lazy query to get the completedOn time
       getCompletedOn()
     }
-  }, [getStatus, getCompletedOn, runIsSubmitted])
+  }, [getStatus, getCompletedOn, runIsSubmitted, setIsPolling])
+
+  useEffect(() => {
+    if (isPolling && !runIsSubmitted) stopStatusPolling()
+  }, [isPolling, runIsSubmitted, stopStatusPolling])
 
   useEffect(() => {
     if (RA.isNotNil(secondaryRunCompletedOnFromQuery)) setSecondaryRunCompletedOn(secondaryRunCompletedOnFromQuery)
