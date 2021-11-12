@@ -16,10 +16,10 @@ const setGenesetUploaded = ({uploaded}) => ({
   }
 })
 
-const setLogs = ({logs}) => ({
-  type: 'annotations/setLogs',
+const setLogsAvailable = ({logsIsAvailable}) => ({
+  type: 'annotations/setLogsAvailable',
   payload: {
-    logs
+    logsIsAvailable
   }
 })
 
@@ -41,7 +41,7 @@ export {
   resetAnnotations,
   setAnnotationsRunID,
   setGenesetUploaded,
-  setLogs,
+  setLogsAvailable,
   setMetadataUploaded,
   setSecondaryRun
 }

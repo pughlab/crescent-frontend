@@ -3,7 +3,7 @@ import {useLazyQuery, useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
-import {setLogs} from '../../../redux/actions/annotations'
+import {setLogsAvailable} from '../../../redux/actions/annotations'
 
 const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
   const dispatch = useDispatch()
@@ -65,7 +65,7 @@ const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
       secondaryRunWesID
     },
     onCompleted: ({cancelSecondaryRun}) => {
-      if (cancelSecondaryRun === 'failed') dispatch(setLogs({logs: null}))
+      if (cancelSecondaryRun === 'failed') dispatch(setLogsAvailable({logsIsAvailable: false}))
       setCancelFailed(cancelSecondaryRun !== 'failed')
       setLoadingCancelSecondaryRun(false)
     }

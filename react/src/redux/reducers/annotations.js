@@ -5,7 +5,6 @@ import createReducer from './createReducer'
 const initialState = {
   annotationsRunID: null,
   genesetUploaded: null,
-  logs: null,
   logsIsAvailable: false,
   logsWasAvailable: false,
   metadataUploaded: null,
@@ -41,14 +40,11 @@ export default createReducer(
         genesetUploaded: R.always(uploaded)
       })(state)
     },
-    'annotations/setLogs': (state, payload) => {
+    'annotations/setLogsAvailable': (state, payload) => {
       const {logsIsAvailable: logsIsAvailablePrev, logsWasAvailable: logsWasAvailablePrev} = state
-      const {logs} = payload
-
-      const logsIsAvailableCurr = RA.isNotNil(logs)
+      const {logsIsAvailable: logsIsAvailableCurr} = payload
 
       return R.evolve({
-        logs: R.always(logs),
         logsIsAvailable: R.always(logsIsAvailableCurr),
         logsWasAvailable: R.always(
           R.or(
