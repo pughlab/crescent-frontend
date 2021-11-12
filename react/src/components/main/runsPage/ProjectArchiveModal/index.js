@@ -1,5 +1,6 @@
 import React from 'react'
 import {Button, Divider, Header, Icon, Modal} from 'semantic-ui-react'
+import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
 import {resetProjectArchive, setProjectArchiveModalOpen} from '../../../../redux/actions/projectArchive'
 import {useProjectArchive} from '../../../../redux/hooks'
@@ -13,7 +14,8 @@ const ProjectArchiveModal = ({ archiveProject, archiveRuns, project, projectRuns
   const {
     createdOn,
     description: projectDescription,
-    name: projectName
+    name: projectName,
+    archived
   } = project
 
   return (
@@ -25,6 +27,7 @@ const ProjectArchiveModal = ({ archiveProject, archiveRuns, project, projectRuns
         <Button
           animated="vertical"
           color="red"
+          disabled={RA.isNotNil(archived)}
         >
           <Button.Content visible>
             <Icon name="trash"/>

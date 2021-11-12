@@ -34,6 +34,8 @@ const useProjectArchiveMutation = projectID => {
         }
         createdOn
 
+        archived
+
         mergedProjects {
           projectID
           name

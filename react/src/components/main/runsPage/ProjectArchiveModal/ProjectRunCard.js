@@ -54,7 +54,7 @@ const ProjectRunCard = ({ run }) => {
         trigger={
           <Button
             attached="top"
-            color={isSelected ? 'blue' : 'grey'}
+            color={isSelected ? 'red' : 'grey'}
             icon={
               <Icon
                 name="file outline"

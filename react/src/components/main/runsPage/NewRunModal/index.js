@@ -98,7 +98,7 @@ const NewRunModal = ({
   return (
     <Modal
       trigger={
-        <Button fluid size='large' color='black' animated='vertical'>
+        <Button fluid size='large' color='black' animated='vertical' disabled={RA.isNotNil(project.archived)}>
           <Button.Content visible><Icon size='large' name='add'/></Button.Content>
           <Button.Content hidden content="Configure a pipeline and submit a run using this project's uploaded data"/>
         </Button>

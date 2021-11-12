@@ -53,11 +53,14 @@ const RunsPageComponent = () => {
     externalUrls,
 
     uploadedDatasets,
-    mergedProjects
+    mergedProjects,
+    archived
   } = project
   
   const isUploadedProject = R.equals(projectKind, 'uploaded')
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
+  const projectIsArchived = RA.isNotNil(archived)
+
   return (    
     <>
       <Fade duration={2000}>
@@ -80,20 +83,30 @@ const RunsPageComponent = () => {
           </Button.Group>
         }
 
-
         {/* PROJECT ABSTRACT AND DETAILS */}
         <Segment attached>
           <Divider horizontal>
             <Header content={'Project Details'} />
           </Divider>
+          { projectIsArchived && (
+            <Label
+              ribbon
+              color="red"
+              content="Archived"
+              size="large"
+            />
+          )}
           {
               RA.isNotNil(accession) &&
               <Label as='a' ribbon content='ID' detail={accession} />
           }
-          <Header
-            content={projectName}
-            subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
-          />
+          <Header>
+            <Header.Content content={projectName} />
+            <Header.Subheader content={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`} />
+            { projectIsArchived && (
+              <Header.Subheader content={`Archived on ${moment(archived).format('D MMMM YYYY')}`} />
+            )}
+          </Header>
           <Divider horizontal />
           {description}
           {
