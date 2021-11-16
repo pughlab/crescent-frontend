@@ -11,12 +11,11 @@ import {useUploadRunMetadataMutation} from '../../../../apollo/hooks/run'
 import {useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
-
 export default function UploadMetadataButton({
   runID
 }) {
   const {userID: currentUserID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {run} = useRunDetailsQuery(runID)
   const {uploadRunMetadata, loading, success} = useUploadRunMetadataMutation({runID})
   const [metadataFile, setMetadataFile] = useState(null)
   useEffect(() => {if (success) setMetadataFile(null)}, [success])
@@ -27,7 +26,7 @@ export default function UploadMetadataButton({
     return null
   }
 
-  const {status: runStatus, name: runName, createdBy: {userID: creatorUserID}} = run
+  const {createdBy: {userID: creatorUserID}} = run
   const disabledUpload = R.not(R.equals(currentUserID, creatorUserID))
   
 

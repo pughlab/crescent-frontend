@@ -1,7 +1,6 @@
 const R = require('ramda')
 const RA = require('ramda-adjunct')
 const A = require('axios')
-var rimraf = require("rimraf");
 const axios = A.create({
   baseURL: `http://localhost:${process.env.EXPRESS_PORT}`,
   timeout: 10000,
@@ -10,11 +9,13 @@ const axios = A.create({
 const resolvers = {
   Query: {
     allRuns: async (parent, variables, {Runs}) => {
-      return await Runs.find({})
+      return await Runs.find({archived: {$eq: null}}) // Run must not be archived
     },
     runs: async (parent, {projectID}, {Runs}) => {
-      const runs = await Runs.find({projectID})
-      return runs
+      return await Runs.find({
+        projectID,
+        archived: {$eq: null}
+      })
     },
     run: async (parent, {runID}, {Runs}) => {
       const run = await Runs.findOne({runID})

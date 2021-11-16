@@ -169,6 +169,12 @@ const clearPlots = R.always({
   type: 'resultsPage/clearPlots',
 })
 
+const setRunStatus = ({status}) => ({
+  type: 'resultsPage/setRunStatus',
+  payload: {
+    status
+  }
+})
 
 export {
   setActiveSidebarTab,
@@ -196,4 +202,5 @@ export {
   addPlots,
   removePlots,
   clearPlots,
+  setRunStatus
 }

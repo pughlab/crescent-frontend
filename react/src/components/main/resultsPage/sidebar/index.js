@@ -1,12 +1,11 @@
 import React from 'react'
 import * as R from 'ramda'
 
-import {Segment, Transition, Button} from 'semantic-ui-react'
+import {Button, Segment} from 'semantic-ui-react'
 
 import ParametersSidebar from '../parameters/ParametersSidebar'
 import VisualizationsSidebar from '../visualizations/VisualizationsSidebar'
 import LogsSidebar from '../logs/LogsSidebar'
-import DataSidebar from '../data/DataSidebar'
 import AnnotationsSidebar from '../annotations/AnnotationSidebar'
 
 import SubmitRunButton from './SubmitRunButton'
@@ -18,21 +17,19 @@ import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
-const SidebarComponent = ({
-
-}) => {
+const SidebarComponent = () => {
   const {userID: currentUserID, runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {run} = useRunDetailsQuery(runID)
 
 
   const dispatch = useDispatch()
-  const {activeSidebarTab} = useResultsPage()
+  const {activeSidebarTab, runStatus} = useResultsPage()
   const isActiveSidebarTab = R.equals(activeSidebarTab)
 
   if (R.isNil(run)) {
     return null
   }
-  const {status: runStatus, createdBy: {userID: creatorUserID}} = run
+  const {createdBy: {userID: creatorUserID}} = run
   const disableResults = R.equals('pending', runStatus)
   const enableSubmit = R.equals(currentUserID, creatorUserID)
   const runIsSubmitted = R.equals('submitted', runStatus)

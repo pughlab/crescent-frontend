@@ -1,19 +1,15 @@
-import React, {useState, useCallback, useEffect} from 'react'
+import React from 'react'
 
-import {Button, Icon, Segment, List, Message, Divider, Label, Image, Header} from 'semantic-ui-react'
+import {Button, Divider, Header, Icon, Label, List, Segment} from 'semantic-ui-react'
 
-import Tada from 'react-reveal/Tada'
 import Fade from 'react-reveal/Fade'
-import Logo from '../../../login/logo.jpg'
 
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 import moment from 'moment'
 import {useDispatch} from 'react-redux'
 
-
 // import {useSecondaryRunDetailsQuery} from '../../../../apollo/hooks/run'
-import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
 export default function AnnotationsSecondaryRuns({
@@ -21,7 +17,7 @@ export default function AnnotationsSecondaryRuns({
   annotationType
 }) {
   const dispatch = useDispatch()
-  // const run = useRunDetailsQuery(runID)
+  // const {run} = useRunDetailsQuery(runID)
 
   // if (R.any(R.isNil, [run])) {
   //   return (

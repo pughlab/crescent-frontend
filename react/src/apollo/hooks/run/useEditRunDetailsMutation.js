@@ -3,7 +3,6 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 
-
 // custom hook to edit run details
 export default function useEditRunDetailsMutation({runID}) {
   const [run, setRun] = useState(null)
@@ -21,8 +20,6 @@ export default function useEditRunDetailsMutation({runID}) {
       # params
 
       parameters
-
-      status
 
       secondaryRuns {
         wesID

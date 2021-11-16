@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState } from 'react'
 import Plot from 'react-plotly.js'
 import { Image, Segment, Label } from 'semantic-ui-react'
 
@@ -9,7 +9,7 @@ import PlotHeader from './PlotHeader';
 
 import * as R from 'ramda'
 
-import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
+import { useCrescentContext } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
 import { useResultsAvailableQuery, useGSVAHeatmapQuery } from '../../../../apollo/hooks/results'
 
@@ -21,7 +21,7 @@ const GSVAHeatmap = ({
   
   const { activeResult, runID: compareRunID, plotQueryID, service } = useResultsPagePlotQuery(plotQueryIndex)
   const [current, send] = useService(service)
-  const plots = useResultsAvailableQuery(runID || compareRunID)
+  const {plots} = useResultsAvailableQuery(runID || compareRunID)
   useGSVAHeatmapQuery(runID || compareRunID, plotQueryIndex)
   const [selectedCell, setSelectedCell] = useState(null)
   

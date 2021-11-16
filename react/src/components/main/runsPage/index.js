@@ -4,7 +4,7 @@ import * as RA from 'ramda-adjunct'
 import moment from 'moment'
 
 
-import ArchiveProjectModal from './ArchiveProjectModal'
+import ProjectArchiveModal from './ProjectArchiveModal'
 import ShareProjectModal from './ShareProjectModal'
 import UnsubscribeProjectModal from './UnsubscribeProjectModal'
 
@@ -16,25 +16,24 @@ import RunsStatusLegend from './RunsStatusLegend'
 import ProjectRunsList from './ProjectRunsList'
 
 
-import { Segment, Container, Button, Divider, Header, Popup, Label, Grid, Icon } from 'semantic-ui-react'
+import { Segment, Container, Button, Divider, Header, Popup, Label, Grid } from 'semantic-ui-react'
 
 import Fade from 'react-reveal/Fade'
 
 import { useCrescentContext } from '../../../redux/hooks'
-import {useEditProjectDetailsMutation} from '../../../apollo/hooks/project'
+import {useProjectArchiveMutation, useProjectRunsQuery} from '../../../apollo/hooks/project'
 
 import {useDispatch} from 'react-redux'
 import {resetRunsPage} from '../../../redux/actions/runsPage'
 import CompareModal from '../comparePage/CompareModal';
 
 
-const RunsPageComponent = ({
-
-}) => {
+const RunsPageComponent = () => {
   const dispatch = useDispatch()
   const { userID: currentUserID, projectID } = useCrescentContext()
   useEffect(() => () => dispatch(resetRunsPage()), [projectID])
-  const { project } = useEditProjectDetailsMutation({projectID}) 
+  const { archiveProject, archiveRuns, project } = useProjectArchiveMutation(projectID)
+  const { getUpdatedRun, projectRuns, removeRun } = useProjectRunsQuery(projectID)
 
   if (R.isNil(project)) {
     return null
@@ -54,11 +53,14 @@ const RunsPageComponent = ({
     externalUrls,
 
     uploadedDatasets,
-    mergedProjects
+    mergedProjects,
+    archived
   } = project
   
   const isUploadedProject = R.equals(projectKind, 'uploaded')
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
+  const projectIsArchived = RA.isNotNil(archived)
+
   return (    
     <>
       <Fade duration={2000}>
@@ -69,7 +71,7 @@ const RunsPageComponent = ({
           R.and(isUploadedProject, currentUserIsCreator) &&
           <Button.Group attached='top' widths={2} size='large'>
             <ShareProjectModal {...{project}} />
-            <ArchiveProjectModal {...{project}} />
+            <ProjectArchiveModal {...{archiveProject, archiveRuns, project, projectRuns, removeRun}} />
           </Button.Group>
         }
 
@@ -81,20 +83,30 @@ const RunsPageComponent = ({
           </Button.Group>
         }
 
-
         {/* PROJECT ABSTRACT AND DETAILS */}
         <Segment attached>
           <Divider horizontal>
             <Header content={'Project Details'} />
           </Divider>
+          { projectIsArchived && (
+            <Label
+              ribbon
+              color="red"
+              content="Archived"
+              size="large"
+            />
+          )}
           {
               RA.isNotNil(accession) &&
               <Label as='a' ribbon content='ID' detail={accession} />
           }
-          <Header
-            content={projectName}
-            subheader={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`}
-          />
+          <Header>
+            <Header.Content content={projectName} />
+            <Header.Subheader content={`Created by ${creatorName} on ${moment(projectCreatedOn).format('D MMMM YYYY')}`} />
+            { projectIsArchived && (
+              <Header.Subheader content={`Archived on ${moment(archived).format('D MMMM YYYY')}`} />
+            )}
+          </Header>
           <Divider horizontal />
           {description}
           {
@@ -144,9 +156,9 @@ const RunsPageComponent = ({
           <NewRunModal {...{project}} />
           {/* SHOW RUNS BY STATUS */}
           {/* {isUploadedProject && <RunsStatusLegend />} */}
-          { <RunsStatusLegend />}
+          { <RunsStatusLegend {...{projectRuns}} />}
 
-          <ProjectRunsList />
+          <ProjectRunsList {...{getUpdatedRun, projectRuns}} />
 
         </Segment>
         

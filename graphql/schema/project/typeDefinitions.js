@@ -75,8 +75,12 @@ const typeDefs = gql`
 
     # Archive project by setting archive property to a current date
     archiveProject(
-      projectID: ID
-    ): Project
+      projectID: ID!
+    ): Boolean
+
+    archiveRuns(
+      runIDs: [ID!]!
+    ): Boolean
 
     # Add external links to project
     addExternalUrl(

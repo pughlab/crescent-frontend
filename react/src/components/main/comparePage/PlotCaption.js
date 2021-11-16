@@ -18,7 +18,7 @@ export default function PlotCaption ({
     selectedGroup,
     selectedFeature
   } = useResultsPagePlotQuery(plotQueryIndex)
-  const run = useRunDetailsQuery(runID)
+  const {run} = useRunDetailsQuery(runID)
 
   if (R.isNil(run)) {
     return null

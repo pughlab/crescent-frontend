@@ -15,7 +15,8 @@ const ShareProjectModal = ({
     name: projectName,
     createdBy: {
       userID: creatorUserID
-    }
+    },
+    archived
   }
 }) => {
   const {projectID} = useCrescentContext()
@@ -86,13 +87,13 @@ const ShareProjectModal = ({
     }
   })
 
-
   return (
     <Modal basic size='small'
       trigger={
         <Button
           color='twitter'
           animated='vertical'
+          disabled={RA.isNotNil(archived)}
         >
           <Button.Content visible><Icon name='add user'/></Button.Content>
           <Button.Content hidden content='Share Project'/>

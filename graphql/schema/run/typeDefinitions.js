@@ -62,6 +62,8 @@ const typeDefs = gql`
     submittedOn: Date
     completedOn: Date
 
+    archived: Date
+
     secondaryRuns: [SecondaryRun]
     wesID: ID
     logs: String

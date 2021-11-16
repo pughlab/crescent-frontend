@@ -1,13 +1,10 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useEffect} from 'react'
 import * as R from 'ramda'
 import * as R_ from 'ramda-extension'
-import {Segment, Icon, Header, Image, Grid, Label, Divider} from 'semantic-ui-react'
+import {Grid, Header, Icon, Image, Segment} from 'semantic-ui-react'
 import Shake from 'react-reveal/Shake'
-
-import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
-import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import {useResultsAvailableQuery} from '../../../../apollo/hooks/results'
 
 import ScatterPlot from './ScatterPlot'
@@ -20,10 +17,7 @@ import InferCNVHeatmap from './InferCNVHeatmap'
 import CrescentPlotCaption from './PlotCaption'
 
 import Tada from 'react-reveal/Tada'
-import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
-import {ClimbingBoxLoader} from 'react-spinners'
-import {Button} from 'semantic-ui-react'
 
 export const CrescentPlot = ({
   plotQueryIndex
@@ -40,98 +34,144 @@ export const CrescentPlot = ({
   )
 }
 
-const VisualizationsComponent = ({
-
+const VisualizationSegment = ({
+  children,
+  nestedSegment=false,
+  outerPlaceholder=false,
+  innerPlaceholder=false,
+  outerStyle={},
+  innerStyle={},
+  ...restProps
 }) => {
+  const InnerSegmentWrapper = children => (
+    <Segment
+      basic
+      placeholder={innerPlaceholder}
+      style={innerStyle}
+    >
+      { children }
+    </Segment>
+  )
+
+  return (
+    <Segment
+      {...restProps}
+      color="violet"
+      placeholder={outerPlaceholder}
+      style={outerStyle} 
+    >
+      { nestedSegment ? InnerSegmentWrapper(children) : children }
+    </Segment>
+  )
+}
+
+const VisualizationsComponent = () => {
   const {runID} = useCrescentContext()
+  const {activeResult, activePlot, plotQueries, sidebarCollapsed, runID: compareRunID, runStatus} = useResultsPage()
+  const {plots, startResultsPolling, stopResultsPolling} = useResultsAvailableQuery(runID || compareRunID)
 
-  const dispatch = useDispatch()
-  const {activeResult, activePlot, plotQueries, sidebarCollapsed, runID: compareRunID} = useResultsPage()
-  const run = useRunDetailsQuery(runID || compareRunID)
-  const plots = useResultsAvailableQuery(runID || compareRunID)
-  const [showLogs, setShowLogs] = useState(false)
+  useEffect(() => {
+    startResultsPolling(1000)
+  }, [startResultsPolling])
 
-  if (R.any(R.isNil, [run, plots])) {
+  useEffect(() => {
+    if (R.none(R.equals(runStatus), ['pending', 'submitted'])) stopResultsPolling()
+  }, [runStatus, stopResultsPolling])
+
+  if (R.and(
+    R.anyPass([R.isNil, R.isEmpty])(plots),
+    R.anyPass([R.isNil, R.equals('submitted')])(runStatus)
+  )) {
     return (
-      <Segment style={{height: '100%'}} color='violet'>
-        <Segment basic style={{ height: '100%' }} placeholder>
-          <Tada forever duration={1000}>
-            <Image src={Logo} centered size='medium' />
-          </Tada>
-        </Segment>
-      </Segment>
+      <VisualizationSegment
+        nestedSegment
+        innerPlaceholder
+        outerStyle={{height: '100%'}}
+        innerStyle={{height: '100%'}}
+      >
+        <Tada forever duration={1000}>
+          <Image
+            centered
+            size="medium"
+            src={Logo}
+          />
+        </Tada>
+      </VisualizationSegment>
     )
   }
 
-  const {status: runStatus} = run
   const runStatusEquals = R.equals(runStatus)
 
   if (runStatusEquals('failed')) {
     return (
-      <Segment color='violet' placeholder>
+      <VisualizationSegment outerPlaceholder>
         <Shake forever duration={10000}>
-        <Header textAlign='center' icon>
-          <Icon name='right arrow' />
-          Download and review failed run logs
-        </Header>  
-        </Shake>      
-      </Segment>
-    )
-  }
-
-  if (R.isEmpty(plots)) {
-    return (
-      <Segment style={{height: '100%'}} color='violet'>
-        <Segment style={{height: '100%'}} basic placeholder>
-          <Tada forever duration={1000}>
-            <Image src={Logo} centered size='medium' />
-          </Tada>
-        </Segment>
-      </Segment>
+          <Header icon textAlign="center">
+            <Icon name="right arrow" />
+            Download and review failed run logs
+          </Header>
+        </Shake>
+      </VisualizationSegment>
     )
   }
 
   return (
     <>
-    {
-      R.isNil(activeResult) ?
-        <Segment color='violet' placeholder>
+      { R.isNil(activeResult) ? (
+        <VisualizationSegment
+          nestedSegment
+          outerPlaceholder={R.complement(runStatusEquals)('submitted')}
+          innerPlaceholder
+          innerStyle={{height: '100%'}}
+        >
+          { runStatusEquals('submitted') && (
+            <Tada forever duration={1000}>
+              <Image
+                centered
+                size="small"
+                src={Logo}
+                style={{marginBottom: 35}}
+              />
+            </Tada>
+          )}
           <Shake forever duration={10000}>
-          <Header textAlign='center' icon>
-            <Icon name='right arrow' />
-            Select a visualization on the right
-          </Header>  
-          </Shake>      
-        </Segment>
-      : (
+            <Header icon textAlign="center">
+              <Icon name="right arrow" />
+              Select a visualization on the right
+              { runStatusEquals('submitted') && (
+                <Header.Subheader>More results will auto-populate as they become available.</Header.Subheader>
+              )}
+            </Header>
+          </Shake>
+        </VisualizationSegment>
+      ) : (
         <>
-        {
-          R.not(sidebarCollapsed) ?
-            <Segment style={{height: '75vh'}} color='violet'>
+          { R.not(sidebarCollapsed) ? (
+            <VisualizationSegment outerStyle={{height: '75vh'}}>
               <CrescentPlot plotQueryIndex={activePlot} />
-            </Segment>
-          :
+            </VisualizationSegment>
+          ) : (
             <Grid columns={R_.ltThanLength(1, plotQueries) ? 2 : 1}>
-            {
-              R.addIndex(R.map)(
+              { R.addIndex(R.map)(
                 (plotQuery, idx) => (
                   <Grid.Column key={idx}>
-                  <Segment style={{height: '60vh'}} color='violet' attached='top'>
-                    <CrescentPlot plotQueryIndex={idx} />
-                  </Segment>
-                  <Segment attached='bottom' compact>
-                    <CrescentPlotCaption plotQueryIndex={idx} />
-                  </Segment>
+                    <VisualizationSegment
+                      attached="top"
+                      outerStyle={{height: '60vh'}}
+                    >
+                      <CrescentPlot plotQueryIndex={idx} />
+                    </VisualizationSegment>
+                    <VisualizationSegment compact attached="bottom">
+                      <CrescentPlotCaption plotQueryIndex={idx} />
+                    </VisualizationSegment>
                   </Grid.Column>
                 ),
                 plotQueries
-              )
-            }
+              )}
             </Grid>
-        }
+          )}
         </>
-      )
-    }
+      )}
     </>
   )
 }

@@ -1,8 +1,7 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useEffect} from 'react';
 
 import { Segment, Button, Icon, Step, Header, Dropdown, Form, Divider, Menu, Label, Popup } from 'semantic-ui-react'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
@@ -22,8 +21,6 @@ const MultiPlotSelector = ({
   runID,
   runOwner
 }) => {
-  const [numPlots, setNumPlots] = useState(1)
-
   const dispatch = useDispatch()
   const {userID} = useCrescentContext()
   const {activePlot, plotQueries} = useResultsPage()
@@ -90,17 +87,24 @@ const MultiPlotSelector = ({
   )
 }
 
-const VisualizationsSidebar = ({
-}) => {    
+const VisualizationsSidebar = () => {    
   const {runID} = useCrescentContext()
-
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
+  const {run} = useRunDetailsQuery(runID)
 
   const dispatch = useDispatch()
   const {activeResult} = useResultsPage()
   const isActiveResult = R.equals(activeResult)
 
-  const plots = useResultsAvailableQuery(runID)
+  const {plots, startResultsPolling, stopResultsPolling} = useResultsAvailableQuery(runID)
+
+  useEffect(() => {
+    startResultsPolling(1000)
+  }, [startResultsPolling])
+
+  useEffect(() => {
+    if (R.none(R.equals(runStatus), ['pending', 'submitted'])) stopResultsPolling()
+  }, [runStatus, stopResultsPolling])
   
   const DetailedDescription = () => {
     const plot = R.find(({result}) => result === activeResult, plots)
@@ -110,7 +114,7 @@ const VisualizationsSidebar = ({
   if (R.any(R.isNil, [run, plots])) {
     return null
   }
-  const {status: runStatus, createdBy: {userID: runOwner}} = run
+  const {createdBy: {userID: runOwner}} = run
   const runStatusEquals = R.equals(runStatus)
   if (runStatusEquals('failed')) {
     return (
@@ -131,7 +135,7 @@ const VisualizationsSidebar = ({
         {
           R.ifElse(
             R.isEmpty,
-            R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Check logs above to see progress. Refresh to see available results."}/></Step>),
+            R.always(<Step key={"noresults"}><Step.Content title={"No Results Available"} description={"Check logs above to see progress. Results will auto-populate as they become available."}/></Step>),
             R.addIndex(R.map)(
               ({result, label, description}, index) => (
                 <Step key={index} onClick={() => dispatch(setActiveResult({result}))} >

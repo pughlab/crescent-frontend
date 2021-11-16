@@ -1,11 +1,10 @@
-import React, {useState, useEffect} from 'react'
-import { Button, Segment, Form, Message, Divider, Label, Input, Icon } from 'semantic-ui-react';
+import React from 'react'
+import {Button, Form, Icon} from 'semantic-ui-react';
 
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
-import {useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useUpdateRunParameterMutation} from '../../../../apollo/hooks/run'
+import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useUpdateRunParameterMutation} from '../../../../apollo/hooks/run'
 
 // Button to reset whatever input to its default value
 const ResetToDefaultValueButton = ({
@@ -31,12 +30,11 @@ const IntegerParameterInput = ({
 }) => {
   const {step, parameter, label, disabled, input: {defaultValue, step: increaseStep}} = toolParameter
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
   const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter, datasetID})
-  if (R.any(R.isNil, [run, parameterValue])) {
+  if (R.any(R.isNil, [runStatus, parameterValue])) {
     return null
   }
-  const {status: runStatus} = run
   const disableInput = R.or(disabled, R.not(R.equals('pending', runStatus)))
   
   const valueTransform = value => R.isNil(datasetID) ? parseInt(value) : {value: parseInt(value), datasetID}
@@ -68,12 +66,11 @@ const FloatParameterInput = ({
   const {step, parameter, label, disabled, input: {defaultValue, step: increaseStep}} = toolParameter
 
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
   const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter, datasetID})
-  if (R.any(R.isNil, [run, parameterValue])) {
+  if (R.any(R.isNil, [runStatus, parameterValue])) {
     return null
   }
-  const {status: runStatus} = run
   const disableInput = R.or(disabled, R.not(R.equals('pending', runStatus)))
   const valueTransform = value => R.isNil(datasetID) ? parseFloat(value) : {value: parseFloat(value), datasetID}
   return (
@@ -104,13 +101,12 @@ const RangeParameterInput = ({
   const {step, parameter, label, disabled, input: {defaultValue, step: increaseStep}} = toolParameter
   const {min: defaultMin, max: defaultMax} = defaultValue
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
   const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter, datasetID})
-  if (R.any(R.isNil, [run, parameterValue])) {
+  if (R.any(R.isNil, [runStatus, parameterValue])) {
     return null
   }
 
-  const {status: runStatus} = run
   const disableInput = R.or(disabled, R.not(R.equals('pending', runStatus)))
 
   const {min, max} = parameterValue
@@ -157,12 +153,11 @@ const SelectParameterInput = ({
   const {step, parameter, label, disabled, input: {defaultValue, options}} = toolParameter
 
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
   const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter, datasetID})
-  if (R.any(R.isNil, [run, parameterValue])) {
+  if (R.any(R.isNil, [runStatus, parameterValue])) {
     return null
   }
-  const {status: runStatus} = run
   const disableInput = R.or(disabled, R.not(R.equals('pending', runStatus)))
   const valueTransform = value => R.isNil(datasetID) ? value : {value, datasetID}
   return (
@@ -193,12 +188,11 @@ const MultiSelectParameterInput = ({
   const {step, parameter, label, disabled, input: {defaultValue, options}} = toolParameter
 
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
   const {parameterValue, updateRunParameterValue, isLoading} = useUpdateRunParameterMutation({runID, step, parameter, datasetID})
-  if (R.any(R.isNil, [run, parameterValue])) {
+  if (R.any(R.isNil, [runStatus, parameterValue])) {
     return null
   }
-  const {status: runStatus} = run
   const disableInput = R.or(disabled, R.not(R.equals('pending', runStatus)))
   const valueTransform = value => R.isNil(datasetID) ? value : {value, datasetID}
   return (

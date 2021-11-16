@@ -1,29 +1,24 @@
 import React, {useState} from 'react'
 
-import {Button, Modal, Divider, Segment, Icon} from 'semantic-ui-react'
+import {Button, Divider, Modal, Segment} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
 
-const DownloadModal = ({
-
-}) => {
+const DownloadModal = () => {
   const [open, setOpen] = useState(false)
 
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
   const [clicked, setClicked] = useState(false)
 
 
-  if (R.any(R.isNil, [run])) {
+  if (R.isNil(runStatus)) {
     return null
   }
-
-  const {status: runStatus} = run
 
   return (
   <Modal
@@ -115,11 +110,7 @@ const DownloadModal = ({
 }
 
 
-const DownloadResultsButton = ({
-
-}) => {
-
-
+const DownloadResultsButton = () => {
   return (
     <Button.Group fluid widths={1}>
 

@@ -1,43 +1,24 @@
 import React, {useEffect, useRef, useState} from 'react'
 import * as R from 'ramda'
 
-import { Segment, Transition, Grid, Image, Message, Label,   Checkbox,
-  Header,
-  Icon,
-  Menu,
-  Sidebar,
-  Button,
-  Container,
-  Form,
-  Dimmer,
-  Ref,
-  Sticky,
-  Popup,
-  Divider, } from 'semantic-ui-react'
+import {Button, Divider, Grid, Icon, Popup, Ref, Sticky} from 'semantic-ui-react'
 
 import SidebarComponent from './sidebar'
 import ParametersComponent from './parameters'
 import VisualizationsComponent from './visualizations'
 import LogsComponent from './logs'
-import DataComponent from './data'
 import AnnotationsComponent from './annotations'
 
 import {useResultsPage} from '../../../redux/hooks'
-import {resetResultsPage, toggleSidebarCollapsed} from '../../../redux/actions/resultsPage'
+import {toggleSidebarCollapsed} from '../../../redux/actions/resultsPage'
 import {useCrescentContext} from '../../../redux/hooks'
 import {useDispatch} from 'react-redux'
 
 import Fade from 'react-reveal/Fade'
-import Tada from 'react-reveal/Tada'
-import Logo from '../../login/logo.svg'
-import AnnotationsSidebar from './annotations/AnnotationSidebar'
 
-const ResultsPageSidebarPusher = ({
-
-}) => {
+const ResultsPageSidebarPusher = () => {
   const dispatch = useDispatch()
   const {runID} = useCrescentContext()
-  useEffect(() => {dispatch(resetResultsPage())}, [runID])
   const {activeSidebarTab, sidebarCollapsed} = useResultsPage()
 
   const stickyRef = useRef()

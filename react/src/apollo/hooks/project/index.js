@@ -3,6 +3,7 @@ import useProjectRunsQuery from './useProjectRunsQuery'
 import useProjectDetailsQuery from './useProjectDetailsQuery'
 import useEditProjectDetailsMutation from './useEditProjectDetailsMutation'
 import useCuratedProjectPlotsQuery from './useCuratedProjectPlotsQuery'
+import useProjectArchiveMutation from './useProjectArchiveMutation'
 
 export {
   useCuratedProjectsQuery,
@@ -10,4 +11,5 @@ export {
   useProjectDetailsQuery,
   useEditProjectDetailsMutation,
   useCuratedProjectPlotsQuery,
+  useProjectArchiveMutation
 }

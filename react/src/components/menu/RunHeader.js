@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useReducer } from 'react'
+import React, { useEffect, useReducer } from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import { Header, Popup, Message, Label, Form, Divider, Modal, Button, Segment, Input } from 'semantic-ui-react'
 
 import { useCrescentContext } from '../../redux/hooks'
-import { useRunDetailsQuery } from '../../apollo/hooks/run'
 import { useEditRunDetailsMutation } from '../../apollo/hooks/run'
 
 import moment from 'moment'
@@ -82,9 +81,7 @@ function useRunDetails(runID) {
 }
 
 
-const RunHeader = ({
-
-}) => {
+const RunHeader = () => {
   const { runID, userID: currentUserID } = useCrescentContext()
   const { state, dispatch, loading } = useRunDetails(runID)
 

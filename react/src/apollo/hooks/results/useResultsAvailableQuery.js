@@ -4,10 +4,9 @@ import { gql } from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
 import * as R from 'ramda'
 
-
 export default function useResultsAvailable(runID) {
   const [plots, setPlots] = useState(null)
-  const {loading, data, error} = useQuery(gql`
+  const {startPolling: startResultsPolling, stopPolling: stopResultsPolling} = useQuery(gql`
     query ResultsAvailable($runID: ID) {
       plots(runID: $runID) {
         label
@@ -26,5 +25,5 @@ export default function useResultsAvailable(runID) {
     skip: R.isNil(runID)
   })
 
-  return plots
+  return {plots, startResultsPolling, stopResultsPolling}
 }

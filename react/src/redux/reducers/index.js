@@ -1,6 +1,5 @@
 import { combineReducers } from 'redux'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
 import createReducer from './createReducer'
 
@@ -9,6 +8,7 @@ import projectsPage from './projectsPage'
 import runsPage from './runsPage'
 import resultsPage from './resultsPage'
 import comparePage from './comparePage'
+import projectArchive from './projectArchive'
 
 // Reducer
 const initialState = {
@@ -396,6 +396,7 @@ export default combineReducers({
   projectsPage,
   runsPage,
   resultsPage,
-  comparePage
+  comparePage,
+  projectArchive
   // app
 })

@@ -9,7 +9,7 @@ import PlotHeader from './PlotHeader';
 
 import * as R from 'ramda'
 
-import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
+import { useCrescentContext } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
 import { useResultsAvailableQuery, useInferCNVHeatmapQuery } from '../../../../apollo/hooks/results'
 
@@ -21,7 +21,7 @@ const InferCNVHeatmap = ({
 
   const { activeResult, runID: compareRunID, plotQueryID, service } = useResultsPagePlotQuery(plotQueryIndex)
   const [current, send] = useService(service)
-  const plots = useResultsAvailableQuery(runID || compareRunID)
+  const {plots} = useResultsAvailableQuery(runID || compareRunID)
   useInferCNVHeatmapQuery(runID || compareRunID, plotQueryIndex)
   
   if (R.any(R.isNil, [plots])) {

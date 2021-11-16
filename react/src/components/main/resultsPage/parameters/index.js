@@ -7,7 +7,6 @@ import PipelineParameter from './PipelineParameter'
 import QualityControlParametersComponent from './QualityControl'
 import ReferenceDatasets from '../data/ReferenceDatasets'
 
-
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks/run'
 
@@ -15,12 +14,10 @@ import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 import Shake from 'react-reveal/Shake'
 
-const ParametersComponent = ({
-
-}) => {
+const ParametersComponent = () => {
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
-  const {activePipelineStep} = useResultsPage()
+  const {run} = useRunDetailsQuery(runID)
+  const {activePipelineStep, runStatus} = useResultsPage()
   const toolSteps = useToolStepsQuery()
 
   if (R.any(R.isNil, [run, toolSteps])) {
@@ -36,7 +33,7 @@ const ParametersComponent = ({
   }
 
 
-  const {status: runStatus, datasets} = run
+  const {datasets} = run
 
   const isSingleDataset = R.compose(R.equals(1), R.length)(datasets)
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Loader, Segment, Button, Transition, Divider, Step, Menu, Header, Accordion, Dropdown } from 'semantic-ui-react'
+import {Button} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
@@ -7,11 +7,10 @@ import * as RA from 'ramda-adjunct'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useCancelRunMutation} from '../../../../apollo/hooks/run'
 
-const CancelRunButton = ({}) => {
-
-  const {userID, runID} = useCrescentContext()
-  // let cancelRun, runStatus, loadingCancelRun;
-  const {cancelRun, runStatus, loadingCancelRun, cancelFailed, cancellable} = useCancelRunMutation(runID)
+const CancelRunButton = () => {
+  const {runID} = useCrescentContext()
+  const {runStatus} = useResultsPage()
+  const {cancelRun, loadingCancelRun, cancelFailed, cancellable} = useCancelRunMutation(runID)
 
   if (runStatus == null){
     return null;
@@ -21,7 +20,7 @@ const CancelRunButton = ({}) => {
 
   return (
     <Button fluid color='red'
-      content={loadingCancelRun ? 'ATTEMPTING TO CANCEL' : cancelFailed ? "CANCEL FAILED, TRY AGAIN?" : runIsSubmitted ? "CANCEL PIPELINE" : "PIPELINE ENDED, REFRESH PAGE"}
+      content={loadingCancelRun ? 'ATTEMPTING TO CANCEL' : cancelFailed ? "CANCEL FAILED, TRY AGAIN?" : runIsSubmitted ? "CANCEL PIPELINE" : "PIPELINE ENDED, PlEASE WAIT A MOMENT..."}
       disabled={R.any(RA.isTrue, [R.not(runIsSubmitted), loadingCancelRun, R.not(cancellable)])}
       onClick={() => {
         cancelRun()

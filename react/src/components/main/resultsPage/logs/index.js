@@ -1,45 +1,30 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React from 'react'
 import * as R from 'ramda'
-import * as R_ from 'ramda-extension'
-import {Segment, Icon, Header, Image, Grid, Label, Divider} from 'semantic-ui-react'
-import Shake from 'react-reveal/Shake'
-
-import {useDispatch} from 'react-redux'
-import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
-
-
+import {Divider, Image, Segment} from 'semantic-ui-react'
+import {useResultsPage} from '../../../../redux/hooks'
 import Logs from './Logs'
-
 import Tada from 'react-reveal/Tada'
-import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
-import {ClimbingBoxLoader} from 'react-spinners'
-import {Button} from 'semantic-ui-react'
 
-const LogsComponent = ({
+const LogsComponent = () => {
+  const {runStatus} = useResultsPage()
 
-}) => {
-  const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
-
-  const dispatch = useDispatch()
-  const {activeResult, activePlot, plotQueries, sidebarCollapsed, activeSidebarTab} = useResultsPage()
-  const [showLogs, setShowLogs] = useState(false)
-
-  if (R.any(R.isNil, [run])) {
-    return null
-  }
-
-  const {status: runStatus} = run
+  if (R.isNil(runStatus)) return null
 
   return (
-    <Segment style={{height: '100%'}} color='red'>
+    <Segment
+      color="red"
+      style={{height: '100%'}}
+    >
       <Segment basic placeholder>
         <Tada forever duration={1000}>
-          <Image src={Logo} centered size='medium' />
+          <Image
+            centered
+            src={Logo}
+            size="medium"
+          />
         </Tada>
-        <Divider horizontal hidden />
+        <Divider hidden horizontal />
         <Logs />
       </Segment>
     </Segment> 

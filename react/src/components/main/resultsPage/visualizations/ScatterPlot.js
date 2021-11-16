@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import Plot from 'react-plotly.js'
-import { Image, Container, Header, Segment, Dimmer, Button, Grid, Popup, Icon } from 'semantic-ui-react'
+import { Button, Grid, Header, Image, Popup, Segment } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { useService } from '@xstate/react';
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
-import { ClimbingBoxLoader } from 'react-spinners'
 import PlotHeader from './PlotHeader';
 
 import * as R from 'ramda'
@@ -35,7 +34,7 @@ const ScatterPlot = ({
 
   const [current, send] = useService(service)
 
-  const plots = useResultsAvailableQuery(runID || compareRunID)
+  const {plots} = useResultsAvailableQuery(runID || compareRunID)
   useScatterQuery(activeResult, selectedGroup, runID || compareRunID , selectedDiffExpression, selectedFeature, plotQueryIndex)
   const scatterNumeric = useScatterNumericQuery(activeResult, selectedGroup, runID || compareRunID, selectedDiffExpression)
   useOpacityQuery(activeResult, selectedFeature, selectedGroup, runID || compareRunID, selectedDiffExpression, selectedExpRange, selectedAssay, plotQueryIndex)

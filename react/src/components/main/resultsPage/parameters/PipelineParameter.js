@@ -1,11 +1,10 @@
-import React, {useState, useEffect} from 'react'
-import { Button, Segment, Form, Message, Divider, Label, Input, Icon } from 'semantic-ui-react';
+import React from 'react'
+import {Divider, Label, Message, Segment} from 'semantic-ui-react';
 
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 
-import {useCrescentContext} from '../../../../redux/hooks'
-import {useToolParameterQuery, useRunDetailsQuery} from '../../../../apollo/hooks/run'
+import {useResultsPage} from '../../../../redux/hooks'
+import {useToolParameterQuery} from '../../../../apollo/hooks/run'
 
 import {
   IntegerParameterInput,
@@ -21,15 +20,13 @@ const PipelineParameter = ({
   // In case of quality control parameters
   datasetID
 }) => {
-  const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
   const toolParameter = useToolParameterQuery(parameterCode)
 
-  if (R.any(R.isNil, [toolParameter, run])) {
+  if (R.any(R.isNil, [toolParameter, runStatus])) {
     return null
   }
   const {prompt, step, parameter, description, disabled, input: {type}} = toolParameter
-  const {status: runStatus} = run
   return (
     <Segment basic>
       <Message color='blue'>

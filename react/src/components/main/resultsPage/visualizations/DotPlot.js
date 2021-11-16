@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Plot from 'react-plotly.js'
-import { Image, Container, Header, Segment, Dimmer, Icon, Popup, Dropdown, Grid, Button } from 'semantic-ui-react'
+import { Button, Dropdown, Grid, Icon, Image, Header, Popup, Segment } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
-import { ClimbingBoxLoader } from 'react-spinners'
 import Shake from 'react-reveal/Shake'
 import { useService } from '@xstate/react';
 import PlotHeader from './PlotHeader';
@@ -32,7 +31,7 @@ const DotPlot = ({
   const { activeResult, selectedFeatures, selectedGroup, selectedScaleBy, selectedExpRange, selectedAssay, runID: compareRunID, plotQueryID, service } = useResultsPagePlotQuery(plotQueryIndex)
   const { sidebarCollapsed, activePlot } = useResultsPage()
 
-  const plots = useResultsAvailableQuery(runID || compareRunID)
+  const {plots} = useResultsAvailableQuery(runID || compareRunID)
   const [current, send] = useService(service)
   
   const firstUpdate = useRef(true);

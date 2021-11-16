@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-import { Transition, Segment, Card, Header, Form, Button, Modal, Label, Divider, Icon, Popup, Message } from 'semantic-ui-react'
+import { Button, Card, Divider, Header, Icon, Label, Message, Popup } from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import * as R_ from 'ramda-extension'
 
 import Marquee from 'react-marquee'
 import moment from 'moment'
@@ -13,6 +12,7 @@ import { useDispatch } from 'react-redux'
 import { useCrescentContext } from '../../../../redux/hooks'
 import { setRun } from '../../../../redux/actions/context'
 import { useCellCountsQuery } from '../../../../apollo/hooks/results'
+import { useRunDetailsQuery } from '../../../../apollo/hooks/run'
 
 const ParameterPopoverContent = ({
   datasets,
@@ -88,6 +88,7 @@ const ParameterPopoverContent = ({
 }
 
 const RunCard = ({
+  getUpdatedRun,
   run
 }) => {
   const dispatch = useDispatch()
@@ -106,12 +107,40 @@ const RunCard = ({
       userID: runCreatorUserID,
       name: creatorName
     },
-    status, hasResults, createdOn, submittedOn, completedOn,
+    status: initialStatus,
+    hasResults, createdOn, submittedOn, completedOn,
     datasets
   } = run
 
-  const cellcount = useCellCountsQuery(runID)
+  const [status, setStatus] = useState(initialStatus)
+  const [isPolling, setIsPolling] = useState(false)
+  const {getRunStatus, runStatus: statusFromQuery, startStatusPolling, stopStatusPolling} = useRunDetailsQuery(runID)
+
+  const {cellcount, startCellCountsPolling, stopCellCountsPolling} = useCellCountsQuery(runID)
   // if (R.isNil(cellcount)) {return null}
+
+  useEffect(() => {
+    getRunStatus()
+  }, [getRunStatus])
+
+  useEffect(() => {
+    if (RA.isNotNil(statusFromQuery)) {
+      setStatus(statusFromQuery)
+
+      if (R.equals('submitted', statusFromQuery)) {
+        setIsPolling(true)
+        startCellCountsPolling(1000)
+        startStatusPolling(1000)
+      } else if (isPolling) {
+        stopStatusPolling()
+        getUpdatedRun({ variables: { runID } })
+      }
+    }
+  }, [dispatch, getUpdatedRun, isPolling, runID, setIsPolling, startCellCountsPolling, startStatusPolling, statusFromQuery, stopStatusPolling])
+
+  useEffect(() => {
+    if (isPolling && RA.isNotNil(cellcount)) stopCellCountsPolling()
+  }, [cellcount, isPolling, stopCellCountsPolling])
 
   const color = R.prop(status, {
     pending: 'orange',

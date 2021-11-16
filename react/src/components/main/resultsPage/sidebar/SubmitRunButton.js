@@ -1,17 +1,16 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React from 'react';
 
-import { Loader, Segment, Button, Popup, Divider, Step, Menu, Header, Accordion, List } from 'semantic-ui-react'
+import {Button, List, Popup} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {useDispatch} from 'react-redux'
-import {useCrescentContext} from '../../../../redux/hooks'
+import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useSubmitRunMutation, useUpdateRunReferenceDatasetsMutation} from '../../../../apollo/hooks/run'
 
-const SubmitRunButton = ({
-}) => {
+const SubmitRunButton = () => {
   const {userID, runID} = useCrescentContext()
+  const {runStatus} = useResultsPage()
   const {submitRun, loading, submitted} = useSubmitRunMutation(runID)
   const {run} = useUpdateRunReferenceDatasetsMutation({runID})
 
@@ -20,7 +19,7 @@ const SubmitRunButton = ({
     return null
   }
 
-  const {status: runStatus, referenceDatasets} = run
+  const {referenceDatasets} = run
 
   const runIsPending = R.equals('pending', runStatus)
 
@@ -50,7 +49,7 @@ const SubmitRunButton = ({
           />
           :
           <Button fluid color='blue'
-            content={runIsPending && !submitted ? 'SUBMIT RUN' : 'SUBMITTED, REFRESH PAGE'}
+            content={runIsPending && !submitted ? 'SUBMIT RUN' : 'SUBMITTED'}
             // Check redux state of submit button, the status in run in redux, or if graphql mutation has been called
             disabled={disableSubmitButton}
             onClick={() => {
