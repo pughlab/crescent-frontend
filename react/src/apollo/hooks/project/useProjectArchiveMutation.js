@@ -85,11 +85,7 @@ const useProjectArchiveMutation = projectID => {
     mutation ArchiveRuns($runIDs: [ID!]!) {
       archiveRuns(runIDs: $runIDs)
     }
-  `, {
-    onCompleted: ({archiveRuns}) => {
-      if (archiveRuns) dispatch(resetProjectArchive())
-    }
-  })
+  `)
 
   return {archiveProject, archiveProjectData, archiveRuns, archiveRunsData, loading: R.or(archiveProjectLoading, archiveRunsLoading), project}
 }

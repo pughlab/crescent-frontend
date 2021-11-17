@@ -4,7 +4,7 @@ import moment from 'moment'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
-import {resetAccordionIndices, setConfirmArchiveProjectOpen, setConfirmArchiveRunsOpen, toggleAccordionIndices} from '../../../../redux/actions/projectArchive'
+import {resetAccordionIndices, resetProjectArchive, setConfirmArchiveProjectOpen, setConfirmArchiveRunsOpen, toggleAccordionIndices} from '../../../../redux/actions/projectArchive'
 import {useProjectArchive} from '../../../../redux/hooks'
 
 const getStatusColor = R.prop(R.__, {
@@ -130,7 +130,7 @@ const ConfirmArchiveProjectModal = ({ allProjectRuns, archiveProject, createdOn,
   )
 }
 
-const ConfirmArchiveRunsModal = ({ allProjectRuns, archiveRuns, projectName, removeRun }) => {
+const ConfirmArchiveRunsModal = ({ allProjectRuns, archiveRuns, projectName, removeRuns }) => {
   const dispatch = useDispatch()
   const {accordionIndices, confirmArchiveRunsOpen, selectedRuns} = useProjectArchive()
 
@@ -237,8 +237,12 @@ const ConfirmArchiveRunsModal = ({ allProjectRuns, archiveRuns, projectName, rem
           content="Delete"
           icon="trash"
           onClick={async () => {
-            archiveRuns({variables: {runIDs: selectedRuns}})
-            selectedRuns.forEach(runID => removeRun(runID))
+            const {data: {archiveRuns: archiveRunResult}} = await archiveRuns({variables: {runIDs: selectedRuns}})
+
+            if (archiveRunResult) {
+              removeRuns(selectedRuns)
+              dispatch(resetProjectArchive())
+            }
           }}
         />
       </Modal.Actions>

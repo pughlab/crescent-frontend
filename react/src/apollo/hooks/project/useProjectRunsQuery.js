@@ -84,11 +84,16 @@ export default function useProjectRunsQuery(projectID) {
     }
   })
 
-  const removeRun = runID => {
-    const runIndex = R.findIndex(R.propEq('runID', runID))(projectRuns)
-
-    setProjectRuns(currProjectRuns => R.remove(runIndex, 1, currProjectRuns))
+  const removeRuns = runIDs => {
+    setProjectRuns(currProjectRuns => R.filter(
+      R.compose(
+        R.not,
+        R.includes(R.__, runIDs),
+        R.prop('runID')
+      ),
+      currProjectRuns
+    ))
   }
 
-  return {getUpdatedRun, projectRuns, removeRun}
+  return {getUpdatedRun, projectRuns, removeRuns}
 }

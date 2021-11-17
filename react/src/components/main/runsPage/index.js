@@ -33,7 +33,7 @@ const RunsPageComponent = () => {
   const { userID: currentUserID, projectID } = useCrescentContext()
   useEffect(() => () => dispatch(resetRunsPage()), [projectID])
   const { archiveProject, archiveRuns, project } = useProjectArchiveMutation(projectID)
-  const { getUpdatedRun, projectRuns, removeRun } = useProjectRunsQuery(projectID)
+  const { getUpdatedRun, projectRuns, removeRuns } = useProjectRunsQuery(projectID)
 
   if (R.isNil(project)) {
     return null
@@ -71,7 +71,7 @@ const RunsPageComponent = () => {
           R.and(isUploadedProject, currentUserIsCreator) &&
           <Button.Group attached='top' widths={2} size='large'>
             <ShareProjectModal {...{project}} />
-            <ProjectArchiveModal {...{archiveProject, archiveRuns, project, projectRuns, removeRun}} />
+            <ProjectArchiveModal {...{archiveProject, archiveRuns, project, projectRuns, removeRuns}} />
           </Button.Group>
         }
 
