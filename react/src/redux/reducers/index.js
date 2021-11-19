@@ -3,6 +3,7 @@ import * as R from 'ramda'
 
 import createReducer from './createReducer'
 
+import annotations from './annotations'
 import context from './context'
 import projectsPage from './projectsPage'
 import runsPage from './runsPage'
@@ -399,6 +400,7 @@ const resultsPagePersistConfig = {
 
 // Combine all reducers for application
 export default combineReducers({
+  annotations,
   context,
   projectsPage,
   runsPage,

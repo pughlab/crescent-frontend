@@ -8,28 +8,30 @@ import Logo from '../../../login/logo.jpg'
 
 import * as R from 'ramda'
 import {useDispatch} from 'react-redux'
-
-// import {useSecondaryRunDetailsQuery} from '../../../../apollo/hooks/run'
-import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
-export default function UploadedMetadataList({
-  runID
-}) {
+export default function UploadedMetadataList({ uploadNames }) {
   const dispatch = useDispatch()
-  const {run} = useRunDetailsQuery(runID)
 
-  if (R.any(R.isNil, [run])) {
+  if (R.isNil(uploadNames)) {
     return (
-      <Segment basic style={{ height: '100%' }} placeholder>
+      <Segment
+        basic
+        placeholder
+        style={{ height: '100%' }}
+      >
         <Tada forever duration={1000}>
-          <Image src={Logo} centered size='medium' />
+          <Image 
+            centered
+            src={Logo}
+            size="medium"
+          />
         </Tada>
       </Segment>
     )
   }
 
-  const {uploadNames: {metadata}} = run
+  const {metadata} = uploadNames
 
   // const runIsPending = R.equals(status, 'pending')
   // const referenceDatasetIDs = R.pluck('datasetID', referenceDatasets)
@@ -42,53 +44,60 @@ export default function UploadedMetadataList({
   // const runIsNotCompleted = R.not(R.equals('completed', status))
 
   if (R.isNil(metadata)) {
-    return(
+    return (
       <Fade up>
-      <Divider horizontal content={'Uploaded Metadata'} />
-      <Segment color='purple'>    
-        <Segment placeholder>
-          <Header icon>
-            <Icon name='exclamation' />
-            No Uploaded Metadata
-          </Header>
+        <Divider horizontal content="Uploaded Metadata" />
+        <Segment color="purple">
+          <Segment placeholder>
+            <Header icon>
+              <Icon name="exclamation" />
+              No Uploaded Metadata
+            </Header>
+          </Segment>
         </Segment>
-      </Segment>
       </Fade>
     )
   }
 
   return (
     <>
-      <Divider horizontal content={'Uploaded Metadata'} />
-      <Segment color='purple'>
-        <List divided relaxed selection celled size='large'>
-          <List.Item key={metadata} >
-            <List.Content floated='left'>
+      <Divider horizontal content="Uploaded Metadata" />
+      <Segment color="purple">
+        <List
+          celled
+          divided
+          relaxed
+          selection
+          size="large"
+        >
+          <List.Item>
+            <List.Content floated="left">
               <List.Header content={metadata} />
             </List.Content>
-            <List.Content floated='right'>
-              {
-                <Button floated='right' animated='vertical' color='green'
-                  onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'visualizations'}))}
-                >
-                  <Button.Content visible>
-                    <Icon
-                      name='circle check outline'
-                      size='large'
-                    />   
-                    {' '}
-                    {'COMPLETED'}
-                  </Button.Content>
-                  <Button.Content hidden>
-                    <Icon
-                      name='circle check outline'
-                      size='large'
-                    />  
-                    {' '}
-                    {'VIEW METADATA'}
-                  </Button.Content>
-                </Button>
-              }
+            <List.Content floated="right">
+              <Button
+                animated="vertical"
+                color="green"
+                floated="right"
+                onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'visualizations'}))}
+              >
+                <Button.Content visible>
+                  <Icon
+                    name="circle check outline"
+                    size="large"
+                  />   
+                  {' '}
+                  {'COMPLETED'}
+                </Button.Content>
+                <Button.Content hidden>
+                  <Icon
+                    name="circle check outline"
+                    size="large"
+                  />  
+                  {' '}
+                  {'VIEW METADATA'}
+                </Button.Content>
+              </Button>
             </List.Content>
           </List.Item>
         </List>
@@ -96,22 +105,3 @@ export default function UploadedMetadataList({
     </>
   )
 }
-
-
-
-
-
-{/* <List.Content floated='right'>
-{
-    <Button floated='right' color='green'
-      onClick={() => dispatch(setActiveSidebarTab({sidebarTab: 'visualizations'}))}
-    >
-      <Icon
-        name='circle check outline'
-        size='large'
-      />   
-      {' '}
-      {R.toUpper('completed')}
-    </Button>
-}
-</List.Content> */}

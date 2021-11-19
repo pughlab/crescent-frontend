@@ -8,7 +8,7 @@ const typeDefs = gql`
     submittedOn: Date
     completedOn: Date
     status: String
-    logs: String
+    logs(runID: ID): String
     uploadName: String
   }
 
@@ -85,6 +85,10 @@ const typeDefs = gql`
     run(
       runID: ID
     ): Run
+    secondaryRun(
+      runID: ID,
+      wesID: ID
+    ): SecondaryRun
   }
   type Mutation {
     createUnsubmittedRun(
@@ -117,6 +121,11 @@ const typeDefs = gql`
 
     cancelRun(
       runID: ID
+    ): String
+
+    cancelSecondaryRun(
+      runID: ID,
+      wesID: ID
     ): String
     
     # Add metadata to run
