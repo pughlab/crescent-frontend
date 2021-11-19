@@ -44,19 +44,6 @@ const initialState = {
 }
 
 const evolveAtIndex = (transformations, index) => R.over(R.lensIndex(index), R.evolve(transformations))
-const getMachine = ({activeResult, selectedFeature, selectedFeatures, selectedQC}) => {
-  return R.cond([
-  [R.includes(R.__, ['violin']),   R.always(initiallyIdleMachine(selectedFeature ? 'initialLoading' : 'idle'))],
-  [R.includes(R.__, ['dot']),   R.always(initiallyIdleMachine(R.isEmpty(selectedFeatures) ? 'idle' : 'initialLoading'))],
-  [R.includes(R.__, ['gsva', 'infercnv']),   R.always(initiallyIdleMachine('initialLoading'))],
-  [R.includes(R.__, ['tsne', 'umap']),   R.always(initiallyLoadingMachine(selectedFeature ? 'initialOpacityLoading' : 'initialScatterLoading'))],
-  [R.includes(R.__, ['qc']),   R.always(QCMachine(R.equals(selectedQC, 'Before_After_Filtering') ? 'initialViolinLoading' : 'initialUmapLoading'))],
-])(activeResult)
-}
-const initiateService = (plotQuery) => ({
-  ...plotQuery,
-  service: interpret(getMachine(plotQuery)).start()
-})
 
 export default createReducer(
   initialState, {
