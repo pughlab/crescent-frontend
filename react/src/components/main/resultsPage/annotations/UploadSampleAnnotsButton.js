@@ -1,83 +1,99 @@
 import React, {useState, useCallback, useEffect} from 'react'
-
-import {Button, Header, Icon, Message, Segment} from 'semantic-ui-react'
-
+import {Button, Divider, Header, Icon, Message, Segment} from 'semantic-ui-react'
 import {useDropzone} from 'react-dropzone'
-
-import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
-
-// import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
-
-import {useUploadSampleAnnotsMutation} from '../../../../apollo/hooks/run'
-import {useCrescentContext} from '../../../../redux/hooks'
-import {useSubmitInferCNVMutation} from '../../../../apollo/hooks/run'
+import * as RA from 'ramda-adjunct'
+import {useUploadSampleAnnotsMutation, useUpdateNormalCellTypesMutation} from '../../../../apollo/hooks/run'
 
 export default function UploadSampleAnnotsButton({
-  runID
+  refetchSampleAnnots,
+  runID,
+  sampleAnnots,
+  secondaryRunSubmitted,
+  setCurrSampleAnnots
 }) {
-  const {userID: currentUserID} = useCrescentContext()
-  // const {run} = useRunDetailsQuery(runID)
-  const {uploadSampleAnnots, loading, success} = useUploadSampleAnnotsMutation({runID})
+  // const {userID: currentUserID} = useCrescentContext()
+  const {uploadSampleAnnots, loading, sampleAnnotsUploaded} = useUploadSampleAnnotsMutation(runID)
+  const {updateNormalCellTypes} = useUpdateNormalCellTypesMutation(runID)
   const [sampleAnnotsFile, setSampleAnnotsFile] = useState(null)
-  useEffect(() => {if (success) setSampleAnnotsFile(null)}, [success])
-  const onDrop = useCallback(acceptedFiles => {if (RA.isNotEmpty(acceptedFiles)) {setSampleAnnotsFile(R.head(acceptedFiles))}}, [])
-  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
-
-  // const {submitGsva, run, loading: loadingGSVA, submitted} = useSubmitGSVAMutation(runID)
-  const {submitInfercnv, run, loading: loadingInferCNV, submitted} = useSubmitInferCNVMutation(runID)
-
-
-  if (R.any(R.isNil, [run])) {
-    return (
-      null
-      // <Segment basic style={{ height: '100%' }} placeholder>
-      //   <Tada forever duration={1000}>
-      //     <Image src={Logo} centered size='medium' />
-      //   </Tada>
-      // </Segment>
-    )
-  }
+  
+  const onDrop = useCallback(acceptedFiles => {
+    if (RA.isNotEmpty(acceptedFiles)) setSampleAnnotsFile(R.head(acceptedFiles))
+  }, [])
+  const {getRootProps, getInputProps} = useDropzone({onDrop})
 
   // const {status: runStatus, name: runName, createdBy: {userID: creatorUserID}} = run
   // const disabledUpload = R.not(R.equals(currentUserID, creatorUserID))
-  
-  const {secondaryRuns} = run
 
+  useEffect(() => {
+    if (secondaryRunSubmitted) setSampleAnnotsFile(null)
+  }, [secondaryRunSubmitted])
+
+  const updateCurrSampleAnnots = async () => {
+    const {data: {sampleAnnots: sampleAnnotsResults}} = await refetchSampleAnnots()
+    if (RA.isNotNil(sampleAnnotsResults)) setCurrSampleAnnots(sampleAnnotsResults)
+  }
 
   return (
-    <>
-            <Message color='purple'>
-              <Icon name='upload'/>
-              Upload/replace sample annotations with barcodes in txt format.
-            <Segment inverted={success} color='purple'>
-              {
-              // disabledUpload ? 
-              //   <Segment placeholder>
-              //     <Header textAlign='center' content={'You do not have permissions to upload geneset for this run'} />
-              //   </Segment>
-              // :
-                <div {...getRootProps()}>
-                <input {...getInputProps()} />
-                <Segment placeholder loading={loading}>
-                  <Header textAlign='center'
-                    content={R.isNil(sampleAnnotsFile) ? 'Drag and drop a sample_annots.txt or click to select file' : sampleAnnotsFile.name}
-                  />
-                  {
-                    RA.isNotNil(sampleAnnotsFile) &&
-                    <Button color='purple'
-                      // onClick={() => uploadRunGeneset({variables: {geneset: genesetFile}}) && submitGsva()}
-                      onClick={() => uploadSampleAnnots({variables: {sampleAnnots: sampleAnnotsFile}})}
-                      content={success ? 'Uploaded' : 'Confirm'}
-                    />
-                  }
-                </Segment>
-                </div>
-              }
+    <Message color="purple">
+      <Icon name="upload" />
+      { R.isNil(sampleAnnots) ? (
+        <>
+          Upload/replace sample annotations with barcodes in txt format.
+        </>
+      ) : (
+        <>
+          Upload/replace sample annotations with barcodes in txt format or use previously uploaded sample annotations.
+          <br />
+          <br />
+          <Button
+            fluid
+            color="purple"
+            content="Use previously uploaded sample annotations"
+            onClick={async () => {
+              // Clear the normal cell types from the previous InferCNV run
+              await updateNormalCellTypes({variables: {normalCellTypes: []}})
+              await updateCurrSampleAnnots(sampleAnnots)
+            }}
+          />
+          <Divider horizontal content="Or" />
+        </>
+      )}
+      <Segment
+        color="purple"
+        inverted={RA.isNotNil(sampleAnnotsFile)}
+      >
+        {
+          // disabledUpload ?
+          //   <Segment placeholder>
+          //     <Header textAlign='center' content={'You do not have permissions to upload geneset for this run'} />
+          //   </Segment>
+          // :
+          <div {...getRootProps()}>
+            <input {...getInputProps()} />
+            <Segment placeholder loading={loading}>
+              <Header
+                content={R.isNil(sampleAnnotsFile) ? 'Drag and drop a sample_annots.txt or click to select file' : sampleAnnotsFile.name}
+                textAlign="center"
+              />
+              { R.or(RA.isNotNil(sampleAnnotsFile), loading) && (
+                <Button
+                  color="purple"
+                  content={R.toUpper(loading ? 'Uploading' : R.both(RA.isNotNil, R.not)(sampleAnnotsUploaded) ? 'Upload failed, please try again' : R.both(RA.isNotNil, RA.isTrue)(sampleAnnotsUploaded) ? 'Reupload' : 'Confirm')}
+                  disabled={R.isNil(sampleAnnotsFile) || loading}
+                  onClick={async e => {
+                    e.stopPropagation()
+                    // Clear the normal cell types from the previous InferCNV run
+                    await updateNormalCellTypes({variables: {normalCellTypes: []}})
+                    await uploadSampleAnnots({variables: {sampleAnnots: sampleAnnotsFile}})
+                    await updateCurrSampleAnnots()
+                  }}
+                />
+              )}
             </Segment>
-            </Message>
-
-
-    </>
+          </div>
+        }
+      </Segment>
+    </Message>
   )
 }

@@ -5,6 +5,7 @@ const typeDefs = gql`
 
   type SecondaryRun {
     wesID: ID
+    type: String,
     submittedOn: Date
     completedOn: Date
     status: String

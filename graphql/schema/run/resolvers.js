@@ -378,7 +378,7 @@ const resolvers = {
       // (assuming that the status can't change from "completed" or "failed")
       if (R.or(R.isNil(wesID), R.either(R.equals('completed'), R.equals('failed'))(status))) return status;
       
-      let runStatus = status
+      let runStatus = status;
 
       try {
         // Make a request to WES API to get the status of the run
@@ -466,7 +466,7 @@ const resolvers = {
       // (assuming that the status can't change from "completed" or "failed")
       if (R.or(R.isNil(wesID), R.either(R.equals('completed'), R.equals('failed'))(status))) return status;
       
-      let runStatus = status
+      let runStatus = status;
 
       try {
         // Make a request to WES API to get the status of the secondary run

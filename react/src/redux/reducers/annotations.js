@@ -4,10 +4,12 @@ import createReducer from './createReducer'
 
 const initialState = {
   annotationsRunID: null,
+  genePosUploaded: null,
   genesetUploaded: null,
   logsIsAvailable: false,
   logsWasAvailable: false,
   metadataUploaded: null,
+  sampleAnnotsUploaded: null,
   secondaryRunSubmitted: false,
   secondaryRunWesID: null
 }
@@ -32,6 +34,13 @@ export default createReducer(
           annotationsRunID: R.always(runID)
         })(initialState)
       )
+    },
+    'annotations/setGenePosUploaded': (state, payload) => {
+      const {uploaded} = payload
+
+      return R.evolve({
+        genePosUploaded: R.always(uploaded)
+      })(state)
     },
     'annotations/setGenesetUploaded': (state, payload) => {
       const {uploaded} = payload
@@ -62,6 +71,13 @@ export default createReducer(
 
       return R.evolve({
         metadataUploaded: R.always(uploaded)
+      })(state)
+    },
+    'annotations/setSampleAnnotsUploaded': (state, payload) => {
+      const {uploaded} = payload
+
+      return R.evolve({
+        sampleAnnotsUploaded: R.always(uploaded)
       })(state)
     },
     'annotations/setSecondaryRun': (state, payload) => {

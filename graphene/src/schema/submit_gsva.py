@@ -156,7 +156,7 @@ class SubmitGsva(Mutation):
 
             # Update wesID and submitted on in mongo
             # db.runs.find_one_and_update({'runID': ObjectId(runId)},{'$set': {'wesID': req["run_id"], 'submittedOn': datetime.datetime.now(), 'status': 'submitted'}})
-            db.runs.find_one_and_update({'runID': ObjectId(runId)}, {'$push': { 'secondaryRuns': {'$each': [{'wesID': req["run_id"], 'submittedOn': datetime.datetime.now(), 'completedOn': None, 'status': 'submitted'}]}}})
+            db.runs.find_one_and_update({'runID': ObjectId(runId)}, {'$push': { 'secondaryRuns': {'$each': [{'wesID': req["run_id"], 'type': 'GSVA', 'submittedOn': datetime.datetime.now(), 'completedOn': None, 'status': 'submitted'}]}}})
 
            
             # db.runs.updateOne({runID: ObjectId('6059156a2578b9004f98900a')}, {$push: {secondaryRuns: {$each: [{wesID: "5", status: "pending"}]}}}) 

@@ -9,6 +9,13 @@ const setAnnotationsRunID = ({runID}) => ({
   }
 })
 
+const setGenePosUploaded = ({uploaded}) => ({
+  type: 'annotations/setGenePosUploaded',
+  payload: {
+    uploaded
+  }
+})
+
 const setGenesetUploaded = ({uploaded}) => ({
   type: 'annotations/setGenesetUploaded',
   payload: {
@@ -30,6 +37,13 @@ const setMetadataUploaded = ({uploaded}) => ({
   }
 })
 
+const setSampleAnnotsUploaded = ({uploaded}) => ({
+  type: 'annotations/setSampleAnnotsUploaded',
+  payload: {
+    uploaded
+  }
+})
+
 const setSecondaryRun = ({secondaryRunWesID}) => ({
   type: 'annotations/setSecondaryRun',
   payload: {
@@ -40,8 +54,10 @@ const setSecondaryRun = ({secondaryRunWesID}) => ({
 export {
   resetAnnotations,
   setAnnotationsRunID,
+  setGenePosUploaded,
   setGenesetUploaded,
   setLogsAvailable,
   setMetadataUploaded,
+  setSampleAnnotsUploaded,
   setSecondaryRun
 }
