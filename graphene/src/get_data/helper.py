@@ -142,13 +142,18 @@ def set_IDs(paths, runID, keys, findDatasetID=False, assay='legacy'):
     runid_pattern = re.compile(r"(?P<pre>.*)(?P<run>run-)(?P<post>.*)")
 
     for key in keys:
-        curr_key = key + "_assay" if assay != 'legacy' and key in ["features", "top_expressed"] else key
-    
+        curr_key = key + "_assay" if assay != 'legacy' and key in ["features", "normalised_counts", "top_expressed"] else key
+
         if ("bucket" in paths[curr_key]):
             match = runid_pattern.match(paths[curr_key]["bucket"])
             if match is not None:
                 groups = match.groupdict()
                 paths[curr_key]["bucket"] = "{0}run-{1}{2}".format(groups["pre"], runID, groups["post"])
+
+                # Only for the key "normalised_counts" with a non-"legacy" assay
+                if ("object" in paths[curr_key] and "suffix" in paths[curr_key]["object"] and curr_key == "normalised_counts_assay"):
+                    paths[curr_key]["object"]["suffix"] = paths[curr_key]["object"]["suffix"].format(assay)
+
                 paths_required[key] = paths[curr_key]
             elif findDatasetID:
                 match = datasetid_pattern.match(paths[key]["bucket"])
@@ -156,11 +161,6 @@ def set_IDs(paths, runID, keys, findDatasetID=False, assay='legacy'):
                     groups = match.groupdict()
                     paths[key]["bucket"] = "{0}project-{1}{2}".format(groups["pre"], datasetID, groups["post"])
                     paths_required[key] = paths[key]
-    if "normalised_counts" in keys:
-        if assay == "legacy":
-            paths_required["normalised_counts"] = paths["normalised_counts"]["prefix"] + runID + paths["normalised_counts"]["suffix"] 
-        else:
-            paths_required["normalised_counts"] = paths["normalised_counts_assay"]["prefix"] + runID + paths["normalised_counts_assay"]["suffix"] + "counts_" + assay + ".loom"
     return paths_required
     
 def calculate_n_th_percentile(n, num_list):

@@ -1,7 +1,6 @@
 #!/bin/python
 
 import json
-import loompy
 import numpy as np
 """
 Run these if you need to run this file directly
@@ -13,7 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 from get_data.get_client import get_minio_client
 from get_data.helper import COLOURS, return_error, set_name_multi, set_IDs, sort_traces, merge_gsva
-from get_data.minio_functions import get_first_line, get_obj_as_2dlist, object_exists, group_exists
+from get_data.minio_functions import get_first_line, get_loompy_connect, get_obj_as_2dlist, object_exists, group_exists
 
 colour_counter = 0
 
@@ -51,10 +50,9 @@ def label_with_groups(plotly_obj, expression_values, group, labels_tsv):
 
     return plotly_obj
 
-def get_expression(feature, normalised_counts_path):
+def get_expression(feature, normalised_counts_path, minio_client):
     """ parses the normalized count matrix to get an expression value for each barcode """
-
-    with loompy.connect(normalised_counts_path) as ds:
+    with get_loompy_connect(normalised_counts_path, minio_client) as ds:
         barcodes = ds.ca.CellID
         features = ds.ra.Gene
         feature_idx = next((i for i in range(len(features)) if features[i] == feature), -1)
@@ -142,7 +140,7 @@ def get_violin_data(feature, group, runID, datasetID, assay):
 
     minio_client = get_minio_client()
     
-    expression_values = get_expression(feature, paths["normalised_counts"])
+    expression_values = get_expression(feature, paths["normalised_counts"], minio_client)
     plotly_obj = categorize_barcodes(group, expression_values, paths, minio_client)
     calculate_bandwidths(plotly_obj)
     sort_traces(plotly_obj)
