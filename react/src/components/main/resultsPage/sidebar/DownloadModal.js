@@ -3,8 +3,7 @@ import {Accordion, Button, Header, Icon, Label, List, Modal, Segment} from 'sema
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useBucketObjectsQuery, usePresignedURLQuery} from '../../../../apollo/hooks/results'
-import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
-import {useCrescentContext} from '../../../../redux/hooks'
+import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 
 const FileDownloadButton = ({ file: { filename, objectName }, runID }) => {
   const presignedURL = usePresignedURLQuery(`run-${runID}`, objectName)
@@ -146,12 +145,10 @@ const DownloadAccordion = ({ bucketObjects, level = 1, runID }) => {
 const DownloadModal = () => {
   const [open, setOpen] = useState(false)
   const {runID} = useCrescentContext()
-  const run = useRunDetailsQuery(runID)
+  const {runStatus} = useResultsPage()
   const bucketObjects = useBucketObjectsQuery(`run-${runID}`)
 
-  if (R.any(R.isNil, [run])) return null
-
-  const {status: runStatus} = run
+  if (R.isNil(runStatus)) return null
 
   return (
     <Modal
