@@ -4,6 +4,7 @@ import {useDropzone} from 'react-dropzone'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import Tada from 'react-reveal/Tada'
+import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
 
 import {useUploadRunGenesetMutation} from '../../../../apollo/hooks/run'
