@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import Plot from 'react-plotly.js'
-import { Button, Dropdown, Grid, Icon, Image, Header, Popup, Segment } from 'semantic-ui-react'
+import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
+import { Image, Container, Header, Segment, Dimmer, Icon, Popup, Dropdown, Grid, Button } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';
 
 import Tada from 'react-reveal/Tada'
@@ -105,12 +105,6 @@ const DotPlot = ({
   // if the value is a number, there will be a rendering error)
   const stringifyYValues = (data) => data.map(trace => ({ ...trace, y: trace.y.map(yValue => yValue + " ") }))
 
-  // make the plot smaller when there's less groups
-  let plotHeight = "85%"
-  if (R.not(R.isEmpty(plotData)) && plotData[0]["y"].length <= 5) {
-    plotHeight = "60%"
-  }
-
   let possibleMaxExp = 100
   if (R.not(R.isEmpty(plotData))) {
     possibleMaxExp = Math.ceil(plotData[0]["globalmax"] * 10) / 10
@@ -126,8 +120,11 @@ const DotPlot = ({
   return (
     <>
       <PlotHeader {...{plotQueryID}} name={currentScatterPlotType} runID={runID || compareRunID} />
-      <Segment basic loading={R.test(/.*Loading/, current.value)} style={{ height: '100%' }}>
-      { inMultiPlot ||
+      <ResponsivePlotSegment
+        loading={R.test(/.*Loading/, current.value)}
+        style={{minHeight: 260}}
+      >
+      { !inMultiPlot &&
         (
           <Grid divided='vertically'>
             <Grid.Row columns={3}>
@@ -205,10 +202,9 @@ const DotPlot = ({
         )
       }
 
-        <Plot
-          useResizeHandler
+        <ResponsivePlot
           data={sizeLegend}
-          style={{ width: '100%', height: 60 }}
+          style={{height: 60}}
           layout={{
             showlegend: false,
             margin: { l: 100, r: 100, b: 0, t: 0 },
@@ -224,13 +220,11 @@ const DotPlot = ({
             staticPlot: true
           }}
         />
-        <Plot
+        <ResponsivePlot
           config={{ showTips: false }}
           data={stringifyYValues(plotData)}
-          useResizeHandler
-          style={{ width: '100%', height: plotHeight }}
+          style={{height: 'calc(100% - 60px)'}}
           layout={{
-            autosize: true,
             hovermode: 'closest',
             hoverlabel: { bgcolor: "#FFF" },
             margin: { l: 50, r: 30, b: 50, t: 20 },
@@ -257,7 +251,7 @@ const DotPlot = ({
             hovermode: 'closest'
           }}
         />
-      </Segment>
+      </ResponsivePlotSegment>
     </>
   )
 }

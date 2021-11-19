@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback } from 'react'
-import Plot from 'react-plotly.js'
+import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
 import { Image, Segment, Header, Icon } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
@@ -100,21 +100,18 @@ const ViolinPlot = ({
     // Plot data
     <>
       <PlotHeader {...{plotQueryID}} name="Gene Expression Violin" runID={runID || compareRunID} />
-      <Segment basic loading={current.matches('dataLoading')} style={{height: '100%'}} >
-        <Plot
+      <ResponsivePlotSegment loading={current.matches('dataLoading')}>
+        <ResponsivePlot
           config={{showTips: false}}
           data={current.context.plotData}
-          useResizeHandler
-          style={{width: '100%', height:'90%'}}
           layout={{
-            autosize: true,
             hovermode: 'closest',
             xaxis: {tickmode: 'linear', automargin: true, autorange: true, type: 'category'},
             yaxis: {showgrid: false, title: {text: 'Gene Expression'}, automargin: true},
             margin: {l:45, r:20, b:20, t:20},
           }}
         />
-      </Segment>
+      </ResponsivePlotSegment>
     </>
   )
 }
