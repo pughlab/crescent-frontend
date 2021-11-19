@@ -7,7 +7,7 @@ import {useProjectArchive} from '../../../../redux/hooks'
 import {ConfirmArchiveProjectModal, ConfirmArchiveRunsModal} from './ConfirmModal'
 import ProjectRuns from './ProjectRuns'
 
-const ProjectArchiveModal = ({ archiveProject, archiveRuns, project, projectRuns: allProjectRuns, removeRun }) => {
+const ProjectArchiveModal = ({ archiveProject, archiveRuns, project, projectRuns: allProjectRuns, removeRuns }) => {
   const dispatch = useDispatch()
   const {projectArchiveModalOpen} = useProjectArchive()
 
@@ -52,7 +52,7 @@ const ProjectArchiveModal = ({ archiveProject, archiveRuns, project, projectRuns
         <Header content="Select Runs to Delete" />
         <ProjectRuns {...{allProjectRuns}} />
         <br />
-        <ConfirmArchiveRunsModal {...{allProjectRuns, archiveRuns, projectName, removeRun}} />
+        <ConfirmArchiveRunsModal {...{allProjectRuns, archiveRuns, projectName, removeRuns}} />
       </Modal.Content>
     </Modal>
   )
