@@ -1,10 +1,29 @@
 import React from 'react'
-import {Divider, List, Segment} from 'semantic-ui-react'
+import {Divider, Header, Icon, List, Segment} from 'semantic-ui-react'
 import * as R from 'ramda'
+import Fade from 'react-reveal/Fade'
 
 import AnnotationsSecondaryRunEntry from './AnnotationsSecondaryRunEntry'
 
+const NoSecondaryRuns = ({ annotationType }) => (
+  <Fade up>
+    <Divider horizontal content={`${annotationType} Run Status`} />
+    <Segment color="purple">    
+      <Segment placeholder>
+        <Header icon>
+          <Icon name="exclamation" />
+          No {annotationType} Runs
+        </Header>
+      </Segment>
+    </Segment>
+  </Fade>
+)
+
 const AnnotationsSecondaryRuns = ({ annotationType, secondaryRuns }) => {
+  const secondaryRunsByAnnotationType = R.filter(R.propEq('type', annotationType), secondaryRuns)
+
+  if (R.isEmpty(secondaryRunsByAnnotationType)) return <NoSecondaryRuns {...{annotationType}} />
+
   return (
     <>
       <Divider horizontal content={`${annotationType} Run Status`} />
@@ -25,7 +44,7 @@ const AnnotationsSecondaryRuns = ({ annotationType, secondaryRuns }) => {
                 />
               )),
               R.reverse
-            )(secondaryRuns)
+            )(secondaryRunsByAnnotationType)
           }
         </List>
       </Segment>
@@ -34,3 +53,4 @@ const AnnotationsSecondaryRuns = ({ annotationType, secondaryRuns }) => {
 }
 
 export default AnnotationsSecondaryRuns
+export {NoSecondaryRuns}

@@ -1,10 +1,9 @@
 import React, {useState, useCallback, useEffect} from 'react'
-import {Button, Divider, Header, Icon, Image, Message, Segment} from 'semantic-ui-react'
+import {Button, Header, Icon, Image, Message, Segment} from 'semantic-ui-react'
 import {useDropzone} from 'react-dropzone'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import Tada from 'react-reveal/Tada'
-import Fade from 'react-reveal/Fade'
 import Logo from '../../../login/logo.jpg'
 
 import {useUploadRunGenesetMutation} from '../../../../apollo/hooks/run'
@@ -13,7 +12,7 @@ import {useSubmitGSVAMutation} from '../../../../apollo/hooks/run'
 import {useAnnotations} from '../../../../redux/hooks'
 
 import SecondaryRunLogs from '../logs/SecondaryRunLogs'
-import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
+import AnnotationsSecondaryRuns, {NoSecondaryRuns} from './AnnotationsSecondaryRuns'
 
 export default function UploadGenesetButton({ runID }) {
   const {secondaryRunWesID} = useAnnotations()
@@ -109,18 +108,8 @@ export default function UploadGenesetButton({ runID }) {
       ) : (
         <SecondaryRunLogs />
       )}
-      { R.either(R.isNil, RA.isEmptyArray)(secondaryRuns) ? (
-        <Fade up>
-          <Divider horizontal content="GSVA Run Status" />
-          <Segment color="purple">    
-            <Segment placeholder>
-              <Header icon>
-                <Icon name="exclamation" />
-                No GSVA Runs
-              </Header>
-            </Segment>
-          </Segment>
-        </Fade>
+      { R.isNil(secondaryRuns) ? (
+        <NoSecondaryRuns {...{annotationType}} />
       ) : (
         <AnnotationsSecondaryRuns {...{annotationType, secondaryRuns}} />
       )}

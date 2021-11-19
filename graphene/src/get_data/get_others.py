@@ -338,7 +338,12 @@ def get_sample_annots_data(runID):
     
     minio_client = get_minio_client()
     if not object_exists(annotation['bucket'], annotation['object'], minio_client):
-        return_error('infercnv observation file not found')
+        '''
+        Don't use:
+            return_error('infercnv observation file not found')
+        Otherwise, the GraphQL query may timeout. So, we simply return None.
+        '''
+        return None
 
     sample_annots_dict = get_obj_as_dictionary(annotation['bucket'], annotation['object'], minio_client, 0, 1)
     sample_annots = list(OrderedSet(sample_annots_dict.values()))

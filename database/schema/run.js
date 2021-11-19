@@ -6,6 +6,11 @@ const SecondaryRunSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  type: {
+    type: String,
+    enum: ['GSVA', 'InferCNV', null], // null is for legacy secondary runs that don't have a type (these are not shown to the user)
+    default: null
+  },
   status: {
     type: String,
     enum: ['pending', 'submitted', 'completed', 'failed'],

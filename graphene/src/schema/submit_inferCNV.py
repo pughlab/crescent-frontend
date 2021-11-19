@@ -48,7 +48,7 @@ def makeInferCNVJob(runId: str, datasetId: str, run: dict, dataName: str):
         "project_id": dataName,
         "sc_input_type" : "MTX",
         # "normal_cell_types" : "endothelial cell,fibroblast,endocardial cell,cardiac muscle cell",
-        "normal_cell_types": str(run['normalCellTypes']),
+        "normal_cell_types": ",".join(run['normalCellTypes']), # The list of strings needs to be converted to comma-separate string
         # "gene_counts_cutoff" : 0.05,
         # "noise_filter" : 0.1,
         # "sd_amplifier" : 0.1,
@@ -170,7 +170,7 @@ class SubmitInfercnv(Mutation):
 
             # Update wesID and submitted on in mongo
             # db.runs.find_one_and_update({'runID': ObjectId(runId)},{'$set': {'wesID': req["run_id"], 'submittedOn': datetime.datetime.now(), 'status': 'submitted'}})
-            db.runs.find_one_and_update({'runID': ObjectId(runId)}, {'$push': { 'secondaryRuns': {'$each': [{'wesID': req["run_id"], 'submittedOn': datetime.datetime.now(), 'completedOn': None, 'status': 'submitted'}]}}})
+            db.runs.find_one_and_update({'runID': ObjectId(runId)}, {'$push': { 'secondaryRuns': {'$each': [{'wesID': req["run_id"], 'type': 'InferCNV', 'submittedOn': datetime.datetime.now(), 'completedOn': None, 'status': 'submitted'}]}}})
 
            
             # db.runs.updateOne({runID: ObjectId('6059156a2578b9004f98900a')}, {$push: {secondaryRuns: {$each: [{wesID: "5", status: "pending"}]}}}) 

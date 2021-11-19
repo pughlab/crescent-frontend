@@ -1,19 +1,24 @@
 import {useState, useEffect} from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import {useQuery, useMutation} from '@apollo/react-hooks'
+import {gql} from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
+import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import {useDispatch} from 'react-redux'
+import {setSecondaryRun} from '../../../redux/actions/annotations'
+import {useAnnotations} from '../../../redux/hooks'
 
 export default function useSubmitInferCNVMutation(runID) {
-  // const {run} = useRunDetailsQuery(runID)
-
+  const dispatch = useDispatch()
+  const {secondaryRunSubmitted} = useAnnotations()
   const [run, setRun] = useState(null)
-  const [submitted, setSubmitted] = useState(true) //start true
-  const {loading: loadingRunQuery, data, error, refetch: refetchRunStatus} = useQuery(gql`
+
+  const {loading: loadingRunQuery, data, refetch: refetchRunStatus} = useQuery(gql`
     query RunStatus($runID: ID) {
       run(runID: $runID) {
         secondaryRuns {
           wesID
+          type
           status
           submittedOn
           completedOn
@@ -24,22 +29,26 @@ export default function useSubmitInferCNVMutation(runID) {
     variables: {
       runID
     },
-    fetchPolicy: 'network-only',
-    onCompleted: ({run}) => {
-      if (!!run) {
-        setRun(run)
-        setSubmitted(RA.isNotNil(run.secondaryRuns.wesID))
-      }
-    }
+    fetchPolicy: 'network-only'
   })
 
   useEffect(() => {
-    if (data) {
-      setRun(data.run)
-    }
+    if (data) setRun(data.run)
   }, [data])
 
-  const [submitInfercnv, {loading: loadingSubmitInferCNV, data: infercnvData}] = useMutation(gql`
+  useEffect(() => {
+    if (RA.isNotNil(run) && RA.isNonEmptyArray(run.secondaryRuns)) {
+      // Get the status and wesID of the most recent secondary run
+      const [latestSecondaryRunStatus, latestSecondaryRunWesID] = R.compose(
+        R.props(['status', 'wesID']),
+        R.last
+      )(run.secondaryRuns)
+
+      if (R.equals('submitted', latestSecondaryRunStatus)) dispatch(setSecondaryRun({secondaryRunWesID: latestSecondaryRunWesID}))
+    }
+  }, [dispatch, run])
+
+  const [submitInferCNV, {loading: loadingSubmitInferCNV, data: infercnvData}] = useMutation(gql`
     mutation SubmitInferCNV($runID: ID) {
       submitInfercnv(runId: $runID) {
         wesID
@@ -49,18 +58,14 @@ export default function useSubmitInferCNVMutation(runID) {
     client,
     variables: {runID},    
     onCompleted: ({submitInfercnv}) => {
-      if (RA.isNotNil(submitInfercnv.wesID)) {
-        setSubmitted(true)
-      }
+      if (RA.isNotNil(submitInfercnv.wesID)) dispatch(setSecondaryRun({secondaryRunWesID: submitInfercnv.wesID}))
     },
   })
 
   useEffect(() => {
-    if (infercnvData) {
-      refetchRunStatus()
-    }
-  }, [infercnvData])
+    if (infercnvData) refetchRunStatus()
+  }, [infercnvData, refetchRunStatus])
 
   const loading = loadingRunQuery || loadingSubmitInferCNV
-  return {submitInfercnv, run, loading, submitted}
+  return {submitInferCNV, run, loading, secondaryRunSubmitted}
 }

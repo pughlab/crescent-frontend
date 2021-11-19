@@ -1,14 +1,15 @@
-import {useState, useEffect} from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
-import * as R from 'ramda'
+import { useDispatch } from 'react-redux'
+import { setSampleAnnotsUploaded } from '../../../redux/actions/annotations'
+import { useAnnotations } from '../../../redux/hooks'
 
-export default function useUploadSampleAnnotsMutation({
-  runID
-}) {
-  const [success, setSuccess] = useState(false)
-  const [uploadSampleAnnots, {loading, data, error}] = useMutation(gql`
+export default function useUploadSampleAnnotsMutation(runID) {
+  const dispatch = useDispatch()
+  const {sampleAnnotsUploaded} = useAnnotations()
+
+  const [uploadSampleAnnots, {loading}] = useMutation(gql`
     mutation UploadSampleAnnots(
       $runID: ID!
       $sampleAnnots: Upload!
@@ -25,11 +26,9 @@ export default function useUploadSampleAnnotsMutation({
       runID
     },
     onCompleted: ({uploadSampleAnnots: run}) => {
-      if (RA.isNotNil(run)) {
-        setSuccess(true)
-      }
+      dispatch(setSampleAnnotsUploaded({uploaded: RA.isNotNil(run)}))
     }
   })
 
-  return {uploadSampleAnnots, loading, success}
+  return {uploadSampleAnnots, loading, sampleAnnotsUploaded}
 }
