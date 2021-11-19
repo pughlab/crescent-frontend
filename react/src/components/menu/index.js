@@ -17,6 +17,7 @@ import RunHeader from './RunHeader'
 import {useDispatch} from 'react-redux'
 import {goHome, goBack} from '../../redux/actions/context'
 import {useCrescentContext, useComparePage} from '../../redux/hooks'
+import { resetComparePage } from '../../redux/actions/comparePage';
 
 const MenuComponent = ({
 
@@ -26,6 +27,12 @@ const MenuComponent = ({
   const {plotQueries: comparePagePlots} = useComparePage()
   const {view, projectID} = context
   const isCurrentView = R.equals(view)
+
+  useEffect(() => {
+    // clear compare page when go back to projects or runs page
+    if(!R.includes(view, ['compare', 'results'])) dispatch(resetComparePage())
+  }, [view])
+
   return (
     <Segment attached='top' as={Grid}>
       <Grid.Column width={2} verticalAlign='middle'>

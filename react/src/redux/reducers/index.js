@@ -9,6 +9,8 @@ import runsPage from './runsPage'
 import resultsPage from './resultsPage'
 import comparePage from './comparePage'
 import projectArchive from './projectArchive'
+import storage from 'redux-persist/lib/storage'
+import persistReducer from 'redux-persist/es/persistReducer'
 
 // Reducer
 const initialState = {
@@ -388,14 +390,19 @@ const app = createReducer(initialState, {
   ...VisualizationReducer,
 })
 
-
+const resultsPagePersistConfig = {
+  key: 'resultsPage',
+  storage: storage,
+  // rehydrate all fields except the following ones
+  blacklist: ['plotQueries']
+}
 
 // Combine all reducers for application
 export default combineReducers({
   context,
   projectsPage,
   runsPage,
-  resultsPage,
+  resultsPage: persistReducer(resultsPagePersistConfig, resultsPage),
   comparePage,
   projectArchive
   // app

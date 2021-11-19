@@ -25,7 +25,8 @@ const persistConfig = {
   key: 'root',
   storage,
   blacklist: [
-    'projectArchive'
+    'projectArchive',
+    'resultsPage'
   ]
 }
 const persistedReducer = persistReducer(persistConfig, rootReducer)
