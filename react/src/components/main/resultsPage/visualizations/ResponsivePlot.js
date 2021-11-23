@@ -43,7 +43,8 @@ export const ResponsivePlotSegment = ({children, style={}, ...props}) => {
         ...styleRest,
         height: '100%',
         minHeight: minHeight ? minHeight : 200,
-        overflow: 'auto'
+        overflow: 'auto', // overflow added in rebase 
+        padding: 0 // padding added in rebase 
       }}
     >
       {children}
