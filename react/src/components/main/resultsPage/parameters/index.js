@@ -22,16 +22,15 @@ const ParametersComponent = () => {
 
   if (R.any(R.isNil, [run, toolSteps])) {
     return (
-      <Segment style={{height: '100%'}} color='violet'>
-        <Segment basic style={{ height: '100%' }} placeholder>
+      <Segment color="blue" style={{height: '100%'}}>
+        <Segment basic placeholder style={{height: '100%'}}>
           <Tada forever duration={1000}>
-            <Image src={Logo} centered size='medium' />
+            <Image centered size="medium" src={Logo} />
           </Tada>
         </Segment>
       </Segment>
     )
   }
-
 
   const {datasets} = run
 
@@ -39,19 +38,21 @@ const ParametersComponent = () => {
 
   if (R.isNil(activePipelineStep)) {
     return (
-      <Segment placeholder style={{height: '100%'}} color='blue'>
-        <Shake forever duration={10000}>
-        <Header textAlign='center' icon>
-          <Icon name='right arrow' />
-          {
-            R.ifElse(
-              R.equals('pending'),
-              R.always('Select a pipeline step on the right to configure parameters'),
-              R.always('Parameters have already been configured and job submitted')
-            )(runStatus)
-          }
-        </Header>
-        </Shake>
+      <Segment color="blue" style={{height: '100%'}}>
+        <Segment placeholder style={{height: '100%'}}>
+          <Shake forever duration={10000}>
+            <Header icon textAlign="center">
+              <Icon name="right arrow" />
+                {
+                  R.ifElse(
+                    R.equals('pending'),
+                    R.always('Select a pipeline step on the right to configure parameters'),
+                    R.always('Parameters have already been configured and job submitted')
+                  )(runStatus)
+                }
+            </Header>
+          </Shake>
+        </Segment>
       </Segment>
     )
   }
@@ -59,9 +60,8 @@ const ParametersComponent = () => {
   const activePipelineStepData = R.find(R.propEq('step', activePipelineStep), toolSteps)
 
   return (
-    <Segment style={{height: '100%'}} color='blue'>
-    {
-      R.equals('referenceDatasets', activePipelineStep) ? 
+    <Segment color="blue" style={{height: '100%'}}>
+      { R.equals('referenceDatasets', activePipelineStep) ?
         <ReferenceDatasets {...{runID}} />      
       : R.equals('quality', activePipelineStep) ? 
         <QualityControlParametersComponent />
@@ -70,16 +70,16 @@ const ParametersComponent = () => {
           R.ifElse(
             R.isEmpty, 
             R.always(
-              <Segment basic placeholder style={{height: '100%'}}>
+              <Segment placeholder style={{height: '100%'}}>
                 <Shake forever duration={10000}>
-                  <Header textAlign='center' icon>
-                    <Icon name='dont' />
+                  <Header icon textAlign="center">
+                    <Icon name="dont" />
                     {
-                        `There are no user-editable ${R.prop('label', activePipelineStepData)} parameters for a ${isSingleDataset ? 'single' : 'multi'} sample pipeline`
+                      `There are no user-editable ${R.prop('label', activePipelineStepData)} parameters for a ${isSingleDataset ? 'single' : 'multi'} sample pipeline`
                     }
                     {
                       R.and(R.equals('normalization', activePipelineStep), R.not(isSingleDataset)) && 
-                      <Header.Subheader content='Normalization uses scTransform for a multi sample pipeline'/>
+                      <Header.Subheader content="Normalization uses scTransform for a multi sample pipeline" />
                     }
                   </Header>
                 </Shake>
@@ -95,7 +95,7 @@ const ParametersComponent = () => {
           R.prop('parameters'),
           // R.find(R.propEq('step', activePipelineStep))
         )(activePipelineStepData)
-    }
+      }
     </Segment>
   )
 }

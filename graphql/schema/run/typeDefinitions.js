@@ -70,6 +70,7 @@ const typeDefs = gql`
     secondaryRuns: [SecondaryRun]
     wesID: ID
     logs: String
+    failedRunLogs: String
     uploadNames: UploadNames
 
     # Datasets selected from parent project
