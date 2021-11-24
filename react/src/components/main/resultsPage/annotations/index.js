@@ -28,23 +28,13 @@ export default function AnnotationsComponent() {
   }, [])
 
   const {run} = useRunDetailsQuery(runID)
+
   if (R.isNil(run)) {
     return (
-      <Segment
-        color="violet"
-        style={{height: '100%'}}
-      >
-        <Segment
-          basic
-          placeholder
-          style={{ height: '100%' }}
-        >
+      <Segment color="purple" style={{height: '100%'}}>
+        <Segment basic placeholder style={{height: '100%'}}>
           <Tada forever duration={1000}>
-            <Image
-              centered
-              size="medium"
-              src={Logo}
-            />
+            <Image centered size="medium" src={Logo} />
           </Tada>
         </Segment>
       </Segment>
@@ -53,17 +43,15 @@ export default function AnnotationsComponent() {
 
   if (R.isNil(activeAnnotationsAction)) {
     return (
-      <Segment
-        placeholder
-        color="purple"
-        style={{height: '100%'}}
-      >
-        <Shake forever duration={10000}>
-          <Header icon textAlign="center">
-            <Icon name="right arrow" />
-            {'Select an annotation method'}
-          </Header>
-        </Shake>
+      <Segment color="purple" style={{height: '100%'}}>
+        <Segment placeholder style={{height: '100%'}}>
+          <Shake forever duration={10000}>
+            <Header icon textAlign="center">
+              <Icon name="right arrow" />
+              {'Select an annotation method'}
+            </Header>
+          </Shake>
+        </Segment>
       </Segment>
     )
   }
@@ -71,10 +59,7 @@ export default function AnnotationsComponent() {
   const activeAnnotationsActionIs = R.equals(activeAnnotationsAction)
 
   return (
-    <Segment
-      color="purple"
-      style={{height: '100%'}}
-    >
+    <Segment color="purple" style={{height: '100%'}}>
       {
         activeAnnotationsActionIs('gsva') ? <UploadRunGenesetButton {...{runID}} />
         : activeAnnotationsActionIs('runMetadata') ? <Metadata {...{runID}} />
