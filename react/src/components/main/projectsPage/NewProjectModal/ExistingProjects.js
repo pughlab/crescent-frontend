@@ -24,6 +24,7 @@ import {useCrescentContext} from '../../../../redux/hooks'
 export const DatasetsPopoverContent = ({
   allDatasets
 }) => {
+  const totalCells = R.sum((R.pluck('numCells')(allDatasets)))
   return (
     <Message>
       <Message.Content>
@@ -31,15 +32,29 @@ export const DatasetsPopoverContent = ({
         <Label.Group>
         {
           R.map(
-            ({datasetID, name}) => (
-              <Label key={datasetID}>
+            ({datasetID, name, cancerTag, oncotreeCode, numCells, hasMetadata}) => (
+              <Label key={datasetID}
+                color={R.prop(cancerTag, {
+                  'cancer': 'pink',
+                  'non-cancer': 'purple',
+                  'immune': 'blue',
+                })}
+              >
                 {name}
+                {<Label.Detail content={R.toUpper(cancerTag)}  />}
+                {<Label.Detail content={`${numCells} cells`}/>}
+                {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+                {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
               </Label>
             ),
             allDatasets
           )
         }
         </Label.Group>
+        <Divider horizontal content='Total Raw Cells' />
+          <Label.Group>
+            <Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${totalCells} cells`} /> 
+          </Label.Group>    
       </Message.Content>
     </Message>
   )
@@ -61,6 +76,7 @@ const ProjectCard = ({
   )(newProjectState)
 
   const uniqueOncotreeCodesArray = R.compose(R.uniq, R.reject(R.isNil), R.pluck('oncotreeCode'))(allDatasets)
+  const totalCells = R.sum(R.pluck('numCells')(allDatasets))
 
   return (
     <Transition visible animation='fade up' duration={1000} unmountOnHide={true} transitionOnMount={true}>
@@ -90,6 +106,7 @@ const ProjectCard = ({
         <Label content={<Icon style={{margin: 0}} name='user' />} detail={creatorName} />
         <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={moment(createdOn).format('DD MMM YYYY')} />
         <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(allDatasets)} dataset(s)`} />
+        <Label content={<Icon style={{margin: 0}} name='certificate' />} detail={`${totalCells} cells`} /> 
         {
           R.map(
             oncotreeCode => <Label key={oncotreeCode} content={<Icon style={{margin: 0}} name='paperclip' />} detail={oncotreeCode} />,
@@ -122,6 +139,8 @@ const PublicProjects = ({
           datasetID
           name
           oncotreeCode
+          cancerTag
+          numCells
         }
       }
     }
@@ -173,6 +192,8 @@ const UploadedProjects = ({
           datasetID
           name
           oncotreeCode
+          cancerTag
+          numCells
         }
       }
     }
