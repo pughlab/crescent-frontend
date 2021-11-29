@@ -53,6 +53,7 @@ const ProjectCard = ({
   const uniqueOncotreeCodesArray = R.compose(R.uniq, R.reject(R.isNil), R.pluck('oncotreeCode'))(allDatasets)
   const uniqueCancerTagsArray = R.compose(R.uniq, R.pluck('cancerTag'))(allDatasets)
   const uniqueCustomTagsArray = R.compose(R.flatten, R.uniq, R.reject(R.isNil), R.pluck('customTags'))(allDatasets)
+  const totalCells = (R.sum(R.pluck('numCells')(allDatasets)))
 
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
@@ -116,7 +117,7 @@ const ProjectCard = ({
                   <Label.Group size='tiny'>
                     {
                       R.map(
-                        ({datasetID, name, cancerTag, oncotreeCode, hasMetadata}) => (
+                        ({datasetID, name, cancerTag, oncotreeCode, numCells, hasMetadata}) => (
                           <Label key={datasetID}
                             color={R.prop(cancerTag, {
                               'cancer': 'pink',
@@ -126,6 +127,7 @@ const ProjectCard = ({
                           >
                             {name}
                             {<Label.Detail content={R.toUpper(cancerTag)}  />}
+                            {<Label.Detail content={`${numCells} cells`}/>}
                             {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
                             {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
                           </Label>
@@ -134,6 +136,10 @@ const ProjectCard = ({
                       )
                     }
                   </Label.Group>
+                  <Divider horizontal content='Total Raw Cells' />
+                  <Label.Group>
+                      <Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${totalCells} cells`} /> 
+                  </Label.Group>                  
                 </Segment>
               </Segment.Group>
               </>
@@ -154,6 +160,7 @@ const ProjectCard = ({
             </Label.Group>
             <Label.Group>
               <Label content={<Icon style={{margin: 0}} name='upload' />} detail={`${R.length(allDatasets)} dataset(s)`} />
+              <Label content={<Icon style={{margin: 0}} name='certificate' />} detail={`${totalCells} cells`} />
               {
                 R.includes('cancer', uniqueCancerTagsArray) &&
                 <Label color='pink' content={<Icon style={{margin: 0}} name='paperclip' />} detail={'CANCER'} />
