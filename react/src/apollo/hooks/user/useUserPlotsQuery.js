@@ -20,6 +20,9 @@ export default function useUserPlotsQuery(userID) {
         allDatasets {
           datasetID
           name
+          size
+          cancerTag
+          numCells
         }
         runs {
           name

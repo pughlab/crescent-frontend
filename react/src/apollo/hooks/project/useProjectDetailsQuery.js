@@ -47,6 +47,7 @@ export default function useProjectDetailsQuery(projectID) {
           cancerTag
           oncotreeCode
           customTags
+          numCells
         }
       }
     }

@@ -20,6 +20,7 @@ export default function useDatasetDetails(datasetID) {
         cancerTag
         oncotreeCode
         customTags
+        numCells
       }
     }
   `, {
