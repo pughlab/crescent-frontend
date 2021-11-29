@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {Button, Divider, List, Message, Segment} from 'semantic-ui-react'
+import {Button, Divider, List, Message, Segment, Label} from 'semantic-ui-react'
 
 import * as R from 'ramda'
 
@@ -37,12 +37,23 @@ export default function ReferenceDatasets({
         <List divided relaxed selection celled>
           {
             R.compose(
-              R.map(({datasetID, name}) => {
+              R.map(({datasetID, name, cancerTag, numCells}) => {
                 const isReference = isReferenceDataset(datasetID)
                 return (
                   <List.Item key={datasetID} active={isReference}>
                     <List.Content floated='left'>
-                      <List.Header content={name} />
+                      <Label key={datasetID}
+                        size='large'
+                        color={R.prop(cancerTag, {
+                          'cancer': 'pink',
+                          'non-cancer': 'purple',
+                          'immune': 'blue',
+                        })}
+                      >
+                        {name}
+                        {<Label.Detail content={R.toUpper(cancerTag)} />}
+                        {<Label.Detail content={`${numCells} cells`}/>}
+                      </Label>
                     </List.Content>
                     {
                       <List.Content floated='right'>
@@ -63,13 +74,16 @@ export default function ReferenceDatasets({
                             :
                             <Button floated='right' disabled={true} color='blue' basic={R.not(isReference)}
                               content={isReference ? 'Anchored' : 'Unanchored'}
+                              size='large'
                             />
                         }
                       </List.Content>
                     }
                   </List.Item>
                 )
-              })
+              }),
+              R.reverse,
+              R.sortBy(R.prop('numCells'))
             )(datasets)
           }
         </List>
