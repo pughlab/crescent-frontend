@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 
 import { Button, Card, Divider, Header, Icon, Label, Message, Popup } from 'semantic-ui-react'
 
@@ -15,6 +15,7 @@ import { useCellCountsQuery } from '../../../../apollo/hooks/results'
 import { useRunDetailsQuery } from '../../../../apollo/hooks/run'
 
 const ParameterPopoverContent = ({
+  cellcount,
   datasets,
   normalization,
   reduction,
@@ -35,6 +36,7 @@ const ParameterPopoverContent = ({
     R.map(R.toPairs)
   )([normalization, reduction, clustering, expression])
   // console.log(parameterValues)
+  const totalCells = R.sum(R.pluck('numCells')(datasets))  
   return (
     <>
       {
@@ -53,7 +55,7 @@ const ParameterPopoverContent = ({
           <Label.Group>
             {
               R.map(
-                ({ datasetID, name, cancerTag }) => (
+                ({ datasetID, name, cancerTag, numCells }) => (
                   <Label key={datasetID}
                     color={R.prop(cancerTag, {
                       'cancer': 'pink',
@@ -63,6 +65,7 @@ const ParameterPopoverContent = ({
                   >
                     {name}
                     {<Label.Detail content={R.toUpper(cancerTag)} />}
+                    {<Label.Detail content={`${numCells} cells`} />}
                   </Label>
                 ),
                 datasets
@@ -80,6 +83,9 @@ const ParameterPopoverContent = ({
               )
             }
           </Label.Group>
+          <Divider horizontal content='Total Cells' />
+            {<Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${totalCells} raw cells`} /> }
+            {<Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${cellcount} filtered cells`} /> }
         </Message.Content>
       </Message>
     </>
@@ -112,6 +118,7 @@ const RunCard = ({
     datasets
   } = run
 
+  // added polling for cell count
   const [status, setStatus] = useState(initialStatus)
   const [isPolling, setIsPolling] = useState(false)
   const {getRunStatus, runStatus: statusFromQuery, startStatusPolling, stopStatusPolling} = useRunDetailsQuery(runID)
@@ -170,7 +177,7 @@ const RunCard = ({
           </Button>
         }
       >
-        <ParameterPopoverContent {...{ datasets, normalization, reduction, clustering, expression, description }} />
+        <ParameterPopoverContent {...{ cellcount, datasets, normalization, reduction, clustering, expression, description }} />
       </Popup>
 
       <Card.Content>
@@ -197,13 +204,13 @@ const RunCard = ({
               <Label content={<Icon style={{ margin: 0 }} name='upload' />} detail={`${R.length(datasets)} dataset(s)`} />
             }
             {
-              hasResults &&
-              <Label content={<Icon style={{ margin: 0 }} name='exclamation circle' />} detail={'Results available'} />
-            }
-            {
               RA.isNotNil(submittedOn) &&
               RA.isNotNil(cellcount) &&
               <Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${cellcount} cells`} />
+            }
+            {
+              hasResults &&
+              <Label content={<Icon style={{ margin: 0 }} name='exclamation circle' />} detail={'Results available'} />
             }
           </Label.Group>
         </Card.Header>
