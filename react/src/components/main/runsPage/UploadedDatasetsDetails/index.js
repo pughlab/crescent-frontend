@@ -38,7 +38,7 @@ const TagOncotreeModal = ({
   }
 
   const {tissue: tissueTypes} = oncotree
-  const {name, cancerTag, oncotreeCode} = dataset
+  const {name, cancerTag, oncotreeCode, numCells} = dataset
   return (
     <Modal
       open={open}
@@ -94,6 +94,7 @@ const TagOncotreeModal = ({
                 {<Icon style={{margin: 0}} name='paperclip' /> }      
                 {<Label.Detail content={R.toUpper(cancerTag)} />}
                 {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} />}
+                {<Label.Detail content={`${numCells} cells`} />}
               </Label>
               {R.map(tag => <Label key={tag} content={<Icon style={{ margin: 0 }} name='paperclip'/>} detail={R.toUpper(tag)} />, dataset.customTags)}
             </>
