@@ -74,6 +74,7 @@ export default function useRunDetails(runID) {
           size
           hasMetadata
           cancerTag
+          numCells
         }
 
         project {

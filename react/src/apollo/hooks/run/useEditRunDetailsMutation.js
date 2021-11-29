@@ -41,6 +41,7 @@ export default function useEditRunDetailsMutation({runID}) {
         size
         hasMetadata
         cancerTag
+        numCells
       }
 
       project {

@@ -32,6 +32,7 @@ export default function useProjectRunsQuery(projectID) {
           size
           hasMetadata
           cancerTag
+          numCells
         }
       }
     }

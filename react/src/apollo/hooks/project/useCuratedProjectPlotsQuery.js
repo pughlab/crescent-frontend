@@ -21,6 +21,9 @@ export default function useCuratedProjectPlotsQuery() {
         allDatasets {
           datasetID
           name
+          size
+          cancerTag
+          numCells
         }
         runs {
           name

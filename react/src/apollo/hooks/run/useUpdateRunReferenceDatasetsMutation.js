@@ -15,6 +15,8 @@ export default function useUpdateRunReferenceDatasetsMutation ({
           name
           size
           hasMetadata
+          cancerTag
+          numCells
         }
         referenceDatasets {
           datasetID
@@ -51,6 +53,8 @@ export default function useUpdateRunReferenceDatasetsMutation ({
           name
           size
           hasMetadata
+          cancerTag
+          numCells
         }
         referenceDatasets {
           datasetID
