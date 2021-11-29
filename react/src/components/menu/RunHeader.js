@@ -1,12 +1,13 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import { Header, Popup, Message, Label, Form, Divider, Modal, Button, Segment, Input } from 'semantic-ui-react'
+import { Header, Popup, Message, Label, Form, Divider, Modal, Button, Segment, Input, Icon } from 'semantic-ui-react'
 
 import { useCrescentContext } from '../../redux/hooks'
 import { useEditRunDetailsMutation } from '../../apollo/hooks/run'
 
+import { useCellCountsQuery } from '../../apollo/hooks/results'
 import moment from 'moment'
 
 function useRunDetails(runID) {
@@ -85,6 +86,21 @@ const RunHeader = () => {
   const { runID, userID: currentUserID } = useCrescentContext()
   const { state, dispatch, loading } = useRunDetails(runID)
 
+  // using polling to get cellcount 
+  const [isPolling, setIsPolling] = useState(false)
+  
+  const {cellcount, startCellCountsPolling, stopCellCountsPolling} = useCellCountsQuery(runID)
+
+  useEffect(() => {
+      if (R.equals('submitted')) {
+        startCellCountsPolling(1000)
+      }
+  }, [dispatch, runID, startCellCountsPolling])
+
+  useEffect(() => {
+    if (RA.isNotNil(cellcount)) stopCellCountsPolling()
+  }, [cellcount, isPolling, stopCellCountsPolling])
+
   if (R.isNil(state.run)) {
     return null
   }
@@ -112,6 +128,7 @@ const RunHeader = () => {
   const sameName = R.equals(runName, state.form.name)
   const sameDesc = R.equals(runDescription, state.form.description)
   const disabled = R.or(loading, R.and(sameName, sameDesc)) // disable button when loading or unchanged description/name/owner
+  const totalCells = R.sum(R.pluck('numCells')(datasets)) // calculating total raw cells
 
   // call dispatch with appropriate action(s) after Save is clicked
   const submitButtonHandler = () => {
@@ -158,7 +175,7 @@ const RunHeader = () => {
               <Label.Group>
                 {
                   R.map(
-                    ({ datasetID, name, cancerTag, size, hasMetadata }) => (
+                    ({ datasetID, name, cancerTag, size, hasMetadata, numCells }) => (
                       <Label key={datasetID}
                         color={R.prop(cancerTag, {
                           'cancer': 'pink',
@@ -168,12 +185,16 @@ const RunHeader = () => {
                       >
                         {name}
                         {<Label.Detail content={R.toUpper(cancerTag)} />}
+                        {<Label.Detail content={`${numCells} cells`}/>}
                       </Label>
                     ),
                     datasets
                   )
                 }
               </Label.Group>
+              <Divider horizontal content='Total Cells' />
+              {<Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${totalCells} raw cells`} /> }
+              {<Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${cellcount} filtered cells`} /> }
             </Message.Content>
           </Message>
         </Popup>
