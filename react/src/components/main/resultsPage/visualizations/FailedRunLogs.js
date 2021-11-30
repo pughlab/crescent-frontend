@@ -35,6 +35,7 @@ const FailedRunLogs = () => {
             <Header.Content>
               <Icon name="exclamation circle" />
               No failed run logs available
+              { /*
               {' '}
               <Popup
                 trigger={
@@ -51,6 +52,7 @@ const FailedRunLogs = () => {
               >
                 Failed run logs (if available) may take a brief moment to load
               </Popup>
+              */ }
             </Header.Content>
           </Header>
         </Message>
