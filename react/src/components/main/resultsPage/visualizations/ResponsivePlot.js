@@ -1,7 +1,9 @@
-import React from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {Icon, Segment} from 'semantic-ui-react'
 import {withSize} from 'react-sizeme'
 import Plot from 'react-plotly.js'
+import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 export const PlotResizeHandle = React.forwardRef(({handleAxis, ...props}, ref) => {
   return (
@@ -40,7 +42,8 @@ export const ResponsivePlotSegment = ({children, style={}, ...props}) => {
       style={{
         ...styleRest,
         height: '100%',
-        minHeight: minHeight ? minHeight : 200
+        minHeight: minHeight ? minHeight : 200,
+        overflow: 'auto'
       }}
     >
       {children}
@@ -48,28 +51,49 @@ export const ResponsivePlotSegment = ({children, style={}, ...props}) => {
   )
 }
 
-const ResponsivePlot = ({layout, size, style={}, ...props}) => {
+const ResponsivePlot = ({automargin: automarginEnabled=false, layout, size, style={}, ...props}) => {
+  const {xaxis, yaxis} = layout
   const {height, ...styleRest} = style
+  const plotRef = useRef(null)
+  // Disable automargin until the plot has been initialized to prevent "Too many auto-margin redraws" warnings
+  const [automargin, setAutomargin] = useState(false)
+
+  useEffect(() => {
+    if (R.all(RA.isNotNil)([plotRef.current, plotRef.current.resizeHandler])) plotRef.current.resizeHandler()
+  }, [size.width, size.height])
 
   return (
     <Plot
       {...props}
+      layout={{
+        ...layout,
+        autosize: true,
+        xaxis: {
+          ...xaxis,
+          automargin
+        },
+        yaxis: {
+          ...yaxis,
+          automargin
+        }
+      }}
+      onInitialized={() => {
+        // Enable automargin now that the plot has been initialized
+        automarginEnabled && setAutomargin(true)
+      }}
+      ref={plotRef}
       style={{
         ...styleRest,
         width: '100%',
         height: height ? height : '100%',
+        overflow: 'hidden'
       }}
-      layout={{
-        ...layout,
-        width: size.width,
-        height: size.height
-      }}
+      useResizeHandler
     />
   )
 }
 
 export default withSize({
   monitorHeight: true,
-  refreshMode: 'debounce',
-  refreshRate: 100
+  refreshRate: 500
 })(ResponsivePlot)

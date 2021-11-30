@@ -104,7 +104,14 @@ const VisualizationsComponent = () => {
       ) : (
         <>
           { R.not(sidebarCollapsed) ? (
-            <Segment color="violet" style={{height: '75vh'}}>
+            <Segment
+              color="violet"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                height: '75vh'
+              }}
+            >
               <CrescentPlot plotQueryIndex={activePlot} />
             </Segment>
           ) : (

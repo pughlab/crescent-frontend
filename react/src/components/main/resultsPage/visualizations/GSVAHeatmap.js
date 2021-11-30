@@ -53,6 +53,7 @@ const GSVAHeatmap = ({
         // loading={loading}
       >
         <ResponsivePlot
+          automargin
           config={{ showTips: false }}
           data={current.context.plotData}
           onClick={e => setSelectedCell({x: e.points[0].x, y: e.points[0].y, z: e.points[0].z})}
@@ -68,14 +69,12 @@ const GSVAHeatmap = ({
                 size: 11,
               },
               title: 'Cell Types',
-              automargin: true,
             },
             yaxis: {
               tickfont: {
                 size: 11,
               },
               title: 'Clusters',
-              automargin: true,
             },
           }}
 
