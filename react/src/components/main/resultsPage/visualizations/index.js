@@ -122,7 +122,11 @@ const VisualizationsComponent = () => {
                     <Segment
                       attached="top"
                       color="violet"
-                      style={{height: '60vh'}}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        height: '60vh'
+                      }}
                     >
                       <CrescentPlot plotQueryIndex={idx} />
                     </Segment>
