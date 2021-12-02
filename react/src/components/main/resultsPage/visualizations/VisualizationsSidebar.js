@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 
 import { Segment, Button, Icon, Step, Header, Dropdown, Form, Divider, Menu, Label, Popup } from 'semantic-ui-react'
 import * as R from 'ramda'
+import { useService } from '@xstate/react';
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
@@ -26,7 +27,8 @@ const MultiPlotSelector = ({
   const dispatch = useDispatch()
   const {userID} = useCrescentContext()
   const {activePlot, plotQueries} = useResultsPage()
-  const {plotQueryID} = useResultsPagePlotQuery(activePlot)
+  const {plotQueryID, service} = useResultsPagePlotQuery(activePlot)
+  const [current, send] = useService(service)
   const {savePlotQuery, loading: savePlotQueryLoading} = useSavePlotQueryMutation(
     runID, 
     R.compose(
@@ -48,17 +50,17 @@ const MultiPlotSelector = ({
   const PlotSavingButtons = () => {
     return plotQueryID ? (
       <Button.Group fluid attached="bottom">
-        <Button color='violet' animated='vertical' style={{borderRadius: 0}} onClick={updateSavedPlotQuery} loading={updatePlotQueryLoading}>
+        <Button color='violet' animated='vertical' style={{borderRadius: 0}} disabled={R.test(/.*Loading/, current.value)} onClick={updateSavedPlotQuery} loading={updatePlotQueryLoading}>
           <Button.Content visible><Icon name='sync'/></Button.Content>
           <Button.Content hidden content="Update saved plot"/>
         </Button>
-        <Button color='red' animated='vertical'  style={{borderRadius: 0}} onClick={removeSavedPlotQuery} loading={removePlotQueryLoading}>
+        <Button color='red' animated='vertical'  style={{borderRadius: 0}} disabled={R.test(/.*Loading/, current.value)} onClick={removeSavedPlotQuery} loading={removePlotQueryLoading}>
           <Button.Content visible><Icon name='trash'/></Button.Content>
           <Button.Content hidden content="Remove plot"/>
         </Button>
       </Button.Group>
     ) : (
-      <Button color="violet" animated='vertical' fluid style={{borderRadius: 0}} onClick={savePlotQuery} loading={savePlotQueryLoading}>
+      <Button color="violet" animated='vertical' fluid style={{borderRadius: 0}} disabled={R.test(/.*Loading/, current.value)} onClick={savePlotQuery} loading={savePlotQueryLoading}>
         <Button.Content visible><Icon name='save'/></Button.Content>
         <Button.Content hidden content="Save plot"/>
       </Button>
