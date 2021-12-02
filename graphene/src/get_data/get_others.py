@@ -351,7 +351,7 @@ def get_inferCNV_types(runID):
     with open('get_data/desc.json') as desc_file:
         DESC = json.load(desc_file)
     
-    infercnv_type_pattern = re.compile(r"INFERCNV/INFERCNV_RESULTS/infercnv.(?P<type>[a-zA-Z]+).tsv")
+    infercnv_type_pattern = re.compile(r"INFERCNV/INFERCNV/infercnv.(?P<type>[a-zA-Z]+).tsv")
     object_names = get_list_of_object_names(paths["frontend_coordinates"]["bucket"], minio_client)
     types = []
     count = 0

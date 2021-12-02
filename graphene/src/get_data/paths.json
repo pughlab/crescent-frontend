@@ -98,7 +98,7 @@
     },
     "infercnv_references": {
         "bucket": "run-",
-        "object": "INFERCNV/INFERCNV_RESULTS/infercnv.references.tsv"
+        "object": "INFERCNV/INFERCNV/infercnv.references.tsv"
     },
     "infercnv_gene_pos": {
         "bucket": "run-",
