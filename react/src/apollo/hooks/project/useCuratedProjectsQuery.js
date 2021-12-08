@@ -15,6 +15,7 @@ export default function useCuratedProjectsQuery() {
         projectID
         name
         description
+        accession
 
         allDatasets {
           datasetID
