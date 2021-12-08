@@ -81,7 +81,8 @@ const PublicProjectsList = () => {
       <Card.Group itemsPerRow={3}>
       {
         R.compose(
-          R.map(({projectID}) => <ProjectCard key={projectID} {...{projectID}} />)
+          R.map(({projectID}) => <ProjectCard key={projectID} {...{projectID}} />),
+          R.sort(({accession:a}, {accession:b}) => a.localeCompare(b, 'en', { numeric: true })),
         )(filteredProjects)
       }
       </Card.Group>
