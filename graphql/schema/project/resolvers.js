@@ -31,7 +31,7 @@ const resolvers = {
       parent,
       {
         userID,
-        name, description,
+        name, description, accession,
         projectIDs = [],
         datasetIDs = [],
       },
@@ -42,7 +42,7 @@ const resolvers = {
     ) => {
       try {
         const project = await Projects.create({
-          name, description,
+          name, description, accession,
           createdBy: userID,
           mergedProjectIDs: projectIDs,
           uploadedDatasetIDs: datasetIDs
@@ -136,6 +136,14 @@ const resolvers = {
       await project.save()
       return project
     },
+
+    updateProjectAccession: async(parent, {projectID, newAccession}, {Projects}) => {
+      const project = await Projects.findOne({projectID})
+      project.accession = newAccession
+      await project.save()
+      return project
+    },
+
 
     changeProjectOwnership: async(parent, {projectID, oldOwnerID, newOwnerID}, {Projects}) => {
       const project = await Projects.findOne({projectID})
