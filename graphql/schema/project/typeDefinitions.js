@@ -12,7 +12,7 @@ const typeDefs = gql`
     kind: String #'uploaded', 'curated'
     name: String
     description: String
-    accession: String
+    accession: Int
     externalUrls: [Url]
     sharedWith: [User]
     createdBy: User
@@ -95,6 +95,9 @@ const typeDefs = gql`
 
     # Update the project's name
     updateProjectName(projectID: ID, newName: String): Project
+
+    # Update the projects accession
+    updateProjectAccession(projectID: ID, newAccession: Int): Project
 
     # Change ownership of project
     changeProjectOwnership(projectID: ID, oldOwnerID: ID, newOwnerID: ID): Project
