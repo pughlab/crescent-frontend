@@ -20,7 +20,7 @@ const ProjectSchema = new mongoose.Schema({
     required: true
   },
   accession: {
-    type: String,
+    type: Number,
     required: false
   },
   externalUrls: {
