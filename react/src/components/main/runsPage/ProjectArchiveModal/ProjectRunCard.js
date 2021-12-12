@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState, useEffect} from 'react';
 import {Button, Card, Divider, Header, Icon, Label, Message, Popup} from 'semantic-ui-react'
 import Marquee from 'react-marquee'
 import moment from 'moment'
@@ -8,6 +8,8 @@ import {useDispatch} from 'react-redux'
 import {setRunSelected} from '../../../../redux/actions/projectArchive'
 import {useProjectArchive} from '../../../../redux/hooks'
 
+import { useCellCountsQuery } from '../../../../apollo/hooks/results'
+import { useRunDetailsQuery } from '../../../../apollo/hooks/run'
 const ProjectRunCard = ({ run }) => {
   const dispatch = useDispatch()
   const {selectedRuns} = useProjectArchive()
@@ -32,6 +34,31 @@ const ProjectRunCard = ({ run }) => {
     submittedOn
   } = run
 
+  // added polling for cell count
+  const [isPolling, setIsPolling] = useState(false)
+  const {getRunStatus, runStatus: statusFromQuery, startStatusPolling, stopStatusPolling} = useRunDetailsQuery(runID)
+
+  const {cellcount, startCellCountsPolling, stopCellCountsPolling} = useCellCountsQuery(runID)
+
+  useEffect(() => {
+    getRunStatus()
+  }, [getRunStatus])
+
+  useEffect(() => {
+    if (RA.isNotNil(statusFromQuery)) {
+      if (R.equals('submitted', statusFromQuery)) {
+        setIsPolling(true)
+        startCellCountsPolling(1000)
+      } else if (isPolling) {
+        stopStatusPolling()
+      }
+    }
+  }, [dispatch, isPolling, runID, setIsPolling, startCellCountsPolling, startStatusPolling, statusFromQuery, stopStatusPolling])
+
+  useEffect(() => {
+    if (isPolling && RA.isNotNil(cellcount)) stopCellCountsPolling()
+  }, [cellcount, isPolling, stopCellCountsPolling])
+
   const isSelected = R.includes(runID, selectedRuns)
 
   const statusColor = R.prop(status, {
@@ -47,6 +74,7 @@ const ProjectRunCard = ({ run }) => {
     R.map(R.toPairs)
   )([normalization, reduction, clustering, expression])
 
+  const totalCells = R.sum(R.pluck('numCells')(datasets))  
   return (
     <Card onClick={() => dispatch(setRunSelected({runID}))}>
       <Popup
@@ -79,7 +107,7 @@ const ProjectRunCard = ({ run }) => {
               <Divider horizontal content="Datasets" />
               <Label.Group>
                 { R.map(
-                  ({ datasetID, name, cancerTag }) => (
+                  ({ datasetID, name, cancerTag, numCells }) => (
                     <Label
                       key={datasetID}
                       color={R.prop(cancerTag, {
@@ -87,9 +115,11 @@ const ProjectRunCard = ({ run }) => {
                         'non-cancer': 'purple',
                         'immune': 'blue',
                       })}
-                      content={name}
-                      detail={R.toUpper(cancerTag)}
-                    />
+                      >
+                     {name}
+                      {<Label.Detail content={R.toUpper(cancerTag)}  />}
+                      {<Label.Detail content={`${numCells} cells`}/>}
+                    </Label>
                   ),
                   datasets
                 )}
@@ -107,6 +137,9 @@ const ProjectRunCard = ({ run }) => {
                   parameterValues
                 )}
               </Label.Group>
+            <Divider horizontal content='Total Cells' />
+            {<Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${totalCells} raw cells`} /> }
+            {<Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${cellcount} filtered cells`} /> }
             </Message.Content>
           </Message>
         </>
@@ -156,6 +189,11 @@ const ProjectRunCard = ({ run }) => {
               />
             }
           />
+          {
+              RA.isNotNil(submittedOn) &&
+              RA.isNotNil(cellcount) &&
+              <Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${cellcount} cells`} />
+            }
           { hasResults &&
             <Label
               content={
