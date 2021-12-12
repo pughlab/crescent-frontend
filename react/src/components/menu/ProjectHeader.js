@@ -9,15 +9,15 @@ import { useEditProjectDetailsMutation } from '../../apollo/hooks/project'
 function useProjectDetails(projectID) {
   const {
     project: projectQuery,
-    editProjectDescription, editProjectName,
+    editProjectDescription, editProjectName, editProjectAccession,
     changeProjectOwnership,
     loading,
-    dataDesc, dataName, dataOwner
+    dataDesc, dataName, dataAccession, dataOwner
   } = useEditProjectDetailsMutation({ projectID })
 
   const initialState = {
     project: null,
-    form: { name: '', description: '', ownerID: '' },
+    form: { name: '', description: '', accession: '', ownerID: '' },
     open: false,
     secondOpen: false
   }
@@ -28,15 +28,16 @@ function useProjectDetails(projectID) {
     console.log(state, action)
     const reducer = {
       'resetForm': (payload, state) => {
-        const {project: {name, description, createdBy: {userID: ownerID}}} = state
-        return {...state, form: {name, description, ownerID}}
+        const {project: {name, description, accession, createdBy: {userID: ownerID}}} = state
+        return {...state, form: {name, description, accession, ownerID}}
       },
       'updateFormName': ({ newName }, state) => ({ ...state, form: {...state.form, name: newName} }),
       'updateFormDescription': ({ newDescription }, state) => ({ ...state, form: { ...state.form, description: newDescription } }),
+      'updateFormAccession': ({ newAccession }, state) => ({ ...state, form: {...state.form, accession: newAccession} }),
       'updateFormOwner': ({ newOwnerID }, state) => ({ ...state, form: { ...state.form, ownerID: newOwnerID } }),
       'setProjectData': ({project}, state) => {
-        const {name, description, createdBy: {userID: ownerID}} = project
-        return { ...state, project, form: { name, description, ownerID } }
+        const {name, description, accession, createdBy: {userID: ownerID}} = project
+        return { ...state, project, form: { name, description, accession, ownerID } }
       },
       'setOpen': ({open}, state) => ({ ...state, open }),
       'setSecondOpen': ({open: secondOpen}, state) => ({ ...state, secondOpen}),
@@ -46,6 +47,10 @@ function useProjectDetails(projectID) {
       },
       'mutateDesc': (payload, state) => {
         editProjectDescription({ variables: { newDescription: state.form.description } })
+        return state
+      },
+      'mutateAccession': (payload, state) => {
+        editProjectAccession({ variables: { newAccession: state.form.accession } })
         return state
       },
       'mutateOwner': (payload, state) => {
@@ -74,11 +79,11 @@ function useProjectDetails(projectID) {
 
   // close Modal when mutation successful
   useEffect(() => {
-    if (R.any(RA.isTrue, [RA.isNotNil(dataDesc), RA.isNotNil(dataName), RA.isNotNil(dataOwner)])) {
+    if (R.any(RA.isTrue, [RA.isNotNil(dataDesc), RA.isNotNil(dataName), RA.isNotNil(dataAccession), RA.isNotNil(dataOwner)])) {
       dispatch({ type: 'setOpen', payload: { open: false } })
       dispatch({ type: 'setSecondOpen', payload: { open: false } })
     }
-  }, [dataDesc, dataName, dataOwner])
+  }, [dataDesc, dataName, dataAccession, dataOwner])
 
   return { state, dispatch, loading }
 }
@@ -95,7 +100,9 @@ const ProjectHeader = ({
   const {
     project: {
       name: oldName,
+      kind,
       description: oldDescription,
+      accession: oldAccession,
       createdBy: {
         userID: createdUserID,
         name: oldOwnerName
@@ -105,6 +112,7 @@ const ProjectHeader = ({
     form: {
       name: newName,
       description: newDescription,
+      accession: newAccession,
       ownerID: newOwnerID
     },
     open,
@@ -114,15 +122,18 @@ const ProjectHeader = ({
   const isProjectCreatorID = R.equals(createdUserID)
   const sameName = R.equals(oldName, newName)
   const sameDesc = R.equals(oldDescription, newDescription)
+  const sameAccession = R.equals(oldAccession, newAccession)
   const sameOwner = isProjectCreatorID(newOwnerID)
-  const disabled = R.or(loading, RA.allEqualTo(true, [sameName, sameDesc, sameOwner])) // disable button when loading or unchanged description/name/owner
+  const disabled = R.or(loading, RA.allEqualTo(true, [sameName, sameDesc, sameAccession, sameOwner])) // disable button when loading or unchanged description/name/owner
   const currentUserIsCreator = isProjectCreatorID(currentUserID)
   const notShared = R.isEmpty(sharedWith)
+  const isPublic = R.equals('curated')
 
   // call dispatch with appropriate action(s) after Save is clicked
   const submitButtonHandler = () => {
     if (!sameName) { dispatch({ type: 'mutateName' }) }
     if (!sameDesc) { dispatch({ type: 'mutateDesc' }) }
+    if (!sameAccession) { dispatch({ type: 'mutateAccession' }) }
     if (!sameOwner) { dispatch({ type: 'mutateOwner' }) }
   }
 
@@ -151,6 +162,8 @@ const ProjectHeader = ({
                     onChange={(e, { value }) => { dispatch({ type: 'updateFormDescription', payload: { newDescription: value } }) }}
                   />
                 </Form>
+                <Header as='h4'>Project Accession</Header>
+                <Input label={isPublic(kind) ? 'CRES-P' : 'CRES-U' } type ='number' value={parseInt(newAccession)} onChange={(e, { value }) => { dispatch({ type: 'updateFormAccession', payload: { newAccession: parseInt(value) } }) }} />
                 <Header as='h4'>
                   <Header.Content>
                     Project Owner
@@ -193,6 +206,8 @@ const ProjectHeader = ({
             <p>{sameName ? oldName : newName}</p>
             <Header as='h4' content="Description" />
             <p>{sameDesc ? oldDescription : newDescription}</p>
+            <Header as='h4' content="Accession" />
+            <p>{sameAccession ? oldAccession : newAccession}</p>
             <Header as='h4' content="Owner" />
             <p>
               {sameOwner ?
