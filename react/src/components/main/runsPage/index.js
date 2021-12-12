@@ -60,6 +60,7 @@ const RunsPageComponent = () => {
   const isUploadedProject = R.equals(projectKind, 'uploaded')
   const currentUserIsCreator = R.equals(currentUserID, creatorUserID)
   const projectIsArchived = RA.isNotNil(archived)
+  const isPublic = R.equals('curated')
 
   return (    
     <>
@@ -98,7 +99,7 @@ const RunsPageComponent = () => {
           )}
           {
               RA.isNotNil(accession) &&
-              <Label as='a' ribbon content='ID' detail={accession} />
+              <Label as='a' ribbon content='ID' detail={isPublic(projectKind) ? `CRES-P${accession}` : `CRES-U${accession}` } />
           }
           <Header>
             <Header.Content content={projectName} />
