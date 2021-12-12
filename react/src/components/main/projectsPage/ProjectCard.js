@@ -37,6 +37,7 @@ const ProjectCard = ({
 
   const {
     name,
+    kind,
     description,
     accession,
     createdBy: {name: creatorName},
@@ -54,6 +55,7 @@ const ProjectCard = ({
   const uniqueCancerTagsArray = R.compose(R.uniq, R.pluck('cancerTag'))(allDatasets)
   const uniqueCustomTagsArray = R.compose(R.flatten, R.uniq, R.reject(R.isNil), R.pluck('customTags'))(allDatasets)
   const totalCells = (R.sum(R.pluck('numCells')(allDatasets)))
+  const isPublic = R.equals('curated')
 
   return (
     <Transition visible animation='fade up' duration={500} unmountOnHide={true} transitionOnMount={true}>
@@ -153,7 +155,7 @@ const ProjectCard = ({
             <Label.Group>
               {
                 RA.isNotNil(accession) &&
-                <Label content={<Icon style={{margin: 0}} name='info circle' />}  detail={accession} />
+                <Label content={<Icon style={{margin: 0}} name='info circle' />}  detail={isPublic(kind) ? `CRES-P${accession}` : `CRES-U${accession}` } />
               }
               <Label content={<Icon style={{margin: 0}} name='user' />}  detail={creatorName} />
               <Label content={<Icon style={{margin: 0}} name='calendar alternate outline' />} detail={`${moment(createdOn).format('D MMMM YYYY')}`} />
