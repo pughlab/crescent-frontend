@@ -77,6 +77,21 @@ export default function useEditProjectDetailsMutation({projectID}) {
     }
   }, [dataDesc])
 
+  const [editProjectAccession, {loading: loadingAccession, data: dataAccession, error: errorAccession}] = useMutation(gql`
+    mutation UpdateProjectAccession($projectID: ID, $newAccession: Int) {
+      updateProjectAccession(projectID: $projectID, newAccession: $newAccession) {
+        accession
+      }
+    }
+  `, {
+    variables: {projectID}
+  })
+  useEffect(() => {
+    if (dataAccession) {
+      refetch()
+    }
+  }, [dataAccession])
+
   const [editProjectName, {loading: loadingName, data: dataName, error: errorName}] = useMutation(gql`
   mutation UpdateProjectName($projectID: ID, $newName: String) {
     updateProjectName(projectID: $projectID, newName: $newName) {
@@ -115,5 +130,5 @@ export default function useEditProjectDetailsMutation({projectID}) {
     }
   }, [dataDetails])
 
-  return {project, editProjectDescription, editProjectName, changeProjectOwnership, loading: R.or(loadingName, loadingDesc, loadingOwner), dataDesc, dataName, dataOwner}
+  return {project, editProjectDescription, editProjectName, editProjectAccession, changeProjectOwnership, loading: R.or(loadingName, loadingDesc, loadingAccession, loadingOwner), dataDesc, dataName, dataAccession, dataOwner}
 }
