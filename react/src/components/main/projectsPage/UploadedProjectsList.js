@@ -85,7 +85,8 @@ const UploadedProjectsList = ({
       <Card.Group itemsPerRow={3}>
       {
         R.compose(
-          R.map(({projectID}) => <ProjectCard key={projectID} {...{projectID}} />)
+          R.map(({projectID}) => <ProjectCard key={projectID} {...{projectID}} />),
+          R.sortBy(R.prop('accession'))
         )(filteredProjects)
       }
       </Card.Group>
