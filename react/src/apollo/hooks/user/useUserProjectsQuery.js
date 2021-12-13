@@ -15,6 +15,7 @@ export default function useUserProjectsQuery(userID) {
         projectID
         name
         description
+        accession
 
         allDatasets {
           datasetID
