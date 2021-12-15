@@ -1,95 +1,77 @@
 import React from 'react'
-
-import {Form, Message, Segment} from 'semantic-ui-react'
-
+import {Form, Icon, Message, Segment} from 'semantic-ui-react'
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
+import {useUpdateNormalCellTypesMutation} from '../../../../apollo/hooks/run'
 
-// import AnnotationsSecondaryRuns from './AnnotationsSecondaryRuns'
-import {useCrescentContext} from '../../../../redux/hooks'
-import {useRunDetailsQuery, useSampleAnnotsQuery, useUpdateNormalCellTypesMutation} from '../../../../apollo/hooks/run'
-
-export default function AddNormalCellTypesButton({
-  runID
-}) {
-  const {userID: currentUserID} = useCrescentContext()
-  const {run} = useRunDetailsQuery(runID)
-  const {updateNormalCellTypes, loading} = useUpdateNormalCellTypesMutation(runID)
-
-
-  const sampleAnnots = useSampleAnnotsQuery(runID)
-
-  if (R.any(R.isNil, [run])) {
-    return (
-      null
-      // <Segment basic style={{ height: '100%' }} placeholder>
-      //   <Tada forever duration={1000}>
-      //     <Image src={Logo} centered size='medium' />
-      //   </Tada>
-      // </Segment>
-    )
-  }
-
-  if (R.any(R.isNil, [sampleAnnots])) {
-    return (
-      <Message color='purple'>
-        Upload a sample annotations above to select normal cell types.
-      <Segment color='purple'>
-        <Form>
-        <Form.Dropdown 
-          selection 
+const NormalCellTypeSelection = ({ children, icon, ...props }) => (
+  <Message color="purple">
+    <Icon name={icon} />
+    { children }
+    <Segment color="purple">
+      <Form>
+        <Form.Dropdown
+          selection
           search
           multiple
-          placeholder={'Select one or more normal cell types from sample annotations'}
-          // defaultValue={defaultValue}
-          disabled={true}
-          // label={label}
-          // value={parameterValue}
+          {...props}
         />
-        {/* {
-          R.not(disableInput) && 
-          <ResetToDefaultValueButton {...{disabled}}
-            // onClick={() => updateRunParameterValue({variables: {value: valueTransform(defaultValue)}})}
-          />
-        } */}
       </Form>
-      </Segment>
-      </Message>
+    </Segment>
+  </Message>
+)
+
+export default function AddNormalCellTypesButton({
+  runID,
+  sampleAnnots,
+  secondaryRunSubmitted,
+  setNormalCellTypes
+}) {
+  // const {userID: currentUserID} = useCrescentContext()
+  const {updateNormalCellTypes} = useUpdateNormalCellTypesMutation(runID)
+
+  if (R.isNil(sampleAnnots)) {
+    return (
+      <NormalCellTypeSelection
+        disabled
+        icon="upload"
+        placeholder="Select one or more normal cell types from sample annotations"
+      >
+        Upload a sample annotations above to select normal cell types.
+      </NormalCellTypeSelection>
     )
   }
+
+  if (RA.isEmptyArray(sampleAnnots)) {
+    return (
+      <NormalCellTypeSelection
+        disabled
+        icon="exclamation circle"
+        placeholder="No normal cell types found from sample annotations"
+      >
+        Upload a sample annotations with one or more normal cell types to make a selection.
+      </NormalCellTypeSelection>
+    )
+  }
+
   // const {status: runStatus, name: runName, createdBy: {userID: creatorUserID}} = run
   // const disabledUpload = R.not(R.equals(currentUserID, creatorUserID))
   
   const formatList = R.addIndex(R.map)((val, index) => ({key: index, text: val, value: val}))
-  const {normalCellTypes} = run
-
 
   return (
-    <>
-      <Message color='purple'>
-        Select one or more normal cell types from sample annotations.
-        <Form>
-        <Form.Dropdown 
-          selection 
-          search
-          multiple
-          placeholder={'Select one or more normal cell types from sample annotations'}
-          // defaultValue={defaultValue}
-          // disabled={disableInput}
-          options={formatList(sampleAnnots)}
-          // label={label}
-          // value={normalCellTypes}
-          onChange={(e, {value}) => updateNormalCellTypes({variables: {normalCellTypes: value}})}
-        />
-        {/* {
-          R.not(disableInput) && 
-          <ResetToDefaultValueButton {...{disabled}}
-            // onClick={() => updateRunParameterValue({variables: {value: valueTransform(defaultValue)}})}
-          />
-        } */}
-      </Form>
-      </Message>
+    <NormalCellTypeSelection
+      disabled={secondaryRunSubmitted}
+      icon="arrow circle down"
+      onChange={async (e, {value}) => {
+        const {data: {updateNormalCellTypes: updateNormalCellTypesResults}} = await updateNormalCellTypes({variables: {normalCellTypes: value}})
 
-
-    </>
+        if (RA.isNotNil(updateNormalCellTypesResults)) setNormalCellTypes(value)
+      }}
+      options={formatList(sampleAnnots)}
+      placeholder="Select one or more normal cell types from sample annotations"
+    >
+      Select one or more normal cell types from sample annotations.
+    </NormalCellTypeSelection>
   )
 }

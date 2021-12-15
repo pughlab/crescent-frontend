@@ -1,5 +1,5 @@
 import React from 'react'
-import Plot from 'react-plotly.js'
+import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
 import { Image, Segment } from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'
@@ -56,14 +56,12 @@ const InferCNVHeatmap = ({
   return (
     <>
       <PlotHeader {...{plotQueryID}} runID={runID || compareRunID} name={currentPlotType} />
-      <Segment basic style={{height: '100%'}} loading={R.test(/.*Loading/, current.value)}>
-        <Plot
+      <ResponsivePlotSegment>
+        <ResponsivePlot
+          automargin
           config={{ showTips: false }}
           data={current.context.plotData}
-          useResizeHandler
-          style={{ width: '100%', height: '90%'}}
           layout={{
-            autosize: true,
             hovermode: 'closest',
             hoverlabel: { bgcolor: "#FFF" },
             margin: { l: 80, r: 30, b: 80, t: 20 },
@@ -77,7 +75,6 @@ const InferCNVHeatmap = ({
                 size: 11,
               },
               title: 'Genomic Regions',
-              automargin: true,
             },
             yaxis: {
               tickvals: cellTypeStartIndices,
@@ -87,12 +84,11 @@ const InferCNVHeatmap = ({
                 size: 11,
               },
               title: 'Cell Types',
-              automargin: true,
             },
           }}
 
         />
-      </Segment>
+      </ResponsivePlotSegment>
     </>
   )
 }

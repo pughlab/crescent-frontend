@@ -18,6 +18,7 @@ export default function useSubmitGSVAMutation(runID) {
       run(runID: $runID) {
         secondaryRuns {
           wesID
+          type
           status
           submittedOn
           completedOn

@@ -102,12 +102,13 @@ const ViolinPlot = ({
       <PlotHeader {...{plotQueryID}} name="Gene Expression Violin" runID={runID || compareRunID} />
       <ResponsivePlotSegment loading={current.matches('dataLoading')}>
         <ResponsivePlot
+          automargin
           config={{showTips: false}}
           data={current.context.plotData}
           layout={{
             hovermode: 'closest',
-            xaxis: {tickmode: 'linear', automargin: true, autorange: true, type: 'category'},
-            yaxis: {showgrid: false, title: {text: 'Gene Expression'}, automargin: true},
+            xaxis: {tickmode: 'linear', autorange: true, type: 'category'},
+            yaxis: {showgrid: false, title: {text: 'Gene Expression'}},
             margin: {l:45, r:20, b:20, t:20},
           }}
         />

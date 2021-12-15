@@ -221,6 +221,7 @@ const DotPlot = ({
           }}
         />
         <ResponsivePlot
+          automargin
           config={{ showTips: false }}
           data={stringifyYValues(plotData)}
           style={{height: 'calc(100% - 60px)'}}
@@ -235,7 +236,6 @@ const DotPlot = ({
               showline: true,
               showgrid: true,
               autorange: true,
-              automargin: true,
               type: 'category',
               categoryorder: 'array',
             },
@@ -244,7 +244,6 @@ const DotPlot = ({
               showline: true,
               showgrid: true,
               autorange: true,
-              automargin: true,
               type: 'category',
               categoryorder: 'array',
             },

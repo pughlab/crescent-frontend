@@ -363,6 +363,24 @@ const resolvers = {
       }
     },
 
+    failedRunLogs: async({runID}, variables, {Minio}) => {
+      try {
+        const objectStream = await Minio.client.getObject(`run-${runID}`, `failedRunLog-${runID}.txt`)
+
+        let failedRunLogs = ''
+
+        return await new Promise((resolve, reject) => {
+          objectStream.on('data', chunk => failedRunLogs += chunk)
+          objectStream.on('error', err => reject(err))
+          objectStream.on('end', () => resolve(failedRunLogs))
+        })
+      } catch (err) {
+        console.log(err)
+
+        return null
+      }
+    },
+
     hasResults: async ({runID}, variables, {Minio}) => {
       try {
         const runBucketObjects = await Minio.bucketObjectsList(`run-${runID}`)
@@ -378,7 +396,7 @@ const resolvers = {
       // (assuming that the status can't change from "completed" or "failed")
       if (R.or(R.isNil(wesID), R.either(R.equals('completed'), R.equals('failed'))(status))) return status;
       
-      let runStatus = status
+      let runStatus = status;
 
       try {
         // Make a request to WES API to get the status of the run
@@ -466,7 +484,7 @@ const resolvers = {
       // (assuming that the status can't change from "completed" or "failed")
       if (R.or(R.isNil(wesID), R.either(R.equals('completed'), R.equals('failed'))(status))) return status;
       
-      let runStatus = status
+      let runStatus = status;
 
       try {
         // Make a request to WES API to get the status of the secondary run

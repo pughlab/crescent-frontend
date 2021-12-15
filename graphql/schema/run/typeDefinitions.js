@@ -5,6 +5,7 @@ const typeDefs = gql`
 
   type SecondaryRun {
     wesID: ID
+    type: String,
     submittedOn: Date
     completedOn: Date
     status: String
@@ -69,6 +70,7 @@ const typeDefs = gql`
     secondaryRuns: [SecondaryRun]
     wesID: ID
     logs: String
+    failedRunLogs: String
     uploadNames: UploadNames
 
     # Datasets selected from parent project
