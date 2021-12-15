@@ -29,6 +29,7 @@ const typeDefs = gql`
     selectedAssay: String
     selectedDiffExpression: String
     selectedQCDataset: ID
+    selectedInferCNVType: String
   }
 
   input PlotQueryInput {
@@ -43,6 +44,7 @@ const typeDefs = gql`
     selectedAssay: String
     selectedDiffExpression: String
     selectedQCDataset: ID
+    selectedInferCNVType: String
   }
 
   type Run {

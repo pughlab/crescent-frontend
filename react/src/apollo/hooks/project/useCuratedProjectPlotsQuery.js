@@ -41,6 +41,7 @@ export default function useCuratedProjectPlotsQuery() {
             selectedQCDataset
             selectedScaleBy
             selectedExpRange
+            selectedInferCNVType
           }
         }
       }

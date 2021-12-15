@@ -11,18 +11,18 @@ from get_data.get_client import get_minio_client
 from get_data.helper import return_error, set_IDs, extract_cluster_label, set_name_multi
 from get_data.minio_functions import get_obj_as_2dlist, get_obj_as_dictionary, object_exists
 
-def get_inferCNV_heatmap_data(runID):
+def get_inferCNV_heatmap_data(runID, inferCNV_type):
     """ given a runID, fetch the heatmap data """
     heatmap_data = {}
     paths = {}
     with open('get_data/paths.json') as paths_file:
         paths = json.load(paths_file)
-    paths = set_IDs(paths, runID, ['infercnv', 'infercnv_gene_pos', 'infercnv_annotation'])
-    infercnv, gene_pos, annotation = paths['infercnv'], paths['infercnv_gene_pos'], paths['infercnv_annotation']
+    paths = set_IDs(paths, runID, ['infercnv_' + inferCNV_type, 'infercnv_gene_pos', 'infercnv_annotation'])
+    infercnv, gene_pos, annotation = paths['infercnv_' + inferCNV_type], paths['infercnv_gene_pos'], paths['infercnv_annotation']
     
     minio_client = get_minio_client()
     if not object_exists(infercnv['bucket'], infercnv['object'], minio_client):
-        return_error('infercnv observation file not found')
+        return_error('infercnv ' + inferCNVType + ' file not found')
 
     infercnv_tsv = get_obj_as_2dlist(infercnv['bucket'], infercnv['object'], minio_client)
     gene_pos_dict = get_obj_as_dictionary(gene_pos['bucket'], gene_pos['object'], minio_client, 0, 1)
@@ -43,7 +43,7 @@ def get_inferCNV_heatmap_data(runID):
     for barcode in infercnv_tsv[0][1:]:
         heatmap_data['text'].append([gene_pos_dict[gene] for gene in heatmap_data['x']])
     for barcode in infercnv_tsv[0][1:]:
-        heatmap_data['hovertext'].append([annotation_dict[barcode] for gene in heatmap_data['x']])
+        heatmap_data['hovertext'].append([annotation_dict[barcode.replace(".", "-")] for gene in heatmap_data['x']])
     for row in transposed_infercnv_tsv[1:]:
         heatmap_data['y'].append(row[0])
         heatmap_data['z'].append(row[1:])

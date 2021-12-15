@@ -30,7 +30,8 @@ const PlotCard = ({
       selectedFeature,
       selectedFeatures,
       selectedGroup,
-      selectedScaleBy
+      selectedScaleBy,
+      selectedInferCNVType
     }
   } = plot
   
@@ -82,7 +83,10 @@ const PlotCard = ({
                     <Label content='Scale by' detail={selectedScaleBy} />
                   </>
                 )],
-                [R.includes(R.__, ['gsva', 'infercnv']), R.always(
+                [R.includes(R.__, ['infercnv']), R.always(
+                  <Label content='Type' detail={selectedInferCNVType} />
+                )],
+                [R.includes(R.__, ['gsva']), R.always(
                   <Label content='No parameter selected'/>
                 )],
                 // tsne, umap, violin

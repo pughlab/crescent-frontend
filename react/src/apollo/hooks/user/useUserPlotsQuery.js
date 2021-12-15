@@ -40,6 +40,7 @@ export default function useUserPlotsQuery(userID) {
             selectedQCDataset
             selectedScaleBy
             selectedExpRange
+            selectedInferCNVType
           }
         }
       }

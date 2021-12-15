@@ -19,11 +19,11 @@ const InferCNVHeatmap = ({
 }) => {
   const { runID } = useCrescentContext()
 
-  const { activeResult, runID: compareRunID, plotQueryID, service } = useResultsPagePlotQuery(plotQueryIndex)
+  const { activeResult, selectedInferCNVType, runID: compareRunID, plotQueryID, service } = useResultsPagePlotQuery(plotQueryIndex)
   const [current, send] = useService(service)
   const {plots} = useResultsAvailableQuery(runID || compareRunID)
-  useInferCNVHeatmapQuery(runID || compareRunID, plotQueryIndex)
-  
+  useInferCNVHeatmapQuery(runID || compareRunID, selectedInferCNVType, plotQueryIndex)
+
   if (R.any(R.isNil, [plots])) {
     return null
   }
@@ -56,7 +56,7 @@ const InferCNVHeatmap = ({
   return (
     <>
       <PlotHeader {...{plotQueryID}} runID={runID || compareRunID} name={currentPlotType} />
-      <Segment basic style={{height: '100%'}}>
+      <Segment basic style={{height: '100%'}} loading={R.test(/.*Loading/, current.value)}>
         <Plot
           config={{ showTips: false }}
           data={current.context.plotData}

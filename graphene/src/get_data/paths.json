@@ -92,9 +92,13 @@
         "bucket": "run-",
         "object": "GSVA/GSVA_RESULTS/crescent.GSVA_cluster_final_label.tsv"
     },
-    "infercnv": {
+    "infercnv_observations": {
         "bucket": "run-",
         "object": "INFERCNV/INFERCNV/infercnv.observations.tsv"
+    },
+    "infercnv_references": {
+        "bucket": "run-",
+        "object": "INFERCNV/INFERCNV/infercnv.references.tsv"
     },
     "infercnv_gene_pos": {
         "bucket": "run-",

@@ -343,3 +343,25 @@ def get_sample_annots_data(runID):
     sample_annots_dict = get_obj_as_dictionary(annotation['bucket'], annotation['object'], minio_client, 0, 1)
     sample_annots = list(OrderedSet(sample_annots_dict.values()))
     return sample_annots
+
+def get_inferCNV_types(runID):
+    minio_client = get_minio_client()
+    paths = get_paths(runID, ["frontend_coordinates"])
+    DESC = {}
+    with open('get_data/desc.json') as desc_file:
+        DESC = json.load(desc_file)
+    
+    infercnv_type_pattern = re.compile(r"INFERCNV/INFERCNV/infercnv.(?P<type>[a-zA-Z]+).tsv")
+    object_names = get_list_of_object_names(paths["frontend_coordinates"]["bucket"], minio_client)
+    types = []
+    count = 0
+    for object_name in object_names:
+        match = infercnv_type_pattern.match(object_name)
+        if match is not None:
+            types.append({
+                "key": count,
+                "text": match.groupdict()["type"],
+                "value": match.groupdict()["type"],
+            })
+            count += 1
+    return types
