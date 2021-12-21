@@ -139,7 +139,7 @@ const ProjectRunCard = ({ run }) => {
               </Label.Group>
             <Divider horizontal content='Total Cells' />
             {<Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${totalCells} raw cells`} /> }
-            {<Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${cellcount} filtered cells`} /> }
+            {RA.isNotNil(cellcount) && <Label content={<Icon style={{ margin: 0 }} name='certificate' />} detail={`${cellcount} filtered cells`} /> }
             </Message.Content>
           </Message>
         </>
