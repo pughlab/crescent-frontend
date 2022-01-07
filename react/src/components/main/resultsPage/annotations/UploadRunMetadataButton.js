@@ -1,23 +1,18 @@
 import React, {useState, useCallback, useEffect} from 'react'
+import {useActor} from '@xstate/react'
 import {Button, Icon, Segment, Header, Message } from 'semantic-ui-react'
 import {useDropzone} from 'react-dropzone'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {useDispatch} from 'react-redux'
-import {useCrescentContext} from '../../../../redux/hooks'
-import {resetAnnotations} from '../../../../redux/actions/annotations'
+import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
 
-import {useRunDetailsQuery, useUploadRunMetadataMutation} from '../../../../apollo/hooks/run'
+import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
-export default function UploadMetadataButton({
-  refetchUploadNames,
-  runID
-}) {
-  const dispatch = useDispatch()
+export default function UploadMetadataButton({runID}) {
+  const {annotationsService: service} = useAnnotations()
   const {userID: currentUserID} = useCrescentContext()
   const {run} = useRunDetailsQuery(runID)
-  const {uploadRunMetadata, loading, metadataUploaded} = useUploadRunMetadataMutation({runID})
   const [metadataFile, setMetadataFile] = useState(null)
 
   const onDrop = useCallback(acceptedFiles => {
@@ -25,9 +20,17 @@ export default function UploadMetadataButton({
   }, [])
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
+  const [{context: {inputsReady}, matches}, send] = useActor(service)
+  const secondaryRunSubmitted = matches('secondaryRunSubmitted')
+  const isStatus = status => R.both(RA.isNotNil, R.compose(
+    R.equals(status),
+    R.head
+  ))(inputsReady)
+  const [uploadLoading, uploadSuccess, uploadFailed] = R.map(isStatus, ['loading', 'success', 'failed'])
+
   useEffect(() => {
-    if (metadataUploaded) setMetadataFile(null)
-  }, [metadataUploaded])
+    if (secondaryRunSubmitted) setMetadataFile(null)
+  }, [secondaryRunSubmitted])
 
   if (R.isNil(run)) return null
 
@@ -52,7 +55,7 @@ export default function UploadMetadataButton({
         ) : (
           <div {...getRootProps()}>
             <input {...getInputProps()} />
-            <Segment placeholder loading={loading}>
+            <Segment placeholder loading={uploadLoading}>
               <Header
                 content={R.isNil(metadataFile) ? 'Drag and drop a metadata.tsv file or click to select file' : metadataFile.name}
                 textAlign="center"
@@ -60,13 +63,21 @@ export default function UploadMetadataButton({
               { RA.isNotNil(metadataFile) && (
                 <Button
                   color="purple"
-                  content={R.toUpper(loading ? 'Uploading' : R.both(RA.isNotNil, R.not)(metadataUploaded) ? 'Upload failed, please try again' : 'Confirm')}
+                  content={R.toUpper(
+                    uploadLoading ? 'Uploading' :
+                    uploadFailed ? 'Upload failed, please try again' :
+                    uploadSuccess ? 'Reupload' :
+                    'Upload'
+                  )}
                   onClick={e => {
                     e.stopPropagation()
-                    uploadRunMetadata({variables: {metadata: metadataFile}}).then(({data: {uploadRunMetadata}}) => {
-                      if (RA.isNotNil(uploadRunMetadata)) {
-                        dispatch(resetAnnotations())
-                        refetchUploadNames()
+                    send({
+                      type: 'UPLOAD_INPUT',
+                      inputIndex: 0,
+                      uploadOptions: {
+                        variables: {
+                          metadata: metadataFile
+                        }
                       }
                     })
                   }}

@@ -152,19 +152,23 @@ const resolvers = {
     },
     cancelRun: async(parent, {runID}, {Runs, dataSources}) => {
       try {
-        const {status_code} = await dataSources.wesAPI.cancelRun(runID)
+        const {status_code} = await dataSources.wesAPI.cancelRun({runID})
 
         if (RA.isUndefined(status_code)) {
           await Runs.updateOne({runID}, {$set: {"status": 'failed'}})
-          return "failed";
+          return "failed"
         }
       } catch (error) {
-        console.log(error);
+        console.log(error)
       }
     },
-    cancelSecondaryRun: async(parent, {runID, wesID}, {Runs, dataSources}) => {
+    cancelSecondaryRun: async(parent, {annotationType, runID, wesID}, {Runs, dataSources}) => {
       try {
-        const {status_code} = await dataSources.wesAPI.cancelRun(runID)
+        const {status_code} = await dataSources.wesAPI.cancelRun({
+          annotationType,
+          isSecondaryRun: true,
+          runID
+        })
 
         if (RA.isUndefined(status_code)) {
           await Runs.updateOne({"secondaryRuns.wesID": wesID}, {$set: {"secondaryRuns.$.status": 'failed'}})
@@ -356,7 +360,7 @@ const resolvers = {
 
     logs: async({runID}, variables, {dataSources}) => {
       try {
-        const {docker_logs} = await dataSources.wesAPI.getLogs(runID);
+        const {docker_logs} = await dataSources.wesAPI.getLogs({runID})
         return docker_logs
       } catch (error) {
         console.log(error)
@@ -505,9 +509,13 @@ const resolvers = {
         return runStatus;
       }
     },
-    logs: async(parent, {runID}, {dataSources}) => {
+    logs: async(parent, {annotationType, runID}, {dataSources}) => {
       try {
-        const {docker_logs} = await dataSources.wesAPI.getLogs(runID);
+        const {docker_logs} = await dataSources.wesAPI.getLogs({
+          annotationType,
+          isSecondaryRun: true,
+          runID
+        })
         return docker_logs
       } catch (error) {
         console.log(error)

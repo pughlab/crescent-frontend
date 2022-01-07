@@ -1,35 +1,36 @@
 import React, {useEffect, useState} from 'react'
+import {useActor} from '@xstate/react'
 import {Button, Icon, Label, List} from 'semantic-ui-react'
 import moment from 'moment'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {useCancelSecondaryRunMutation} from '../../../../apollo/hooks/run'
+import {useSecondaryRunStatusQuery} from '../../../../apollo/hooks/run'
 
 import {useDispatch} from 'react-redux'
-import {resetAnnotations} from '../../../../redux/actions/annotations'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
 
 const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initialCompletedOn, status: initialStatus }) => {
   const dispatch = useDispatch()
-  const {logsIsAvailable, logsWasAvailable, secondaryRunWesID} = useAnnotations()
+  const {annotationsService: service} = useAnnotations()
   const {runID} = useCrescentContext()
   const [secondaryRunStatus, setSecondaryRunStatus] = useState(initialStatus)
   const [secondaryRunCompletedOn, setSecondaryRunCompletedOn] = useState(initialCompletedOn)
   const [isPolling, setIsPolling] = useState(false)
 
-  const {cancelFailed, cancelSecondaryRun, getStatus, getCompletedOn, loadingCancelSecondaryRun, secondaryRunCompletedOn: secondaryRunCompletedOnFromQuery, secondaryRunStatus: secondaryRunStatusFromPolling, stopStatusPolling} = useCancelSecondaryRunMutation(runID, wesID)
+  const {getStatus, getCompletedOn, secondaryRunCompletedOn: secondaryRunCompletedOnFromQuery, secondaryRunStatus: secondaryRunStatusFromPolling, stopStatusPolling} = useSecondaryRunStatusQuery(runID, wesID)
 
   const runIsSubmitted = R.equals('submitted', secondaryRunStatus)
   const runIsCompleted = R.equals('completed', secondaryRunStatus)
 
-  useEffect(() => {
-    if (R.and(
-      R.not(runIsSubmitted),
-      R.equals(wesID, secondaryRunWesID)
-    )) dispatch(resetAnnotations())
-  }, [dispatch, runIsSubmitted, secondaryRunWesID, wesID])
+  const [{context: {logs, secondaryRunWesID}, matches}, send] = useActor(service)
+  const logsIsAvailable = RA.isNotNil(logs)
+  const cancelLoading = R.and(
+    R.any(matches, ['cancelProcessing', 'secondaryRunCanceled']),
+    R.equals(secondaryRunWesID, wesID)
+  )
+  const cancelFailed = matches('cancelFailed')
 
   useEffect(() => {
     // Only call getStatus() to execute the lazy query and start polling if the secondary run is currently "submitted"
@@ -54,7 +55,6 @@ const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initial
       RA.isNotNil,
       R.complement(R.equals)('submitted')
     )(secondaryRunStatusFromPolling)) {
-      if (R.equals(wesID, secondaryRunWesID)) dispatch(resetAnnotations())
       setSecondaryRunStatus(secondaryRunStatusFromPolling)
     }
   }, [dispatch, secondaryRunStatusFromPolling, secondaryRunWesID, wesID])
@@ -86,8 +86,21 @@ const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initial
       )}
       <List.Content floated='right'>
         {
-          <Button floated='right' animated={R.or(runIsCompleted, runIsSubmitted && logsIsAvailable) && 'vertical'} color={color} 
-            onClick={() => runIsCompleted ? dispatch(setActiveSidebarTab({sidebarTab: 'visualizations'})) : runIsSubmitted && logsIsAvailable && cancelSecondaryRun()}
+          <Button floated='right' animated={R.any(RA.isTrue, [runIsCompleted, R.and(runIsSubmitted, logsIsAvailable), cancelLoading]) && 'vertical'} color={color} 
+            onClick={async () => {
+              if (runIsCompleted) {
+                dispatch(setActiveSidebarTab({sidebarTab: 'visualizations'}))
+              } else if (logsIsAvailable) {
+                send({
+                  type: 'CANCEL_SECONDARY_RUN',
+                  cancelOptions: {
+                    variables: {
+                      wesID
+                    }
+                  }
+                })
+              }
+            }}
           >
             <Button.Content visible>
               <Icon
@@ -96,16 +109,16 @@ const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initial
                 size='large'
               />   
               {' '}
-              { R.and(runIsSubmitted, logsWasAvailable) ? 'FINISHING' : R.toUpper(secondaryRunStatus) }
+              { R.toUpper(secondaryRunStatus) }
             </Button.Content>
-            { R.or(runIsCompleted, R.and(runIsSubmitted, logsIsAvailable)) && (
+            { R.any(RA.isTrue, [runIsCompleted, R.and(runIsSubmitted, logsIsAvailable), cancelLoading]) && (
               <Button.Content hidden>
                 <Icon
                   name={runIsCompleted ? icon : 'x'}
                   size='large'
                 />  
                 {' '}
-                {runIsCompleted ? 'VIEW RUN' : loadingCancelSecondaryRun ? 'CANCELING RUN' : cancelFailed ? 'CANCEL FAILED' : 'CANCEL RUN'}
+                {runIsCompleted ? 'VIEW RUN' : cancelLoading ? 'CANCELING RUN' : cancelFailed ? 'CANCEL FAILED' : 'CANCEL RUN'}
               </Button.Content>
             )}
           </Button>

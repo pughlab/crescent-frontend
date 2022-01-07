@@ -13,7 +13,6 @@ import DataForm from './DataForm'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
-import {setAnnotationsRunID} from '../../../../redux/actions/annotations'
 import {setRun} from '../../../../redux/actions/context'
 
 
@@ -88,7 +87,6 @@ const NewRunModal = ({
       if (RA.isNotNil(run)) {
         const {runID} = run
         dispatch(setRun({runID}))
-        dispatch(setAnnotationsRunID({runID}))
       }
     }
   })

@@ -277,6 +277,12 @@ paths:
           in: path
           required: true
           type: string
+        - name: annotation_type
+          in: query
+          type: string
+        - name: is_secondary_run
+          in: query
+          type: boolean
       tags:
         - WorkflowExecutionService
   /runs/completed-on:
@@ -362,6 +368,12 @@ paths:
           in: path
           required: true
           type: string
+        - name: annotation_type
+          in: query
+          type: string
+        - name: is_secondary_run
+          in: query
+          type: boolean
       tags:
         - WorkflowExecutionService
   /runs/{run_id}/status:

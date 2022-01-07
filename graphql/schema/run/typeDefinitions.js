@@ -9,7 +9,7 @@ const typeDefs = gql`
     submittedOn: Date
     completedOn: Date
     status: String
-    logs(runID: ID): String
+    logs(annotationType: String, runID: ID): String
     uploadName: String
   }
 
@@ -128,6 +128,7 @@ const typeDefs = gql`
     ): String
 
     cancelSecondaryRun(
+      annotationType: String,
       runID: ID,
       wesID: ID
     ): String

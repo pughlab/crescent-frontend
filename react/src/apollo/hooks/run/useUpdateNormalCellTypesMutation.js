@@ -1,12 +1,8 @@
-import {useState, useEffect} from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
-import * as RA from 'ramda-adjunct'
-import * as R from 'ramda'
 
 export default function useUpdateNormalCellTypesMutation(runID) {
-  const [run, setRun] = useState(null)
-  const [updateNormalCellTypes, {loading}] = useMutation(gql`
+  const [updateNormalCellTypes] = useMutation(gql`
     mutation UpdateNormalCellTypes(
       $runID: ID!
       $normalCellTypes: [String]
@@ -22,13 +18,8 @@ export default function useUpdateNormalCellTypesMutation(runID) {
   `, {
     variables: {
       runID
-    },
-    onCompleted: ({updateNormalCellTypes: run}) => {
-      if (RA.isNotNil(run)) {
-        setRun(run)
-      }
     }
   })
 
-  return {run, updateNormalCellTypes, loading}
+  return updateNormalCellTypes
 }

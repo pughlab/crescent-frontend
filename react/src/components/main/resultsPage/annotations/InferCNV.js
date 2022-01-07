@@ -1,15 +1,14 @@
 import React, {useEffect, useState} from 'react'
+import {useActor} from '@xstate/react'
 import {Image, Grid, Segment} from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 
-import {useDispatch} from 'react-redux'
 import {useAnnotations} from '../../../../redux/hooks'
-import {setGenePosUploaded, setSampleAnnotsUploaded} from '../../../../redux/actions/annotations'
 
-import {useSubmitInferCNVMutation, useSampleAnnotsQuery, useUpdateNormalCellTypesMutation} from '../../../../apollo/hooks/run'
+import {useSubmitInferCNVMutation, useSampleAnnotsQuery, useUpdateNormalCellTypesMutation, useUploadGenePosMutation, useUploadSampleAnnotsMutation} from '../../../../apollo/hooks/run'
 
 import UploadSampleAnnotsButton from './UploadSampleAnnotsButton'
 import UploadGenePosButton from './UploadGenePosButton'
@@ -19,21 +18,72 @@ import SecondaryRunLogs from '../logs/SecondaryRunLogs'
 import AnnotationsSecondaryRuns, {NoSecondaryRuns} from './AnnotationsSecondaryRuns'
 
 export default function InferCNV({ runID }) {
-  const dispatch = useDispatch()
-  const {secondaryRunWesID} = useAnnotations()
+  const {annotationsService: service} = useAnnotations()
   // const {userID: currentUserID} = useCrescentContext()
   const {refetchSampleAnnots, sampleAnnots} = useSampleAnnotsQuery(runID)
-  const {submitInferCNV, run, loading: loadingInferCNV, secondaryRunSubmitted} = useSubmitInferCNVMutation(runID)
+  const uploadSampleAnnots = useUploadSampleAnnotsMutation(runID)
+  const updateNormalCellTypes = useUpdateNormalCellTypesMutation(runID)
+  const uploadGenePos = useUploadGenePosMutation(runID)
+  const {submitInferCNV, run} = useSubmitInferCNVMutation(runID)
   const [secondaryRuns, setSecondaryRuns] = useState(null)
   const [currSampleAnnots, setCurrSampleAnnots] = useState(null)
-  const [normalCellTypes, setNormalCellTypes] = useState([])
 
 	const annotationType = 'InferCNV'
 
+  const [{context: {secondaryRunWesID}, matches}, send] = useActor(service)
+  const secondaryRunSubmitted = matches('secondaryRunSubmitted')
+
   useEffect(() => {
-    dispatch(setSampleAnnotsUploaded({uploaded: null}))
-    dispatch(setGenePosUploaded({uploaded: null}))
-  }, [dispatch])
+    send({
+      type: 'ANNOTATION_TYPE_INIT',
+      annotationType,
+      // The predicates that the respective input must satisfy before the secondary run can be submitted
+      inputConditions: [
+        R.both(RA.isNotNil, RA.isNonEmptyArray),
+        R.both(RA.isNotNil, RA.isNonEmptyArray),
+        RA.isNotNil
+      ],
+      // Labels for input upload status checklist
+      inputChecklistLabels: [
+        'Sample annotation file (.txt format)',
+        'Normal cell type selection',
+        'Gene/chromosome position file (.txt format)'
+      ],
+      // Submission function for the secondary run
+      submitFunction: submitInferCNV,
+      // Function for uploading/handling the respective input
+      // NOTE: each must be a function (the function will be passed uploadOptions)
+      // that returns a promise that resolves with the upload results in the form of {data: results} 
+      // (which will then verified with the respective input condition)
+      uploadFunctions: [
+        // inputIndex: 0 - sample annotation file upload or retrieving previously upload sample annotations
+        uploadOptions => new Promise(async resolve => {
+          const {type, variables} = uploadOptions
+
+          // Clear the normal cell types from the previous InferCNV secondary run
+          await updateNormalCellTypes({variables: {normalCellTypes: []}})
+          // Upload the sample annots file
+          // (only if the user uploaded a sample annots file vs. choosing to use the previously uploaded sample annots file)
+          if (type === 'newUpload') await uploadSampleAnnots({...{variables}})
+          // Refetch and set the current sample annots
+          const {data: {sampleAnnots: sampleAnnotsResults}} = await refetchSampleAnnots()
+          
+          if (RA.isNotNil(sampleAnnotsResults)) setCurrSampleAnnots(sampleAnnotsResults)
+
+          resolve({data: RA.isNotNil(sampleAnnotsResults) ? sampleAnnotsResults : null})
+        }),
+        // inputIndex: 1 - normal cell type update
+        uploadOptions => new Promise(async resolve => {
+          const {variables: {normalCellTypes: value}} = uploadOptions
+          const {data: {updateNormalCellTypes: updateNormalCellTypesResults}} = await updateNormalCellTypes(uploadOptions)
+
+          resolve(updateNormalCellTypesResults ? {data: value} : null)
+        }),
+        // inputIndex: 2 - gene position file upload
+        uploadGenePos
+      ]
+    })
+  }, [send, refetchSampleAnnots, submitInferCNV, updateNormalCellTypes, uploadGenePos, uploadSampleAnnots])
 
   useEffect(() => {
     if (RA.isNotNil(run)) {
@@ -73,17 +123,17 @@ export default function InferCNV({ runID }) {
         <Grid>
           <Grid.Row>
             <Grid.Column>
-              <UploadSampleAnnotsButton {...{refetchSampleAnnots, runID, sampleAnnots, secondaryRunSubmitted, setCurrSampleAnnots}} />
+              <UploadSampleAnnotsButton {...{sampleAnnots}} />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              <AddNormalCellTypesButton {...{runID, sampleAnnots: currSampleAnnots, secondaryRunSubmitted, setNormalCellTypes}} />
+              <AddNormalCellTypesButton {...{sampleAnnots: currSampleAnnots}} />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              <UploadGenePosButton {...{loadingInferCNV, normalCellTypes, runID, sampleAnnots: currSampleAnnots, secondaryRunSubmitted, setNormalCellTypes, submitInferCNV}} />
+              <UploadGenePosButton />
             </Grid.Column>
           </Grid.Row>
         </Grid>

@@ -25,6 +25,7 @@ import useRemoveSavedPlotQueryMutation from './useRemoveSavedPlotQueryMutation'
 import useUpdateSavedPlotQueryMutation from './useUpdateSavedPlotQueryMutation'
 import useRunUploadNamesQuery from './useRunUploadNamesQuery'
 import useFailedRunLogsQuery from './useFailedRunLogsQuery'
+import useSecondaryRunStatusQuery from './useSecondaryRunStatusQuery'
 
 export {
   useRunDetailsQuery,
@@ -53,5 +54,6 @@ export {
   useRemoveSavedPlotQueryMutation,
   useUpdateSavedPlotQueryMutation,
   useRunUploadNamesQuery,
-  useFailedRunLogsQuery
+  useFailedRunLogsQuery,
+  useSecondaryRunStatusQuery
 }

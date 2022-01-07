@@ -1,5 +1,6 @@
 import React from 'react'
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 import {Button, Segment} from 'semantic-ui-react'
 
@@ -8,19 +9,22 @@ import VisualizationsSidebar from '../visualizations/VisualizationsSidebar'
 import LogsSidebar from '../logs/LogsSidebar'
 import AnnotationsSidebar from '../annotations/AnnotationSidebar'
 
+import SecondaryRunInputChecklist from './SecondaryRunInputChecklist'
+
 import SubmitRunButton from './SubmitRunButton'
 import CancelRunButton from './CancelRunButton'
 import DownloadResultsButton from './DownloadResultsButton'
+import SubmitSecondaryRunButton from './SubmitSecondaryRunButton'
 
 import {useDispatch} from 'react-redux'
-import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
+import {useResultsPage, useCrescentContext, useAnnotations} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
 const SidebarComponent = () => {
+  const {annotationsService: service} = useAnnotations()
   const {userID: currentUserID, runID} = useCrescentContext()
   const {run} = useRunDetailsQuery(runID)
-
 
   const dispatch = useDispatch()
   const {activeSidebarTab, runStatus} = useResultsPage()
@@ -29,6 +33,7 @@ const SidebarComponent = () => {
   if (R.isNil(run)) {
     return null
   }
+
   const {createdBy: {userID: creatorUserID}} = run
   const disableResults = R.equals('pending', runStatus)
   const enableSubmit = R.equals(currentUserID, creatorUserID)
@@ -36,7 +41,6 @@ const SidebarComponent = () => {
   const runIsNotCompleted = R.not(R.equals('completed', runStatus))
 
   return (
-    
     <Segment basic style={{padding: 0, display: 'flex', flexDirection: 'column'}}>
       <Segment attached='top'>
         {/* {
@@ -90,12 +94,16 @@ const SidebarComponent = () => {
         ])(activeSidebarTab)
       }
       </Segment>
+      { R.compose(R.and(R.both(RA.isNotNil, R.hasIn('status'))(service)), R.equals('annotations'))(activeSidebarTab) && (
+        <SecondaryRunInputChecklist />
+      )}
       <Segment attached='bottom'>
       {
         R.cond([
           [R.compose(R.and(runIsSubmitted), R.equals('logs')), R.always(<CancelRunButton />)],
           [R.compose(R.and(enableSubmit), R.equals('parameters')), R.always(<SubmitRunButton />)],
           [R.equals('visualizations'), R.always(<DownloadResultsButton />)],
+          [R.compose(R.and(R.both(RA.isNotNil, R.hasIn('status'))(service)), R.equals('annotations')), R.always(<SubmitSecondaryRunButton />)],
           [R.T, R.always(null)]
         ])(activeSidebarTab)
       }

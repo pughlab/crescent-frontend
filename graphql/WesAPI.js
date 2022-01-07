@@ -16,12 +16,12 @@ module.exports = {
             return this.get(`/ga4gh/wes/v1/runs/${wesID}`);
         }
 
-        async cancelRun(runID) {
-            return this.post(`/ga4gh/wes/v1/runs/${runID}/cancel`)
+        async cancelRun({annotationType=null, isSecondaryRun=false, runID}) {
+            return this.post(`/ga4gh/wes/v1/runs/${runID}/cancel?annotation_type=${annotationType}&is_secondary_run=${isSecondaryRun}`)
         }
 
-        async getLogs(runID) {
-            return this.get(`/ga4gh/wes/v1/runs/${runID}/logs`);
+        async getLogs({annotationType=null, isSecondaryRun=false, runID}) {
+            return this.get(`/ga4gh/wes/v1/runs/${runID}/logs?annotation_type=${annotationType}&is_secondary_run=${isSecondaryRun}`);
         }
 
         async getCompletedOn({isSecondaryRun=false, runID, state, submittedOnTime, wesID}) {

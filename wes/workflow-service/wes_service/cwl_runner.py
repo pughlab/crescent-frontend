@@ -168,7 +168,7 @@ class Workflow(object):
 
 # CReSCENT-specific
 class WorkflowCrescent(object):
-    def __init__(self, is_secondary_run=False, run_id=None, state=None, submitted_on_time=None, wes_id=None):
+    def __init__(self, annotation_type=None, is_secondary_run=False, run_id=None, state=None, submitted_on_time=None, wes_id=None):
         if wes_id is not None:
             self.response = Workflow(wes_id).getlog() # The response object for the run
             self.log_file_prefix = "{}:---{}".format(
@@ -176,6 +176,7 @@ class WorkflowCrescent(object):
                 self.response['request']['workflow_attachment'][8:].replace('/', '-')
             ) # The log file prefix for this run's log files
         
+        self.annotation_type = annotation_type # Secondary runs only: the annotation type of the secondary run
         self.is_secondary_run = is_secondary_run # Whether or not the run is a secondary run
         self.run_id = run_id # CReSCENT's runID
         self.state = state # State of the run
@@ -185,12 +186,17 @@ class WorkflowCrescent(object):
     # Helper methods
     def getcontainerid(self):
         # Helper function for determining if any of the container's mounts' destination contain the relevant runID
-        def mountDestinationIncludesRunID(container):
+        def mountDestinationContainsRunID(container):
             return any([mount for mount in docker_client.api.inspect_container(container.id)['Mounts'] if self.run_id in mount['Destination']])
 
+        # Helper function for determining if any of the args contain the relevant annotation type
+        def argsContainAnnotationType(container):
+            return any([arg for arg in docker_client.api.inspect_container(container.id)['Args'] if self.annotation_type in arg])
+
         # Returns the containerID of the container who has a mount with a destination value that contains the relevant runID
+        # and at least one arg that contains the relevant annotation type
         # Otherwise, returns None if no container was found
-        return next((container.id for container in docker_client.containers.list() if mountDestinationIncludesRunID(container)), None)
+        return next((container.id for container in docker_client.containers.list() if mountDestinationContainsRunID(container) and (argsContainAnnotationType(container) if self.is_secondary_run else True)), None)
     
     def getcontainerbyid(self, container_id):
         return docker_client.containers.get(container_id)
@@ -377,12 +383,12 @@ class CWLRunnerBackend(WESBackend):
         return job.getstatus()
 
     # CReSCENT-specific
-    def CancelRun(self, run_id):
-        job = WorkflowCrescent(run_id=run_id)
+    def CancelRun(self, run_id, annotation_type=None, is_secondary_run=False):
+        job = WorkflowCrescent(annotation_type=annotation_type, is_secondary_run=is_secondary_run, run_id=run_id)
         return job.cancel()
 
-    def GetDockerLogs(self, run_id):
-        job = WorkflowCrescent(run_id=run_id)
+    def GetDockerLogs(self, run_id, annotation_type=None, is_secondary_run=False):
+        job = WorkflowCrescent(annotation_type=annotation_type, is_secondary_run=is_secondary_run, run_id=run_id)
         return job.getdockerlogs()
 
     def GetCompletedOn(self, is_secondary_run=False, run_id=None, state=None, submitted_on_time=None, wes_id=None):

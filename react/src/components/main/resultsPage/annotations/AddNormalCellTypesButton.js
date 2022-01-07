@@ -1,8 +1,9 @@
 import React from 'react'
 import {Form, Icon, Message, Segment} from 'semantic-ui-react'
+import {useActor} from '@xstate/react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import {useUpdateNormalCellTypesMutation} from '../../../../apollo/hooks/run'
+import {useAnnotations} from '../../../../redux/hooks'
 
 const NormalCellTypeSelection = ({ children, icon, ...props }) => (
   <Message color="purple">
@@ -21,14 +22,11 @@ const NormalCellTypeSelection = ({ children, icon, ...props }) => (
   </Message>
 )
 
-export default function AddNormalCellTypesButton({
-  runID,
-  sampleAnnots,
-  secondaryRunSubmitted,
-  setNormalCellTypes
-}) {
+export default function AddNormalCellTypesButton({ sampleAnnots }) {
   // const {userID: currentUserID} = useCrescentContext()
-  const {updateNormalCellTypes} = useUpdateNormalCellTypesMutation(runID)
+  const {annotationsService: service} = useAnnotations()
+  const [{ matches }, send] = useActor(service)
+  const secondaryRunSubmitted = matches('secondaryRunSubmitted')
 
   if (R.isNil(sampleAnnots)) {
     return (
@@ -64,9 +62,15 @@ export default function AddNormalCellTypesButton({
       disabled={secondaryRunSubmitted}
       icon="arrow circle down"
       onChange={async (e, {value}) => {
-        const {data: {updateNormalCellTypes: updateNormalCellTypesResults}} = await updateNormalCellTypes({variables: {normalCellTypes: value}})
-
-        if (RA.isNotNil(updateNormalCellTypesResults)) setNormalCellTypes(value)
+        send({
+          type: 'UPLOAD_INPUT',
+          inputIndex: 1,
+          uploadOptions: {
+            variables: {
+              normalCellTypes: value
+            }
+          }
+        })
       }}
       options={formatList(sampleAnnots)}
       placeholder="Select one or more normal cell types from sample annotations"

@@ -1,7 +1,12 @@
-import React from 'react'
-import {Divider, Header, Icon, List, Segment} from 'semantic-ui-react'
+import React, { useEffect } from 'react'
+import { useActor } from '@xstate/react'
+import { Divider, Header, Icon, List, Segment } from 'semantic-ui-react'
 import * as R from 'ramda'
 import Fade from 'react-reveal/Fade'
+
+import { useAnnotations, useCrescentContext } from '../../../../redux/hooks'
+
+import { useCancelSecondaryRunMutation } from '../../../../apollo/hooks/run'
 
 import AnnotationsSecondaryRunEntry from './AnnotationsSecondaryRunEntry'
 
@@ -20,7 +25,20 @@ const NoSecondaryRuns = ({ annotationType }) => (
 )
 
 const AnnotationsSecondaryRuns = ({ annotationType, secondaryRuns }) => {
+  const { annotationsService: service } = useAnnotations()
+  const { runID } = useCrescentContext()
+  const [{ context: { secondaryRunWesID }}, send] = useActor(service)
+  const cancelSecondaryRun = useCancelSecondaryRunMutation(runID, secondaryRunWesID)
+
   const secondaryRunsByAnnotationType = R.filter(R.propEq('type', annotationType), secondaryRuns)
+
+  useEffect(() => {
+    send({
+      type: 'CANCEL_SECONDARY_RUN_INIT',
+      // Function for canceling the secondary run
+      cancelFunction: cancelSecondaryRun
+    })
+  }, [cancelSecondaryRun, send])
 
   if (R.isEmpty(secondaryRunsByAnnotationType)) return <NoSecondaryRuns {...{annotationType}} />
 

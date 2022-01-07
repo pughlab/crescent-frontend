@@ -1,21 +1,11 @@
 import React, {useEffect} from 'react'
-import {Icon, Message} from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
+import {useActor} from '@xstate/react'
 
 import {useSecondaryRunLogsQuery} from '../../../../apollo/hooks/run'
 
 import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
-
-const SecondaryRunFinishing = () => (
-  <Message icon color="violet">
-    <Icon loading name="circle notched" />
-    <Message.Content>
-      <Message.Header>Finishing</Message.Header>
-      Please wait a moment...
-    </Message.Content>
-  </Message>
-)
 
 const SecondaryRunNoLogs = () => (
   <>
@@ -24,19 +14,16 @@ const SecondaryRunNoLogs = () => (
 )
 
 const SecondaryRunDockerLogs = () => {
-  const {logsIsAvailable, secondaryRunWesID, logsWasAvailable} = useAnnotations()
+  const {annotationsService: service} = useAnnotations()
   const {runID} = useCrescentContext()
-  const {logs, startPolling, stopPolling} = useSecondaryRunLogsQuery(runID, secondaryRunWesID)
+  
+  const [{context: {annotationType, logs, secondaryRunWesID}}] = useActor(service)
+
+  const {startPolling} = useSecondaryRunLogsQuery(annotationType, runID, secondaryRunWesID)
   
   useEffect(() => {
     if (RA.isNotNil(secondaryRunWesID)) startPolling(1000)
   }, [secondaryRunWesID, startPolling])
-
-  useEffect(() => {
-    // Don't poll for logs if logsWasAvailable is true
-    // (i.e. when the docker container has stopped after the secondary run has been completed)
-    if (logsWasAvailable) stopPolling()
-  }, [logsWasAvailable, stopPolling])
 
   // Utility functions for formatting and cleaning up the logs
   const splitByNewLine = R.compose(R.map(R.trim), R.split('\n'))
@@ -47,7 +34,7 @@ const SecondaryRunDockerLogs = () => {
   return (
     <>
       {
-        R.or(R.not(logsIsAvailable), R.either(R.isNil, R.isEmpty)(logs)) ? (
+        R.either(R.isNil, R.isEmpty)(logs) ? (
           <SecondaryRunNoLogs />
         ) : (
           <>
@@ -68,6 +55,5 @@ const SecondaryRunDockerLogs = () => {
 
 export {
   SecondaryRunDockerLogs,
-  SecondaryRunFinishing,
   SecondaryRunNoLogs
 }

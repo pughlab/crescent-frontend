@@ -1,13 +1,10 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
 import {Header, Icon, Image, Segment} from 'semantic-ui-react'
 
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
-import {useDispatch} from 'react-redux'
-import {setGenesetUploaded} from '../../../../redux/actions/annotations'
-import {useAnnotations, useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
@@ -16,16 +13,14 @@ import Shake from 'react-reveal/Shake'
 import UploadRunGenesetButton from './UploadRunGenesetButton'
 import Metadata from './Metadata'
 import InferCNV from './InferCNV'
+import useSecondaryRunMachine from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 export default function AnnotationsComponent() {
-  const dispatch = useDispatch()
   const {runID} = useCrescentContext()
-  const {genesetUploaded} = useAnnotations()
   const {activeAnnotationsAction} = useResultsPage()
 
-  useEffect(() => {
-    if (RA.isNotNil(genesetUploaded)) dispatch(setGenesetUploaded({uploaded: null}))
-  }, [])
+  // Initialize the secondary run machine to its initial state
+  useSecondaryRunMachine()
 
   const {run} = useRunDetailsQuery(runID)
 

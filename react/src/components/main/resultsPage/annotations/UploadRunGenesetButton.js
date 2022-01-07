@@ -1,4 +1,5 @@
 import React, {useState, useCallback, useEffect} from 'react'
+import {useActor} from '@xstate/react'
 import {Button, Header, Icon, Image, Message, Segment} from 'semantic-ui-react'
 import {useDropzone} from 'react-dropzone'
 import * as R from 'ramda'
@@ -15,10 +16,10 @@ import SecondaryRunLogs from '../logs/SecondaryRunLogs'
 import AnnotationsSecondaryRuns, {NoSecondaryRuns} from './AnnotationsSecondaryRuns'
 
 export default function UploadGenesetButton({ runID }) {
-  const {secondaryRunWesID} = useAnnotations()
+  const {annotationsService: service} = useAnnotations()
   // const {userID: currentUserID} = useCrescentContext()
-  const {uploadRunGeneset, loading: loadingUpload, genesetUploaded} = useUploadRunGenesetMutation({runID})
-  const {submitGsva, run, loading: loadingGSVA, secondaryRunSubmitted} = useSubmitGSVAMutation(runID)
+  const uploadRunGeneset = useUploadRunGenesetMutation(runID)
+  const {submitGsva, run} = useSubmitGSVAMutation(runID)
   const [secondaryRuns, setSecondaryRuns] = useState(null)
   const [genesetFile, setGenesetFile] = useState(null)
 
@@ -27,9 +28,40 @@ export default function UploadGenesetButton({ runID }) {
   }, [])
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
-  const loading = loadingUpload || loadingGSVA
-
   const annotationType = 'GSVA'
+
+  const [{context: {inputsReady, secondaryRunWesID}, matches}, send] = useActor(service)
+  const secondaryRunSubmitted = matches('secondaryRunSubmitted')
+  const isStatus = status => R.both(RA.isNotNil, R.compose(
+    R.equals(status),
+    R.head
+  ))(inputsReady)
+  const [uploadLoading, uploadSuccess, uploadFailed] = R.map(isStatus, ['loading', 'success', 'failed'])
+
+  useEffect(() => {
+    send({
+      type: 'ANNOTATION_TYPE_INIT',
+      annotationType,
+      // The predicates that the respective input must satisfy before the secondary run can be submitted
+      inputConditions: [
+        RA.isNotNil
+      ],
+      // Labels for input upload status checklist
+      inputChecklistLabels: [
+        'Geneset file (.gmt format)'
+      ],
+      // Submission function for the secondary run
+      submitFunction: submitGsva,
+      // Function for uploading/handling the respective input
+      // NOTE: each must be a function (the function will be passed uploadOptions)
+      // that returns a promise that resolves with the upload results in the form of {data: results} 
+      // (which will then verified with the respective input condition)
+      uploadFunctions: [
+        // inputIndex 0 - geneset file upload
+        uploadRunGeneset
+      ]
+    })
+  }, [send, submitGsva, uploadRunGeneset])
 
   useEffect(() => {
     if (secondaryRunSubmitted) setGenesetFile(null)
@@ -81,25 +113,35 @@ export default function UploadGenesetButton({ runID }) {
               // :
               <div {...getRootProps()}>
                 <input {...getInputProps()} />
-                <Segment placeholder loading={loading}>
+                <Segment placeholder loading={uploadLoading}>
                   <Header
                     content={R.isNil(genesetFile) ? 'Drag and drop a geneset.gmt file or click to select file' : genesetFile.name}
                     textAlign="center"
                   />
-                  {
-                    R.or(RA.isNotNil(genesetFile), loading) &&
+                  { RA.isNotNil(genesetFile) && (
                     <Button
                       color="purple"
-                      content={R.toUpper(loadingUpload ? 'Uploading' : R.both(RA.isNotNil, R.not)(genesetUploaded) ? 'Upload failed, please try again' : loadingGSVA ? 'Submitting' : 'Confirm')}
-                      disabled={loading}
-                      onClick={e => {
+                      content={R.toUpper(
+                        uploadLoading ? 'Uploading' :
+                        uploadFailed ? 'Upload failed, please try again' :
+                        uploadSuccess ? 'Reupload' :
+                        'Upload'
+                      )}
+                      disabled={uploadLoading}
+                      onClick={async e => {
                         e.stopPropagation()
-                        uploadRunGeneset({variables: {geneset: genesetFile}}).then(({data: {uploadRunGeneset}}) => {
-                          if (RA.isNotNil(uploadRunGeneset)) submitGsva()
+                        send({
+                          type: 'UPLOAD_INPUT',
+                          inputIndex: 0,
+                          uploadOptions: {
+                            variables: {
+                              geneset: genesetFile
+                            }
+                          }
                         })
                       }}
                     />
-                  }
+                  )}
                 </Segment>
               </div>
             }
