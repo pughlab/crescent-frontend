@@ -21,7 +21,7 @@ export default function UploadMetadataButton({runID}) {
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
   const [{context: {inputsReady}, matches}, send] = useActor(service)
-  const secondaryRunSubmitted = matches('secondaryRunSubmitted')
+  const inputsPending = matches('inputsPending')
   const isStatus = status => R.both(RA.isNotNil, R.compose(
     R.equals(status),
     R.head
@@ -29,8 +29,8 @@ export default function UploadMetadataButton({runID}) {
   const [uploadLoading, uploadSuccess, uploadFailed] = R.map(isStatus, ['loading', 'success', 'failed'])
 
   useEffect(() => {
-    if (secondaryRunSubmitted) setMetadataFile(null)
-  }, [secondaryRunSubmitted])
+    if (inputsPending) setMetadataFile(null)
+  }, [inputsPending])
 
   if (R.isNil(run)) return null
 

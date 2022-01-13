@@ -25,7 +25,7 @@ const onComplete = ({ onComplete }, _) => {
 
 // Reset specific context values on secondary run completion
 const onCompleteReset = assign({
-  inputsReady: ({ inputsReady }, _) => R.map(R.always('pending'), inputsReady),
+  inputsReady: ({ inputsReady }, _) => R.repeat('pending', R.length(inputsReady)),
   logs: RA.stubNull,
   secondaryRunWesID: RA.stubNull
 })

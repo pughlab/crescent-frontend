@@ -22,7 +22,7 @@ const NormalCellTypeSelection = ({ children, icon, ...props }) => (
   </Message>
 )
 
-export default function AddNormalCellTypesButton({ sampleAnnots }) {
+export default function AddNormalCellTypesButton({ normalCellTypes, sampleAnnots }) {
   // const {userID: currentUserID} = useCrescentContext()
   const {annotationsService: service} = useAnnotations()
   const [{ matches }, send] = useActor(service)
@@ -33,6 +33,7 @@ export default function AddNormalCellTypesButton({ sampleAnnots }) {
       <NormalCellTypeSelection
         disabled
         icon="upload"
+        options={[]}
         placeholder="Select one or more normal cell types from sample annotations"
       >
         Upload a sample annotations above to select normal cell types.
@@ -45,6 +46,7 @@ export default function AddNormalCellTypesButton({ sampleAnnots }) {
       <NormalCellTypeSelection
         disabled
         icon="exclamation circle"
+        options={[]}
         placeholder="No normal cell types found from sample annotations"
       >
         Upload a sample annotations with one or more normal cell types to make a selection.
@@ -74,6 +76,7 @@ export default function AddNormalCellTypesButton({ sampleAnnots }) {
       }}
       options={formatList(sampleAnnots)}
       placeholder="Select one or more normal cell types from sample annotations"
+      value={normalCellTypes}
     >
       Select one or more normal cell types from sample annotations.
     </NormalCellTypeSelection>

@@ -27,6 +27,7 @@ export default function InferCNV({ runID }) {
   const {submitInferCNV, run} = useSubmitInferCNVMutation(runID)
   const [secondaryRuns, setSecondaryRuns] = useState(null)
   const [currSampleAnnots, setCurrSampleAnnots] = useState(null)
+  const [normalCellTypes, setNormalCellTypes] = useState([])
 
 	const annotationType = 'InferCNV'
 
@@ -53,31 +54,66 @@ export default function InferCNV({ runID }) {
       submitFunction: submitInferCNV,
       // Function for uploading/handling the respective input
       // NOTE: each must be a function (the function will be passed uploadOptions)
-      // that returns a promise that resolves with the upload results in the form of {data: results} 
-      // (which will then verified with the respective input condition)
+      // that returns a promise which resolves with the upload result in the form of {data: result} 
+      // (the result will be verified with the respective input condition)
+      // or rejects when an error occurs (via a try-catch block)
       uploadFunctions: [
         // inputIndex: 0 - sample annotation file upload or retrieving previously upload sample annotations
-        uploadOptions => new Promise(async resolve => {
-          const {type, variables} = uploadOptions
+        uploadOptions => new Promise(async (resolve, reject) => {
+          try {
+            const {type, variables} = uploadOptions
 
-          // Clear the normal cell types from the previous InferCNV secondary run
-          await updateNormalCellTypes({variables: {normalCellTypes: []}})
-          // Upload the sample annots file
-          // (only if the user uploaded a sample annots file vs. choosing to use the previously uploaded sample annots file)
-          if (type === 'newUpload') await uploadSampleAnnots({...{variables}})
-          // Refetch and set the current sample annots
-          const {data: {sampleAnnots: sampleAnnotsResults}} = await refetchSampleAnnots()
-          
-          if (RA.isNotNil(sampleAnnotsResults)) setCurrSampleAnnots(sampleAnnotsResults)
+            // Clear the normal cell types from the previous InferCNV secondary run
+            await updateNormalCellTypes({variables: {normalCellTypes: []}})
+            // Upload the sample annots file
+            // (only if the user uploaded a sample annots file vs. choosing to use the previously uploaded sample annots file)
+            if (type === 'newUpload') await uploadSampleAnnots({...{variables}})
+            // Refetch and set the current sample annots
+            const {data: {sampleAnnots: sampleAnnotsResults}} = await refetchSampleAnnots()
+            
+            if (RA.isNotNil(sampleAnnotsResults)) {
+              setCurrSampleAnnots(sampleAnnotsResults)
 
-          resolve({data: RA.isNotNil(sampleAnnotsResults) ? sampleAnnotsResults : null})
+              // Reset the currently selected normal cell types (if one or more had been selected by the user)
+              // now that a new sample annotations file has been uploaded
+              setNormalCellTypes(normalCellTypes => {
+                const isNormalCellTypesSelected = RA.isNonEmptyArray(normalCellTypes)
+
+                if (isNormalCellTypesSelected) {
+                  // Reset the normal cell types in MongoDB
+                  send({
+                    type: 'UPLOAD_INPUT',
+                    inputIndex: 1,
+                    uploadOptions: {
+                      variables: {
+                        normalCellTypes: []
+                      }
+                    }
+                  })
+                }
+
+                // Update the state accordingly
+                return isNormalCellTypesSelected ? [] : normalCellTypes
+              })
+            }
+
+            resolve({data: RA.isNotNil(sampleAnnotsResults) ? sampleAnnotsResults : null})
+          } catch {
+            reject()
+          }
         }),
         // inputIndex: 1 - normal cell type update
-        uploadOptions => new Promise(async resolve => {
-          const {variables: {normalCellTypes: value}} = uploadOptions
-          const {data: {updateNormalCellTypes: updateNormalCellTypesResults}} = await updateNormalCellTypes(uploadOptions)
+        uploadOptions => new Promise(async (resolve, reject) => {
+          try {
+            const {variables: {normalCellTypes: value}} = uploadOptions
+            const {data: {updateNormalCellTypes: updateNormalCellTypesResults}} = await updateNormalCellTypes(uploadOptions)
 
-          resolve(updateNormalCellTypesResults ? {data: value} : null)
+            // Update the normal cell type state now that the GraphQL mutation has successfully executed
+            setNormalCellTypes(value)
+            resolve(updateNormalCellTypesResults ? {data: value} : null)
+          } catch {
+            reject()
+          }
         }),
         // inputIndex: 2 - gene position file upload
         uploadGenePos
@@ -123,12 +159,12 @@ export default function InferCNV({ runID }) {
         <Grid>
           <Grid.Row>
             <Grid.Column>
-              <UploadSampleAnnotsButton {...{sampleAnnots}} />
+              <UploadSampleAnnotsButton {...{prevSampleAnnots: sampleAnnots, currSampleAnnots}} />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>
             <Grid.Column>
-              <AddNormalCellTypesButton {...{sampleAnnots: currSampleAnnots}} />
+              <AddNormalCellTypesButton {...{normalCellTypes, sampleAnnots: currSampleAnnots}} />
             </Grid.Column>
           </Grid.Row>
           <Grid.Row>

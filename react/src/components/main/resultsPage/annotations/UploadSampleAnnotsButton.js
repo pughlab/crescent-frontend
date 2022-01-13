@@ -6,11 +6,22 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useAnnotations} from '../../../../redux/hooks'
 
-export default function UploadSampleAnnotsButton({ sampleAnnots }) {
+export default function UploadSampleAnnotsButton({ prevSampleAnnots, currSampleAnnots }) {
   const {annotationsService: service} = useAnnotations()
   // const {userID: currentUserID} = useCrescentContext()
   const [sampleAnnotsFile, setSampleAnnotsFile] = useState(null)
-  const [usedPrevUploadedSampleAnnots, setUsedPrevUploadedSampleAnnots] = useState(false)
+  const [isPrevSampleAnnotsAvailable, setIsPrevSampleAnnotsAvailable] = useState(false)
+
+  useEffect(() => {
+    setIsPrevSampleAnnotsAvailable(isPrevSampleAnnotsAvailable => R.and(
+      // If isPrevSampleAnnotsAvailable is null that means that a new sample annotations file had been uploaded,
+      // so the option to use previously uploaded sample annotations should be disabled or remain disabled
+      RA.isNotNil(isPrevSampleAnnotsAvailable),
+      // The option to use previous sample annotations should only be be enabled if it exists
+      // and it contains one or more normal cell types
+      RA.neither(R.isNil, RA.isEmptyArray)(prevSampleAnnots)
+    ))
+  }, [prevSampleAnnots])
   
   const onDrop = useCallback(acceptedFiles => {
     if (RA.isNotEmpty(acceptedFiles)) setSampleAnnotsFile(R.head(acceptedFiles))
@@ -18,6 +29,7 @@ export default function UploadSampleAnnotsButton({ sampleAnnots }) {
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
   const inputIndex = 0
+  const usingPrevUploadedSampleAnnots = R.equals(prevSampleAnnots, currSampleAnnots)
 
   const [{context: {inputsReady}, matches}, send] = useActor(service)
   const secondaryRunSubmitted = matches('secondaryRunSubmitted')
@@ -38,21 +50,18 @@ export default function UploadSampleAnnotsButton({ sampleAnnots }) {
   return (
     <Message color="purple">
       <Icon name="upload" />
-      { R.isNil(sampleAnnots) ? (
+      Upload/replace sample annotations with barcodes in txt format
+      { !isPrevSampleAnnotsAvailable || usingPrevUploadedSampleAnnots ? '.' : ' or use previously uploaded sample annotations.' }
+      { isPrevSampleAnnotsAvailable && (
         <>
-          Upload/replace sample annotations with barcodes in txt format.
-        </>
-      ) : (
-        <>
-          Upload/replace sample annotations with barcodes in txt format or use previously uploaded sample annotations.
           <br />
           <br />
           <Button
             fluid
             color="purple"
-            content={`${usedPrevUploadedSampleAnnots ? 'Currently using' : 'Use'} previously uploaded sample annotations`}
-            disabled={uploadLoading || usedPrevUploadedSampleAnnots}
-            icon={usedPrevUploadedSampleAnnots ? 'check circle' : 'copy'}
+            content={`${usingPrevUploadedSampleAnnots ? 'Currently using' : 'Use'} previously uploaded sample annotations`}
+            disabled={uploadLoading || usingPrevUploadedSampleAnnots}
+            icon={usingPrevUploadedSampleAnnots ? 'check circle' : 'copy'}
             loading={uploadLoading}
             onClick={() => {
               send({
@@ -62,7 +71,6 @@ export default function UploadSampleAnnotsButton({ sampleAnnots }) {
                   type: 'previousUpload'
                 }
               })
-              setUsedPrevUploadedSampleAnnots(true)
             }}
           />
           <Divider horizontal content="Or" />
@@ -97,6 +105,9 @@ export default function UploadSampleAnnotsButton({ sampleAnnots }) {
                   disabled={R.isNil(sampleAnnotsFile) || uploadLoading}
                   onClick={e => {
                     e.stopPropagation()
+                    // Set isPrevSampleAnnotsAvailable to null given that a new sample annotations file is being uploaded
+                    // Since prevSampleAnnots gets refetched, we want to keep the option to use previously uploaded sample annotations (which would simply be the current sample annotations that were uploaded) disabled
+                    setIsPrevSampleAnnotsAvailable(null)
                     send({
                       type: 'UPLOAD_INPUT',
                       inputIndex: 0,

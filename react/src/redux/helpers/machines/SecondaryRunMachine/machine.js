@@ -182,6 +182,12 @@ const SecondaryRunMachine = createMachine({
     inputsValidating: {
       // EVENTLESS TRANSITION
       always: [
+        // Non-submittable runs only - if the input is valid and uploaded, automatically transition back to 'inputsPending'
+        {
+          target: 'inputsPending',
+          cond: 'isNonSubmittable',
+          actions: 'onComplete'
+        },
         // If the inputs are all valid, automatically transition to 'inputsReady'
         {
           target: 'inputsReady',
@@ -193,14 +199,6 @@ const SecondaryRunMachine = createMachine({
     },
     // STATE: all required inputs have been uploaded and are valid
     inputsReady: {
-      // EVENTLESS TRANSITION:
-      // for non-submittable annotation types, immediately transition to 'inputsPending' if the input is uploaded and valid
-      // as the user does not need to explicitly submit the secondary run
-      always: {
-        target: 'inputsPending',
-        cond: 'isNonSubmittable',
-        actions: ['onComplete', 'onCompleteReset']
-      },
       on: {
         // Annotation type switch
         ANNOTATION_TYPE_INIT: 'annotationTypeInit',
@@ -230,11 +228,6 @@ const SecondaryRunMachine = createMachine({
         'xstate.update': {
           target: 'inputsValidating',
           actions: 'setInputReady'
-        },
-        // WILDCARD TRANSITION: for 'INPUT_SUCCESS' or 'INPUT_FAILED' events
-        '*': {
-          target: 'inputsPending',
-          actions: 'sendInputToActor'
         }
       }
     },
@@ -249,8 +242,8 @@ const SecondaryRunMachine = createMachine({
           target: 'submitValidating',
           actions: 'setSecondaryRunWesID'
         },
-        // If the promise rejects, the submission has failed, so transition back to 'inputsReady'
-        onError: 'inputsReady'
+        // If the promise rejects, the submission has failed, so transition back to 'submitFailed'
+        onError: 'submitFailed'
       },
       on: {
         // Annotation type switch
@@ -275,6 +268,39 @@ const SecondaryRunMachine = createMachine({
         // Otherwise, the run submission has failed, so transition back to 'inputsReady'
         'inputsReady'
       ]
+    },
+    submitFailed: {
+      on: {
+        // Annotation type switch
+        ANNOTATION_TYPE_INIT: 'annotationTypeInit',
+        // Set the cancel function
+        CANCEL_SECONDARY_RUN_INIT: {
+          actions: 'setCancelFunction',
+          internal: true
+        },
+        // The run has already been submitted and logs are available
+        LOGS_UPDATE: {
+          target: 'secondaryRunSubmitted',
+          actions: 'setLogs'
+        },
+        // The run has already been submit (NOTE: this is different from the 'SUBMIT_SECONDARY_RUN' event)
+        SECONDARY_RUN_SUBMITTED: 'secondaryRunSubmitted',
+        // Set the WES ID of the secondary run
+        SET_SECONDARY_RUN_WES_ID: {
+          actions: 'setSubmittedSecondaryRunWesID'
+        },
+        // The run is being submitted (the 'submitProcessing' state will handle the submission)
+        SUBMIT_SECONDARY_RUN: 'submitProcessing',
+        // An input has been uploaded, so send the input to the appropriate input actor
+        UPLOAD_INPUT: {
+          actions: 'sendInputToActor'
+        },
+        // An input has been uploaded, so re-validate the inputs to ensure that they are still all valid
+        'xstate.update': {
+          target: 'inputsValidating',
+          actions: 'setInputReady'
+        }
+      }
     },
     // STATE: secondary run has been submitted
     secondaryRunSubmitted: {
