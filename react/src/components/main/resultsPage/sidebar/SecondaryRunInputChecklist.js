@@ -9,7 +9,7 @@ const SecondaryRunInputChecklist = () => {
   
   const [{ context: { inputChecklistLabels, inputsReady, submittable }, matches }, ] = useActor(service)
   const isSubmitting = R.any(matches, ['submitProcessing', 'submitValidating'])
-  const isSubmitted = R.any(matches, ['secondaryRunSubmitted', 'cancelProcessing'])
+  const isSubmitted = R.any(matches, ['secondaryRunSubmitted', 'cancelProcessing', 'cancelFailed'])
   const isCanceled = matches('secondaryRunCanceled')
 
   if (!submittable || R.not(R.length(inputsReady))) return null
@@ -30,7 +30,7 @@ const SecondaryRunInputChecklist = () => {
                            inputStatus
 
             return (
-              <List.Item key={`${inputChecklistLabels[index]}-${inputStatus}`}>
+              <List.Item key={`${inputChecklistLabels[index]}-${status}`}>
                 <List.Icon
                   color={R.prop(status, {
                     pending: 'purple', // Input is awaiting upload

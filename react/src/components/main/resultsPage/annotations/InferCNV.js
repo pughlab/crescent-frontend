@@ -31,8 +31,8 @@ export default function InferCNV({ runID }) {
 
 	const annotationType = 'InferCNV'
 
-  const [{context: {secondaryRunWesID}, matches}, send] = useActor(service)
-  const secondaryRunSubmitted = matches('secondaryRunSubmitted')
+  const [{value}, send] = useActor(service)
+  const secondaryRunSubmitted = R.any(R.startsWith(R.__, value), ['secondaryRun', 'cancel'])
 
   useEffect(() => {
     send({
@@ -155,7 +155,7 @@ export default function InferCNV({ runID }) {
 
   return (
     <>
-      { R.isNil(secondaryRunWesID) ? (
+      { !secondaryRunSubmitted ? (
         <Grid>
           <Grid.Row>
             <Grid.Column>

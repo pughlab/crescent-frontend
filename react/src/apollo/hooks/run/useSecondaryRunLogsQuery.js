@@ -1,15 +1,15 @@
 import {useEffect} from 'react'
 import {useActor} from '@xstate/react'
-import {useQuery} from '@apollo/react-hooks'
+import {useLazyQuery} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
 import {useAnnotations} from '../../../redux/hooks'
 
 export default function useSecondaryRunLogsQuery(annotationType, runID, secondaryRunWesID) {
   const {annotationsService: service} = useAnnotations()
-  const [{context: {logs}}, send] = useActor(service)
+  const [, send] = useActor(service)
 
-  const {loading, data, startPolling, stopPolling} = useQuery(gql`
+  const [getSecondaryRunLogs, {data}] = useLazyQuery(gql`
     query SecondaryRunLogs($annotationType: String, $runID: ID, $secondaryRunWesID: ID) {
       secondaryRun(runID: $runID, wesID: $secondaryRunWesID) {
         logs(annotationType: $annotationType, runID: $runID)
@@ -21,7 +21,8 @@ export default function useSecondaryRunLogsQuery(annotationType, runID, secondar
       annotationType,
       runID,
       secondaryRunWesID
-    }
+    },
+    pollInterval: 1000
   })
 
   useEffect(() => {
@@ -35,5 +36,5 @@ export default function useSecondaryRunLogsQuery(annotationType, runID, secondar
     }
   }, [data, send])
 
-  return {logs, loading, startPolling, stopPolling}
+  return getSecondaryRunLogs
 }

@@ -40,7 +40,7 @@ const sendInputToActor = send((_, { uploadOptions }) => ({
 const sendUploadFunctionToActors = pure(({ inputActors }, { uploadFunctions }) => R.addIndex(R.map)(
   (inputActor, index) => send({
     type: 'SET_UPLOAD_FUNCTION',
-    uploadFunc: uploadFunctions[index]
+    uploadFunction: uploadFunctions[index]
   }, { to: inputActor }),
   inputActors
 ))
@@ -48,11 +48,6 @@ const sendUploadFunctionToActors = pure(({ inputActors }, { uploadFunctions }) =
 // Set the cancel function for the secondary run
 const setCancelFunction = assign({
   cancelFunction: (_, { cancelFunction }) => cancelFunction
-})
-
-// Set the input's upload status as failed (null)
-const setInputFailed = assign({
-  input: RA.stubNull
 })
 
 // Set the input's upload status according to the respective input actor's state
@@ -90,14 +85,15 @@ const setSecondaryRunWesID = assign({
   )(data)
 })
 
-// Set the WES ID for an already submitted secondary run
+// Set the WES ID and set all inputsReady array values to 'success' for a secondary run that has already been submitted
 const setSubmittedSecondaryRunWesID = assign({
+  inputsReady: ({ inputsReady }, _) => R.repeat('success', R.length(inputsReady)),
   secondaryRunWesID: (_, { secondaryRunWesID }) => secondaryRunWesID
 })
 
 // Set the upload function for the input actor
 const setUploadFunction = assign({
-  upload: (_, { uploadFunc }) => uploadFunc
+  uploadFunction: (_, { uploadFunction }) => uploadFunction
 })
 
 export {
@@ -107,7 +103,6 @@ export {
   sendInputToActor,
   sendUploadFunctionToActors,
   setCancelFunction,
-  setInputFailed,
   setInputReady,
   setLogs,
   setSecondaryRunWesID,

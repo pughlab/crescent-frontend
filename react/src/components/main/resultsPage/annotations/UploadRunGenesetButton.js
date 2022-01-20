@@ -30,8 +30,8 @@ export default function UploadGenesetButton({ runID }) {
 
   const annotationType = 'GSVA'
 
-  const [{context: {inputsReady, secondaryRunWesID}, matches}, send] = useActor(service)
-  const secondaryRunSubmitted = matches('secondaryRunSubmitted')
+  const [{context: {inputsReady}, value}, send] = useActor(service)
+  const secondaryRunSubmitted = R.any(R.startsWith(R.__, value), ['secondaryRun', 'cancel'])
   const isStatus = status => R.both(RA.isNotNil, R.compose(
     R.equals(status),
     R.head
@@ -97,7 +97,7 @@ export default function UploadGenesetButton({ runID }) {
 
   return (
     <>
-      { R.isNil(secondaryRunWesID) ? (
+      { !secondaryRunSubmitted ? (
         <Message color="purple">
           <Icon name="upload" />
           Upload/replace geneset for this run in the GMT format.

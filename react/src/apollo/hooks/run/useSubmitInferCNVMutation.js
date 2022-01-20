@@ -58,10 +58,12 @@ export default function useSubmitInferCNVMutation(runID) {
       R.last
     )(secondaryRunsByAnnotationType)
 
-    send({
-      type: 'SET_SECONDARY_RUN_WES_ID',
-      secondaryRunWesID: R.equals('submitted', latestSecondaryRunStatus) ? latestSecondaryRunWesID : null
-    })
+    if (R.equals('submitted', latestSecondaryRunStatus)) {
+      send({
+        type: 'SECONDARY_RUN_SUBMITTED',
+        secondaryRunWesID: latestSecondaryRunWesID
+      })
+    }
   }, [run, send])
 
   const [submitInferCNV, {data: infercnvData}] = useMutation(gql`

@@ -1,29 +1,14 @@
-import React, {useEffect} from 'react'
+import React from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useActor} from '@xstate/react'
 
-import {useSecondaryRunLogsQuery} from '../../../../apollo/hooks/run'
+import {useAnnotations} from '../../../../redux/hooks'
 
-import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
-
-const SecondaryRunNoLogs = () => (
-  <>
-    No Logs Available
-  </>
-)
-
-const SecondaryRunDockerLogs = () => {
+const SecondaryRunLogsContent = () => {
   const {annotationsService: service} = useAnnotations()
-  const {runID} = useCrescentContext()
-  
-  const [{context: {annotationType, logs, secondaryRunWesID}}] = useActor(service)
 
-  const {startPolling} = useSecondaryRunLogsQuery(annotationType, runID, secondaryRunWesID)
-  
-  useEffect(() => {
-    if (RA.isNotNil(secondaryRunWesID)) startPolling(1000)
-  }, [secondaryRunWesID, startPolling])
+  const [{context: {logs}}] = useActor(service)
 
   // Utility functions for formatting and cleaning up the logs
   const splitByNewLine = R.compose(R.map(R.trim), R.split('\n'))
@@ -34,26 +19,15 @@ const SecondaryRunDockerLogs = () => {
   return (
     <>
       {
-        R.either(R.isNil, R.isEmpty)(logs) ? (
-          <SecondaryRunNoLogs />
-        ) : (
-          <>
-            {
-              R.compose(
-                mapToParagraph,
-                R.map(trimUnicode),
-                R.filter(includesThreeAsterisks),
-                splitByNewLine
-              )(logs)
-            }
-          </>
-        )
+        R.compose(
+          mapToParagraph,
+          R.map(trimUnicode),
+          R.filter(includesThreeAsterisks),
+          splitByNewLine
+        )(logs)
       }
     </>
   )
 }
 
-export {
-  SecondaryRunDockerLogs,
-  SecondaryRunNoLogs
-}
+export default SecondaryRunLogsContent

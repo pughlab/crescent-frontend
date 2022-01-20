@@ -46,7 +46,7 @@ const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
     if (RA.isNotNil(statusData)) {
       const {secondaryRun: {status}} = statusData
       setSecondaryRunStatus(status)
-      send(`SECONDARY_RUN_${R.toUpper(status)}`)
+      send({ type: `SECONDARY_RUN_${R.toUpper(status)}` })
     }
   }, [send, statusData])
 

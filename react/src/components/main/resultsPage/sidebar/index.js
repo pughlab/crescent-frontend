@@ -94,7 +94,7 @@ const SidebarComponent = () => {
         ])(activeSidebarTab)
       }
       </Segment>
-      { R.compose(R.and(R.both(RA.isNotNil, R.hasIn('status'))(service)), R.equals('annotations'))(activeSidebarTab) && (
+      { R.compose(R.and(RA.isNotNil(service)), R.equals('annotations'))(activeSidebarTab) && (
         <SecondaryRunInputChecklist />
       )}
       <Segment attached='bottom'>
@@ -103,7 +103,7 @@ const SidebarComponent = () => {
           [R.compose(R.and(runIsSubmitted), R.equals('logs')), R.always(<CancelRunButton />)],
           [R.compose(R.and(enableSubmit), R.equals('parameters')), R.always(<SubmitRunButton />)],
           [R.equals('visualizations'), R.always(<DownloadResultsButton />)],
-          [R.compose(R.and(R.both(RA.isNotNil, R.hasIn('status'))(service)), R.equals('annotations')), R.always(<SubmitSecondaryRunButton />)],
+          [R.compose(R.and(RA.isNotNil(service)), R.equals('annotations')), R.always(<SubmitSecondaryRunButton />)],
           [R.T, R.always(null)]
         ])(activeSidebarTab)
       }
