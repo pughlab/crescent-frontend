@@ -26,7 +26,7 @@ const SubmitSecondaryRunButton = () => {
         !submittableAnnotation || // The current annotation type is non-submittable; OR
         isUnsubmittable // The secondary run isn't ready to be submitted
       }
-      color="blue"
+      color="purple"
       content={R.toUpper(
         !submittableAnnotation ? 'Nothing to submit'
         : isSubmittable ? `Submit ${annotationType} run`
