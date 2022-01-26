@@ -55,6 +55,7 @@ export default function InferCNV({ runID }) {
       >
         <Tada forever duration={1000}>
           <Image
+            style={{ display: 'block' }} 
             centered
             size="medium"
             src={Logo}  

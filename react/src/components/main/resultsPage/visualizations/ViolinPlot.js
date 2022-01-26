@@ -59,7 +59,7 @@ const ViolinPlot = ({
     return (
       <Segment basic style={{height: '100%'}} placeholder>
         <Tada forever duration={1000}>
-          <Image src={Logo} centered size='medium' />
+          <Image style={{ display: 'block' }} src={Logo} centered size='medium' />
         </Tada>
       </Segment>
     )

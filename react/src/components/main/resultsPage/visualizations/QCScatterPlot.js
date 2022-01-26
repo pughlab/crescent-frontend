@@ -32,7 +32,7 @@ const QCScatterPlot = ({
     return (
       <Segment style={{height: '100%'}} basic placeholder>
       <Tada forever duration={1000}>
-        <Image src={Logo} centered size='medium' />
+        <Image style={{ display: 'block' }} src={Logo} centered size='medium' />
       </Tada>
     </Segment>
     )
