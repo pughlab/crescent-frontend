@@ -120,7 +120,7 @@ const SecondaryRunMachine = createMachine({
       internal: true
     },
     // Updated logs are available
-    LOGS_UPDATE: {
+    UPDATE_LOGS: {
       actions: 'setLogs',
       internal: true
     }

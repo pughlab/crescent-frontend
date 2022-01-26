@@ -6,12 +6,14 @@ import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
 import {useAnnotations} from '../../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 export default function UploadGenePosButton() {
   // const {userID: currentUserID} = useCrescentContext()
   // const {run} = useRunDetailsQuery(runID)
   const {annotationsService: service} = useAnnotations()
   const [genePosFile, setGenePosFile] = useState(null)
+  const {uploadInput} = useSecondaryRunEvents()
   
   const onDrop = useCallback(acceptedFiles => {
     if (RA.isNotEmpty(acceptedFiles)) setGenePosFile(R.head(acceptedFiles))
@@ -20,7 +22,7 @@ export default function UploadGenePosButton() {
 
   const inputIndex = 2
 
-  const [{context: {inputsReady}, matches}, send] = useActor(service)
+  const [{context: {inputsReady}, matches}] = useActor(service)
   const secondaryRunSubmitted = matches('secondaryRunSubmitted')
   const isStatus = status => R.both(RA.isNotNil, R.compose(
     R.equals(status),
@@ -72,8 +74,7 @@ export default function UploadGenePosButton() {
                   disabled={uploadLoading}
                   onClick={e => {
                     e.stopPropagation()
-                    send({
-                      type: 'UPLOAD_INPUT',
+                    uploadInput({
                       inputIndex,
                       uploadOptions: {
                         variables: {

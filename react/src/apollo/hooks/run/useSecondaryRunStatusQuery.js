@@ -1,17 +1,13 @@
 import {useEffect, useState} from 'react'
-import {useActor} from '@xstate/react'
 import {useLazyQuery} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
-import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import {useAnnotations} from '../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
-  const {annotationsService: service} = useAnnotations()
   const [secondaryRunCompletedOn, setSecondaryRunCompletedOn] = useState(null)
   const [secondaryRunStatus, setSecondaryRunStatus] = useState(null)
-  
-  const [, send] = useActor(service)
+  const {updateStatus} = useSecondaryRunEvents()
 
   const [getStatus, {data: statusData, stopPolling: stopStatusPolling}] = useLazyQuery(gql`
     query SecondaryRunStatus($runID: ID, $secondaryRunWesID: ID) {
@@ -46,9 +42,9 @@ const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
     if (RA.isNotNil(statusData)) {
       const {secondaryRun: {status}} = statusData
       setSecondaryRunStatus(status)
-      send({ type: `SECONDARY_RUN_${R.toUpper(status)}` })
+      updateStatus({status})
     }
-  }, [send, statusData])
+  }, [statusData, updateStatus])
 
   useEffect(() => {
     if (RA.isNotNil(completedOnData)) {

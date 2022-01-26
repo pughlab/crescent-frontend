@@ -6,6 +6,7 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
 import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
@@ -14,13 +15,14 @@ export default function UploadMetadataButton({runID}) {
   const {userID: currentUserID} = useCrescentContext()
   const {run} = useRunDetailsQuery(runID)
   const [metadataFile, setMetadataFile] = useState(null)
+  const {uploadInput} = useSecondaryRunEvents()
 
   const onDrop = useCallback(acceptedFiles => {
     if (RA.isNotEmpty(acceptedFiles)) setMetadataFile(R.head(acceptedFiles))
   }, [])
   const {getRootProps, getInputProps} = useDropzone({onDrop})
 
-  const [{context: {inputsReady}, matches}, send] = useActor(service)
+  const [{context: {inputsReady}, matches}] = useActor(service)
   const inputsPending = matches('inputsPending')
   const isStatus = status => R.both(RA.isNotNil, R.compose(
     R.equals(status),
@@ -71,8 +73,7 @@ export default function UploadMetadataButton({runID}) {
                   )}
                   onClick={e => {
                     e.stopPropagation()
-                    send({
-                      type: 'UPLOAD_INPUT',
+                    uploadInput({
                       inputIndex: 0,
                       uploadOptions: {
                         variables: {

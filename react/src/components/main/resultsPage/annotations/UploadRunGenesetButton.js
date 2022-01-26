@@ -11,6 +11,7 @@ import {useUploadRunGenesetMutation} from '../../../../apollo/hooks/run'
 import {useSubmitGSVAMutation} from '../../../../apollo/hooks/run'
 
 import {useAnnotations} from '../../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 import SecondaryRunLogs from '../logs/SecondaryRunLogs'
 import AnnotationsSecondaryRuns, {NoSecondaryRuns} from './AnnotationsSecondaryRuns'
@@ -22,6 +23,7 @@ export default function UploadGenesetButton({ runID }) {
   const {submitGsva, run} = useSubmitGSVAMutation(runID)
   const [secondaryRuns, setSecondaryRuns] = useState(null)
   const [genesetFile, setGenesetFile] = useState(null)
+  const {annotationTypeInit, uploadInput} = useSecondaryRunEvents()
 
   const onDrop = useCallback(acceptedFiles => {
     if (RA.isNotEmpty(acceptedFiles)) setGenesetFile(R.head(acceptedFiles))
@@ -30,7 +32,7 @@ export default function UploadGenesetButton({ runID }) {
 
   const annotationType = 'GSVA'
 
-  const [{context: {inputsReady}, value}, send] = useActor(service)
+  const [{context: {inputsReady}, value}] = useActor(service)
   const secondaryRunSubmitted = R.any(R.startsWith(R.__, value), ['secondaryRun', 'cancel'])
   const isStatus = status => R.both(RA.isNotNil, R.compose(
     R.equals(status),
@@ -39,29 +41,21 @@ export default function UploadGenesetButton({ runID }) {
   const [uploadLoading, uploadSuccess, uploadFailed] = R.map(isStatus, ['loading', 'success', 'failed'])
 
   useEffect(() => {
-    send({
-      type: 'ANNOTATION_TYPE_INIT',
+    annotationTypeInit({
       annotationType,
-      // The predicates that the respective input must satisfy before the secondary run can be submitted
       inputConditions: [
         RA.isNotNil
       ],
-      // Labels for input upload status checklist
       inputChecklistLabels: [
         'Geneset file (.gmt format)'
       ],
-      // Submission function for the secondary run
       submitFunction: submitGsva,
-      // Function for uploading/handling the respective input
-      // NOTE: each must be a function (the function will be passed uploadOptions)
-      // that returns a promise that resolves with the upload results in the form of {data: results} 
-      // (which will then verified with the respective input condition)
       uploadFunctions: [
         // inputIndex 0 - geneset file upload
         uploadRunGeneset
       ]
     })
-  }, [send, submitGsva, uploadRunGeneset])
+  }, [annotationTypeInit, submitGsva, uploadRunGeneset])
 
   useEffect(() => {
     if (secondaryRunSubmitted) setGenesetFile(null)
@@ -130,7 +124,7 @@ export default function UploadGenesetButton({ runID }) {
                       disabled={uploadLoading}
                       onClick={async e => {
                         e.stopPropagation()
-                        send({
+                        uploadInput({
                           type: 'UPLOAD_INPUT',
                           inputIndex: 0,
                           uploadOptions: {

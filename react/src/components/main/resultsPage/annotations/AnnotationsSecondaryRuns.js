@@ -9,6 +9,7 @@ import { useAnnotations, useCrescentContext } from '../../../../redux/hooks'
 import { useCancelSecondaryRunMutation } from '../../../../apollo/hooks/run'
 
 import AnnotationsSecondaryRunEntry from './AnnotationsSecondaryRunEntry'
+import { useSecondaryRunEvents } from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 const NoSecondaryRuns = ({ annotationType }) => (
   <Fade up>
@@ -27,18 +28,17 @@ const NoSecondaryRuns = ({ annotationType }) => (
 const AnnotationsSecondaryRuns = ({ annotationType, secondaryRuns }) => {
   const { annotationsService: service } = useAnnotations()
   const { runID } = useCrescentContext()
-  const [{ context: { secondaryRunWesID }}, send] = useActor(service)
+  const [{ context: { secondaryRunWesID }}] = useActor(service)
   const cancelSecondaryRun = useCancelSecondaryRunMutation(runID, secondaryRunWesID)
+  const { cancelSecondaryRunInit } = useSecondaryRunEvents()
 
   const secondaryRunsByAnnotationType = R.filter(R.propEq('type', annotationType), secondaryRuns)
 
   useEffect(() => {
-    send({
-      type: 'CANCEL_SECONDARY_RUN_INIT',
-      // Function for canceling the secondary run
+    cancelSecondaryRunInit({
       cancelFunction: cancelSecondaryRun
     })
-  }, [cancelSecondaryRun, send])
+  }, [cancelSecondaryRun, cancelSecondaryRunInit])
 
   if (R.isEmpty(secondaryRunsByAnnotationType)) return <NoSecondaryRuns {...{annotationType}} />
 

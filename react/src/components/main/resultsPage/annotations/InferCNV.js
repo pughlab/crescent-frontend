@@ -7,6 +7,7 @@ import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 
 import {useAnnotations} from '../../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 import {useSubmitInferCNVMutation, useSampleAnnotsQuery, useUpdateNormalCellTypesMutation, useUploadGenePosMutation, useUploadSampleAnnotsMutation} from '../../../../apollo/hooks/run'
 
@@ -28,46 +29,38 @@ export default function InferCNV({ runID }) {
   const [secondaryRuns, setSecondaryRuns] = useState(null)
   const [currSampleAnnots, setCurrSampleAnnots] = useState(null)
   const [normalCellTypes, setNormalCellTypes] = useState([])
+  const {annotationTypeInit, uploadInput} = useSecondaryRunEvents()
 
 	const annotationType = 'InferCNV'
 
-  const [{value}, send] = useActor(service)
+  const [{value}] = useActor(service)
   const secondaryRunSubmitted = R.any(R.startsWith(R.__, value), ['secondaryRun', 'cancel'])
 
   useEffect(() => {
-    send({
-      type: 'ANNOTATION_TYPE_INIT',
+    annotationTypeInit({
       annotationType,
-      // The predicates that the respective input must satisfy before the secondary run can be submitted
       inputConditions: [
         R.both(RA.isNotNil, RA.isNonEmptyArray),
         R.both(RA.isNotNil, RA.isNonEmptyArray),
         RA.isNotNil
       ],
-      // Labels for input upload status checklist
       inputChecklistLabels: [
         'Sample annotation file (.txt format)',
         'Normal cell type selection',
         'Gene/chromosome position file (.txt format)'
       ],
-      // Submission function for the secondary run
       submitFunction: submitInferCNV,
-      // Function for uploading/handling the respective input
-      // NOTE: each must be a function (the function will be passed uploadOptions)
-      // that returns a promise which resolves with the upload result in the form of {data: result} 
-      // (the result will be verified with the respective input condition)
-      // or rejects when an error occurs (via a try-catch block)
       uploadFunctions: [
         // inputIndex: 0 - sample annotation file upload or retrieving previously upload sample annotations
         uploadOptions => new Promise(async (resolve, reject) => {
           try {
-            const {type, variables} = uploadOptions
+            const {newUpload, variables} = uploadOptions
 
             // Clear the normal cell types from the previous InferCNV secondary run
             await updateNormalCellTypes({variables: {normalCellTypes: []}})
             // Upload the sample annots file
             // (only if the user uploaded a sample annots file vs. choosing to use the previously uploaded sample annots file)
-            if (type === 'newUpload') await uploadSampleAnnots({...{variables}})
+            if (newUpload) await uploadSampleAnnots({...{variables}})
             // Refetch and set the current sample annots
             const {data: {sampleAnnots: sampleAnnotsResults}} = await refetchSampleAnnots()
             
@@ -81,8 +74,7 @@ export default function InferCNV({ runID }) {
 
                 if (isNormalCellTypesSelected) {
                   // Reset the normal cell types in MongoDB
-                  send({
-                    type: 'UPLOAD_INPUT',
+                  uploadInput({
                     inputIndex: 1,
                     uploadOptions: {
                       variables: {
@@ -119,7 +111,7 @@ export default function InferCNV({ runID }) {
         uploadGenePos
       ]
     })
-  }, [send, refetchSampleAnnots, submitInferCNV, updateNormalCellTypes, uploadGenePos, uploadSampleAnnots])
+  }, [annotationTypeInit, refetchSampleAnnots, submitInferCNV, updateNormalCellTypes, uploadGenePos, uploadInput, uploadSampleAnnots])
 
   useEffect(() => {
     if (RA.isNotNil(run)) {

@@ -4,6 +4,7 @@ import {useActor} from '@xstate/react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useAnnotations} from '../../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 const NormalCellTypeSelection = ({ children, icon, ...props }) => (
   <Message color="purple">
@@ -25,7 +26,8 @@ const NormalCellTypeSelection = ({ children, icon, ...props }) => (
 export default function AddNormalCellTypesButton({ normalCellTypes, sampleAnnots }) {
   // const {userID: currentUserID} = useCrescentContext()
   const {annotationsService: service} = useAnnotations()
-  const [{ matches }, send] = useActor(service)
+  const {uploadInput} = useSecondaryRunEvents()
+  const [{ matches }] = useActor(service)
   const secondaryRunSubmitted = matches('secondaryRunSubmitted')
 
   if (R.isNil(sampleAnnots)) {
@@ -64,8 +66,7 @@ export default function AddNormalCellTypesButton({ normalCellTypes, sampleAnnots
       disabled={secondaryRunSubmitted}
       icon="arrow circle down"
       onChange={async (e, {value}) => {
-        send({
-          type: 'UPLOAD_INPUT',
+        uploadInput({
           inputIndex: 1,
           uploadOptions: {
             variables: {

@@ -5,12 +5,14 @@ import {useDropzone} from 'react-dropzone'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useAnnotations} from '../../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 export default function UploadSampleAnnotsButton({ prevSampleAnnots, currSampleAnnots }) {
   const {annotationsService: service} = useAnnotations()
   // const {userID: currentUserID} = useCrescentContext()
   const [sampleAnnotsFile, setSampleAnnotsFile] = useState(null)
   const [isPrevSampleAnnotsAvailable, setIsPrevSampleAnnotsAvailable] = useState(false)
+  const {uploadInput} = useSecondaryRunEvents()
 
   useEffect(() => {
     setIsPrevSampleAnnotsAvailable(isPrevSampleAnnotsAvailable => R.and(
@@ -31,7 +33,7 @@ export default function UploadSampleAnnotsButton({ prevSampleAnnots, currSampleA
   const inputIndex = 0
   const usingPrevUploadedSampleAnnots = R.equals(prevSampleAnnots, currSampleAnnots)
 
-  const [{context: {inputsReady}, matches}, send] = useActor(service)
+  const [{context: {inputsReady}, matches}] = useActor(service)
   const secondaryRunSubmitted = matches('secondaryRunSubmitted')
   const isStatus = status => R.both(RA.isNotNil, R.compose(
     R.equals(status),
@@ -64,8 +66,7 @@ export default function UploadSampleAnnotsButton({ prevSampleAnnots, currSampleA
             icon={usingPrevUploadedSampleAnnots ? 'check circle' : 'copy'}
             loading={uploadLoading}
             onClick={() => {
-              send({
-                type: 'UPLOAD_INPUT',
+              uploadInput({
                 inputIndex,
                 uploadOptions: {
                   type: 'previousUpload'
@@ -108,11 +109,10 @@ export default function UploadSampleAnnotsButton({ prevSampleAnnots, currSampleA
                     // Set isPrevSampleAnnotsAvailable to null given that a new sample annotations file is being uploaded
                     // Since prevSampleAnnots gets refetched, we want to keep the option to use previously uploaded sample annotations (which would simply be the current sample annotations that were uploaded) disabled
                     setIsPrevSampleAnnotsAvailable(null)
-                    send({
-                      type: 'UPLOAD_INPUT',
+                    uploadInput({
                       inputIndex: 0,
                       uploadOptions: {
-                        type: 'newUpload',
+                        newUpload: true,
                         variables: {
                           sampleAnnots: sampleAnnotsFile
                         }

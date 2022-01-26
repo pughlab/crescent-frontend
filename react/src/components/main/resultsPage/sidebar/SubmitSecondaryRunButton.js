@@ -3,11 +3,13 @@ import { Button, Icon } from 'semantic-ui-react'
 import { useActor } from '@xstate/react'
 import * as R from 'ramda'
 import { useAnnotations } from '../../../../redux/hooks'
+import { useSecondaryRunEvents } from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 const SubmitSecondaryRunButton = () => {
   const { annotationsService: service } = useAnnotations()
+  const { submitSecondaryRun } = useSecondaryRunEvents()
 
-  const [{ context: { annotationType, submittable: submittableAnnotation }, matches, value }, send] = useActor(service)
+  const [{ context: { annotationType, submittable: submittableAnnotation }, matches, value }] = useActor(service)
 
   const isUnsubmittable = R.any(matches, ['inputsPending', 'inputsValidating'])
   const isSubmittable = matches('inputsReady')
@@ -40,7 +42,7 @@ const SubmitSecondaryRunButton = () => {
       icon={isSubmitting && (
         <Icon loading name="circle notch" />
       )}
-      onClick={() => send({ type: 'SUBMIT_SECONDARY_RUN' })}
+      onClick={() => submitSecondaryRun()}
     />
   )
 }

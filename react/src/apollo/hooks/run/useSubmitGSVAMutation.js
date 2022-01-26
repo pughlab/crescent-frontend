@@ -1,17 +1,14 @@
 import {useState, useEffect} from 'react'
-import {useActor} from '@xstate/react'
 import {useQuery, useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import {useAnnotations} from '../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 export default function useSubmitGSVAMutation(runID) {
-  const {annotationsService: service} = useAnnotations()
   const [run, setRun] = useState(null)
-
-  const [, send] = useActor(service)
+  const {updateStatus} = useSecondaryRunEvents()
 
   const {data, refetch: refetchRunStatus} = useQuery(gql`
     query RunStatus($runID: ID) {
@@ -59,12 +56,12 @@ export default function useSubmitGSVAMutation(runID) {
     )(secondaryRunsByAnnotationType)
 
     if (R.equals('submitted', latestSecondaryRunStatus)) {
-      send({
-        type: 'SECONDARY_RUN_SUBMITTED',
-        secondaryRunWesID: latestSecondaryRunWesID
+      updateStatus({
+        secondaryRunWesID: latestSecondaryRunWesID,
+        status: 'submitted'
       })
     }
-  }, [run, send])
+  }, [run, updateStatus])
 
   const [submitGsva, {data: gsvaData}] = useMutation(gql`
     mutation SubmitGSVA($runID: ID) {

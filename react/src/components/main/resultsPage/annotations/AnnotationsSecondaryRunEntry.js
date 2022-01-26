@@ -10,6 +10,7 @@ import {useSecondaryRunStatusQuery} from '../../../../apollo/hooks/run'
 import {useDispatch} from 'react-redux'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
+import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
 
 const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initialCompletedOn, status: initialStatus }) => {
   const dispatch = useDispatch()
@@ -18,13 +19,14 @@ const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initial
   const [secondaryRunStatus, setSecondaryRunStatus] = useState(initialStatus)
   const [secondaryRunCompletedOn, setSecondaryRunCompletedOn] = useState(initialCompletedOn)
   const [isPolling, setIsPolling] = useState(false)
+  const {cancelSecondaryRun} = useSecondaryRunEvents()
 
   const {getStatus, getCompletedOn, secondaryRunCompletedOn: secondaryRunCompletedOnFromQuery, secondaryRunStatus: secondaryRunStatusFromPolling, stopStatusPolling} = useSecondaryRunStatusQuery(runID, wesID)
 
   const runIsSubmitted = R.equals('submitted', secondaryRunStatus)
   const runIsCompleted = R.equals('completed', secondaryRunStatus)
 
-  const [{context: {logs, secondaryRunWesID}, matches}, send] = useActor(service)
+  const [{context: {logs, secondaryRunWesID}, matches}] = useActor(service)
   const logsIsAvailable = RA.isNotNil(logs)
   const cancelLoading = R.and(
     R.any(matches, ['cancelProcessing', 'secondaryRunCanceled']),
@@ -91,8 +93,7 @@ const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initial
               if (runIsCompleted) {
                 dispatch(setActiveSidebarTab({sidebarTab: 'visualizations'}))
               } else if (logsIsAvailable) {
-                send({
-                  type: 'CANCEL_SECONDARY_RUN',
+                cancelSecondaryRun({
                   cancelOptions: {
                     variables: {
                       wesID
