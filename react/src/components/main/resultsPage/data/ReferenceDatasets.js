@@ -3,6 +3,7 @@ import React from 'react'
 import {Button, Divider, List, Message, Segment, Label} from 'semantic-ui-react'
 
 import * as R from 'ramda'
+import * as RA from 'ramda-adjunct'
 
 import {useUpdateRunReferenceDatasetsMutation} from '../../../../apollo/hooks/run'
 import {useResultsPage} from '../../../../redux/hooks'
@@ -17,7 +18,7 @@ export default function ReferenceDatasets({
     return null
   }
 
-  const {datasets, referenceDatasets} = run
+  const {parameters: {quality}, datasets, referenceDatasets, datasetIDs} = run
 
   const runIsPending = R.equals(runStatus, 'pending')
   const referenceDatasetIDs = R.pluck('datasetID', referenceDatasets)
@@ -26,6 +27,16 @@ export default function ReferenceDatasets({
   const removeReferenceDataset = datasetID => updateRunReferenceDatasets({variables: {datasetIDs: R.without([datasetID], referenceDatasetIDs)}})
 
   const disableAddingReferences = R.lt(5, R.length(referenceDatasetIDs))
+
+  //Summing downsampled values with numCells
+  const datasetNumCells = R.reduce((numCellsByDatasetID, {datasetID, numCells}) => R.assoc(datasetID, numCells, numCellsByDatasetID), {}, datasets)
+  //Plucking downsampled cells
+  const downsampledCells = R.compose(
+    R.mapObjIndexed((downsample, datasetID, obj) => downsample <= 0 ? datasetNumCells[datasetID] : downsample),
+    R.pluck('downsample')
+  )(quality)
+  
+  const downsampledCellsSum = R.sum(R.values(downsampledCells))
 
   return (
     <>
@@ -39,6 +50,8 @@ export default function ReferenceDatasets({
             R.compose(
               R.map(({datasetID, name, cancerTag, numCells}) => {
                 const isReference = isReferenceDataset(datasetID)
+                const downsampledCellsEquivalent = R.equals(R.subtract(numCells,R.prop(datasetID,downsampledCells)), 0)
+                const downsampledCellsSubtraction = R.subtract(numCells,R.prop(datasetID,downsampledCells)) 
                 return (
                   <List.Item key={datasetID} active={isReference}>
                     <List.Content floated='left'>
@@ -54,6 +67,12 @@ export default function ReferenceDatasets({
                         {<Label.Detail content={R.toUpper(cancerTag)} />}
                         {<Label.Detail content={`${numCells} cells`}/>}
                       </Label>
+                        {/* Checking number of cells after downsampling (if downsample occurred) */}
+                      {downsampledCellsSubtraction == 0 ? null :
+                      <Label>
+                      {<Label.Detail content={`${downsampledCellsEquivalent ? null : downsampledCellsSubtraction } cells after downsample`}/>}
+                      </Label>
+              }
                     </List.Content>
                     {
                       <List.Content floated='right'>
