@@ -10,6 +10,7 @@ export default function useUpdateRunReferenceDatasetsMutation ({
   const {data: dataDatasets, refetch} = useQuery(gql`
     query RunDatasets($runID: ID) {
       run(runID: $runID) {
+        parameters
         datasets {
           datasetID
           name
@@ -21,6 +22,7 @@ export default function useUpdateRunReferenceDatasetsMutation ({
         referenceDatasets {
           datasetID
         }
+        datasetIDs
       }
     }
   `, {
@@ -47,6 +49,7 @@ export default function useUpdateRunReferenceDatasetsMutation ({
         runID: $runID
         datasetIDs: $datasetIDs
       ) {
+        parameters
         status
         datasets {
           datasetID
