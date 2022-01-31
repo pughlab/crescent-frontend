@@ -1,7 +1,7 @@
 import React, { useReducer, useEffect, useState } from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import { Button, Input, Form, Modal, Dropdown, Popup, Segment, Message, Header, Label } from 'semantic-ui-react'
+import { Button, Input, Form, Modal, Dropdown, Popup, Segment, Message, Header, Label, Icon } from 'semantic-ui-react'
 
 import { useCrescentContext } from '../../redux/hooks'
 import { useEditProjectDetailsMutation } from '../../apollo/hooks/project'
@@ -93,6 +93,10 @@ const ProjectHeader = ({
 }) => {
   const { projectID, userID: currentUserID } = useCrescentContext()
   const { state, dispatch, loading } = useProjectDetails(projectID)
+
+  // useState for showing the accession portion on the front-end
+  const[hidden, setHidden] = useState(true) 
+
   if (R.isNil(state.project)) {
     return null
   }
@@ -162,8 +166,25 @@ const ProjectHeader = ({
                     onChange={(e, { value }) => { dispatch({ type: 'updateFormDescription', payload: { newDescription: value } }) }}
                   />
                 </Form>
-                <Header as='h4'>Project Accession</Header>
-                <Input label={isPublic(kind) ? 'CRES-P' : 'CRES-U' } type ='number' value={parseInt(newAccession)} onChange={(e, { value }) => { dispatch({ type: 'updateFormAccession', payload: { newAccession: parseInt(value) } }) }} />
+                <Header as='h4'> 
+                <Header.Content>
+                Project Accession
+                </Header.Content>
+                </Header>
+
+                {/* Using useState to hide or show the accession */}
+                <Input labelPosition='right' type ='number' value={parseInt(newAccession)} onChange={(e, { value }) => { dispatch({ type: 'updateFormAccession', payload: { newAccession: parseInt(value) } }) }} >
+                <Label basic>  
+                {isPublic(kind) ? 'CRES-P' : 'CRES-U'} 
+                </Label>
+                <input disabled={!hidden} />
+                <Popup inverted size='tiny' content='Accession allows for an optional custom numerical tag' 
+                trigger=
+                {<Label icon='remove' 
+                value={null}
+                onClick={(e, { value }) => { dispatch({ type: 'updateFormAccession', payload: { newAccession: null } }) }}/>}
+                />
+                </Input>                
                 <Header as='h4'>
                   <Header.Content>
                     Project Owner
@@ -206,7 +227,7 @@ const ProjectHeader = ({
             <p>{sameName ? oldName : newName}</p>
             <Header as='h4' content="Description" />
             <p>{sameDesc ? oldDescription : newDescription}</p>
-            <Header as='h4' content="Accession" />
+            {newAccession == null ? null : <Header as='h4' content="Accession" /> } 
             <p>{sameAccession ? oldAccession : newAccession}</p>
             <Header as='h4' content="Owner" />
             <p>
