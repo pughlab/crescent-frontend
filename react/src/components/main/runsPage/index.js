@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import moment from 'moment'
@@ -16,7 +16,7 @@ import RunsStatusLegend from './RunsStatusLegend'
 import ProjectRunsList from './ProjectRunsList'
 
 
-import { Segment, Container, Button, Divider, Header, Popup, Label, Grid } from 'semantic-ui-react'
+import { Segment, Container, Button, Divider, Header, Popup, Label, Grid, Modal } from 'semantic-ui-react'
 
 import Fade from 'react-reveal/Fade'
 
@@ -27,6 +27,7 @@ import {useDispatch} from 'react-redux'
 import {resetRunsPage} from '../../../redux/actions/runsPage'
 import CompareModal from '../comparePage/CompareModal';
 
+import ProjectHeader from '../../menu/ProjectHeader'
 
 const RunsPageComponent = () => {
   const dispatch = useDispatch()
@@ -34,6 +35,8 @@ const RunsPageComponent = () => {
   useEffect(() => () => dispatch(resetRunsPage()), [projectID])
   const { archiveProject, archiveRuns, project } = useProjectArchiveMutation(projectID)
   const { getUpdatedRun, projectRuns, removeRuns } = useProjectRunsQuery(projectID)
+
+  const [open, setOpen] = useState(false)
 
   if (R.isNil(project)) {
     return null
@@ -99,7 +102,7 @@ const RunsPageComponent = () => {
           )}
           {
               RA.isNotNil(accession) &&
-              <Label as='a' ribbon content='ID' detail={isPublic(projectKind) ? `CRES-P${accession}` : `CRES-U${accession}` } />
+              <Label as='a' ribbon content='ID' detail={isPublic(projectKind) ? `CRES-P${accession}`  : `CRES-U${accession}`} />
           }
           <Header>
             <Header.Content content={projectName} />
