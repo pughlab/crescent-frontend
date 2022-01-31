@@ -57,6 +57,7 @@ const typeDefs = gql`
     parameters: RunParameters
     projectID: ID
     project: Project
+    datasetIDs: [ID]
 
     status: String
     downloadable: Boolean
