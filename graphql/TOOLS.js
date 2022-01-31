@@ -124,7 +124,7 @@ const TOOLS = {
           input: {
             type: 'integer',
             step: 1,
-            defaultValue: -1,
+            defaultValue: 0,
           },
           disabled: false,
           singleDataset: false,
