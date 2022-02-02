@@ -7,9 +7,6 @@ const isAllInputsReady = ({ inputsReady }, _) => R.all(R.equals('success'), inpu
 // Checks if the secondary run cancelation was successful
 const isCancelSuccess = (_, { data: { data: { cancelSecondaryRun } } }) => R.equals('failed', cancelSecondaryRun)
 
-// Checks if the uploaded input is valid
-const isInputValid = ({ inputCondition }, { data: { data } }) => inputCondition(data)
-
 // Checks if the secondary run is non-submittable
 const isNonSubmittable = ({ submittable }, _) => !submittable
 
@@ -19,7 +16,6 @@ const isSubmitSuccess = ({ secondaryRunWesID }, _) => RA.isNotNil(secondaryRunWe
 export {
   isAllInputsReady,
   isCancelSuccess,
-  isInputValid,
   isNonSubmittable,
   isSubmitSuccess
 }

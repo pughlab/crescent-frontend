@@ -3,7 +3,7 @@ import { Button, Icon } from 'semantic-ui-react'
 import { useActor } from '@xstate/react'
 import * as R from 'ramda'
 import { useAnnotations } from '../../../../redux/hooks'
-import { useSecondaryRunEvents } from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import { useSecondaryRunEvents } from '../../../../xstate/hooks'
 
 const SubmitSecondaryRunButton = () => {
   const { annotationsService: service } = useAnnotations()

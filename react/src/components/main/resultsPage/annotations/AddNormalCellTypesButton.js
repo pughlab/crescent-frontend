@@ -4,7 +4,7 @@ import {useActor} from '@xstate/react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useAnnotations} from '../../../../redux/hooks'
-import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 const NormalCellTypeSelection = ({ children, icon, ...props }) => (
   <Message color="purple">

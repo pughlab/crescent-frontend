@@ -1,14 +1,14 @@
 import { actions, assign, send, spawn } from 'xstate'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import { SecondaryRunInputMachine } from './machine'
+import { InputUploadMachine } from '..'
 
 const { pure } = actions
 
 // Initialize the required context values when switching annotation type
 const annotationTypeInit = assign({
   annotationType: (_, { annotationType }) => annotationType,
-  inputActors: (_, { inputConditions=[] }) => R.addIndex(R.map)((inputCondition, inputIndex) => spawn(SecondaryRunInputMachine(inputCondition, inputIndex), { sync: true }), inputConditions),
+  inputActors: (_, { inputConditions=[] }) => R.addIndex(R.map)((inputCondition, inputIndex) => spawn(InputUploadMachine({ inputCondition, inputIndex, isActor: true }), { sync: true }), inputConditions),
   inputChecklistLabels: (_, { inputChecklistLabels=[] }) => inputChecklistLabels,
   inputsReady: (_, { inputConditions=[] }) => R.repeat(false, R.length(inputConditions)),
   logs: null,
@@ -91,11 +91,6 @@ const setSubmittedSecondaryRunWesID = assign({
   secondaryRunWesID: (_, { secondaryRunWesID }) => secondaryRunWesID
 })
 
-// Set the upload function for the input actor
-const setUploadFunction = assign({
-  uploadFunction: (_, { uploadFunction }) => uploadFunction
-})
-
 export {
   annotationTypeInit,
   onComplete,
@@ -106,6 +101,5 @@ export {
   setInputReady,
   setLogs,
   setSecondaryRunWesID,
-  setSubmittedSecondaryRunWesID,
-  setUploadFunction
+  setSubmittedSecondaryRunWesID
 }

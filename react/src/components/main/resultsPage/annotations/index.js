@@ -13,7 +13,7 @@ import Shake from 'react-reveal/Shake'
 import UploadRunGenesetButton from './UploadRunGenesetButton'
 import Metadata from './Metadata'
 import InferCNV from './InferCNV'
-import useSecondaryRunMachine from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunMachine} from '../../../../xstate/hooks'
 
 export default function AnnotationsComponent() {
   const {runID} = useCrescentContext()

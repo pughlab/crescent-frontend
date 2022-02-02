@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {useLazyQuery} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
-import {useSecondaryRunEvents} from '../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunEvents} from '../../../xstate/hooks'
 
 const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
   const [secondaryRunCompletedOn, setSecondaryRunCompletedOn] = useState(null)

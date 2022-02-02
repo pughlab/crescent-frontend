@@ -1,10 +1,10 @@
 import { useCallback, useEffect } from 'react'
 import { useActor, useInterpret } from '@xstate/react'
-import SecondaryRunMachine from './machine'
+import { SecondaryRunMachine } from '../../machines'
 import { useDispatch } from 'react-redux'
 import * as R from 'ramda'
-import { setAnnotationsService } from '../../../actions/annotations'
-import { useAnnotations } from '../../../hooks'
+import { setAnnotationsService } from '../../../redux/actions/annotations'
+import { useAnnotations } from '../../../redux/hooks'
 
 /**
  * Hook for initializing the `SecondaryRunMachine` and dispatching the service to Redux.

@@ -4,7 +4,7 @@ import {gql} from 'apollo-boost'
 import {grapheneClient as client} from '../../clients'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import { useSecondaryRunEvents } from '../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunEvents} from '../../../xstate/hooks'
 
 export default function useSubmitInferCNVMutation(runID) {
   const [run, setRun] = useState(null)

@@ -10,7 +10,7 @@ import {useSecondaryRunStatusQuery} from '../../../../apollo/hooks/run'
 import {useDispatch} from 'react-redux'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
-import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 const AnnotationsSecondaryRunEntry = ({ wesID, submittedOn, completedOn: initialCompletedOn, status: initialStatus }) => {
   const dispatch = useDispatch()

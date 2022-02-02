@@ -2,7 +2,7 @@ import {useEffect} from 'react'
 import {useLazyQuery} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
 import * as RA from 'ramda-adjunct'
-import {useSecondaryRunEvents} from '../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunEvents} from '../../../xstate/hooks'
 
 export default function useSecondaryRunLogsQuery(annotationType, runID, secondaryRunWesID) {
   const {updateLogs} = useSecondaryRunEvents()

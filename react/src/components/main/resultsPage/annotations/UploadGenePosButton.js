@@ -6,7 +6,7 @@ import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
 import {useAnnotations} from '../../../../redux/hooks'
-import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 export default function UploadGenePosButton() {
   // const {userID: currentUserID} = useCrescentContext()

@@ -9,7 +9,7 @@ import { useAnnotations, useCrescentContext } from '../../../../redux/hooks'
 import { useCancelSecondaryRunMutation } from '../../../../apollo/hooks/run'
 
 import AnnotationsSecondaryRunEntry from './AnnotationsSecondaryRunEntry'
-import { useSecondaryRunEvents } from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import { useSecondaryRunEvents } from '../../../../xstate/hooks'
 
 const NoSecondaryRuns = ({ annotationType }) => (
   <Fade up>

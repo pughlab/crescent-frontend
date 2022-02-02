@@ -1,4 +1,4 @@
-import { createMachine, sendUpdate } from 'xstate'
+import { createMachine } from 'xstate'
 import {
   annotationTypeInit,
   onComplete,
@@ -9,87 +9,15 @@ import {
   setInputReady,
   setLogs,
   setSecondaryRunWesID,
-  setSubmittedSecondaryRunWesID,
-  setUploadFunction
+  setSubmittedSecondaryRunWesID
 } from './actions'
 import {
   isAllInputsReady,
   isCancelSuccess,
-  isInputValid,
   isNonSubmittable,
   isSubmitSuccess
 } from './guards'
-
-// State machine for handling a secondary run input (used internally by the SecondaryRunMachine)
-export const SecondaryRunInputMachine = (inputCondition, inputIndex) => createMachine({
-  id: `SecondaryRunInputMachine-${inputIndex}`,
-  initial: 'inputPending',
-  context: {
-    inputCondition, // A predicate that checks if the input is valid
-    inputIndex, // The index of the input with regards to all inputs (i.e. first input should have an inputIndex of 0, etc.)
-    uploadFunction: () => new Promise((_, reject) => reject()) // Function for uploading the input
-  },
-  // ROOT NODE TRANSITIONS (apply to all states, unless specified as a forbidden transition in a specific state)
-  on: {
-    // Set the upload function
-    SET_UPLOAD_FUNCTION: {
-      actions: 'setUploadFunction',
-      internal: true
-    },
-    // The input is being uploaded or re-uploaded (the 'inputProcessing' state will handle the upload)
-    UPLOAD_INPUT: 'inputProcessing'
-  },
-  states: {
-    // INITIAL STATE: the input is pending (no input has been uploaded or the input is invalid)
-    inputPending: {
-      entry: undefined
-    },
-    // STATE: invoke the upload function and transition based on whether the upload function's promise resolves or rejects
-    inputProcessing: {
-      entry: sendUpdate(),
-      invoke: {
-        id: `uploadInput-${inputIndex}`,
-        // Call the input upload function with the provided uploadOptions
-        src: ({ uploadFunction }, { uploadOptions }) => uploadFunction(uploadOptions),
-        // If the promise resolves, the input upload was successful
-        onDone: [
-          // Transition to 'inputReady' if the input is valid (i.e. it satisfies its corresponding inputCondition)
-          {
-            target: 'inputReady',
-            cond: 'isInputValid'
-          },
-          // Otherwise, the input is invalid, so transition back to 'inputPending'
-          'inputPending'
-        ],
-        // If the promise rejects, the input upload has failed, so transition to 'inputFailed'
-        onError: 'inputFailed'
-      },
-      on: {
-        // FORBIDDEN TRANSITIONS: can't set the upload function while the input is still being uploaded
-        SET_UPLOAD_FUNCTION: undefined,
-        // FORBIDDEN TRANSITION: the input can't be re-uploaded while it is still being uploaded
-        UPLOAD_INPUT: undefined
-      }
-    },
-    // STATE: the input upload has failed
-    inputFailed: {
-      // Send update to the parent (SecondaryRunMachine) machine to let it know that the input upload has failed
-      entry: sendUpdate()
-    },
-    // STATE: the input is valid and uploaded
-    inputReady: {
-      // Send update to the parent (SecondaryRunMachine) machine to let it know that the upload was successful
-      entry: sendUpdate()
-    }
-  }
-}, {
-  actions: {
-    setUploadFunction
-  },
-  guards: {
-    isInputValid
-  }
-})
+import * as RA from 'ramda-adjunct'
 
 // State machine for handling the lifecycle of a secondary run
 const SecondaryRunMachine = createMachine({
@@ -97,14 +25,14 @@ const SecondaryRunMachine = createMachine({
   initial: 'inputsPending',
   context: {
     annotationType: null, // The current annotation type (e.g. 'GSVA', 'InferCNV', 'Metadata', etc.)
-    cancelFunction: () => new Promise((_, reject) => reject()), // Function for canceling the secondary run
+    cancelFunction: () => RA.rejectP, // Function for canceling the secondary run
     inputActors: [], // Array of actors that handle the respective input
     inputChecklistLabels: [], // Labels for the input upload status checklist (in the sidebar)
     inputsReady: [], // Array of boolean flags indicating whether the respective input is submitted and valid
     logs: null, // Secondary run logs
-    onComplete: () => {}, // Function to run when the secondary run has completed (whether it was successful or a failure)
+    onComplete: RA.noop, // Function to run when the secondary run has completed (whether it was successful or a failure)
     secondaryRunWesID: null, // The WES ID of the secondary run
-    submitFunction: () => new Promise((_, reject) => reject()), // Function for submitting the secondary run
+    submitFunction: () => RA.rejectP, // Function for submitting the secondary run
     submittable: true // Boolean flag indiciating whether or not the secondary needs to be submitted (i.e. metadata upload has no secondary run to submit, so the flag should be set to 'false' for it)
   },
   // ROOT NODE TRANSITIONS (apply to all states, unless specified as a forbidden transition in a specific state)

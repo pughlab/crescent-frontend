@@ -11,7 +11,7 @@ import {useUploadRunGenesetMutation} from '../../../../apollo/hooks/run'
 import {useSubmitGSVAMutation} from '../../../../apollo/hooks/run'
 
 import {useAnnotations} from '../../../../redux/hooks'
-import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 import SecondaryRunLogs from '../logs/SecondaryRunLogs'
 import AnnotationsSecondaryRuns, {NoSecondaryRuns} from './AnnotationsSecondaryRuns'

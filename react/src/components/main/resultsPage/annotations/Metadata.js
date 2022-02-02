@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import * as RA from 'ramda-adjunct'
 
-import {useSecondaryRunEvents} from '../../../../redux/helpers/machines/SecondaryRunMachine/useSecondaryRunMachine'
+import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 import {useRunUploadNamesQuery, useUploadRunMetadataMutation} from '../../../../apollo/hooks/run'
 
