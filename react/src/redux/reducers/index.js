@@ -3,15 +3,16 @@ import * as R from 'ramda'
 
 import createReducer from './createReducer'
 
-import annotations from './annotations'
-import context from './context'
-import projectsPage from './projectsPage'
-import runsPage from './runsPage'
-import resultsPage from './resultsPage'
-import comparePage from './comparePage'
-import projectArchive from './projectArchive'
 import storage from 'redux-persist/lib/storage'
 import persistReducer from 'redux-persist/es/persistReducer'
+
+import comparePage from './comparePage'
+import context from './context'
+import machineServices from './machineServices'
+import projectArchive from './projectArchive'
+import projectsPage from './projectsPage'
+import resultsPage from './resultsPage'
+import runsPage from './runsPage'
 
 // Reducer
 const initialState = {
@@ -400,12 +401,11 @@ const resultsPagePersistConfig = {
 
 // Combine all reducers for application
 export default combineReducers({
-  annotations,
-  context,
-  projectsPage,
-  runsPage,
-  resultsPage: persistReducer(resultsPagePersistConfig, resultsPage),
   comparePage,
-  projectArchive
-  // app
+  context,
+  machineServices,
+  projectArchive,
+  projectsPage,
+  resultsPage: persistReducer(resultsPagePersistConfig, resultsPage),
+  runsPage
 })

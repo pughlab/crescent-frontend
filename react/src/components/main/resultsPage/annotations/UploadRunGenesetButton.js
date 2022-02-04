@@ -10,14 +10,14 @@ import Logo from '../../../login/logo.jpg'
 import {useUploadRunGenesetMutation} from '../../../../apollo/hooks/run'
 import {useSubmitGSVAMutation} from '../../../../apollo/hooks/run'
 
-import {useAnnotations} from '../../../../redux/hooks'
+import {useMachineServices} from '../../../../redux/hooks'
 import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 import SecondaryRunLogs from '../logs/SecondaryRunLogs'
 import AnnotationsSecondaryRuns, {NoSecondaryRuns} from './AnnotationsSecondaryRuns'
 
 export default function UploadGenesetButton({ runID }) {
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   // const {userID: currentUserID} = useCrescentContext()
   const uploadRunGeneset = useUploadRunGenesetMutation(runID)
   const {submitGsva, run} = useSubmitGSVAMutation(runID)

@@ -5,13 +5,13 @@ import {useDropzone} from 'react-dropzone'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {useAnnotations, useCrescentContext} from '../../../../redux/hooks'
+import {useMachineServices, useCrescentContext} from '../../../../redux/hooks'
 import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 
 export default function UploadMetadataButton({runID}) {
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   const {userID: currentUserID} = useCrescentContext()
   const {run} = useRunDetailsQuery(runID)
   const [metadataFile, setMetadataFile] = useState(null)

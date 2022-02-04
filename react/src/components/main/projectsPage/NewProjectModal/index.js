@@ -1,62 +1,20 @@
-import React, {useState, useReducer} from 'react';
+import React, {useState} from 'react';
+import {Header, Button, Segment, Modal, Icon, Step} from 'semantic-ui-react'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
-import moment from 'moment'
 
-import {Transition, Header, Button, Segment, Modal, Icon, Step} from 'semantic-ui-react'
+import {useMachineServices} from '../../../../redux/hooks'
 
+import {useNewProjectEvents, useNewProjectMachine} from '../../../../xstate/hooks'
+
+import DetailsForm from './DetailsForm'
+import DataForm from './DataForm'
 import CreateProjectButton from './CreateProjectButton'
 
-import DataForm from './DataForm'
-import DetailsForm from './DetailsForm'
-
-const NewProjectModal = ({
-
-}) => {
-  const initialNewProjectState = {
-    name: '',
-    description: '',
-    mergedProjectIDs: [],
-    uploadedDatasetIDs: [],
-  }
-  const [newProjectState, newProjectDispatch] = useReducer(
-    (state, action) => {
-      const {type} = action
-      switch (type) {
-        case 'RESET':
-          return initialNewProjectState
-        case 'CHANGE_NAME':
-          return R.evolve({
-            name: R.always(R.prop('name', action))
-          }, state)
-        case 'CHANGE_DESCRIPTION':
-          return R.evolve({
-            description: R.always(R.prop('description', action))
-          }, state)
-        case 'TOGGLE_PROJECT':
-          const {projectID} = action
-          return R.evolve({
-            mergedProjectIDs: R.ifElse(
-              R.includes(projectID),
-              R.without([projectID]),
-              R.append(projectID)
-            )
-          }, state)
-        case 'ADD_DATASET':
-          return R.evolve({
-            uploadedDatasetIDs: R.append(R.prop('datasetID', action))
-          }, state)
-        case 'REMOVE_DATASET':  
-          return R.evolve({
-            uploadedDatasetIDs: R.without(R.prop('datasetID', action))
-          }, state)
-        default: 
-          return state
-      }
-    }, initialNewProjectState
-  )
-
+const NewProjectModalComponent = () => {
   const [currentContent, setCurrentContent] = useState('details')
+
+  const {resetProject} = useNewProjectEvents()
+
   const CONTENTS = [
     {
       name: 'details',
@@ -64,12 +22,7 @@ const NewProjectModal = ({
       icon: 'info',
       component: (
         <Segment basic>
-          <DetailsForm
-            {...{
-              newProjectState,
-              newProjectDispatch
-            }}
-          />
+          <DetailsForm />
         </Segment>
       )
     },
@@ -79,12 +32,7 @@ const NewProjectModal = ({
       icon: 'database',
       component: (
         <Segment basic>
-          <DataForm
-            {...{
-              newProjectState,
-              newProjectDispatch
-            }}
-          />
+          <DataForm />
         </Segment>
       )
     },
@@ -94,12 +42,7 @@ const NewProjectModal = ({
       icon: 'paper plane',
       component: (
         <Segment basic>
-          <CreateProjectButton
-            {...{
-              newProjectState,
-              newProjectDispatch,
-            }}
-          />
+          <CreateProjectButton />
         </Segment>
       )
     },
@@ -109,46 +52,67 @@ const NewProjectModal = ({
     <Modal
       closeIcon
       closeOnDimmerClick={false}
-      size='large'
+      onClose={() => {
+        resetProject()
+      }}
       onOpen={() => {
-        newProjectDispatch({type: 'RESET'})
         setCurrentContent('details')
       }}
+      size="large"
       trigger={
-        <Button fluid size='large' color='black' animated='vertical'>
-          <Button.Content visible><Icon name='add' size='large'/></Button.Content>
-          <Button.Content hidden content="Upload your own files to create a new project"/>
+        <Button fluid size="large" color="black" animated="vertical">
+          <Button.Content visible>
+            <Icon name="add" size="large" />
+          </Button.Content>
+          <Button.Content hidden content="Upload your own files to create a new project" />
         </Button>
       }
     >
       <Modal.Header>
-        <Header textAlign='center' content='New Project'
-          subheader='Enter project details and select/upload your data'
+        <Header
+          content="New Project"
+          subheader="Enter project details and select/upload your data"
+          textAlign="center"
         />
       </Modal.Header>
       <Modal.Header>
-        <Step.Group fluid size='small' widths={4}>
-        {
-          R.map(
-            ({name, label, icon}) => (
-              <Step key={name} title={label} onClick={() => setCurrentContent(name)} icon={icon}
-                active={R.equals(currentContent, name)}
-              />
-            ),
-            CONTENTS
-          )
-        }
+        <Step.Group fluid size="small" widths={4}>
+          {
+            R.map(
+              ({name, label, icon}) => (
+                <Step
+                  key={name}
+                  active={R.equals(currentContent, name)}
+                  icon={icon}
+                  onClick={() => setCurrentContent(name)}
+                  title={label} 
+                />
+              ),
+              CONTENTS
+            )
+          }
         </Step.Group>
       </Modal.Header>
       <Modal.Content scrolling>
-      {
-        R.compose(
-          R.prop('component'),
-          R.find(R.propEq('name', currentContent))
-        )(CONTENTS)
-      }
+        {
+          R.compose(
+            R.prop('component'),
+            R.find(R.propEq('name', currentContent))
+          )(CONTENTS)
+        }
       </Modal.Content>
     </Modal>
+  )
+}
+
+const NewProjectModal = () => {
+  useNewProjectMachine()
+  const {newProjectService} = useMachineServices()
+
+  if (R.isNil(newProjectService)) return null
+
+  return (
+    <NewProjectModalComponent />
   )
 }
 

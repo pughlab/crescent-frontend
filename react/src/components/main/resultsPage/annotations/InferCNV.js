@@ -6,7 +6,7 @@ import * as RA from 'ramda-adjunct'
 import Tada from 'react-reveal/Tada'
 import Logo from '../../../login/logo.jpg'
 
-import {useAnnotations} from '../../../../redux/hooks'
+import {useMachineServices} from '../../../../redux/hooks'
 import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 import {useSubmitInferCNVMutation, useSampleAnnotsQuery, useUpdateNormalCellTypesMutation, useUploadGenePosMutation, useUploadSampleAnnotsMutation} from '../../../../apollo/hooks/run'
@@ -19,7 +19,7 @@ import SecondaryRunLogs from '../logs/SecondaryRunLogs'
 import AnnotationsSecondaryRuns, {NoSecondaryRuns} from './AnnotationsSecondaryRuns'
 
 export default function InferCNV({ runID }) {
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   // const {userID: currentUserID} = useCrescentContext()
   const {refetchSampleAnnots, sampleAnnots} = useSampleAnnotsQuery(runID)
   const uploadSampleAnnots = useUploadSampleAnnotsMutation(runID)

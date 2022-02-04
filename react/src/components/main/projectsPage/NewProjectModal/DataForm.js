@@ -1,77 +1,53 @@
-import React, {useState, useCallback, useEffect} from 'react';
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import React, {useState} from 'react'
+import {Button, Divider} from 'semantic-ui-react'
 import * as R from 'ramda'
-import * as RA from 'ramda-adjunct'
-import moment from 'moment'
-
-import {queryIsNotNil} from '../../../../utils'
-
-import {useDropzone} from 'react-dropzone'
-
-import {Form, Card, Header, Menu, Button, Segment, Modal, Label, Divider, Icon, Image, Popup, Grid, Step} from 'semantic-ui-react'
-
-import {useCrescentContext} from '../../../../redux/hooks'
 
 import DirectoryUploadSegment from './DirectoryUploadSegment'
 import {PublicProjects, UploadedProjects} from './ExistingProjects'
 
-
-const DataForm = ({
-  // Props
-  newProjectState, newProjectDispatch,
-}) => {
-  const {userID} = useCrescentContext()
+const DataForm = () => {
   const [currentContent, setCurrentContent] = useState('publicProjects')
   const CONTENTS = [
     {
       name: 'publicProjects',
       label: 'Public Projects',
-      icon: 'folder open',
       component: (
-        <PublicProjects
-          {...{newProjectState, newProjectDispatch}}
-        />
+        <PublicProjects />
       )
     },
     {
       name: 'uploadedProjects',
       label: 'Your Projects',
-      icon: 'folder open',
       component: (
-        <UploadedProjects
-          {...{newProjectState, newProjectDispatch}}
-        />
+        <UploadedProjects />
       )
     },
     {
       name: 'directoryUpload',
       label: 'Upload Datasets',
-      icon: 'upload',
       component: (
-        <DirectoryUploadSegment 
-          {...{newProjectState, newProjectDispatch}}
-        />
+        <DirectoryUploadSegment />
       )
-    },
-    
+    }
   ]
+  
   return (
     <>
-      <Button.Group widths={3} fluid>
+      <Button.Group fluid widths={3}>
       {
         R.map(
-          ({name, label, icon}) => (
-            <Button key={name} content={label} onClick={() => setCurrentContent(name)}
+          ({name, label}) => (
+            <Button
+              key={name}
               active={R.equals(currentContent, name)}
+              content={label}
+              onClick={() => setCurrentContent(name)}
             />
           ),
           CONTENTS
         )
       }
       </Button.Group>
-
       <Divider horizontal />
       {
         R.compose(

@@ -25,7 +25,7 @@ const persistConfig = {
   key: 'root',
   storage,
   blacklist: [
-    'annotations',
+    'machineServices',
     'projectArchive',
     'resultsPage'
   ]

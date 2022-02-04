@@ -3,7 +3,7 @@ import {Form, Icon, Message, Segment} from 'semantic-ui-react'
 import {useActor} from '@xstate/react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import {useAnnotations} from '../../../../redux/hooks'
+import {useMachineServices} from '../../../../redux/hooks'
 import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 const NormalCellTypeSelection = ({ children, icon, ...props }) => (
@@ -25,7 +25,7 @@ const NormalCellTypeSelection = ({ children, icon, ...props }) => (
 
 export default function AddNormalCellTypesButton({ normalCellTypes, sampleAnnots }) {
   // const {userID: currentUserID} = useCrescentContext()
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   const {uploadInput} = useSecondaryRunEvents()
   const [{ matches }] = useActor(service)
   const secondaryRunSubmitted = matches('secondaryRunSubmitted')

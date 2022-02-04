@@ -1,10 +1,10 @@
 import {useActor} from '@xstate/react'
 import {useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
-import {useAnnotations} from '../../../redux/hooks'
+import {useMachineServices} from '../../../redux/hooks'
 
 const useCancelSecondaryRunMutation = (runID, secondaryRunWesID) => {
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   const [{context: {annotationType}}] = useActor(service)
 
   const [cancelSecondaryRun] = useMutation(gql`

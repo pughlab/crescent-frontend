@@ -5,12 +5,12 @@ import * as R from 'ramda'
 
 import {useSecondaryRunLogsQuery} from '../../../../apollo/hooks/run'
 
-import {useAnnotations, useCrescentContext, useResultsPage} from '../../../../redux/hooks'
+import {useMachineServices, useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 
 import SecondaryRunLogsContent from './SecondaryRunLogsContent'
 
 const SecondaryRunLogs = () => {
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   const {runID} = useCrescentContext()
   const {activeAnnotationsAction} = useResultsPage()
 

@@ -5,13 +5,13 @@ import {useDropzone} from 'react-dropzone'
 import * as RA from 'ramda-adjunct'
 import * as R from 'ramda'
 
-import {useAnnotations} from '../../../../redux/hooks'
+import {useMachineServices} from '../../../../redux/hooks'
 import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 export default function UploadGenePosButton() {
   // const {userID: currentUserID} = useCrescentContext()
   // const {run} = useRunDetailsQuery(runID)
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   const [genePosFile, setGenePosFile] = useState(null)
   const {uploadInput} = useSecondaryRunEvents()
   

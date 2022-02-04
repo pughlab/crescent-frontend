@@ -2,10 +2,10 @@ import React from 'react'
 import { useActor } from '@xstate/react'
 import { Header, List, Segment } from 'semantic-ui-react'
 import * as R from 'ramda'
-import { useAnnotations } from '../../../../redux/hooks'
+import { useMachineServices } from '../../../../redux/hooks'
 
 const SecondaryRunInputChecklist = () => {
-  const { annotationsService: service } = useAnnotations()
+  const { annotationsService: service } = useMachineServices()
   
   const [{ context: { inputChecklistLabels, inputsReady, submittable }, matches }, ] = useActor(service)
   const isSubmitting = R.any(matches, ['submitProcessing', 'submitValidating'])

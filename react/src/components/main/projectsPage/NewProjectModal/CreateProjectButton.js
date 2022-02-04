@@ -1,29 +1,23 @@
 import React from 'react'
-
-import { useMutation, useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import {useActor} from '@xstate/react'
+import {useMutation} from '@apollo/react-hooks'
+import {gql} from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-
-import {Form, Card, Header, Message, Button, Segment, Modal, Label, Divider, Icon, Image, Popup, Grid, Step} from 'semantic-ui-react'
-
-
+import {Button, Header, Message, Segment} from 'semantic-ui-react'
 import {useDispatch} from 'react-redux'
-import {useCrescentContext} from '../../../../redux/hooks'
+import {useCrescentContext, useMachineServices} from '../../../../redux/hooks'
 import {setProject} from '../../../../redux/actions/context'
 
-const CreateProjectButton = ({
-  newProjectState, newProjectDispatch,
-}) => {
-  const {
-    name, description, mergedProjectIDs, uploadedDatasetIDs,
-    oncotreeReference, cancerTag
-  } = newProjectState
+const CreateProjectButton = () => {
+  const {newProjectService} = useMachineServices()
+  const [{context: {projectDescription, projectName, mergedProjectIDs, uploadedDatasetIDs}, matches}] = useActor(newProjectService)
 
   const dispatch = useDispatch()
   const {userID} = useCrescentContext()
+
   // GQL mutation to create a project
-  const [createMergedProject, {loading, data, error}] = useMutation(gql`
+  const [createMergedProject] = useMutation(gql`
     mutation CreateMergedProject(
       $userID: ID!,
       $name: String!,
@@ -43,7 +37,9 @@ const CreateProjectButton = ({
     }
   `, {
     variables: {
-      userID, name, description,
+      userID,
+      name: projectName,
+      description: projectDescription,
       projectIDs: mergedProjectIDs,
       datasetIDs: uploadedDatasetIDs,
     },
@@ -55,54 +51,46 @@ const CreateProjectButton = ({
     }
   })
 
-
-  const noDetails = R.any(R.isEmpty, [name, description])
+  const noDetails = R.any(R.isEmpty, [projectDescription, projectName])
   const noMergedProjects = R.isEmpty(mergedProjectIDs)
   const noUploadedDatasets = R.isEmpty(uploadedDatasetIDs)
-  const disabled = R.any(RA.isTrue, [
-    loading,
-    noDetails,
-    R.and(noMergedProjects, noUploadedDatasets)
-  ])
+  const disabled = R.not(matches('projectCreationReady'))
+
   return (
     <Segment basic>
       <Message>
-      {
-        noDetails ?
+        { noDetails ? (
           'You need to enter in the project name and description'
-        :
+        ) : (
           <Header>
-            {name}
+            {projectName}
             <Header.Subheader>
-              {description}
+              {projectDescription}
             </Header.Subheader>
           </Header>
-      }
+        )}
       </Message>
-
       <Message>
-      {
-        noMergedProjects ?
+        { noMergedProjects ? (
           'You did not select any public or prior projects to integrate'
-        :
+        ) : (
           `${R.length(mergedProjectIDs)} Project${R.equals(1, R.length(mergedProjectIDs)) ? '' : 's'} selected ${R.equals(1, R.length(mergedProjectIDs)) ? '' : 'to integrate'}`
-      }
+        )}
       </Message>
-
       <Message>
-      {
-        noUploadedDatasets ?
+        { noUploadedDatasets ? (
           'You did not upload any single-cell sample datasets'
-        :
+        ) : (
           `${R.length(uploadedDatasetIDs)} Uploaded Dataset${R.equals(1, R.length(uploadedDatasetIDs)) ? '' : 's'}`
-      }
+        )}
       </Message>
-
-      <Button size='huge' fluid
-        disabled={disabled}
+      <Button
+        fluid
         color={disabled ? undefined : 'black'}
+        content="Create Project"
+        disabled={disabled}
         onClick={() => createMergedProject()}
-        content='Create Project'
+        size="huge"
       />
     </Segment>
   )

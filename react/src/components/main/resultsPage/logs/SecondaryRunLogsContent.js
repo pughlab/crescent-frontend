@@ -3,10 +3,10 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useActor} from '@xstate/react'
 
-import {useAnnotations} from '../../../../redux/hooks'
+import {useMachineServices} from '../../../../redux/hooks'
 
 const SecondaryRunLogsContent = () => {
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
 
   const [{context: {logs}}] = useActor(service)
 

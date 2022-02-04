@@ -17,12 +17,12 @@ import DownloadResultsButton from './DownloadResultsButton'
 import SubmitSecondaryRunButton from './SubmitSecondaryRunButton'
 
 import {useDispatch} from 'react-redux'
-import {useResultsPage, useCrescentContext, useAnnotations} from '../../../../redux/hooks'
+import {useResultsPage, useCrescentContext, useMachineServices} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
 import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
 
 const SidebarComponent = () => {
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   const {userID: currentUserID, runID} = useCrescentContext()
   const {run} = useRunDetailsQuery(runID)
 

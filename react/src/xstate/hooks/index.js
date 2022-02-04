@@ -1,8 +1,9 @@
-import useDatasetUploadMachine from './DatasetUploadMachine/useDatasetUploadMachine'
+import useNewProjectMachine, { useNewProjectEvents } from './NewProjectMachine/useNewProjectMachine'
 import useSecondaryRunMachine, { useSecondaryRunEvents } from './SecondaryRunMachine/useSecondaryRunMachine'
 
 export {
-  useDatasetUploadMachine,
+  useNewProjectEvents,
+  useNewProjectMachine,
   useSecondaryRunEvents,
   useSecondaryRunMachine
 }

@@ -4,11 +4,11 @@ import {Button, Divider, Header, Icon, Message, Segment} from 'semantic-ui-react
 import {useDropzone} from 'react-dropzone'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
-import {useAnnotations} from '../../../../redux/hooks'
+import {useMachineServices} from '../../../../redux/hooks'
 import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 
 export default function UploadSampleAnnotsButton({ prevSampleAnnots, currSampleAnnots }) {
-  const {annotationsService: service} = useAnnotations()
+  const {annotationsService: service} = useMachineServices()
   // const {userID: currentUserID} = useCrescentContext()
   const [sampleAnnotsFile, setSampleAnnotsFile] = useState(null)
   const [isPrevSampleAnnotsAvailable, setIsPrevSampleAnnotsAvailable] = useState(false)

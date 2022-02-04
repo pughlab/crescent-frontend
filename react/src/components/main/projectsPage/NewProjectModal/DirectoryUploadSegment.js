@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import { Button, Card, Grid, Header, Icon, Label, List, Message, Modal, Segment } from 'semantic-ui-react'
@@ -6,11 +6,12 @@ import { useDropzone } from 'react-dropzone'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import { useDatasetUploadMachine } from '../../../../xstate/hooks'
-
 import { useEditDatasetTagsMutation, useOncotreeQuery } from '../../../../apollo/hooks/dataset'
 
 import { TagOncotreeModalContent } from '../../runsPage/UploadedDatasetsDetails/index'
+import { useMachineServices } from '../../../../redux/hooks'
+import { useActor } from '@xstate/react'
+import { useNewProjectEvents } from '../../../../xstate/hooks'
 
 const maxFileSize = 209715200
 const validFileTypes = ['.mtx.gz', '.tsv.gz']
@@ -67,10 +68,8 @@ const TagOncotreeModal = ({
   )
 }
 
-const DatasetCard = ({
-  datasetID,
-  newProjectDispatch
-}) => {
+const DatasetCard = ({ datasetID }) => {
+  const {removeUploadedDataset} = useNewProjectEvents()
   const { dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset } = useEditDatasetTagsMutation(datasetID)
   const [deleteDataset] = useMutation(gql`
     mutation DeleteDataset(
@@ -87,7 +86,8 @@ const DatasetCard = ({
     onCompleted: ({ deleteDataset }) => {
       if (RA.isNotNil(deleteDataset)) {
         const { datasetID } = deleteDataset
-        newProjectDispatch({ type: 'REMOVE_DATASET', datasetID })
+
+        removeUploadedDataset({ datasetID })
       }
     }
   })
@@ -146,46 +146,27 @@ const DatasetCard = ({
 }
 
 const DirectoryStatusCard = ({
-  createDataset,
   dirIndex,
   dirSummary: {
     dirName,
     files,
     ...restDirSummary
-  },
-  setUploadStatuses
+  }
 }) => {
-  const [{ matches, value }, send] = useDatasetUploadMachine(createDataset)
-
-  const uploadDirectoryFiles = useCallback(() => {
-    if (RA.isNotNil(files)) {
-      const { directoryName, ...directoryfiles } = files
-
-      send({
-        type: 'UPLOAD_INPUT',
-        uploadOptions: {
-          variables: {
-            ...directoryfiles,
-            name: directoryName
-          }
-        }
-      })
-    }
-  }, [files, send])
-
-  useEffect(() => {
-    setUploadStatuses(uploadStatuses => R.update(dirIndex, value, uploadStatuses))
-  }, [dirIndex, setUploadStatuses, value])
-
-  useEffect(() => {
-    uploadDirectoryFiles()
-  }, [uploadDirectoryFiles])
+  const { newProjectService } = useMachineServices()
+  const [{ context: { datasetUploadStatuses }}] = useActor(newProjectService)
+  const {retryUploadDataset} = useNewProjectEvents()
+  
+  const isDatasetUploadStatus = status => R.compose(
+    R.equals(status),
+    R.nth(dirIndex)
+  )(datasetUploadStatuses)
 
   const [ fileUploadStatus, fileUploadStatusColor, fileUploadStatusIcon ] = (
     R.isNil(files) ? ['Not Uploaded', 'grey', 'dont'] : // One or file was missing for this directory, so it is not being uploaded
-    matches('inputPending') ? ['Pending Upload', 'grey', 'upload'] : // Waiting for input upload to begin
-    matches('inputProcessing') ? ['Uploading', 'purple', 'circle notch'] : // The directory files are being uploaded
-    matches('inputFailed') ? ['Upload Failed', 'red', 'times circle outline'] : // One of the directory files failed to upload
+    isDatasetUploadStatus('pending') ? ['Pending Upload', 'grey', 'upload'] : // Waiting for input upload to begin
+    isDatasetUploadStatus('loading') ? ['Uploading', 'purple', 'circle notch'] : // The directory files are being uploaded
+    isDatasetUploadStatus('failed') ? ['Upload Failed', 'red', 'times circle outline'] : // One of the directory files failed to upload
     ['Uploaded', 'green', 'circle check outline'] // The directory files were uploaded successfully
   )
 
@@ -195,7 +176,7 @@ const DirectoryStatusCard = ({
         <Label color={fileUploadStatusColor} style={{ width: '100%' }}>
           <Header
             content={R.toUpper(`${dirName} — ${fileUploadStatus}`)}
-            icon={<Icon loading={RA.isNotNil(files) && matches('inputProcessing')} name={fileUploadStatusIcon} />}
+            icon={<Icon loading={RA.isNotNil(files) && isDatasetUploadStatus('loading')} name={fileUploadStatusIcon} />}
             size="small"
             style={{
               color: '#FFFFFF',
@@ -225,13 +206,25 @@ const DirectoryStatusCard = ({
               })(["matrix", "barcodes", "features"])
             }
           </List>
-          { matches('inputFailed') && (
+          { isDatasetUploadStatus('failed') && (
             <Button
               fluid
               color={fileUploadStatusColor}
               content="Retry Upload"
               icon="redo alternate"
-              onClick={() => uploadDirectoryFiles()}
+              onClick={() => {
+                const { directoryName, ...directoryfiles } = files
+
+                retryUploadDataset({
+                  dataset: {
+                    variables: {
+                      ...directoryfiles,
+                      name: directoryName
+                    }
+                  },
+                  datasetIndex: dirIndex
+                })
+              }}
             />
           )}
         </Card.Content>
@@ -241,7 +234,7 @@ const DirectoryStatusCard = ({
 }
 
 // Callback function for drag and drop
-const useOnDropAcceptedCallback = (setUploadErrMsgs, setUploadStatuses, setUploadSummary) => useCallback(acceptedFiles => {
+const useOnDropAcceptedCallback = (setUploadErrMsgs, setUploadSummary, uploadDatasets) => useCallback(acceptedFiles => {
   if (RA.isNotEmpty(acceptedFiles)) {
     // Group flat array of files into first level directory ([] => {directoryName: [File]})
     const groupByDirectory = R.groupBy(R.compose(
@@ -276,7 +269,7 @@ const useOnDropAcceptedCallback = (setUploadErrMsgs, setUploadStatuses, setUploa
     const uploadSummary = uploadedDirs.reduce((uploadSummary, dir) => {
       const getCode = file => R.isNil(R.prop(file, dir)) ? "missing" : "valid"
       const dirSummary = {
-        dirName: dir.directoryName,
+        dirName: R.compose(R.equals('undefined'), R.prop('directoryName'))(dir) ? "root" : dir.directoryName,
         barcodes: { expectedFileName: "barcodes.tsv.gz", code: getCode("barcodes") },
         matrix: { expectedFileName: "matrix.mtx.gz", code: getCode("matrix") },
         features: { expectedFileName: "features.tsv.gz", code: getCode("features") }
@@ -294,44 +287,34 @@ const useOnDropAcceptedCallback = (setUploadErrMsgs, setUploadStatuses, setUploa
       }, uploadSummary)
     }, [])
 
-    setUploadStatuses(R.repeat('inputPending', R.length(uploadSummary)))
     setUploadSummary(uploadSummary)
-
+    uploadDatasets({
+      datasets: R.compose(
+        R.map(
+          ({ dirName, files }) => ({
+            variables: {
+              ...files,
+              name: dirName
+            }
+          })
+        ),
+        R.reject(R.propEq('files', null))
+      )(uploadSummary)
+    })
   } else {
     setUploadErrMsgs({ file: null, message: "Empty folder uploaded!" })
   }
-}, [setUploadErrMsgs, setUploadStatuses, setUploadSummary])
+}, [setUploadErrMsgs, setUploadSummary, uploadDatasets])
 
-const DirectoryUploadSegment = ({ newProjectState, newProjectDispatch }) => {
+const DirectoryUploadSegment = () => {
   const [uploadSummary, setUploadSummary] = useState([])
   const [uploadErrMsgs, setUploadErrMsgs] = useState([])
-  const [uploadStatuses, setUploadStatuses] = useState([])
 
-  // GQL mutation to create a dataset
-  const [createDataset] = useMutation(gql`
-    mutation CreateDataset(
-      $name: String!
-      $matrix: Upload!
-      $features: Upload!
-      $barcodes: Upload!
-    ) {
-      createDataset(
-        name: $name
-        matrix: $matrix
-        features: $features
-        barcodes: $barcodes
-      ) {
-        datasetID
-      }
-    }
-  `, {
-    onCompleted: ({ createDataset }) => {
-      if (RA.isNotNil(createDataset)) {
-        const { datasetID } = createDataset
-        newProjectDispatch({ type: 'ADD_DATASET', datasetID })
-      }
-    }
-  })
+  const [validDirs, invalidDirs] = R.partition(R.compose(RA.isNotNil, R.prop('files')))(uploadSummary)
+
+  const { newProjectService } = useMachineServices()
+  const [{ context: { datasetUploadStatuses, uploadedDatasetIDs } }] = useActor(newProjectService)
+  const { uploadDatasets } = useNewProjectEvents()
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: validFileTypes,
@@ -339,14 +322,14 @@ const DirectoryUploadSegment = ({ newProjectState, newProjectDispatch }) => {
     onDrop: files => {
       if (R.isEmpty(files)) setUploadErrMsgs(null)
     },
-    onDropAccepted: useOnDropAcceptedCallback(setUploadErrMsgs, setUploadStatuses, setUploadSummary),
+    onDropAccepted: useOnDropAcceptedCallback(setUploadErrMsgs, setUploadSummary, uploadDatasets),
     onDropRejected: errors => setUploadErrMsgs(errors.map(({ file, errors }) => ({ file, message: errorsToMsg(errors) })))
   })
 
-  const getCountByUploadStatus = status => R.compose(R.length, R.filter(R.equals(status)))(uploadStatuses)
-  const numUploading = getCountByUploadStatus('inputProcessing')
-  const numUploaded = getCountByUploadStatus('inputReady')
-  const numUploadFailed = getCountByUploadStatus('inputFailed')
+  const getCountByUploadStatus = status => R.compose(R.length, R.filter(R.equals(status)))(datasetUploadStatuses)
+  const numUploading = getCountByUploadStatus('loading')
+  const numUploaded = getCountByUploadStatus('success')
+  const numUploadFailed = getCountByUploadStatus('failed')
 
   return (
     <>
@@ -363,28 +346,29 @@ const DirectoryUploadSegment = ({ newProjectState, newProjectDispatch }) => {
               rel="noopener noreferrer"
             >(see required files and formats)</a>
           </Header>
-          <Card.Group itemsPerRow={4}>
-            {
-              R.compose(
-                R.map(datasetID => <DatasetCard key={datasetID} {...{ datasetID, newProjectDispatch }} />),
-                R.prop('uploadedDatasetIDs')
-              )(newProjectState)
-            }
-          </Card.Group>
+          { R.gt(R.length(uploadedDatasetIDs), 0) && (
+            <Card.Group itemsPerRow={4}>
+              {
+                R.map(
+                  datasetID => <DatasetCard key={datasetID} {...{ datasetID }} />,
+                  uploadedDatasetIDs
+                )
+              }
+            </Card.Group>
+          )}
         </Segment>
       </div>
       <Modal
-        closeOnDimmerClick={R.any(R.includes(R.__, uploadStatuses), ['inputReady', 'inputFailed'])}
+        closeOnDimmerClick={R.any(R.includes(R.__, datasetUploadStatuses), ['success', 'failed'])}
         size="small"
         onClose={() => {
           setUploadSummary([])
           setUploadErrMsgs([])
-          setUploadStatuses([])
         }}
         open={R.any(RA.isNotEmpty, [uploadSummary, uploadErrMsgs])}
       >
         <Modal.Header>
-          Upload Summary — { R.gt(R.length(uploadStatuses), 0) ? `${numUploaded}/${R.length(uploadStatuses)}` : 'None' } Uploaded
+          Upload Summary — { R.gt(R.length(datasetUploadStatuses), 0) ? `${numUploaded}/${R.length(datasetUploadStatuses)}` : 'None' } Uploaded
           {
             R.all(R.gt(R.__, 0), [numUploading, numUploadFailed]) ? ` (${numUploading} Uploading, ${numUploadFailed} Failed)` :
             R.gt(numUploading, 0) ? ` (${numUploading} Uploading)` :
@@ -414,21 +398,34 @@ const DirectoryUploadSegment = ({ newProjectState, newProjectDispatch }) => {
                 </Message>
               )}
               <Grid columns={2} style={{ margin: 0 }}>
-                { uploadSummary.map((dirSummary, index) => (
-                  <DirectoryStatusCard key={index} {...{ createDataset, dirIndex: index, dirSummary, setUploadStatuses }} />
-                ))}
+                {
+                  R.addIndex(R.map)((dirSummary, index) => (
+                    <DirectoryStatusCard key={index} {...{ dirIndex: index, dirSummary }} />
+                  ))(validDirs)
+                }
               </Grid>
+              { R.gt(R.length(invalidDirs), 0) && (
+                <>
+                  <Header content={`Directories with File(s) Missing (${R.compose(R.length, R.filter(R.compose(R.isNil, R.prop('files'))))((uploadSummary))})`} />
+                  <Grid columns={2} style={{ margin: 0 }}>
+                    {
+                      R.addIndex(R.map)((dirSummary, index) => (
+                        <DirectoryStatusCard key={index} {...{ dirIndex: index, dirSummary }} />
+                      ))(invalidDirs)
+                    }
+                  </Grid>
+                </>
+              )}
             </>
           )}
         </Modal.Content>
         <Modal.Actions>
           <Button
-            content={R.any(R.equals('inputProcessing'), uploadStatuses) ? 'Uploading, please wait a moment...' : 'Close'}
-            disabled={R.any(R.equals('inputProcessing'), uploadStatuses)}
+            content={R.any(R.equals('loading'), datasetUploadStatuses) ? 'Uploading, please wait a moment...' : 'Close'}
+            disabled={R.any(R.equals('loading'), datasetUploadStatuses)}
             onClick={() => {
               setUploadSummary([])
               setUploadErrMsgs([])
-              setUploadStatuses([])
             }}
           />
         </Modal.Actions>

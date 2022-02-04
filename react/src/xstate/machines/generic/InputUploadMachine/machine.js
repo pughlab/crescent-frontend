@@ -1,6 +1,8 @@
 import { actions, createMachine, sendUpdate } from 'xstate'
 import {
-  setUploadFunction
+  resetUploadResults,
+  setUploadFunction,
+  setUploadResults
 } from './actions'
 import {
   isInputValid
@@ -23,7 +25,8 @@ const InputUploadMachine = ({
     inputCondition, // A predicate that checks if the input is valid
     inputIndex, // The index of the input with regards to all inputs (i.e. first input should have an inputIndex of 0, etc.)
     isActor, // Boolean flag indicating whether or not the machine is an actor
-    uploadFunction // Function for uploading the input, this can be provided as a parameter to InputUploadMachine or provided as a payload for the 'SET_UPLOAD_FUNCTION' event
+    uploadFunction, // Function for uploading the input, this can be provided as a parameter to InputUploadMachine or provided as a payload for the 'SET_UPLOAD_FUNCTION' event
+    uploadResults: null // The results of the upload function's execution
   },
   // ROOT NODE TRANSITIONS (apply to all states, unless specified as a forbidden transition in a specific state)
   on: {
@@ -42,8 +45,12 @@ const InputUploadMachine = ({
     },
     // STATE: invoke the upload function and transition based on whether the upload function's promise resolves or rejects
     inputProcessing: {
-      // NOTE: only sends update to the parent machine if the machine is a spawned actor
-      entry: pure(({ isActor }) => isActor ? sendUpdate() : undefined),
+      entry: [
+        // NOTE: only sends update to the parent machine if the machine is a spawned actor
+        pure(({ isActor }) => isActor ? sendUpdate() : undefined),
+        // Reset the upload results since the input is being re-uploaded
+        'resetUploadResults'
+      ],
       invoke: {
         id: `uploadInput-${inputIndex}`,
         // Call the input upload function with the provided uploadOptions
@@ -53,7 +60,8 @@ const InputUploadMachine = ({
           // Transition to 'inputReady' if the input is valid (i.e. it satisfies its corresponding inputCondition)
           {
             target: 'inputReady',
-            cond: 'isInputValid'
+            cond: 'isInputValid',
+            actions: 'setUploadResults'
           },
           // Otherwise, the input is invalid, so transition back to 'inputPending'
           'inputPending'
@@ -83,7 +91,9 @@ const InputUploadMachine = ({
   }
 }, {
   actions: {
-    setUploadFunction
+    resetUploadResults,
+    setUploadFunction,
+    setUploadResults
   },
   guards: {
     isInputValid

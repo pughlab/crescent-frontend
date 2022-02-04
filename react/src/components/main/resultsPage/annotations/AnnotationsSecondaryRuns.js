@@ -4,7 +4,7 @@ import { Divider, Header, Icon, List, Segment } from 'semantic-ui-react'
 import * as R from 'ramda'
 import Fade from 'react-reveal/Fade'
 
-import { useAnnotations, useCrescentContext } from '../../../../redux/hooks'
+import { useMachineServices, useCrescentContext } from '../../../../redux/hooks'
 
 import { useCancelSecondaryRunMutation } from '../../../../apollo/hooks/run'
 
@@ -26,7 +26,7 @@ const NoSecondaryRuns = ({ annotationType }) => (
 )
 
 const AnnotationsSecondaryRuns = ({ annotationType, secondaryRuns }) => {
-  const { annotationsService: service } = useAnnotations()
+  const { annotationsService: service } = useMachineServices()
   const { runID } = useCrescentContext()
   const [{ context: { secondaryRunWesID }}] = useActor(service)
   const cancelSecondaryRun = useCancelSecondaryRunMutation(runID, secondaryRunWesID)
