@@ -1,12 +1,10 @@
 import React, { useCallback, useState } from 'react'
-import { useMutation } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
 import { Button, Card, Grid, Header, Icon, Label, List, Message, Modal, Segment } from 'semantic-ui-react'
 import { useDropzone } from 'react-dropzone'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import { useEditDatasetTagsMutation, useOncotreeQuery } from '../../../../apollo/hooks/dataset'
+import { useDeleteDatasetMutation, useEditDatasetTagsMutation, useOncotreeQuery } from '../../../../apollo/hooks/dataset'
 
 import { TagOncotreeModalContent } from '../../runsPage/UploadedDatasetsDetails/index'
 import { useMachineServices } from '../../../../redux/hooks'
@@ -69,28 +67,8 @@ const TagOncotreeModal = ({
 }
 
 const DatasetCard = ({ datasetID }) => {
-  const {removeUploadedDataset} = useNewProjectEvents()
+  const deleteDataset = useDeleteDatasetMutation(datasetID)
   const { dataset, tagDataset, addCustomTagDataset, removeCustomTagDataset } = useEditDatasetTagsMutation(datasetID)
-  const [deleteDataset] = useMutation(gql`
-    mutation DeleteDataset(
-      $datasetID: ID!
-    ) {
-      deleteDataset(
-        datasetID: $datasetID
-      ) {
-        datasetID
-      }
-    }
-  `, {
-    variables: { datasetID },
-    onCompleted: ({ deleteDataset }) => {
-      if (RA.isNotNil(deleteDataset)) {
-        const { datasetID } = deleteDataset
-
-        removeUploadedDataset({ datasetID })
-      }
-    }
-  })
 
   return RA.isNotNil(dataset) && (
     <Card onClick={e => e.stopPropagation()}>
@@ -219,7 +197,7 @@ const DirectoryStatusCard = ({
                   dataset: {
                     variables: {
                       ...directoryfiles,
-                      name: directoryName
+                      name: dirName
                     }
                   },
                   datasetIndex: dirIndex
@@ -346,7 +324,7 @@ const DirectoryUploadSegment = () => {
               rel="noopener noreferrer"
             >(see required files and formats)</a>
           </Header>
-          { R.gt(R.length(uploadedDatasetIDs), 0) && (
+          { RA.lengthGt(0, uploadedDatasetIDs) && (
             <Card.Group itemsPerRow={4}>
               {
                 R.map(
@@ -368,9 +346,9 @@ const DirectoryUploadSegment = () => {
         open={R.any(RA.isNotEmpty, [uploadSummary, uploadErrMsgs])}
       >
         <Modal.Header>
-          Upload Summary — { R.gt(R.length(datasetUploadStatuses), 0) ? `${numUploaded}/${R.length(datasetUploadStatuses)}` : 'None' } Uploaded
+          Upload Summary — { RA.lengthGt(0, datasetUploadStatuses) ? `${numUploaded}/${R.length(datasetUploadStatuses)}` : 'None' } Uploaded
           {
-            R.all(R.gt(R.__, 0), [numUploading, numUploadFailed]) ? ` (${numUploading} Uploading, ${numUploadFailed} Failed)` :
+            R.all(RA.lengthGt(0), [numUploading, numUploadFailed]) ? ` (${numUploading} Uploading, ${numUploadFailed} Failed)` :
             R.gt(numUploading, 0) ? ` (${numUploading} Uploading)` :
             R.gt(numUploadFailed, 0) ? ` (${numUploadFailed} Failed)` :
             null
@@ -404,7 +382,7 @@ const DirectoryUploadSegment = () => {
                   ))(validDirs)
                 }
               </Grid>
-              { R.gt(R.length(invalidDirs), 0) && (
+              { RA.lengthGt(0, invalidDirs) && (
                 <>
                   <Header content={`Directories with File(s) Missing (${R.compose(R.length, R.filter(R.compose(R.isNil, R.prop('files'))))((uploadSummary))})`} />
                   <Grid columns={2} style={{ margin: 0 }}>

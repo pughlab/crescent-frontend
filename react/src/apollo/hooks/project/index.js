@@ -1,15 +1,19 @@
-import useCuratedProjectsQuery from './useCuratedProjectsQuery'
-import useProjectRunsQuery from './useProjectRunsQuery'
-import useProjectDetailsQuery from './useProjectDetailsQuery'
-import useEditProjectDetailsMutation from './useEditProjectDetailsMutation'
+import useAddDatasetToProjectMutation from './useAddDatasetToProjectMutation'
+import useCreateMergedProjectMutation from './useCreateMergedProjectMutation'
 import useCuratedProjectPlotsQuery from './useCuratedProjectPlotsQuery'
+import useCuratedProjectsQuery from './useCuratedProjectsQuery'
+import useEditProjectDetailsMutation from './useEditProjectDetailsMutation'
 import useProjectArchiveMutation from './useProjectArchiveMutation'
+import useProjectDetailsQuery from './useProjectDetailsQuery'
+import useProjectRunsQuery from './useProjectRunsQuery'
 
 export {
-  useCuratedProjectsQuery,
-  useProjectRunsQuery,
-  useProjectDetailsQuery,
-  useEditProjectDetailsMutation,
+  useAddDatasetToProjectMutation,
+  useCreateMergedProjectMutation,
   useCuratedProjectPlotsQuery,
-  useProjectArchiveMutation
+  useCuratedProjectsQuery,
+  useEditProjectDetailsMutation,
+  useProjectArchiveMutation,
+  useProjectDetailsQuery,
+  useProjectRunsQuery
 }

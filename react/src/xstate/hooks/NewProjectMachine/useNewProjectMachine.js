@@ -1,34 +1,17 @@
 import { useCallback, useEffect } from 'react'
 import { useActor, useInterpret } from '@xstate/react'
 import { NewProjectMachine } from '../../machines'
-import { useMutation } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
 import { useDispatch } from 'react-redux'
 import { setNewProjectService } from '../../../redux/actions/machineServices'
 import { useMachineServices } from '../../../redux/hooks'
+import { useCreateDatasetMutation } from '../../../apollo/hooks/dataset'
 
 /**
  * Hook for initializing the `NewProjectMachine` and dispatching the service to Redux.
  * @returns {import('xstate').Interpreter} The `NewProjectMachine` interpreter.
  */
 const useNewProjectMachine = () => {
-  const [createDataset] = useMutation(gql`
-    mutation CreateDataset(
-      $name: String!
-      $matrix: Upload!
-      $features: Upload!
-      $barcodes: Upload!
-    ) {
-      createDataset(
-        name: $name
-        matrix: $matrix
-        features: $features
-        barcodes: $barcodes
-      ) {
-        datasetID
-      }
-    }
-  `)
+  const createDataset = useCreateDatasetMutation()
 
   const dispatch = useDispatch()
   const { newProjectService } = useMachineServices()

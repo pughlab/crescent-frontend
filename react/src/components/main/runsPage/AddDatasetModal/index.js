@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
 import { Button, Header, Icon, Modal } from 'semantic-ui-react'
 import { useActor } from '@xstate/react'
-import { useMutation } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import { useNewProjectEvents, useNewProjectMachine } from '../../../../xstate/hooks'
 import { useCrescentContext, useMachineServices } from '../../../../redux/hooks'
 import DirectoryUploadSegment from '../../projectsPage/NewProjectModal/DirectoryUploadSegment'
+import { useAddDatasetToProjectMutation } from '../../../../apollo/hooks/project'
 
 const AddDatasetModalComponent = ({ refetchProject }) => {
   const [open, setOpen] = useState(false)
@@ -15,27 +14,7 @@ const AddDatasetModalComponent = ({ refetchProject }) => {
   const { newProjectService } = useMachineServices()
   const [{ context: { uploadedDatasetIDs } }] = useActor(newProjectService)
   const { resetProject } = useNewProjectEvents()
-  
-  // GQL mutation to create a dataset
-  const [addDatasetToProject] = useMutation(gql`
-    mutation AddDataset(
-      $datasetIDs: [ID!]!
-      $projectID: ID!
-    ) {
-      addDataset(
-        datasetIDs: $datasetIDs
-        projectID: $projectID
-      ) {
-        projectID
-      }
-    }
-  `, {
-    onCompleted: () => {
-      setOpen(false)
-      resetProject()
-      refetchProject()
-    }
-  })
+  const { addDatasetToProject, addDatasetToProjectError, addDatasetToProjectLoading } = useAddDatasetToProjectMutation()
 
   return (
     <Modal
@@ -74,15 +53,30 @@ const AddDatasetModalComponent = ({ refetchProject }) => {
       </Modal.Content>
       <Modal.Actions>
         <Button
-          content="Add Datasets to Project"
-          disabled={RA.isEmptyArray(uploadedDatasetIDs)}
-          onClick={() => {
-            addDatasetToProject({
-              variables: {
-                datasetIDs: uploadedDatasetIDs,
-                projectID
-              }
-            })
+          content={
+            addDatasetToProjectLoading ? `Adding Dataset${RA.lengthGt(1, uploadedDatasetIDs) ? 's' : ''} to Project` :
+            RA.isNotNil(addDatasetToProjectError) ? `Unable to Add Dataset${RA.lengthGt(1, uploadedDatasetIDs) ? 's' : ''} to Project, Please Try Again...` :
+            `Add Dataset${RA.lengthGt(1, uploadedDatasetIDs) ? 's' : ''} to Project`
+          }
+          disabled={
+            RA.isEmptyArray(uploadedDatasetIDs) || // The user hasn't uploaded any datasets yet
+            addDatasetToProjectLoading // The dataset(s) are currently being added to the project
+          }
+          onClick={async () => {
+            try {
+              await addDatasetToProject({
+                variables: {
+                  datasetIDs: uploadedDatasetIDs,
+                  projectID
+                }
+              })
+
+              setOpen(false)
+              resetProject()
+              refetchProject()
+            } catch {
+              console.log(`Unable to add dataset ${uploadedDatasetIDs.join(", ")} to project`)
+            }
           }}
         />
       </Modal.Actions>

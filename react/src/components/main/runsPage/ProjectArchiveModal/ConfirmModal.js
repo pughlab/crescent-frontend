@@ -164,7 +164,7 @@ const ConfirmArchiveRunsModal = ({ allProjectRuns, archiveRuns, projectName, rem
               <Icon corner name="close" />
             </Icon.Group>
           </Button.Content>
-          <Button.Content hidden content={`Delete selected run${R.gt(R.length(selectedRuns), 1) ? 's' : ''}`} />
+          <Button.Content hidden content={`Delete selected run${RA.lengthGt(1, selectedRuns) ? 's' : ''}`} />
         </Button>
       }
     >
@@ -173,7 +173,7 @@ const ConfirmArchiveRunsModal = ({ allProjectRuns, archiveRuns, projectName, rem
           content={projectName}
           icon="exclamation"
           size="tiny"
-          subheader={`Are you sure you would like to delete the following run${R.gt(R.length(selectedRuns), 1) ? 's' : ''}?`}
+          subheader={`Are you sure you would like to delete the following run${RA.lengthGt(1, selectedRuns) ? 's' : ''}?`}
         />
       </Modal.Header>
       <Modal.Content scrolling>
