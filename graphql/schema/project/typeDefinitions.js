@@ -98,6 +98,12 @@ const typeDefs = gql`
 
     # Change ownership of project
     changeProjectOwnership(projectID: ID, oldOwnerID: ID, newOwnerID: ID): Project
+
+    # Add additional dataset(s) to an existing project
+    addDataset(
+      datasetIDs: [ID!]!
+      projectID: ID!
+    ): Project
   }
 `
 

@@ -144,6 +144,12 @@ const resolvers = {
       project.sharedWith = R.append(oldOwnerID, sharedWith)
       await project.save()
       return project
+    },
+
+    addDataset: async (parent, {datasetIDs, projectID}, {Projects}) => {
+      const project = await Projects.updateOne({projectID}, {$push: {"uploadedDatasetIDs": {$each: datasetIDs}}})
+
+      return project
     }
   },
   // Subfield resolvers

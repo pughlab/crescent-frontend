@@ -1,10 +1,10 @@
 import {useState} from 'react'
-import { useQuery } from '@apollo/react-hooks'
-import { gql } from 'apollo-boost'
+import {useQuery} from '@apollo/react-hooks'
+import {gql} from 'apollo-boost'
 
 export default function useProjectDetailsQuery(projectID) {
   const [project, setProject] = useState(null)
-  const {loading, data, error} = useQuery(gql`
+  const {refetch: refetchProject} = useQuery(gql`
     query ProjectDetails($projectID: ID) {
       project(projectID: $projectID) {
         projectID
@@ -58,5 +58,5 @@ export default function useProjectDetailsQuery(projectID) {
     }
   })
 
-  return project
+  return {project, refetchProject}
 }
