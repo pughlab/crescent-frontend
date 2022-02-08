@@ -6,7 +6,7 @@ import * as RA from 'ramda-adjunct'
 // - At least one dataset has been uploaded or at least one existing project has been selected for integration
 const isAllInputsReady = ({ mergedProjectIDs, projectDescription, projectName, uploadedDatasetIDs }, _) => R.and(
   R.all(RA.isNonEmptyString, [projectName, projectDescription]),
-  R.either(RA.isNonEmptyArray, [mergedProjectIDs, uploadedDatasetIDs]),
+  R.any(RA.isNonEmptyArray, [mergedProjectIDs, uploadedDatasetIDs]),
 )
 
 export {

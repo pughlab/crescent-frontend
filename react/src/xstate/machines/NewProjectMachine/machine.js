@@ -38,11 +38,11 @@ const NewProjectMachine = ({ createDataset }) => createMachine({
     // Reset the project data
     RESET_PROJECT: {
       target: 'inputsPending',
-      actions: ['resetProject']
+      actions: 'resetProject'
     },
     // Re-attempt to upload a dataset that failed to upload
     RETRY_UPLOAD_DATASET: {
-      actions: ['retryUploadDataset']
+      actions: 'retryUploadDataset'
     },
     // Toggle a project for integration
     TOGGLE_MERGED_PROJECT: {
