@@ -11,7 +11,8 @@ const CreateProjectButton = () => {
   const [{context: {projectDescription, projectName, mergedProjectIDs, uploadedDatasetIDs}, matches}] = useActor(newProjectService)
   const {createProject} = useNewProjectEvents()
 
-  const noDetails = R.any(R.isEmpty, [projectDescription, projectName])
+  const noProjectName = R.isEmpty(projectName)
+  const noProjectDescription = R.isEmpty(projectDescription)
   const noMergedProjects = R.isEmpty(mergedProjectIDs)
   const noUploadedDatasets = R.isEmpty(uploadedDatasetIDs)
   const disabled = R.none(matches, ['projectCreationReady', 'projectCreationFailed'])
@@ -19,8 +20,12 @@ const CreateProjectButton = () => {
   return (
     <Segment basic>
       <Message>
-        { noDetails ? (
-          'You need to enter in the project name and description'
+        { R.or(noProjectName, noProjectDescription) ? (
+          `You did not enter a ${
+            R.and(noProjectName, noProjectDescription) ? 'project name or description' :
+            noProjectName ? 'project name' :
+            'project description'
+          }`
         ) : (
           <Header>
             {projectName}
