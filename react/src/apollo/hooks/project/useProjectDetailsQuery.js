@@ -48,6 +48,8 @@ export default function useProjectDetailsQuery(projectID) {
           oncotreeCode
           customTags
         }
+
+        archived
       }
     }
   `, {
