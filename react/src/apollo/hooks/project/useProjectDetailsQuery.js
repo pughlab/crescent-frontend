@@ -4,7 +4,7 @@ import {gql} from 'apollo-boost'
 
 export default function useProjectDetailsQuery(projectID) {
   const [project, setProject] = useState(null)
-  const {refetch: refetchProject} = useQuery(gql`
+  useQuery(gql`
     query ProjectDetails($projectID: ID) {
       project(projectID: $projectID) {
         projectID
@@ -58,5 +58,5 @@ export default function useProjectDetailsQuery(projectID) {
     }
   })
 
-  return {project, refetchProject}
+  return project
 }

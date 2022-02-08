@@ -207,9 +207,8 @@ export function TagOncotreeModalContent({
   )
 }
 
-export default function UploadedDatasetsDetails() {
-  const {userID: currentUserID, projectID} = useCrescentContext()
-  const {project, refetchProject} = useProjectDetailsQuery(projectID)
+export default function UploadedDatasetsDetails({ project, refetchProjectDetails }) {
+  const {userID: currentUserID} = useCrescentContext()
 
   if (R.isNil(project)) return null
 
@@ -222,20 +221,24 @@ export default function UploadedDatasetsDetails() {
       <Divider horizontal>
         <Header content="Upload Additional Datasets" />
       </Divider>
-      <AddDatasetModal {...{refetchProject}} />
-      <Divider horizontal>
-        <Header content="Dataset Tags" />
-      </Divider>
-      <Label.Group size="large" style={{ lineHeight: '40px' }}>
-        {
-          R.map(
-            ({datasetID}) => (
-              <TagOncotreeModal key={datasetID} {...{datasetID, disabledTagging}} />
-            ),
-            uploadedDatasets
-          )
-        }
-      </Label.Group>
+      <AddDatasetModal {...{refetchProjectDetails}} />
+      { RA.isNonEmptyArray(uploadedDatasets) && (
+        <>
+          <Divider horizontal>
+            <Header content="Dataset Tags" />
+          </Divider>
+          <Label.Group size="large" style={{ lineHeight: '40px' }}>
+            {
+              R.map(
+                ({datasetID}) => (
+                  <TagOncotreeModal key={datasetID} {...{datasetID, disabledTagging}} />
+                ),
+                uploadedDatasets
+              )
+            }
+          </Label.Group>
+        </>
+      )}
     </Segment>
   )
 }

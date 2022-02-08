@@ -22,7 +22,7 @@ const ProjectCard = ({
   projectID
 }) => {
   const dispatch = useDispatch()
-  const {project} = useProjectDetailsQuery(projectID)
+  const project = useProjectDetailsQuery(projectID)
 
   if (R.isNil(project)) {
     // return null

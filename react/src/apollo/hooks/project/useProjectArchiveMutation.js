@@ -11,7 +11,7 @@ const useProjectArchiveMutation = projectID => {
   const dispatch = useDispatch()
   const [project, setProject] = useState(null)
 
-  const {data: projectDetailsData} = useQuery(gql`
+  const {data: projectDetailsData, refetch: refetchProjectDetails} = useQuery(gql`
     query ProjectDetails($projectID: ID) {
       project(projectID: $projectID) {
         projectID
@@ -87,7 +87,7 @@ const useProjectArchiveMutation = projectID => {
     }
   `)
 
-  return {archiveProject, archiveProjectData, archiveRuns, archiveRunsData, loading: R.or(archiveProjectLoading, archiveRunsLoading), project}
+  return {archiveProject, archiveProjectData, archiveRuns, archiveRunsData, loading: R.or(archiveProjectLoading, archiveRunsLoading), project, refetchProjectDetails}
 }
 
 export default useProjectArchiveMutation

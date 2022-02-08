@@ -8,7 +8,7 @@ import { useCrescentContext, useMachineServices } from '../../../../redux/hooks'
 import DirectoryUploadSegment from '../../projectsPage/NewProjectModal/DirectoryUploadSegment'
 import { useAddDatasetToProjectMutation } from '../../../../apollo/hooks/project'
 
-const AddDatasetModalComponent = ({ refetchProject }) => {
+const AddDatasetModalComponent = ({ refetchProjectDetails }) => {
   const [open, setOpen] = useState(false)
   const { projectID } = useCrescentContext()
   const { newProjectService } = useMachineServices()
@@ -73,7 +73,7 @@ const AddDatasetModalComponent = ({ refetchProject }) => {
 
               setOpen(false)
               resetProject()
-              refetchProject()
+              refetchProjectDetails()
             } catch {
               console.log(`Unable to add dataset ${uploadedDatasetIDs.join(", ")} to project`)
             }
@@ -84,14 +84,14 @@ const AddDatasetModalComponent = ({ refetchProject }) => {
   )
 }
 
-const AddDatasetModal = ({ refetchProject }) => {
+const AddDatasetModal = ({ refetchProjectDetails }) => {
   useNewProjectMachine()
   const {newProjectService} = useMachineServices()
 
   if (R.isNil(newProjectService)) return null
 
   return (
-    <AddDatasetModalComponent {...{refetchProject}} />
+    <AddDatasetModalComponent {...{refetchProjectDetails}} />
   )
 }
 

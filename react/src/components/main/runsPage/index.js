@@ -32,7 +32,7 @@ const RunsPageComponent = () => {
   const dispatch = useDispatch()
   const { userID: currentUserID, projectID } = useCrescentContext()
   useEffect(() => () => dispatch(resetRunsPage()), [projectID])
-  const { archiveProject, archiveRuns, project } = useProjectArchiveMutation(projectID)
+  const { archiveProject, archiveRuns, project, refetchProjectDetails } = useProjectArchiveMutation(projectID)
   const { getUpdatedRun, projectRuns, removeRuns } = useProjectRunsQuery(projectID)
 
   if (R.isNil(project)) {
@@ -52,7 +52,6 @@ const RunsPageComponent = () => {
     accession,
     externalUrls,
 
-    uploadedDatasets,
     mergedProjects,
     archived
   } = project
@@ -129,23 +128,21 @@ const RunsPageComponent = () => {
           }
         </Segment>
 
-        {
-          R.and(R.isEmpty(uploadedDatasets), RA.isNotEmpty(mergedProjects)) ?
-            // {/* LIST OF MERGED PROJECTS  */}
-            <MergedProjectsDetails />
-          : R.and(R.isEmpty(mergedProjects), RA.isNotEmpty(uploadedDatasets)) ?
-            // {/* LIST OF UPLOADED DATASETS */}
-            <UploadedDatasetsDetails />
-          :
-            <Segment attached as={Grid} columns={2}>
-              <Grid.Column>  
-                <MergedProjectsDetails />
-              </Grid.Column>
-              <Grid.Column>
-                <UploadedDatasetsDetails />
-              </Grid.Column>
-            </Segment>
-        }
+        { R.isEmpty(mergedProjects) ? (
+          // LIST OF UPLOADED DATASETS AND BUTTON FOR UPLOADING ADDITIONAL DATASETS
+          <UploadedDatasetsDetails {...{project, refetchProjectDetails}} />
+        ) : (
+          <Segment attached as={Grid} columns={2}>
+            <Grid.Column>
+              { /* LIST OF MERGED PROJECTS */}
+              <MergedProjectsDetails />
+            </Grid.Column>
+            <Grid.Column>
+              { /* LIST OF UPLOADED DATASETS AND BUTTON FOR UPLOADING ADDITIONAL DATASETS */ }
+              <UploadedDatasetsDetails {...{project, refetchProjectDetails}} />
+            </Grid.Column>
+          </Segment>
+        )}
 
 
         <Segment attached='bottom'>
