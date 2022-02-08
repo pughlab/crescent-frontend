@@ -133,7 +133,7 @@ const SecondaryRunMachine = createMachine({
           target: 'submitValidating',
           actions: 'setSecondaryRunWesID'
         },
-        // If the promise rejects, the submission has failed, so transition back to 'submitFailed'
+        // If the promise rejects, the submission has failed, so transition to 'submitFailed'
         onError: 'submitFailed'
       }
     },

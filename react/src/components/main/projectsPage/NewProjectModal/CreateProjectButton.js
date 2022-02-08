@@ -2,19 +2,19 @@ import React from 'react'
 import {useActor} from '@xstate/react'
 import * as R from 'ramda'
 import {Button, Header, Message, Segment} from 'semantic-ui-react'
-import {useMachineServices} from '../../../../redux/hooks'
-import {useCreateMergedProjectMutation} from '../../../../apollo/hooks/project'
+import {useCrescentContext, useMachineServices} from '../../../../redux/hooks'
+import {useNewProjectEvents} from '../../../../xstate/hooks'
 
 const CreateProjectButton = () => {
+  const {userID} = useCrescentContext()
   const {newProjectService} = useMachineServices()
   const [{context: {projectDescription, projectName, mergedProjectIDs, uploadedDatasetIDs}, matches}] = useActor(newProjectService)
-
-  const createMergedProject = useCreateMergedProjectMutation()
+  const {createProject} = useNewProjectEvents()
 
   const noDetails = R.any(R.isEmpty, [projectDescription, projectName])
   const noMergedProjects = R.isEmpty(mergedProjectIDs)
   const noUploadedDatasets = R.isEmpty(uploadedDatasetIDs)
-  const disabled = R.not(matches('projectCreationReady'))
+  const disabled = R.none(matches, ['projectCreationReady', 'projectCreationFailed'])
 
   return (
     <Segment basic>
@@ -47,9 +47,13 @@ const CreateProjectButton = () => {
       <Button
         fluid
         color={disabled ? undefined : 'black'}
-        content="Create Project"
+        content={
+          matches('projectCreationPending') ? 'Creating Project' : // The project is currently being created
+          matches('projectCreationFailed') ? 'Unable to Create Project, Please Try Again' : // The project creation has failed
+          'Create Project' // The project is ready to be created
+        }
         disabled={disabled}
-        onClick={() => createMergedProject()}
+        onClick={() => createProject({ userID })}
         size="huge"
       />
     </Segment>

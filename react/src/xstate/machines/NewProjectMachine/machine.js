@@ -16,11 +16,12 @@ import {
 } from './guards'
 
 // State machine for handling the creation of a new project
-const NewProjectMachine = ({ createDataset }) => createMachine({
+const NewProjectMachine = ({ createDataset, createMergedProject }) => createMachine({
   id: 'NewProjectMachine',
   initial: 'inputsPending',
   context: {
     createDataset, // Function for creating a new dataset
+    createMergedProject, // Function for creating a new merged project
     datasetUploadActors: [], // Array of actors that handle dataset uploads
     datasetUploadStatuses: [], // Array of statuses for the dataset uploads, one each dataset upload actor
     mergedProjectIDs: [], // Array of IDs of projects that have been selected for integration
@@ -90,7 +91,47 @@ const NewProjectMachine = ({ createDataset }) => createMachine({
     },
     // STATE: all required inputs have been provided
     projectCreationReady: {
-      entry: undefined
+      on: {
+        // The project is being created
+        CREATE_PROJECT: 'projectCreationPending'
+      }
+    },
+    // STATE: invoke the createMergedProject function to create a new project
+    projectCreationPending: {
+      invoke: {
+        id: 'createProject',
+        // Call the project creation function to create a new project
+        src: ({
+          createMergedProject,
+          mergedProjectIDs,
+          projectDescription,
+          projectName,
+          uploadedDatasetIDs
+        }, { userID }) => createMergedProject({
+          variables: {
+            userID,
+            name: projectName,
+            description: projectDescription,
+            projectIDs: mergedProjectIDs,
+            datasetIDs: uploadedDatasetIDs,
+          }
+        }),
+        // If the promise resolves, the project was successfully created, so transition to 'projectCreated'
+        onDone: 'projectCreated',
+        // If the promise rejects, the project creation has failed, so transition to 'projectCreationFailed'
+        onError: 'projectCreationFailed'
+      }
+    },
+    // STATE: The project creation has failed
+    projectCreationFailed: {
+      on: {
+        // Another attempt is being made to create the project
+        CREATE_PROJECT: 'projectCreationPending'
+      }
+    },
+    // FINAL STATE: the project has been successfully created
+    projectCreated: {
+      type: 'final'
     }
   }
 }, {

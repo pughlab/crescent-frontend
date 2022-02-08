@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import { setNewProjectService } from '../../../redux/actions/machineServices'
 import { useMachineServices } from '../../../redux/hooks'
 import { useCreateDatasetMutation } from '../../../apollo/hooks/dataset'
+import { useCreateMergedProjectMutation } from '../../../apollo/hooks/project'
 
 /**
  * Hook for initializing the `NewProjectMachine` and dispatching the service to Redux.
@@ -12,11 +13,12 @@ import { useCreateDatasetMutation } from '../../../apollo/hooks/dataset'
  */
 const useNewProjectMachine = () => {
   const createDataset = useCreateDatasetMutation()
+  const createMergedProject = useCreateMergedProjectMutation()
 
   const dispatch = useDispatch()
   const { newProjectService } = useMachineServices()
   // Create service from the SecondaryRunMachine
-  const initialService = useInterpret(NewProjectMachine({ createDataset }))
+  const initialService = useInterpret(NewProjectMachine({ createDataset, createMergedProject }))
 
   // Save the service to Redux
   useEffect(() => {
@@ -41,6 +43,20 @@ const useNewProjectEvents = () => {
    * @property {object} variables.matrix - The `matrix.mtx.gz` file being uploaded.
    * @property {string} variables.name - The directory name of the dataset.
    */
+
+  const createProject = useCallback(
+    /**
+     * Create a new project with the user provided data.
+     * @param {object} payload - Payload for the `CREATE_PROJECT` event being sent to the `NewProjectMachine`.
+     * @param {string} payload.userID - The ID of the user creating the project. 
+     */
+    ({ userID }) => {
+      send({
+        type: 'CREATE_PROJECT',
+        userID
+      })
+    }, [send]
+  )
 
   const removeUploadedDataset = useCallback(
     /**
@@ -131,6 +147,7 @@ const useNewProjectEvents = () => {
       }, [send])
 
   return {
+    createProject,
     removeUploadedDataset,
     resetProject,
     retryUploadDataset,
