@@ -4,7 +4,6 @@ import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {PulseLoader} from 'react-spinners'
 
-import {useProjectDetailsQuery} from '../../../../apollo/hooks/project'
 import {useOncotreeQuery, useEditDatasetTagsMutation} from '../../../../apollo/hooks/dataset'
 import {useCrescentContext} from '../../../../redux/hooks'
 
@@ -212,7 +211,7 @@ export default function UploadedDatasetsDetails({ project, refetchProjectDetails
 
   if (R.isNil(project)) return null
 
-  const {uploadedDatasets, createdBy: {userID: creatorUserID}} = project
+  const {archived, createdBy: {userID: creatorUserID}, uploadedDatasets} = project
   // Check current user is project creator to allow editing dataset tags
   const disabledTagging = R.not(R.equals(currentUserID, creatorUserID))
 
@@ -221,7 +220,7 @@ export default function UploadedDatasetsDetails({ project, refetchProjectDetails
       <Divider horizontal>
         <Header content="Upload Additional Datasets" />
       </Divider>
-      <AddDatasetModal {...{refetchProjectDetails}} />
+      <AddDatasetModal {...{archived, refetchProjectDetails}} />
       { RA.isNonEmptyArray(uploadedDatasets) && (
         <>
           <Divider horizontal>

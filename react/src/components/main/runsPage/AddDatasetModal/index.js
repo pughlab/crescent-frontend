@@ -8,7 +8,7 @@ import { useCrescentContext, useMachineServices } from '../../../../redux/hooks'
 import DirectoryUploadSegment from '../../projectsPage/NewProjectModal/DirectoryUploadSegment'
 import { useAddDatasetToProjectMutation } from '../../../../apollo/hooks/project'
 
-const AddDatasetModalComponent = ({ refetchProjectDetails }) => {
+const AddDatasetModalComponent = ({ archived, refetchProjectDetails }) => {
   const [open, setOpen] = useState(false)
   const { projectID } = useCrescentContext()
   const { newProjectService } = useMachineServices()
@@ -29,6 +29,7 @@ const AddDatasetModalComponent = ({ refetchProjectDetails }) => {
       trigger={
         <Button
           icon
+          disabled={RA.isNotNil(archived)}
           labelPosition="left"
           onClick={() => setOpen(true)}
           style={{
@@ -84,14 +85,14 @@ const AddDatasetModalComponent = ({ refetchProjectDetails }) => {
   )
 }
 
-const AddDatasetModal = ({ refetchProjectDetails }) => {
+const AddDatasetModal = ({ archived, refetchProjectDetails }) => {
   useNewProjectMachine()
   const {newProjectService} = useMachineServices()
 
   if (R.isNil(newProjectService)) return null
 
   return (
-    <AddDatasetModalComponent {...{refetchProjectDetails}} />
+    <AddDatasetModalComponent {...{archived, refetchProjectDetails}} />
   )
 }
 
