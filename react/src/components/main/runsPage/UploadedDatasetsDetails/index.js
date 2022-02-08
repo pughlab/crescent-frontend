@@ -12,6 +12,7 @@ import AddCustomTagsButton from './AddCustomTagsButton'
 import AddDatasetModal from '../AddDatasetModal'
 
 const TagOncotreeModal = ({
+  archived,
   datasetID,
   disabledTagging,
 }) => {
@@ -39,57 +40,55 @@ const TagOncotreeModal = ({
       trigger={
         <Popup
           flowing
-          on="hover"
-          trigger={
-            <Button as="div" labelPosition="right">
-            <Button 
-              basic
-              // as={Button} 
-              color={R.prop(cancerTag, {
-                'cancer': 'pink',
-                'non-cancer': 'purple',
-                'immune': 'blue',
-              })}
-              onClick={() => setOpen(true)}
-              // size="big"
-            >
-              {name}
-              {/* {<Label.Detail content={R.toUpper(cancerTag)}  />} */}
-              {/* {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} /> */}
-              {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
-            </Button>
-            <Label
-              download
-              color={R.prop(cancerTag, {
-                'cancer': 'pink',
-                'non-cancer': 'purple',
-                'immune': 'blue',
-              })}
-              // Should only work with nginx reverse proxy
-              // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
-              href={`/express/download/${datasetID}`}
-              icon="cloud download"
-              pointing="left"
-              target="_blank"
-            />
-            </Button>
-            
-          }
           content={
             <>
-              <Label
-                color={R.prop(cancerTag, {
-                  'cancer': 'pink',
-                  'non-cancer': 'purple',
-                  'immune': 'blue',
-                })}
-              >
+              <Label color={R.prop(cancerTag, {
+                'cancer': 'pink',
+                'non-cancer': 'purple',
+                'immune': 'blue',
+              })}>
                 <Icon name="paperclip" style={{margin: 0}} />
                 <Label.Detail content={R.toUpper(cancerTag)} />
                 { RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} /> }
               </Label>
               { R.map(tag => <Label key={tag} content={<Icon name="paperclip" style={{ margin: 0 }} />} detail={R.toUpper(tag)} />, dataset.customTags) }
             </>
+          }
+          on="hover"
+          trigger={
+            <Button as="div" labelPosition="right">
+              <Button 
+                basic
+                // as={Button} 
+                color={R.prop(cancerTag, {
+                  'cancer': 'pink',
+                  'non-cancer': 'purple',
+                  'immune': 'blue',
+                })}
+                disabled={RA.isNotNil(archived)}
+                onClick={() => setOpen(true)}
+                // size="big"
+              >
+                {name}
+                {/* {<Label.Detail content={R.toUpper(cancerTag)}  />} */}
+                {/* {RA.isNotNil(oncotreeCode) && <Label.Detail content={oncotreeCode} /> */}
+                {/* <Label.Detail content={hasMetadata ? 'HAS METADATA' : 'NO METADATA'} /> */}
+              </Button>
+              <Label
+                download
+                color={R.prop(cancerTag, {
+                  'cancer': 'pink',
+                  'non-cancer': 'purple',
+                  'immune': 'blue',
+                })}
+                // Should only work with nginx reverse proxy
+                // see: https://github.com/suluxan/crescent-frontend/commit/8300e985804518ce31e1de9c3d3b340ee94de3f6
+                href={`/express/download/${datasetID}`}
+                icon="cloud download"
+                pointing="left"
+                target="_blank"
+              />
+            </Button>
           }
         />
       }
@@ -230,7 +229,7 @@ export default function UploadedDatasetsDetails({ project, refetchProjectDetails
             {
               R.map(
                 ({datasetID}) => (
-                  <TagOncotreeModal key={datasetID} {...{datasetID, disabledTagging}} />
+                  <TagOncotreeModal key={datasetID} {...{archived, datasetID, disabledTagging}} />
                 ),
                 uploadedDatasets
               )

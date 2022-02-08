@@ -100,7 +100,8 @@ const ProjectHeader = ({
         userID: createdUserID,
         name: oldOwnerName
       },
-      sharedWith
+      sharedWith,
+      archived
     },
     form: {
       name: newName,
@@ -131,7 +132,7 @@ const ProjectHeader = ({
       <>
         <Modal basic open={open} onOpen={() => dispatch({ type: 'setOpen', payload: { open: true } })} onClose={() => dispatch({ type: 'setOpen', payload: { open: false } })}
           trigger={
-            <Label as={Button} basic >
+            <Label basic as={Button} disabled={RA.isNotNil(archived)}>
               <Header textAlign="center">{oldName}</Header>
             </Label>
           }

@@ -54,6 +54,8 @@ export default function useEditProjectDetailsMutation({projectID}) {
         oncotreeCode
         customTags
       }
+
+      archived
     }
   }
   `, {
