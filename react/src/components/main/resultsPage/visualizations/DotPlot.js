@@ -70,8 +70,11 @@ const DotPlot = ({
       </Segment>
     )
   }
-  //plot is rendering
-  if (current.matches('initialLoading')) {
+
+  const { plotData } = current.context
+  
+  // Plot is rendering
+  if (current.matches('initialLoading') || R.isEmpty(plotData)) {
     return (
       <Segment basic style={{ height: '100%' }} placeholder>
         <Tada forever duration={1000}>
@@ -79,8 +82,6 @@ const DotPlot = ({
         </Tada>
       </Segment>)
   }
-
-  const { plotData } = current.context
 
   // determine proper name of active plot
   const currentScatterPlotType = R.compose(
@@ -105,15 +106,8 @@ const DotPlot = ({
   // if the value is a number, there will be a rendering error)
   const stringifyYValues = (data) => data.map(trace => ({ ...trace, y: trace.y.map(yValue => yValue + " ") }))
 
-  let possibleMaxExp = 100
-  if (R.not(R.isEmpty(plotData))) {
-    possibleMaxExp = Math.ceil(plotData[0]["globalmax"] * 10) / 10
-  }
-  
-  let initialRange = [0,0]
-  if (R.not(R.isEmpty(plotData))) {
-    initialRange = plotData[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
-  }
+  const possibleMaxExp = Math.ceil(plotData[0]["globalmax"] * 10) / 10
+  const initialRange = plotData[0]["initialminmax"].map(num => Math.round(num * 10) / 10)
 
   const SliderWithTooltip = createSliderWithTooltip(Slider.Range);
   const getColor = () => selectedScaleBy === "gene" ? grey : violet
