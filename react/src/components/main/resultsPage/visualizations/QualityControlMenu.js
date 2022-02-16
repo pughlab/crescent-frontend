@@ -9,7 +9,7 @@ import * as R_ from 'ramda-extension'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
-import {setSelectedQC, setSelectedQCDataset} from '../../../../redux/actions/resultsPage'
+import {setSelectedQC, setSelectedQCDataset} from '../../../../redux/slices/resultsPage'
 import {useQCAvailableQuery, useQCMetricsQuery, useMachineService} from '../../../../apollo/hooks/results'
 import {useRunDatasetsDropdownQuery} from '../../../../apollo/hooks/run/useRunDatasetsQuery'
 

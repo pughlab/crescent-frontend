@@ -10,7 +10,7 @@ import moment from 'moment'
 
 import { useDispatch } from 'react-redux'
 import { useCrescentContext } from '../../../../redux/hooks'
-import { setRun } from '../../../../redux/actions/context'
+import { setRun } from '../../../../redux/slices/context'
 import { useCellCountsQuery } from '../../../../apollo/hooks/results'
 import { useRunDetailsQuery } from '../../../../apollo/hooks/run'
 

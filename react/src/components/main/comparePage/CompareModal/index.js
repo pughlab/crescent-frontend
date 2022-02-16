@@ -7,8 +7,8 @@ import ProjectsForm from './ProjectsForm'
 
 import {useDispatch} from 'react-redux'
 import {useComparePage, useCrescentContext} from '../../../../redux/hooks'
-import {clearPlots} from '../../../../redux/actions/comparePage'
-import {goToCompare} from '../../../../redux/actions/context'
+import {clearPlots} from '../../../../redux/slices/comparePage'
+import {goToCompare} from '../../../../redux/slices/context'
 
 import {useUserPlotsQuery} from '../../../../apollo/hooks/user'
 import {useCuratedProjectPlotsQuery} from '../../../../apollo/hooks/project'

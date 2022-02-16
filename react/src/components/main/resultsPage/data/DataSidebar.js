@@ -6,7 +6,7 @@ import * as R from 'ramda'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
-import {setActiveDataAction} from '../../../../redux/actions/resultsPage'
+import {setActiveDataAction} from '../../../../redux/slices/resultsPage'
 
 const DataAccordionItem = ({dataAction, label, description}) => {
   const dispatch = useDispatch()

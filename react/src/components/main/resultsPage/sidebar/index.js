@@ -19,7 +19,7 @@ import SubmitSecondaryRunButton from './SubmitSecondaryRunButton'
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext, useMachineServices} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
-import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
+import {setActiveSidebarTab} from '../../../../redux/slices/resultsPage'
 
 const SidebarComponent = () => {
   const {annotationsService: service} = useMachineServices()

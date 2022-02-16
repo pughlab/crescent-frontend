@@ -4,7 +4,7 @@ import { gql } from 'apollo-boost'
 
 import {grapheneClient as client} from '../../clients'
 import { useDispatch } from 'react-redux'
-import { sendSuccess } from '../../../redux/actions/resultsPage'
+import { sendSuccess } from '../../../redux/slices/resultsPage'
 import { useService } from '@xstate/react'
 import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 

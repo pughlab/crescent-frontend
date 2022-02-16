@@ -8,7 +8,7 @@ import {grapheneClient as client} from '../../clients'
 
 import { useDispatch } from 'react-redux'
 import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
-import { sendSuccess } from '../../../redux/actions/resultsPage'
+import { sendSuccess } from '../../../redux/slices/resultsPage'
 
 export default function useDotPlot(features, group, runID, scaleBy, expRange, assay, sidebarCollapsed, plotQueryIndex) {
   const dispatch = useDispatch()

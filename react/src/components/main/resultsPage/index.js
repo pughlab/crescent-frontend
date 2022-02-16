@@ -4,7 +4,7 @@ import * as RA from 'ramda-adjunct'
 
 import {Grid, Segment} from 'semantic-ui-react'
 
-import {initializePlots, resetResultsPage, setActiveSidebarTab, setRunStatus} from '../../../redux/actions/resultsPage'
+import {initializePlots, resetResultsPage, setActiveSidebarTab, setRunStatus} from '../../../redux/slices/resultsPage'
 import {useCrescentContext, useComparePage} from '../../../redux/hooks'
 import {useDispatch} from 'react-redux'
 import {useRunDetailsQuery} from '../../../apollo/hooks/run'

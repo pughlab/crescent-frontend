@@ -5,7 +5,7 @@ import {Input, Segment, Dropdown, Grid, Button, Divider, Form, Checkbox, Popup} 
 import {useDispatch} from 'react-redux'
 
 import {useProjectsPage} from '../../../redux/hooks'
-import {setSearchFilter, setTissueFilter, setOncotreeFilter} from '../../../redux/actions/projectsPage'
+import {setSearchFilter, setTissueFilter, setOncotreeFilter} from '../../../redux/slices/projectsPage'
 
 import {useOncotreeQuery} from '../../../apollo/hooks/dataset'
 

@@ -4,7 +4,7 @@ import {Modal, Segment, Image, Button} from 'semantic-ui-react'
 
 
 import {useDispatch} from 'react-redux'
-import {goHome} from '../../redux/actions/context'
+import {goHome} from '../../redux/slices/context'
 
 import {useCrescentContext} from '../../redux/hooks'
 import Logo from '../login/logo.jpg'

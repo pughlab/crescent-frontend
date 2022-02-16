@@ -13,7 +13,7 @@ import * as RA from 'ramda-adjunct'
 import Logo from './logo.jpg'
 
 import {useDispatch} from 'react-redux'
-import {setUser} from '../../redux/actions/context'
+import {setUser} from '../../redux/slices/context'
 
 // See LoginForm.js for congruent comments regarding structure of component
 const RegisterValidationSchema = Yup.object().shape({

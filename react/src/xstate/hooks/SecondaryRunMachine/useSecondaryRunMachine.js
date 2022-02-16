@@ -3,7 +3,7 @@ import { useActor, useInterpret } from '@xstate/react'
 import { SecondaryRunMachine } from '../../machines'
 import { useDispatch } from 'react-redux'
 import * as R from 'ramda'
-import { setAnnotationsService } from '../../../redux/actions/machineServices'
+import { setAnnotationsService } from '../../../redux/slices/machineServices'
 import { useMachineServices } from '../../../redux/hooks'
 
 /**

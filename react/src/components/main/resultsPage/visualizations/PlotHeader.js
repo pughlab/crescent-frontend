@@ -6,8 +6,8 @@ import * as R from 'ramda'
 import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useRunDetailsQuery } from '../../../../apollo/hooks/run'
-import { goToResults } from '../../../../redux/actions/context'
-import { cacheComparePage } from '../../../../redux/actions/comparePage'
+import { goToResults } from '../../../../redux/slices/context'
+import { cacheComparePage } from '../../../../redux/slices/comparePage'
 
 const PlotHeader = ({
   plotQueryID,

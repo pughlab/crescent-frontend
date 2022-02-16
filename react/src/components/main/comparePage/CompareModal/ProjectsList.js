@@ -8,7 +8,7 @@ import {ClimbingBoxLoader} from 'react-spinners'
 import ProjectCard from './ProjectCard'
 
 import {useDispatch} from 'react-redux'
-import {removePlots} from '../../../../redux/actions/comparePage';
+import {removePlots} from '../../../../redux/slices/comparePage';
 
 const ProjectsList = ({
   projects,

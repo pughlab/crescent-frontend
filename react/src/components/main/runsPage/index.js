@@ -24,7 +24,7 @@ import { useCrescentContext } from '../../../redux/hooks'
 import {useProjectArchiveMutation, useProjectRunsQuery} from '../../../apollo/hooks/project'
 
 import {useDispatch} from 'react-redux'
-import {resetRunsPage} from '../../../redux/actions/runsPage'
+import {resetRunsPage} from '../../../redux/slices/runsPage'
 import CompareModal from '../comparePage/CompareModal';
 
 

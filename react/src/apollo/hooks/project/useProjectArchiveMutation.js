@@ -4,8 +4,8 @@ import {gql} from 'apollo-boost'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
-import {goBack} from '../../../redux/actions/context'
-import {resetProjectArchive} from '../../../redux/actions/projectArchive'
+import {goBack} from '../../../redux/slices/context'
+import {resetProjectArchive} from '../../../redux/slices/projectArchive'
 
 const useProjectArchiveMutation = projectID => {
   const dispatch = useDispatch()

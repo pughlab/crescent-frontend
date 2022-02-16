@@ -10,7 +10,7 @@ import { gql } from 'apollo-boost'
 import { useDispatch } from 'react-redux'
 
 import { useCrescentContext } from '../../../redux/hooks'
-import { goBack } from '../../../redux/actions/context'
+import { goBack } from '../../../redux/slices/context'
 
 const UnsubscribeProjectModal = ({
     // Props

@@ -10,7 +10,7 @@ import PlotCaption from './PlotCaption'
 
 import {useDispatch} from 'react-redux'
 import {useResultsPage, useComparePage} from '../../../redux/hooks'
-import {resetResultsPage, initializePlots} from '../../../redux/actions/resultsPage'
+import {resetResultsPage, initializePlots} from '../../../redux/slices/resultsPage'
 
 // CSS import for react-grid-layout
 import 'react-grid-layout/css/styles.css'

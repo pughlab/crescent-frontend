@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
 import { useInferCNVTypes, useMachineService } from '../../../../apollo/hooks/results'
-import { setInferCNVType } from '../../../../redux/actions/resultsPage'
+import { setInferCNVType } from '../../../../redux/slices/resultsPage'
 
 import { Fade } from 'react-reveal'
 

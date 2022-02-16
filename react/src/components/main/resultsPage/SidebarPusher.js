@@ -10,7 +10,7 @@ import LogsComponent from './logs'
 import AnnotationsComponent from './annotations'
 
 import {useResultsPage} from '../../../redux/hooks'
-import {toggleSidebarCollapsed} from '../../../redux/actions/resultsPage'
+import {toggleSidebarCollapsed} from '../../../redux/slices/resultsPage'
 import {useCrescentContext} from '../../../redux/hooks'
 import {useDispatch} from 'react-redux'
 

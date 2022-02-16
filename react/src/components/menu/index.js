@@ -15,9 +15,9 @@ import ProjectHeader from './ProjectHeader'
 import RunHeader from './RunHeader'
 
 import {useDispatch} from 'react-redux'
-import {goHome, goBack} from '../../redux/actions/context'
+import {goHome, goBack} from '../../redux/slices/context'
 import {useCrescentContext, useComparePage} from '../../redux/hooks'
-import { resetComparePage } from '../../redux/actions/comparePage';
+import { resetComparePage } from '../../redux/slices/comparePage';
 
 const MenuComponent = ({
 

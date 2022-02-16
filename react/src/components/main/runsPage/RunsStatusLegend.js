@@ -6,7 +6,7 @@ import * as R from 'ramda'
 
 import {useRunsPage} from '../../../redux/hooks'
 import {useDispatch} from 'react-redux'
-import {setActiveRunsFilter} from '../../../redux/actions/runsPage'
+import {setActiveRunsFilter} from '../../../redux/slices/runsPage'
 
 const RunsStatusLegend = ({ projectRuns }) => {
   const dispatch = useDispatch()

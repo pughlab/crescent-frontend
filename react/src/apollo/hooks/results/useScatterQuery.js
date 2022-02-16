@@ -5,7 +5,7 @@ import * as R from 'ramda'
 import { useDispatch } from 'react-redux'
 import { useService } from '@xstate/react'
 import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
-import { sendSuccess } from '../../../redux/actions/resultsPage'
+import { sendSuccess } from '../../../redux/slices/resultsPage'
 
 
 export default function useScatter(vis, group, runID, datasetID, selectedFeature, plotQueryIndex) {

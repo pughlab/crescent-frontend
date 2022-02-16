@@ -7,7 +7,7 @@ import {useDispatch} from 'react-redux'
 import {useResultsPage, useCrescentContext} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useToolStepsQuery} from '../../../../apollo/hooks/run'
 
-import {setActivePipelineStep} from '../../../../redux/actions/resultsPage'
+import {setActivePipelineStep} from '../../../../redux/slices/resultsPage'
 
 const ParameterAccordionItem = ({
   step, label

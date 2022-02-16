@@ -5,7 +5,7 @@ import moment from 'moment'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
-import {setRunSelected} from '../../../../redux/actions/projectArchive'
+import {setRunSelected} from '../../../../redux/slices/projectArchive'
 import {useProjectArchive} from '../../../../redux/hooks'
 
 const ProjectRunCard = ({ run }) => {

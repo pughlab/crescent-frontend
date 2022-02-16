@@ -8,7 +8,7 @@ import Logo from '../../../login/logo.jpg'
 
 import * as R from 'ramda'
 import {useDispatch} from 'react-redux'
-import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
+import {setActiveSidebarTab} from '../../../../redux/slices/resultsPage'
 
 export default function UploadedMetadataList({ uploadNames }) {
   const dispatch = useDispatch()

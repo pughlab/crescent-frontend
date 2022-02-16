@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import { useDispatch } from 'react-redux'
 import * as RA from 'ramda-adjunct'
-import {setProject} from '../../../redux/actions/context'
+import {setProject} from '../../../redux/slices/context'
 
 const useCreateMergedProjectMutation = () => {
   const dispatch = useDispatch()

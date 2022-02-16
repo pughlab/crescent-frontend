@@ -6,7 +6,7 @@ import * as RA from 'ramda-adjunct'
 
 import {useProjectDetailsQuery} from '../../../apollo/hooks/project'
 import {useCrescentContext} from '../../../redux/hooks'
-import {setProject} from '../../../redux/actions/context'
+import {setProject} from '../../../redux/slices/context'
 
 const ViewProjectModal = ({ projectID }) => {
   const dispatch = useDispatch()

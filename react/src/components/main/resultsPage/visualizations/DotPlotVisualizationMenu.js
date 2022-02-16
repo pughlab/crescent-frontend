@@ -10,7 +10,7 @@ import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
 import { useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery, useSetAssaysQuery, useMachineService } from '../../../../apollo/hooks/results'
-import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedAssay, setSelectedDiffExpression } from '../../../../redux/actions/resultsPage'
+import { addSelectedFeature, removeSelectedFeature, setSelectedGroup, setSelectedAssay, setSelectedDiffExpression } from '../../../../redux/slices/resultsPage'
 
 const DotPlotVisualizationMenu = ({
 }) => {

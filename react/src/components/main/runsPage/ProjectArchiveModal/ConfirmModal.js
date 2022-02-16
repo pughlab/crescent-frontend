@@ -4,7 +4,7 @@ import moment from 'moment'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 import {useDispatch} from 'react-redux'
-import {resetAccordionIndices, resetProjectArchive, setConfirmArchiveProjectOpen, setConfirmArchiveRunsOpen, toggleAccordionIndices} from '../../../../redux/actions/projectArchive'
+import {resetAccordionIndices, resetProjectArchive, setConfirmArchiveProjectOpen, setConfirmArchiveRunsOpen, toggleAccordionIndices} from '../../../../redux/slices/projectArchive'
 import {useProjectArchive} from '../../../../redux/hooks'
 
 const getStatusColor = R.prop(R.__, {

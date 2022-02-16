@@ -12,7 +12,7 @@ import * as Yup from 'yup'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 
-import {setUser} from '../../redux/actions/context'
+import {setUser} from '../../redux/slices/context'
 import {useDispatch} from 'react-redux'
 
 // Yup form validation

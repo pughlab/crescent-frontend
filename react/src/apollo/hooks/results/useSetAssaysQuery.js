@@ -11,7 +11,7 @@ import {useDispatch} from 'react-redux'
 import { useResultsPage } from '../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../redux/hooks/useResultsPage'
 
-import {setSelectedAssay} from '../../../redux/actions/resultsPage'
+import {setSelectedAssay} from '../../../redux/slices/resultsPage'
 
 import useAvailableAssaysQuery from './useAvailableAssaysQuery'
 import { useMachineService } from '.'

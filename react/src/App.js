@@ -18,7 +18,7 @@ import {useMutation} from '@apollo/react-hooks'
 import {gql} from 'apollo-boost'
 
 
-import {setUser} from './redux/actions/context'
+import {setUser} from './redux/slices/context'
 // Hooks
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from './redux/hooks'

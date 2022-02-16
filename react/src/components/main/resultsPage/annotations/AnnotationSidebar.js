@@ -6,7 +6,7 @@ import * as R from 'ramda'
 import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useRunDetailsQuery} from '../../../../apollo/hooks/run'
-import {setActiveAnnotationsAction} from '../../../../redux/actions/resultsPage'
+import {setActiveAnnotationsAction} from '../../../../redux/slices/resultsPage'
 
 const AnnotationsAccordionItem = ({annotationsAction, label, description}) => {
   const dispatch = useDispatch()

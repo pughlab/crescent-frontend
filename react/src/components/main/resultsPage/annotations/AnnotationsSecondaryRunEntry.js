@@ -8,7 +8,7 @@ import * as RA from 'ramda-adjunct'
 import {useSecondaryRunStatusQuery} from '../../../../apollo/hooks/run'
 
 import {useDispatch} from 'react-redux'
-import {setActiveSidebarTab} from '../../../../redux/actions/resultsPage'
+import {setActiveSidebarTab} from '../../../../redux/slices/resultsPage'
 import {useMachineServices, useCrescentContext} from '../../../../redux/hooks'
 import {useSecondaryRunEvents} from '../../../../xstate/hooks'
 

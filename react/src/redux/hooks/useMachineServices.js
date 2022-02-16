@@ -1,11 +1,3 @@
-import * as R from 'ramda'
-// Redux
-import {useSelector} from 'react-redux'
-import {createSelector} from 'reselect'
+import createSelectorHook from './createSelectorHook'
 
-export default function useMachineServices() {
-  // Get services object from redux store
-  const machineServicesSelector = createSelector(R.prop('machineServices'), R.identity)
-  const machineServices = useSelector(machineServicesSelector)
-  return machineServices
-}
+export default createSelectorHook('machineServices')

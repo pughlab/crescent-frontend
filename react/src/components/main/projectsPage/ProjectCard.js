@@ -14,7 +14,7 @@ import {Form, Card, Header, Transition, Button, Container, Segment, Modal, Label
 import Marquee from 'react-marquee'
 
 import {useDispatch} from 'react-redux'
-import {setProject} from '../../../redux/actions/context'
+import {setProject} from '../../../redux/slices/context'
 import {useProjectDetailsQuery} from '../../../apollo/hooks/project'
 
 const ProjectCard = ({

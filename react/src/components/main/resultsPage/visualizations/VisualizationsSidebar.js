@@ -9,8 +9,8 @@ import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useRunDetailsQuery, useSavePlotQueryMutation, useRemoveSavedPlotQueryMutation, useUpdateSavedPlotQueryMutation} from '../../../../apollo/hooks/run'
 import {useResultsAvailableQuery} from '../../../../apollo/hooks/results'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage';
-import {setActiveResult, addEmptyPlot, setActivePlot, setPlotQueryID} from '../../../../redux/actions/resultsPage'
-import {updatePlot} from '../../../../redux/actions/comparePage'
+import {setActiveResult, addEmptyPlot, setActivePlot, setPlotQueryID} from '../../../../redux/slices/resultsPage'
+import {updatePlot} from '../../../../redux/slices/comparePage'
 
 import VisualizationMenu from '../../resultsPage/visualizations/VisualizationMenu'
 import DotPlotVisualizationMenu from '../../resultsPage/visualizations/DotPlotVisualizationMenu'

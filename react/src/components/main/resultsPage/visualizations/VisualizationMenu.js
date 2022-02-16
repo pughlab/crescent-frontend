@@ -11,7 +11,7 @@ import {useDispatch} from 'react-redux'
 import {useCrescentContext, useResultsPage} from '../../../../redux/hooks'
 import {useResultsPagePlotQuery} from '../../../../redux/hooks/useResultsPage'
 import {useDiffExpressionQuery, useDiffExpressionGroupsQuery, useTopExpressedQuery, useSearchFeaturesQuery, useDiffExpressionCategoricalGroupsQuery, useSetAssaysQuery} from '../../../../apollo/hooks/results'
-import {setSelectedFeature, setSelectedGroup, setSelectedDiffExpression, setSelectedAssay} from '../../../../redux/actions/resultsPage'
+import {setSelectedFeature, setSelectedGroup, setSelectedDiffExpression, setSelectedAssay} from '../../../../redux/slices/resultsPage'
 
 const VisualizationMenu = ({
 }) => { 

@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux'
 import { useCrescentContext, useResultsPage } from '../../../../redux/hooks'
 import { useResultsPagePlotQuery } from '../../../../redux/hooks/useResultsPage'
 import { useResultsAvailableQuery, useScatterQuery, useScatterNumericQuery, useOpacityQuery} from '../../../../apollo/hooks/results'
-import { setSelectedExpRange } from '../../../../redux/actions/resultsPage'
+import { setSelectedExpRange } from '../../../../redux/slices/resultsPage'
 
 const violet = '#6435c9'
 const lightViolet = '#c5b3eb'

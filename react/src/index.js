@@ -4,21 +4,20 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
-
+// Apollo Client
 import { ApolloClient } from 'apollo-client'
 import { InMemoryCache } from 'apollo-cache-inmemory'
-import {createUploadLink} from 'apollo-upload-client'
-
+import { createUploadLink } from 'apollo-upload-client'
 import { ApolloProvider } from '@apollo/react-hooks'
 
+// Redux
+import { configureStore } from '@reduxjs/toolkit'
 import { Provider as ReduxProvider } from 'react-redux'
-import { createStore, applyMiddleware } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension'
-import thunk from 'redux-thunk'
-import rootReducer from './redux/reducers'
 import { persistStore, persistReducer } from 'redux-persist'
-import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
 import { PersistGate } from 'redux-persist/integration/react'
+import storage from 'redux-persist/lib/storage' // defaults to localStorage for web
+import rootReducer from './redux/rootReducer'
+
 require('dotenv').config()
 
 const persistConfig = {
@@ -32,13 +31,17 @@ const persistConfig = {
 }
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 // Redux store
-const store = createStore(
-  persistedReducer,
-  composeWithDevTools(
-    applyMiddleware(thunk)
-  )
-  // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-)
+const store = configureStore({
+  reducer: persistedReducer,
+  // Default middleware include: thunk, immutableStateInvariant, and serializableStateInvariant (disabled)
+  // immutableStateInvariant is not applicable when using createSlice as it automatically uses Immer internally
+  middleware: getDefaultMiddleware => getDefaultMiddleware({
+    serializableCheck: false
+  }),
+  // Set devTools to false to disable Redux DevTools integration
+  // devtools: false
+})
+// Redux store persistor
 const persistor = persistStore(store)
 
 // const client = new ApolloClient({

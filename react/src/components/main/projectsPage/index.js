@@ -6,8 +6,8 @@ import Fade from 'react-reveal/Fade'
 
 import {useDispatch} from 'react-redux'
 import {useProjectsPage, useCrescentContext} from '../../../redux/hooks'
-import {resetProjectsPage, setActiveProjectKind} from '../../../redux/actions/projectsPage'
-import {setProject} from '../../../redux/actions/context'
+import {resetProjectsPage, setActiveProjectKind} from '../../../redux/slices/projectsPage'
+import {setProject} from '../../../redux/slices/context'
 
 import PublicProjectsList from './PublicProjectsList'
 import UploadedProjectsList from './UploadedProjectsList'

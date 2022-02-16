@@ -13,7 +13,7 @@ import DataForm from './DataForm'
 
 import {useDispatch} from 'react-redux'
 import {useCrescentContext} from '../../../../redux/hooks'
-import {setRun} from '../../../../redux/actions/context'
+import {setRun} from '../../../../redux/slices/context'
 
 
 // TODO: GQL QUERIES FOR PROJECT DETAILS

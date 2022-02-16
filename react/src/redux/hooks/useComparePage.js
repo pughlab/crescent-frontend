@@ -1,11 +1,3 @@
-import * as R from 'ramda'
-// Redux
-import {useSelector} from 'react-redux'
-import {createSelector} from 'reselect'
+import createSelectorHook from './createSelectorHook'
 
-export default function useComparePage() {
-  // Get comparePage object from redux store
-  const comparePageSelector = createSelector(R.prop('comparePage'), R.identity)
-  const comparePage = useSelector(comparePageSelector)
-  return comparePage
-}
+export default createSelectorHook('comparePage')

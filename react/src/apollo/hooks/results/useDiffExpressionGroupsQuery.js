@@ -5,7 +5,7 @@ import * as RA from 'ramda-adjunct'
 import useAvailableGroupsQuery from './useAvailableGroupsQuery'
 import useMachineService from './useMachineService'
 
-import {setSelectedGroup, setSelectedDiffExpression} from '../../../redux/actions/resultsPage'
+import {setSelectedGroup, setSelectedDiffExpression} from '../../../redux/slices/resultsPage'
 
 import {useDispatch} from 'react-redux'
 import { useResultsPage } from '../../../redux/hooks'

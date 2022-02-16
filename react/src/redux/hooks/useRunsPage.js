@@ -1,11 +1,3 @@
-import * as R from 'ramda'
-// Redux
-import {useSelector} from 'react-redux'
-import {createSelector} from 'reselect'
+import createSelectorHook from './createSelectorHook'
 
-export default function useRunsPage() {
-  // Get context object from redux store
-  const runsPageSelector = createSelector(R.prop('runsPage'), R.identity)
-  const runsPage = useSelector(runsPageSelector)
-  return runsPage
-}
+export default createSelectorHook('runsPage')

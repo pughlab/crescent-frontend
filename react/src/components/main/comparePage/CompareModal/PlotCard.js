@@ -6,7 +6,7 @@ import moment from 'moment'
 
 import {useDispatch} from 'react-redux'
 import {useComparePage} from '../../../../redux/hooks'
-import {addPlots, removePlots} from '../../../../redux/actions/comparePage'
+import {addPlots, removePlots} from '../../../../redux/slices/comparePage'
 
 const PlotCard = ({
 	plot
