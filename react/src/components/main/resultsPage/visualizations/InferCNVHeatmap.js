@@ -1,4 +1,3 @@
-import React from 'react'
 import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
 import { Image, Segment } from 'semantic-ui-react'
 

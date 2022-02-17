@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 
 import {Button, Header, Icon, Modal, Segment} from 'semantic-ui-react'
 

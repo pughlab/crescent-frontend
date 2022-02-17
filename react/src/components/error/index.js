@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {Modal, Segment, Image, Button} from 'semantic-ui-react'
 
 

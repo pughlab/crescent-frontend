@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import { Button, Form, Grid, Container, Image, Modal, Segment, Card, Icon, Divider, Header, Message } from 'semantic-ui-react'
 
 import { useMutation } from '@apollo/react-hooks'

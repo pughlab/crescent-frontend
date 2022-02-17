@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Button, Card, Grid, Header, Icon, Label, List, Message, Modal, Segment } from 'semantic-ui-react'
 import { useDropzone } from 'react-dropzone'
 import * as R from 'ramda'

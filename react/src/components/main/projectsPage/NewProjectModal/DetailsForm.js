@@ -1,4 +1,3 @@
-import React from 'react'
 import {useActor} from '@xstate/react'
 import {Form} from 'semantic-ui-react'
 import {useMachineServices} from '../../../../redux/hooks'

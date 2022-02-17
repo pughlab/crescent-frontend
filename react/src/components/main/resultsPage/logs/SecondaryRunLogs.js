@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import {useActor} from '@xstate/react'
 import {Divider, Segment} from 'semantic-ui-react'
 import * as R from 'ramda'

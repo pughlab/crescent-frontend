@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {Button, Divider, Header, Icon, Image, List, Segment} from 'semantic-ui-react'
 
 import Tada from 'react-reveal/Tada'

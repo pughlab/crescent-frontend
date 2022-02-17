@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useReducer} from 'react';
+import {useState, useEffect, useReducer} from 'react';
 
 import {Container, Breadcrumb, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid, Step, Transition, Form} from 'semantic-ui-react'
 import * as R from 'ramda'

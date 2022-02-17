@@ -1,4 +1,3 @@
-import React from 'react'
 import {Button, Divider, Header, Icon, Label, Modal, Segment} from 'semantic-ui-react'
 import {useDispatch} from 'react-redux'
 import * as R from 'ramda'

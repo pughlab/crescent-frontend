@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import * as R from 'ramda'
 import {Input, Segment, Dropdown, Grid, Button, Divider, Form, Checkbox, Popup} from 'semantic-ui-react'
 

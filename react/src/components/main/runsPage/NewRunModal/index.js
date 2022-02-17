@@ -1,4 +1,4 @@
-import React, {useState, useReducer} from 'react'
+import {useState, useReducer} from 'react'
 
 import {Header, Form, Button, Modal, Icon, Divider} from 'semantic-ui-react'
 

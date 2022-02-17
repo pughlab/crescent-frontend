@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback } from 'react'
+import {useState, useEffect, useCallback } from 'react'
 import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
 
 import { Image, Segment, Header, Icon } from 'semantic-ui-react'

@@ -1,4 +1,3 @@
-import React from 'react'
 import {useActor} from '@xstate/react'
 import * as R from 'ramda'
 import {Button, Header, Message, Segment} from 'semantic-ui-react'

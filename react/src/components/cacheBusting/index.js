@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {Button, Container, Grid, Header, Icon, Label, Message, Modal} from 'semantic-ui-react'
 import Shake from 'react-reveal/Shake'
 import {useSemverCheck} from '../../utils/hooks'

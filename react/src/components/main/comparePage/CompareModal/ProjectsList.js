@@ -1,5 +1,3 @@
-import React from 'react';
-
 import * as R from 'ramda'
 
 import {Card, Header, Icon, Segment} from 'semantic-ui-react'

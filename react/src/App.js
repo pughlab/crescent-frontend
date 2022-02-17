@@ -1,7 +1,7 @@
 import './App.css'
 import 'semantic-ui-css/semantic.min.css'
 
-import React, {useState, useRef, useEffect} from 'react'
+import {useState, useRef, useEffect} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 // React components

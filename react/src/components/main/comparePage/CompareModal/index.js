@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 import * as R from 'ramda'
 
 import {Header, Button, Segment, Modal, Icon, Card, Popup, Step, Transition} from 'semantic-ui-react'

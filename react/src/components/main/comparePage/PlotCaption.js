@@ -1,4 +1,3 @@
-import React from 'react'
 import * as R from 'ramda'
 
 import {Label} from 'semantic-ui-react'

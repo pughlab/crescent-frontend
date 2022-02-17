@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {Button, List, Popup} from 'semantic-ui-react'
 
 import * as R from 'ramda'

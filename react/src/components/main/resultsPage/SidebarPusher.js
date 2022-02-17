@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import * as R from 'ramda'
 
 import {Button, Divider, Grid, Icon, Popup, Ref, Sticky} from 'semantic-ui-react'

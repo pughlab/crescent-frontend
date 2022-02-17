@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 

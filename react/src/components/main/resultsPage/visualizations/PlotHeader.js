@@ -1,4 +1,3 @@
-import React from 'react'
 import { Header, Popup, Grid, Button } from 'semantic-ui-react'
 
 import * as R from 'ramda'

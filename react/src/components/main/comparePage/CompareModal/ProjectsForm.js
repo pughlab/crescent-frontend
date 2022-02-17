@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import * as R from 'ramda'
 
 import {Button, Divider} from 'semantic-ui-react'

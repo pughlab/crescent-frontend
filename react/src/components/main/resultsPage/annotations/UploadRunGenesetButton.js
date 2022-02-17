@@ -1,4 +1,4 @@
-import React, {useState, useCallback, useEffect} from 'react'
+import {useState, useCallback, useEffect} from 'react'
 import {useActor} from '@xstate/react'
 import {Button, Header, Icon, Image, Message, Segment} from 'semantic-ui-react'
 import {useDropzone} from 'react-dropzone'

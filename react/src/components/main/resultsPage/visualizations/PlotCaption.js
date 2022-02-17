@@ -1,4 +1,3 @@
-import React from 'react'
 import * as R from 'ramda'
 import * as R_ from 'ramda-extension'
 import {Segment, Icon, Header, Image, Grid, Label} from 'semantic-ui-react'

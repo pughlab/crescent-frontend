@@ -1,4 +1,3 @@
-import React from 'react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'
 

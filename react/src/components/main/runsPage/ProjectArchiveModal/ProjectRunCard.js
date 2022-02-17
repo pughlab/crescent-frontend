@@ -1,4 +1,3 @@
-import React from 'react'
 import {Button, Card, Divider, Header, Icon, Label, Message, Popup} from 'semantic-ui-react'
 import Marquee from 'react-marquee'
 import moment from 'moment'

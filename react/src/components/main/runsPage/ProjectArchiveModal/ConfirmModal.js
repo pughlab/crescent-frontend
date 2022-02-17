@@ -1,4 +1,4 @@
-import React from 'react'
+import { Fragment } from 'react';
 import {Accordion, Button, Divider, Header, Icon, Label, Message, Modal, Popup, Segment} from 'semantic-ui-react'
 import moment from 'moment'
 import * as R from 'ramda'
@@ -180,7 +180,7 @@ const ConfirmArchiveRunsModal = ({ allProjectRuns, archiveRuns, projectName, rem
         <Accordion fluid>
           { R.addIndex(R.map)(
             ({ completedOn, createdOn, description, name, status, submittedOn }, index) => (
-              <React.Fragment key={index}>
+              <Fragment key={index}>
                 <Accordion.Title
                   active={R.includes(index, accordionIndices)}
                   content={
@@ -220,7 +220,7 @@ const ConfirmArchiveRunsModal = ({ allProjectRuns, archiveRuns, projectName, rem
                     />
                   </Segment>
                 </Accordion.Content>
-              </React.Fragment>
+              </Fragment>
             ),
             runsSelectedToDelete
           )}
@@ -247,7 +247,7 @@ const ConfirmArchiveRunsModal = ({ allProjectRuns, archiveRuns, projectName, rem
         />
       </Modal.Actions>
     </Modal>
-  )
+  );
 }
 
 export {

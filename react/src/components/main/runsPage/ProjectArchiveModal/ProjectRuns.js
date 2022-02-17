@@ -1,4 +1,3 @@
-import React from 'react'
 import {Card, Header, Icon, Segment} from 'semantic-ui-react'
 import * as R from 'ramda'
 import * as RA from 'ramda-adjunct'

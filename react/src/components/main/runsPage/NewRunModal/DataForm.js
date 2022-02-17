@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {Segment, Header, Button, Label, Divider} from 'semantic-ui-react'
 
 import * as R from 'ramda'

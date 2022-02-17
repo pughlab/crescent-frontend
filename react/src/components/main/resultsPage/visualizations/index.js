@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import * as R from 'ramda'
 import * as R_ from 'ramda-extension'
 import {Grid, Header, Icon, Image, Segment} from 'semantic-ui-react'

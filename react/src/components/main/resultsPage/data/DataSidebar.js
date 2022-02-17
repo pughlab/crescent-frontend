@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {Accordion} from 'semantic-ui-react'
 import * as R from 'ramda'
 
@@ -36,7 +34,7 @@ export default function DataSidebar () {
   const isSingleDatasetRun = R.compose(R.equals(1), R.length)(datasets)
 
   const DATA_ACTIONS = [
-    ... isSingleDatasetRun ? [] : [{dataAction: 'referenceDatasets', label: 'Select Reference Datasets', description: 'Select which datasets will be used as reference/anchors'}],
+    ... (isSingleDatasetRun ? [] : [{dataAction: 'referenceDatasets', label: 'Select Reference Datasets', description: 'Select which datasets will be used as reference/anchors'}]),
   ]
 
   return (

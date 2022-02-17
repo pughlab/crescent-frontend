@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import * as RA from 'ramda-adjunct'
 
 import {useSecondaryRunEvents} from '../../../../xstate/hooks'

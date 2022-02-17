@@ -1,4 +1,3 @@
-import React from 'react';
 import * as R from 'ramda'
 
 import {Header, Button, Label, Icon, Card, Transition} from 'semantic-ui-react'

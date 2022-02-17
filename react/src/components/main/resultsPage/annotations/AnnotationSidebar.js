@@ -1,5 +1,3 @@
-import React from 'react';
-
 import {Accordion} from 'semantic-ui-react'
 import * as R from 'ramda'
 

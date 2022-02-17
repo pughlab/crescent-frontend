@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import {useState} from 'react'
 import { Button, Form, Grid, Header, Image, Modal, Segment, Card, Divider, Container } from 'semantic-ui-react'
 
 import Logo from './logo.jpg'

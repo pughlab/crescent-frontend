@@ -1,4 +1,3 @@
-import React from 'react'
 import {Form, Icon, Message, Segment} from 'semantic-ui-react'
 import {useActor} from '@xstate/react'
 import * as R from 'ramda'

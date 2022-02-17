@@ -1,7 +1,6 @@
 
 
 
-import React from 'react'
 import { Button, Card, Divider, Header, Icon, Label, Message, Popup, Segment, Transition } from 'semantic-ui-react'
 import { useActor } from '@xstate/react'
 import { useQuery } from '@apollo/react-hooks'

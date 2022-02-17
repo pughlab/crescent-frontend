@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 import { Container, Card, Divider, Button, Header, Icon, Modal, Dropdown, Label, Segment, Grid } from 'semantic-ui-react'
 

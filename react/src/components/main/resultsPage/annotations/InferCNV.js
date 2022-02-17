@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useActor} from '@xstate/react'
 import {Image, Grid, Segment} from 'semantic-ui-react'
 import * as R from 'ramda'

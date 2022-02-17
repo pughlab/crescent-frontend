@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback } from 'react'
+import {useState, useEffect, useCallback } from 'react'
 import Plot from 'react-plotly.js'
 import { Loader, Segment, Header, Icon } from 'semantic-ui-react'
 

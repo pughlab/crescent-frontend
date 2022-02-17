@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Plot from 'react-plotly.js'
 import { Button, Form, Divider, Segment, Popup, Label } from 'semantic-ui-react'
 import { Fade } from 'react-reveal'

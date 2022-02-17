@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import ResponsivePlot, {ResponsivePlotSegment} from './ResponsivePlot'
 import { Image, Container, Header, Segment, Dimmer, Icon, Popup, Dropdown, Grid, Button } from 'semantic-ui-react'
 import Slider, { createSliderWithTooltip } from 'rc-slider';

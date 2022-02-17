@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useActor} from '@xstate/react'
 import {Button, Icon, Label, List} from 'semantic-ui-react'
 import moment from 'moment'

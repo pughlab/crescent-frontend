@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { Loader, Segment, Button, Transition, Divider, Step, Menu, Header, Accordion, Dropdown, Checkbox } from 'semantic-ui-react'
 
