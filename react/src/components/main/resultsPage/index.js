@@ -12,12 +12,16 @@ import {useRunDetailsQuery} from '../../../apollo/hooks/run'
 import Fade from 'react-reveal/Fade'
 
 import ResultsPageSidebarPusher from './SidebarPusher'
+import useGAPageView from '../../../analytics/hooks/useGAPageView'
 
 const ResultsPageComponent = () => {
   const dispatch = useDispatch()
   const {runID} = useCrescentContext()
   const {selectedPlotID} = useComparePage()
   const {getRunStatus, run, runStatus, startStatusPolling, stopStatusPolling} = useRunDetailsQuery(runID)
+
+  //Google Analytics implementation
+  useGAPageView({route: '/results'})
 
   useEffect(() => {
     getRunStatus()

@@ -28,6 +28,7 @@ import {resetRunsPage} from '../../../redux/actions/runsPage'
 import CompareModal from '../comparePage/CompareModal';
 
 import ProjectHeader from '../../menu/ProjectHeader'
+import useGAPageView from '../../../analytics/hooks/useGAPageView'
 
 const RunsPageComponent = () => {
   const dispatch = useDispatch()
@@ -37,6 +38,9 @@ const RunsPageComponent = () => {
   const { getUpdatedRun, projectRuns, removeRuns } = useProjectRunsQuery(projectID)
 
   const [open, setOpen] = useState(false)
+
+  //Google Analytics implementation
+  useGAPageView({route: '/runs'})
 
   if (R.isNil(project)) {
     return null

@@ -14,6 +14,7 @@ import UploadedProjectsList from './UploadedProjectsList'
 import ProjectSearchInput from './ProjectSearchInput'
 import NewProjectModal from './NewProjectModal'
 import CompareModal from '../comparePage/CompareModal';
+import useGAPageView from '../../../analytics/hooks/useGAPageView';
 
 const ProjectsPageComponent = ({
 
@@ -24,6 +25,10 @@ const ProjectsPageComponent = ({
 
   const {activeProjectKind} = useProjectsPage()
   const isActiveProjectKind = R.equals(activeProjectKind)
+
+  //Google Analytics implementation
+  useGAPageView({route: '/projects'})
+
   return (
     <>
       <Fade duration={2000}>
