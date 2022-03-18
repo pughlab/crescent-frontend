@@ -43,7 +43,7 @@ npm start
 Clone this repo.
 
 Copy the SSL certificate files specified in `nginx/conf/default.conf` to `nginx/certs/`.
-Copy `sample.env` to `.env` and `react/sample.env` to `react/.env` and customize as needed. The `GRAPHENE_DEV` variable should be set to `False`.
+Copy `sample.env` to `.env` and `react/sample.env` to `react/.env` and customize as needed. The `GRAPHENE_DEV` variable should be set to `False`. If you would like to use Google Analytics, the `REACT_APP_GA_TRACKING_ID` should be set with your tracking ID.
 
 `npm install` to install server dependencies.
 In the `react` folder, `npm install` for frontend dependencies and then `npm build` to compile a release version of the frontend in `build`.
